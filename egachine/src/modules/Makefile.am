@@ -17,16 +17,16 @@ if BUILD_TIMER
 MAYBE_TIMER = timer
 endif
 if BUILD_GL
-MAYBE_TIMER = gl
+MAYBE_GL = gl
 endif
 if BUILD_VIDEO
-MAYBE_TIMER = video
+MAYBE_VIDEO = video
 endif
 if BUILD_INPUT
-MAYBE_TIMER = input
+MAYBE_INPUT = input
 endif
 if BUILD_AUDIO
-MAYBE_TIMER = audio
+MAYBE_AUDIO = audio
 endif
 
 SUBDIRS = \

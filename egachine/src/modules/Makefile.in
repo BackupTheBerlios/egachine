@@ -65,7 +65,7 @@ HEADERS = $(include_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = example zlib monitorable stream file network bytearray \
-	egachine base64 audio gl input timer video svgl util graphviz
+	egachine base64 timer gl video input audio svgl util graphviz
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -216,11 +216,11 @@ target_alias = @target_alias@
 @BUILD_STREAM_TRUE@MAYBE_STREAM = stream
 @BUILD_FILE_TRUE@MAYBE_FILE = file
 @BUILD_NET_TRUE@MAYBE_NET = network
-@BUILD_AUDIO_TRUE@MAYBE_TIMER = audio
-@BUILD_GL_TRUE@MAYBE_TIMER = gl
-@BUILD_INPUT_TRUE@MAYBE_TIMER = input
 @BUILD_TIMER_TRUE@MAYBE_TIMER = timer
-@BUILD_VIDEO_TRUE@MAYBE_TIMER = video
+@BUILD_GL_TRUE@MAYBE_GL = gl
+@BUILD_VIDEO_TRUE@MAYBE_VIDEO = video
+@BUILD_INPUT_TRUE@MAYBE_INPUT = input
+@BUILD_AUDIO_TRUE@MAYBE_AUDIO = audio
 SUBDIRS = \
 	example \
 	$(MAYBE_ZLIB) \

@@ -213,10 +213,13 @@ examples = \
 	client/slideshow-back.svg \
 	client/slideshow.js \
 	client/simple.js \
+	client/balls.js \
 	server/netpong.js \
 	server/netorigpong.js \
 	svg/svgviewer.js \
 	svg/svgtetris.svg \
+	svg/domevent.svg \
+	svg/lion.svg \
 	ejs/shell.js
 
 nobase_dist_example_DATA = $(examples)

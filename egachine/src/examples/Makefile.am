@@ -13,6 +13,7 @@ examples = \
 	client/slideshow-back.svg \
 	client/slideshow.js \
 	client/simple.js \
+	client/balls.js \
 	server/netpong.js \
 	server/netorigpong.js \
 	svg/svgviewer.js \

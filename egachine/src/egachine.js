@@ -144,7 +144,7 @@ Video.setViewportCoords=function(obj)
 Video.getViewport=function()
 {
   // todo perhaps our getViewport should unproject the points?
-  return glGetIntegerv (GL_VIEWPORT);
+  return gl.GetIntegerv (GL_VIEWPORT);
 }
 
 Video.setViewport=function(vec)

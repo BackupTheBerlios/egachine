@@ -36,8 +36,8 @@ Girl.prototype.step=function(dt)
 }
 
 viewport=Video.getViewport();
-sx=viewport.sx;
-sy=viewport.sy;
+sx=viewport[2];
+sy=viewport[3];
 // TODO: we assume 4:3 (1.33:1) here
 Video.scale(sx/(1+1/3),sy);
 

@@ -82,20 +82,11 @@ und dann wird eval auch noch für callbacks aus c code zurück nach
 javascript benutzt
 und ReportError löst doch keine exception aus
 --------------------------------------------------------------------------------
-segfault on new Timer() !!
-=> habe noch keine funktionierende javascript klasse von c++ aus definiert
-das problem war auch das ich eigentlich nur ein namespace wollte
-das habe ich denke ich behoben, da ich keine klasse benutze sondern nur ein
-objekt
---------------------------------------------------------------------------------
 complete scenegraph (color, ...)
 wrap remaining video/input functions
 --------------------------------------------------------------------------------
 perhaps redesign the scene-graph and take advantage of ecmascript features
 the current scenegraph is mainly taken from jgachine
---------------------------------------------------------------------------------
-seperate step and paint
-perhaps seperate scenegraph from animation logic completely?
 --------------------------------------------------------------------------------
 watchall does not handle circles?!
 --------------------------------------------------------------------------------
@@ -209,7 +200,7 @@ implement a menu/input field where connect to
 nearly done
 --------------------------------------------------------------------------------
 use autoutils again? (autoconf/make..)
-for now i like the simple shell script
+for now i like the simple shell scripts
 i recommend to use ccache/compilercache
 --------------------------------------------------------------------------------
 debian package:
@@ -229,12 +220,7 @@ i used a different spidermonkey version
 (there is none in testing?)
 => compiled statically
 --------------------------------------------------------------------------------
-let user redefine keys
-see also redesign input layer?
---------------------------------------------------------------------------------
 write DOCU!
---------------------------------------------------------------------------------
-ship with resource utility
 --------------------------------------------------------------------------------
 allow #!/usr/.../egachine at beginning of scripts
 to allow "normal" execution on unix systems
@@ -253,9 +239,11 @@ sometime in the future:
 expose more of the SDL Input stuff
 it is more powerful and there will not be any other implementation
 in the near future
+let user redefine keys
 --------------------------------------------------------------------------------
 i am not sure if I do create the dll with my mingw cross compiler the right way
-do I need -fPIC, too ?
+do I need -fPIC, too ? no i don't think so - it seems all win32 code generated
+by mingw is position independant
 do I need the declspec shit and have to use dlltool?
 for now I simply compile like I would do on a unix system and it seems to work
 --------------------------------------------------------------------------------
@@ -267,8 +255,6 @@ i started a second try in src/examples/misc/ser.js
 now using the second serializer
 which temporarily renames __proto__ to _p
 still not the best solution
---------------------------------------------------------------------------------
-compare performance of new and old serializer
 --------------------------------------------------------------------------------
 client and server should check protocol compatibility/version
 --------------------------------------------------------------------------------
@@ -298,13 +284,8 @@ for now we use SDL_mixer
 --------------------------------------------------------------------------------
 kick out the video stuff which only duplicates the gl wrapper
 --------------------------------------------------------------------------------
-cross-compile newer version of SDL_image
---------------------------------------------------------------------------------
 I just found the sdl mingw developer package again
 should try if opengl works with it => no need for hacked SDL version?
---------------------------------------------------------------------------------
-server and client are crashing
-very strange
 --------------------------------------------------------------------------------
 we often assume that there is only one javascript context
 especially in client/video/jsgl
@@ -326,9 +307,6 @@ done: Zlib.compress and Zlib.decompress
 todo: allow files passed on startup to be .gz
 --------------------------------------------------------------------------------
 do not install all examples
-especially misc
-(removed misc completely)
-
 somehow tag the examples which should not get shipped with binaries
 the tag is DONTINSTALL in the first line
 (done: but only install does use this

@@ -18,7 +18,10 @@
 
 /*!
   \file stream/ejsstream.cpp
-  \brief Javascript stream object (wrapper around std::basic_streambuf)
+  \brief JavaScript Stream object
+  
+  Wrapper around std::basic_streambuf, std::cin, std::cout, std::cerr
+
   \author Jens Thiele
 
   \todo as always: js strings are ucs-2 !
@@ -47,13 +50,14 @@ extern "C" {
 
   // todo: is this class check good enough to make this dangerous cast safe?
   // Remember: if (JS_GET_CLASS(cx, obj) != &stream_class) did not work
-  // because JS_THREADSAFE was not defined correctly (defined or undefined)
+  // this is probably caused by incorrect definition (defined or undefined) 
+  // of JS_THREADSAFE
 
-#define GET_STREAM_OBJ std::streambuf* stream=NULL;			\
-    if (JS_GET_CLASS(cx, obj) != &stream_class)				\
-      EJS_THROW_ERROR(cx,obj,"incompatible object type"); \
-    stream=(std::streambuf *)JS_GetPrivate(cx,obj);			\
-    if (!stream)							\
+#define GET_STREAM_OBJ std::streambuf* stream=NULL;		\
+    if (JS_GET_CLASS(cx, obj) != &stream_class)			\
+      EJS_THROW_ERROR(cx,obj,"incompatible object type");	\
+    stream=(std::streambuf *)JS_GetPrivate(cx,obj);		\
+    if (!stream)						\
       EJS_THROW_ERROR(cx,obj,"no valid stream object")
 
   static
@@ -62,7 +66,7 @@ extern "C" {
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     GET_STREAM_OBJ;
-
+    
     // todo: root string!
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -169,11 +173,11 @@ extern "C" {
   ejsstream_LTX_onLoad(JSContext *cx, JSObject *global)
   {
     JSObject *stream = JS_InitClass(cx, global,
-				   NULL,
-				   &stream_class,
-				   stream_cons, 0,
-				   NULL, stream_methods,
-				   NULL, NULL);
+				    NULL,
+				    &stream_class,
+				    stream_cons, 0,
+				    NULL, stream_methods,
+				    NULL, NULL);
     if (!stream) return JS_FALSE;
     // create stdin, stdout, stderr streams
     JSObject *obj;

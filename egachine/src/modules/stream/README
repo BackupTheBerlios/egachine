@@ -1,0 +1,11 @@
+JavaScript Stream object
+
+Stream objects provide following methods:
+String read(Number)
+Number write(String)
+Number inAvailable()
+
+Existing Stream objects:
+stdin, stdout, stderr
+
+To construct other Stream objects see the network and file modules

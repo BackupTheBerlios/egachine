@@ -18,9 +18,8 @@
 
 /* base64 stuff:
  * Copyright (C) 1999 Masanao Izumo <mo@goice.co.jp>
- * Version: 1.0
- * LastModified: Dec 25 1999
- * This library is free.  You can redistribute it and/or modify it.
+ * Version: 1.0-karme
+ * LastModified: 2004 by Jens Thiele
  */
 
 /*!
@@ -33,8 +32,98 @@
 
 // global functions - todo: there perhaps should be none
 
+/*
 function Copy(obj){
   for (var i in obj) this[i] = obj[i];
+  }*/
+
+// is the passed object an empty prototype? (empty object)
+function isEmptyProto(p) {
+  return (p=={}.__proto__);
+}
+
+// is this property from a prototype?
+function isFromProto(o,prop) {
+  var p=o.__proto__;
+  while (p!=undefined) {
+    if (p[prop]&&(o[prop]==p[prop])) return true;
+    p=p.__proto__;
+  }
+  return false;
+}
+
+//! call function for all properties of an object (and the object itself)
+/*!
+  \param obj the object
+  \param func(x,depthFirst) the function to call 
+  (for objects it is called twice - once before going into the depth,
+  and once after - depthFirst is set to reflect this)
+  \param idfunc function returning a ID for an object
+  
+  \note this works recursively and handles cycles in the graph
+  if you pass in a correct idfunc
+*/
+function forall(obj,func,idfunc){
+  var m={};
+  if (!idfunc) idfunc=function(x){return hashObject(x).toString();};
+  if (!func) throw "need function";
+  function _forall(x) {
+    if (typeof(x) != 'object') {
+      func(x,false);
+      return;
+    };
+    var hash=idfunc(x);
+    if (m[hash]) return;
+    m[hash]=true;
+    func(x,false);
+    for (var k in x) {
+      if (!isFromProto(x,k))
+	_forall(x[k]);
+    };
+    func(x,true);
+    return;
+  };
+  _forall(obj);
+}
+
+function delp(x){
+  forall(x,(function(x,depthFirst,debug){
+    if (typeof(x) != 'object') return;
+    if (!depthFirst) {
+      if (x._p) x.__proto__=x._p;
+    }else{
+      if (x._p) delete x._p;
+    }
+  }));
+}
+
+//! serialize object
+/*!
+  \bug properties named _p are not allowed
+  \note temporarily adds property _p as copy of __proto__
+*/
+function serialize(x) {
+  forall(x,(function(x,depthFirst){
+    if (typeof(x) != 'object') return;
+    if ((depthFirst)||(isEmptyProto(x.__proto__))) return;
+    if ((x._p)&&(!isFromProto(x,"_p")))
+      throw "TODO: property _p not allowed";
+    x._p=x.__proto__;
+  }));
+  var r=x.toSource();
+  delp(x);
+  //  print("ser: "+r);
+  return r;
+}
+
+//! deserialize object
+/*
+  \note This calls eval - which depending on your usage may be a security hole
+*/
+function deserialize(str) {
+  var x=eval(str);
+  delp(x);
+  return x;
 }
 
 // end global functions --------------------------------------------------------
@@ -101,33 +190,31 @@ if (!this.Video) {
   EGachine.client=true;
 }
 
-// we do not want to modify the default empty proto
-Video.__proto__={};
 // map resname to texture id
-Video.__proto__.textures={};
+Video.textures={};
 // color stack
-Video.__proto__.colors=[];
+Video.colors=[];
 
 // map resname to texture id
-Video.__proto__.getTextureID=function(resname){
+Video.getTextureID=function(resname){
   var tid=Video.textures[resname];
   if (tid) return tid;
   var res=EGachine.getResource(resname);
   //  print("res.length: "+res.length);
   //  var dec=unescape(res);
-  var dec=base64decode(res);
+  var dec=Base64.decode(res);
   //  print("dec.length: "+dec.length);
   tid=Video.textures[resname]=Video.createTexture(dec);
   return tid;
 };
 
-Video.__proto__.pushColor=function() {
-  this.colors.push(this.getColor());
+Video.pushColor=function() {
+  Video.colors.push(this.getColor());
 }
 
-Video.__proto__.popColor=function() {
-  var c=this.colors.pop();
-  this.setColor(c[0],c[1],c[2],c[3]);
+Video.popColor=function() {
+  var c=Video.colors.pop();
+  Video.setColor(c[0],c[1],c[2],c[3]);
 }
 
 // vector class - TODO: operator +,-,... - perhaps native code
@@ -152,20 +239,22 @@ function DevState(dev,x,y,buttons){
   this.buttons=buttons;
 }
 
-// Node class
-// curently base class of all nodes in the scenegraph
-// this is not necessary and in ecmascript the term class
-// is a bit misleading / non-existent ;-)
-// it took me a while to understand this - and to like
-// the prototype idea
-// anyway i keep the term class
+// Node object
+// curently prototype object of all nodes in the scenegraph
+// (prototype of the prototypes)
 function Node() {
 }
 Node.prototype.paint=function(dt){
   if (!this.children) return;
   for (var i=0;i<this.children.length;++i)
-    if (!this.children[i].disabled)
+    if (!this.children[i].disabled) {
+      if (typeof(this.children[i].paint) != 'function') {
+	print(this.children[i].toSource());
+	print(this.children[i].__proto__.toSource());
+	print(this.children[i].paint);
+      }
       this.children[i].paint(dt);
+    }
 }
 Node.prototype.addNode=function(n){
   if (!this.children) this.children=[];
@@ -173,13 +262,11 @@ Node.prototype.addNode=function(n){
   return this;
 }
 
-// derived class Rotate
+// derived object Rotate
 function Rotate(degrees) {
-  //  Node.prototype.init.call(this);
   this.degrees=degrees;
 }
-Rotate.prototype=new Copy(Node.prototype);
-Rotate.prototype.constructor=Rotate;
+Rotate.prototype=new Node();
 Rotate.prototype.paint=function(dt){
   Video.pushMatrix();
   Video.rotate(this.degrees.value);
@@ -187,25 +274,21 @@ Rotate.prototype.paint=function(dt){
   Video.popMatrix();
 }
 
-// derived class Texture
+// derived object Texture
 function Texture(resname){
-  //  Node.prototype.init.call(this);
   this.resname=resname;
 }
-Texture.prototype=new Copy(Node.prototype);
-Texture.prototype.constructor=Texture;
+Texture.prototype=new Node();
 Texture.prototype.paint=function(dt){
   Video.drawTexture(Video.getTextureID(this.resname));
   Node.prototype.paint.call(this,dt);
 }
 
-// derived class Scale
+// derived object Scale
 function Scale(v) {
-  //  Node.prototype.init.call(this);
   this.v=v;
 }
-Scale.prototype=new Copy(Node.prototype);
-Scale.prototype.constructor=Scale;
+Scale.prototype=new Node();
 Scale.prototype.paint=function(dt){
   Video.pushMatrix();
   Video.scale(this.v.x,this.v.y);
@@ -213,13 +296,11 @@ Scale.prototype.paint=function(dt){
   Video.popMatrix();
 }
 
-// derived class Translate
+// derived object Translate
 function Translate(v) {
-  //  Node.prototype.init.call(this);
   this.v=v;
 }
-Translate.prototype=new Copy(Node.prototype);
-Translate.prototype.constructor=Translate;
+Translate.prototype=new Node();
 Translate.prototype.paint=function(dt){
   Video.pushMatrix();
   translate(this.v.x,this.v.y);
@@ -227,16 +308,14 @@ Translate.prototype.paint=function(dt){
   Video.popMatrix();
 }
 
-// derived class Sprite
+// derived object Sprite
 function Sprite(resname,size,pos,degrees) {
-  //  Node.prototype.init.call(this);
   this.size=size;
   this.pos=pos;
   this.degrees=degrees;
   this.resname=resname;
 }
-Sprite.prototype=new Copy(Node.prototype);
-Sprite.prototype.constructor=Sprite;
+Sprite.prototype=new Node();
 Sprite.prototype.paint=function(dt){
   Video.pushMatrix();
   Video.translate(this.pos.x,this.pos.y);
@@ -249,15 +328,14 @@ Sprite.prototype.paint=function(dt){
   Video.popMatrix();
 }
 
-// derived class Mover
+// derived object Mover
 function Mover(speed, rotspeed) {
   this.speed=speed;
   this.rotspeed=rotspeed;
   this.time=0;
   this.last=0;
 }
-Mover.prototype=new Copy(Node.prototype);
-Mover.prototype.constructor=Mover;
+Mover.prototype=new Node();
 Mover.prototype.paint=function(dt){
   var ct=this.time+dt;
   if (ct-this.last<1) {
@@ -280,12 +358,11 @@ Mover.prototype.paint=function(dt){
   Node.prototype.paint.call(this,dt);
 }
 
-// derived class Color
+// derived object Color
 function Color(r,g,b,a) {
   this.c=[r,g,b,a];
 }
-Color.prototype=new Copy(Node.prototype);
-Color.prototype.constructor=Color;
+Color.prototype=new Node();
 Color.prototype.paint=function(dt){
   Video.pushColor();
   Video.setColor(this.c[0],this.c[1],this.c[2],this.c[3]);
@@ -293,16 +370,8 @@ Color.prototype.paint=function(dt){
   Video.popColor();
 }
 
-
-
 // a first object serializer hack
 // based on code from Daniel Fournier  ( thanks!)
-
-// is the passed object an empty prototype? (empty object)
-function isEmptyProto(p) {
-  for (a in p) return false;
-  return true;
-}
 
 /*
 // todo: hashfunc is called not only for objects
@@ -504,78 +573,6 @@ Serializer.prototype._serialize=function(object){
 }
 */
 
-//! call function for all properties of an object (and the object itself)
-/*!
-  \param obj the object
-  \param func(x,depthFirst) the function to call 
-  (for objects it is called twice - once before going into the depth,
-  and once after - depthFirst is set to reflect this)
-  \param idfunc function returning a ID for an object
-  
-  \note this works recursively and handles cycles in the graph
-  if you pass in a correct idfunc
-*/
-function forall(obj,func,idfunc){
-  var m={};
-  if (!idfunc) idfunc=function(x){return hashObject(x).toString();};
-  if (!func) throw "need function";
-  function _forall(x) {
-    if (typeof(x) != 'object') {
-      func(x,false);
-      return;
-    };
-    var hash=idfunc(x);
-    if (m[hash]) return;
-    m[hash]=true;
-    func(x,false);
-    for (var k in x) {
-      _forall(x[k]);
-    };
-    func(x,true);
-    return;
-  };
-  _forall(obj);
-}
-
-function delp(x){
-  forall(x,(function(x,depthFirst,debug){
-    if (typeof(x) != 'object') return;
-    if (!depthFirst) {
-      if (x._p) x.__proto__=x._p;
-    }else{
-      if (x._p) delete x._p;
-    }
-  }));
-}
-
-//! serialize object
-/*!
-  \bug properties named _p are not allowed
-  \note temporarily adds property _p as copy of __proto__
-*/
-function serialize(x) {
-  forall(x,(function(x,depthFirst){
-    if (typeof(x) != 'object') return;
-    if (depthFirst||isEmptyProto(x.__proto__)) return;
-    if (x._p) throw "TODO: property _p not allowed";
-    x._p=x.__proto__;
-  }));
-  var r=x.toSource();
-  delp(x);
-  //  print("ser: "+r);
-  return r;
-}
-
-//! deserialize object
-/*
-  \note This calls eval - which depending on your usage may be a security hole
-*/
-function deserialize(str) {
-  var x=eval(str);
-  delp(x);
-  return x;
-}
-
 
 //! restricted deserializer/eval
 /*!
@@ -669,32 +666,38 @@ var genericwatch=function(y) {
   return function(p,o,n){print(y+'='+n+';');return n;};
 }
 
-function _watchall(pobj,cobj,cname,scope,gf){
-  //  print(scope);
-  if (!gf) throw "need generic function";
-  if (typeof(cobj) != 'object') {
-    var f=gf(scope);
-    //    print(f.toSource());
-    pobj.watch(cname,f);
-    return;
-  }
-  if (cobj instanceof Array) {
-    var k;
-    for (var k in cobj) {
-      _watchall(cobj, cobj[k], k, scope+"["+k+"]", gf);
-    }
-  }else{
-    var k;
-    for (var k in cobj) {
-      if (k[0]!='_')
-	_watchall(cobj, cobj[k], k, scope+"."+k,     gf);
-    }
-  }
-}
-// watch all properties in the object graph
-// and on change call a function which is generated
-// by gf - if gf isn't passed use genericwatch
+//! watch all properties in the object graph 
+/*
+  on change of a property call a generated function 
+  \param gf function which generates the watch function
+  if gf is not passed genericwatch is used
+  
+  \note properties coming from a prototype aren't watched
+*/
 function watchall(cobj,cname,gf){
+  function _watchall(pobj,cobj,cname,scope,gf){
+    //  print(scope);
+    if (!gf) throw "need generic function";
+    if (typeof(cobj) != 'object') {
+      var f=gf(scope);
+      //    print(f.toSource());
+      pobj.watch(cname,f);
+      return;
+    }
+    if (cobj instanceof Array) {
+      var k;
+      for (var k in cobj) {
+	_watchall(cobj, cobj[k], k, scope+"["+k+"]", gf);
+      }
+    }else{
+      var k;
+      for (var k in cobj) {
+	if ((k[0]!='_')&&(!isFromProto(cobj,k)))
+	  _watchall(cobj, cobj[k], k, scope+"."+k,     gf);
+      }
+    }
+  }
+
   if (!gf) gf=genericwatch;
   _watchall(undefined,cobj,cname,cname,gf);
 }
@@ -705,27 +708,23 @@ function watchall(cobj,cname,gf){
  * Version: 1.0
  * LastModified: Dec 25 1999
  * This library is free.  You can redistribute it and/or modify it.
+ *
+ * modified by Jens Thiele, 2004
  */
 
-/*
- * Interfaces:
- * b64 = base64encode(data);
- * data = base64decode(b64);
- */
+Base64={};
+Base64._encodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+Base64._decodeChars = new Array(
+				     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+				     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+				     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
+				     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
+				     -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+				     15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
+				     -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+				     41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
 
-
-var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-var base64DecodeChars = new Array(
-				  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-				  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-				  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
-				  52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
-				  -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
-				  15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
-				  -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-				  41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
-
-function base64encode(str) {
+Base64.encode=function(str) {
   var out, i, len;
   var c1, c2, c3;
 
@@ -736,30 +735,30 @@ function base64encode(str) {
     c1 = str.charCodeAt(i++) & 0xff;
     if(i == len)
       {
-	out += base64EncodeChars.charAt(c1 >> 2);
-	out += base64EncodeChars.charAt((c1 & 0x3) << 4);
+	out += this._encodeChars.charAt(c1 >> 2);
+	out += this._encodeChars.charAt((c1 & 0x3) << 4);
 	out += "==";
 	break;
       }
     c2 = str.charCodeAt(i++);
     if(i == len)
       {
-	out += base64EncodeChars.charAt(c1 >> 2);
-	out += base64EncodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
-	out += base64EncodeChars.charAt((c2 & 0xF) << 2);
+	out += this._encodeChars.charAt(c1 >> 2);
+	out += this._encodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+	out += this._encodeChars.charAt((c2 & 0xF) << 2);
 	out += "=";
 	break;
       }
     c3 = str.charCodeAt(i++);
-    out += base64EncodeChars.charAt(c1 >> 2);
-    out += base64EncodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
-    out += base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >>6));
-    out += base64EncodeChars.charAt(c3 & 0x3F);
+    out += this._encodeChars.charAt(c1 >> 2);
+    out += this._encodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+    out += this._encodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >>6));
+    out += this._encodeChars.charAt(c3 & 0x3F);
   }
   return out;
 }
 
-function base64decode(str) {
+Base64.decode=function(str) {
   var c1, c2, c3, c4;
   var i, len, out;
 
@@ -769,14 +768,14 @@ function base64decode(str) {
   while(i < len) {
     /* c1 */
     do {
-      c1 = base64DecodeChars[str.charCodeAt(i++) & 0xff];
+      c1 = this._decodeChars[str.charCodeAt(i++) & 0xff];
     } while(i < len && c1 == -1);
     if(c1 == -1)
       break;
 
     /* c2 */
     do {
-      c2 = base64DecodeChars[str.charCodeAt(i++) & 0xff];
+      c2 = this._decodeChars[str.charCodeAt(i++) & 0xff];
     } while(i < len && c2 == -1);
     if(c2 == -1)
       break;
@@ -788,7 +787,7 @@ function base64decode(str) {
       c3 = str.charCodeAt(i++) & 0xff;
       if(c3 == 61)
 	return out;
-      c3 = base64DecodeChars[c3];
+      c3 = this._decodeChars[c3];
     } while(i < len && c3 == -1);
     if(c3 == -1)
       break;
@@ -800,7 +799,7 @@ function base64decode(str) {
       c4 = str.charCodeAt(i++) & 0xff;
       if(c4 == 61)
 	return out;
-      c4 = base64DecodeChars[c4];
+      c4 = this._decodeChars[c4];
     } while(i < len && c4 == -1);
     if(c4 == -1)
       break;
@@ -811,6 +810,11 @@ function base64decode(str) {
 // end base 64 stuff
 
 // opengl constants
+// did not put them into gl. because
+// gl.Begin(GL_LINES) is nicer than gl.Begin(gl.LINES) or similar
+// and
+// gl.xxx(gl.2_BYTES) is not possible
+
 GL_FALSE=0x0
 GL_TRUE=0x1
 GL_BYTE=0x1400

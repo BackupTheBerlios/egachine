@@ -2,6 +2,10 @@
 if (!EGachine.server) throw "This file must be run by egaserver";
 if (!EGachine.checkVersion(0,0,4)) throw "at least version 0.0.4 required";
 
+print("Server is now running\nListening for connections on port "+listenPort);
+print("ATTENTION: at the moment the server is insecure.");
+print("You should not give access to untrusted clients - you have been warned!");
+
 // our game uses an aspect ratio of 1.333:1
 sx=1+1/3;
 sy=1;

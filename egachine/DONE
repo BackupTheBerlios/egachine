@@ -86,3 +86,11 @@ http://bugzilla.mozilla.org/show_bug.cgi?id=240577
 welche spidermonkey version soll ich benutzen?
 HEAD
 --------------------------------------------------------------------------------
+there is some bug with isFromProto or in the serialization
+test case: netpong and nc localhost 47000
+seems there happens a strange effect
+
+this was interaction with watch
+if you watch a property coming from a prototype
+toSource will give different results
+--------------------------------------------------------------------------------

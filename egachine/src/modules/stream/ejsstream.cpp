@@ -83,18 +83,17 @@ extern "C" {
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     GET_STREAM_OBJ;
-    if (!JSVAL_IS_INT(argv[0])) EJS_THROW_ERROR(cx,obj,"int expected");
-    int toread=JSVAL_TO_INT(argv[0]);
+    uint32 toread;
+    if (!JS_ValueToECMAUint32(cx,argv[0],&toread)) return JS_FALSE;
+    if (toread+1==0) --toread;
     char* buf=(char *)JS_malloc(cx,toread+1);
     if (!buf) return JS_FALSE;
-    int got=stream->sgetn(buf,toread);
-    assert(got>=0);
+    uint32 got=stream->sgetn(buf,toread);
     assert(got<=toread);
     
     if (got<toread) {
       buf=(char *)JS_realloc(cx,buf,got+1);
-      if (!buf)
-	return JS_FALSE;
+      if (!buf) return JS_FALSE;
     }
     buf[got]='\0';
     JSString *r=JS_NewString(cx, buf, got);
@@ -142,16 +141,11 @@ extern "C" {
 #undef FUNC
 
 
-
   static
   JSBool
   stream_cons
-  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  (JSContext *, JSObject *, uintN, jsval *, jsval *)
   {
-    if (!JS_IsConstructing(cx)) {
-      // todo
-      EJS_THROW_ERROR(cx,obj,"not yet implemented");
-    }
     return JS_TRUE;
   }
 
@@ -165,8 +159,7 @@ extern "C" {
     jsval owner;
     EJS_CHECK(JS_GetReservedSlot(cx,obj,0,&owner));
     EJS_CHECK(JSVAL_IS_BOOLEAN(owner));
-    if (owner==JSVAL_TRUE)
-      delete stream;
+    if (owner==JSVAL_TRUE) delete stream;
   }
 
   JSBool

@@ -63,27 +63,31 @@ inline
 JSBool
 ejs_throw_error(JSContext* cx, JSObject* obj, const char* msg)
 {
-  std::string script("throw new Error('");			
-  std::string op;						
-  for (unsigned i=0;msg[i];++i) {				
-    switch(msg[i]){						
-    case '\\':						
-      op+="\\\\";						
-      break;							
-    case '\'':						
-      op+="\\'";						
-      break;							
-    default:							
-      op+=msg[i];						
-    }								
-  }								
-  script+=op;							
-  script+="');";						
-  jsval dummy;						
-  // todo: stack is empty but we want to report a stacktrace
-  return JS_EvaluateScript(cx, obj,				
-			   script.c_str(), script.length(),	
-			   NULL, 0, &dummy);			
+  JSString* jsstr;
+  // if we get errors during error reporting we report those
+  if ( ((jsstr=JS_NewStringCopyZ(cx, msg)))
+       && (JS_AddNamedRoot(cx,&jsstr,"jsstr")) ) {
+    jsval dummy;						
+    // We can't use JS_EvaluateScript since the stack would be wrong
+    JSFunction *func;
+    JSObject* fobj;
+    const char* fbody="throw new Error(msg);";
+    const char* argnames[]={"msg"};
+    if ((func=JS_CompileFunction(cx, obj, NULL,
+				 1, argnames,
+				 fbody, strlen(fbody),	
+				 NULL, 0))) {
+      // root function
+      if ( ((fobj = JS_GetFunctionObject(func)))
+	   && (JS_AddNamedRoot(cx, &fobj, "fobj")) ) {
+	jsval args[]={STRING_TO_JSVAL(jsstr)};
+	JS_CallFunction(cx, obj, func, 1, args, &dummy);
+	JS_RemoveRoot(cx, &fobj);
+      }
+    }
+    JS_RemoveRoot(cx,&jsstr);
+  }
+  return JS_FALSE;
 }
 
 /*

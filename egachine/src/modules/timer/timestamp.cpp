@@ -15,7 +15,7 @@
 // we assume non-win platforms all have gettimeofday
 #define HAVE_GETTIMEOFDAY 1
 // unix/posix
-static Timer::TimeStamp start;
+static Timer::TimeStamp start=0;
 
 #endif
 
@@ -34,13 +34,9 @@ Timer::init()
   // unix/posix
 
 #if defined(HAVE_GETTIMEOFDAY)
-  timeval s;
-  gettimeofday(&s,NULL);
-  start=Timer::TimeStamp(s.tv_sec)*Timer::TimeStamp(1000000)+Timer::TimeStamp(s.tv_usec);
 #else
 #error "bug"
 #endif
-
 
   start=Timer::getTimeStamp();
 #endif

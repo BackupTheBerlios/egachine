@@ -310,3 +310,8 @@ because the have quite some code in common
 --------------------------------------------------------------------------------
 native base64 encode/decode
 --------------------------------------------------------------------------------
+Attention:
+JS_ValueToNumber does not fail if value==undefined
+i have to test what happens - i guess NaN (since a double is returned)
+and if a NaN double is converted to an int ...
+--------------------------------------------------------------------------------

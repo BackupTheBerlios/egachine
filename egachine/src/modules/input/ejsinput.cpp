@@ -18,114 +18,160 @@
 
 /*!
   \file input/jsinput.cpp
-  \brief Javascript wrapper of input layer
+  \brief Javascript input layer
   \author Jens Thiele
 */
 
 #include <cassert>
-#include "input.h"
 #include "ejsmodule.h"
+#include "ejsjoystick.h"
+#include <SDL.h>
 
-//! exception we throw within our callbacks
-struct CallbackError
-{};
-
-
-//! store data when calling poll
-struct PollData
-{
-  PollData() : cx(NULL), obj(NULL)
-  {}
-
-  JSBool
-  enterPoll(JSContext* _cx, JSObject* _obj)
-  {
-    EJS_CHECK(_cx&&_obj);
-    if (cx||obj) EJS_THROW_ERROR(cx,obj,"only one active Input.poll allowed");
-    cx=_cx;
-    obj=_obj;
-    return JS_TRUE;
-  }
-  
-  void
-  leavePoll(JSContext* _cx, JSObject* _obj)
-  {
-    EJS_CHECK((cx==_cx)&&(obj==_obj));
-    EJS_CHECK(cx&&obj);
-    cx=NULL;
-    obj=NULL;
-  }
-  
-  JSContext* cx;
-  JSObject* obj;
-};
-
-static
-PollData pollData;
-
-//! keep pollData correct in case of exceptions (finally)
-/*!
-  The "resource acquisition is initialization" technique
-  see also:
-  http://www.research.att.com/~bs/bs_faq2.html#finally
-*/
-struct Poll
-{
-  Poll(JSContext* _cx, JSObject* _obj) : cx(_cx), obj(_obj)
-  {
-    if ((_good=pollData.enterPoll(cx,obj)))
-      Input::poll();
-  }
-  JSBool good() const
-  {
-    return _good;
-  }
-  ~Poll()
-  {
-    pollData.leavePoll(cx,obj);
-  }
-private:
-  JSBool _good;
-  JSContext* cx;
-  JSObject* obj;
-};
 
 
 extern "C" {
   //! fetch input events
   /*!
-    we are called back from the input layer
-   */
+    fetch input events and convert them to array of javascript objects
+  */
+
+#define SET_BOOL_PROP(event,name) do{					\
+    jsval jstype=BOOLEAN_TO_JSVAL(event.name);				\
+    if (!JS_SetProperty(cx, jseventobj, EJS_XSTR(name), &jstype))	\
+      return JS_FALSE;							\
+  }while(0)
+  
+#define SET_NUM_PROP(event,name) do{					\
+    jsval jstype;							\
+    if (!JS_NewNumberValue(cx, event.name, &jstype)) return JS_FALSE;	\
+    if (!JS_SetProperty(cx, jseventobj, EJS_XSTR(name), &jstype))	\
+      return JS_FALSE;							\
+  }while(0)
+
   static
   JSBool
-  poll(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *)
+  getEvents(JSContext *cx, JSObject *, uintN, jsval *, jsval *rval)
   {
-    try{
-      Poll poll(cx,obj);
-      if (!poll.good()) return JS_FALSE;
-    }catch(const CallbackError &error){
-      return JS_FALSE;
+    JSObject * jsarray;
+    if (!(jsarray=JS_NewArrayObject(cx, 0, NULL))) return JS_FALSE;
+    *rval=OBJECT_TO_JSVAL(jsarray);
+    SDL_Event event;
+    unsigned i=0;
+    while ( SDL_PollEvent(&event) ) {
+      JSObject *jseventobj;
+      if (!(jseventobj=JS_NewObject(cx, NULL, NULL, NULL))) return JS_FALSE;
+      jsval jsevent=OBJECT_TO_JSVAL(jseventobj);
+      if (!JS_SetElement(cx, jsarray, i, &jsevent)) return JS_FALSE;
+
+      SET_NUM_PROP(event,type);
+
+      switch (event.type) {
+      case SDL_ACTIVEEVENT:
+	SET_BOOL_PROP(event.active,gain);
+	SET_NUM_PROP(event.active,state);
+	break;
+      case SDL_KEYDOWN:
+      case SDL_KEYUP:
+	SET_NUM_PROP (event.key,which);
+	SET_BOOL_PROP(event.key,state);
+	// platform dependent
+	//	SET_NUM_PROP(event.key.keysym,scancode);
+	SET_NUM_PROP (event.key.keysym,sym);
+	SET_NUM_PROP (event.key.keysym,mod);
+	SET_NUM_PROP (event.key.keysym,unicode);
+	break;
+      case SDL_MOUSEMOTION:
+	SET_NUM_PROP (event.motion,which);
+	SET_BOOL_PROP(event.motion,state);
+	SET_NUM_PROP (event.motion,x);
+	SET_NUM_PROP (event.motion,y);
+	SET_NUM_PROP (event.motion,xrel);
+	SET_NUM_PROP (event.motion,yrel);
+	break;
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+	SET_NUM_PROP (event.button,which);
+	SET_NUM_PROP (event.button,button);
+	SET_BOOL_PROP(event.button,state);
+	SET_NUM_PROP (event.button,x);
+	SET_NUM_PROP (event.button,y);
+	break;
+      case SDL_JOYAXISMOTION:
+	SET_NUM_PROP (event.jaxis,which);
+	SET_NUM_PROP (event.jaxis,axis);
+	SET_NUM_PROP (event.jaxis,value);
+	break;
+      case SDL_JOYBALLMOTION:
+	SET_NUM_PROP (event.jball,which);
+	SET_NUM_PROP (event.jball,ball);
+	SET_NUM_PROP (event.jball,xrel);
+	SET_NUM_PROP (event.jball,yrel);
+	break;
+      case SDL_JOYHATMOTION:
+	SET_NUM_PROP (event.jhat,which);
+	SET_NUM_PROP (event.jhat,hat);
+	SET_NUM_PROP (event.jhat,value);
+	break;
+      case SDL_JOYBUTTONDOWN:
+      case SDL_JOYBUTTONUP:
+	SET_NUM_PROP (event.jbutton,which);
+	SET_NUM_PROP (event.jbutton,button);
+	SET_BOOL_PROP(event.jbutton,state);
+      case SDL_QUIT:
+	break;
+      case SDL_VIDEORESIZE:
+	SET_NUM_PROP (event.resize,w);
+	SET_NUM_PROP (event.resize,h);
+      case SDL_VIDEOEXPOSE:
+	break;
+      default:
+	EJS_INFO("Got unknown event => we drop it ("<<unsigned(event.type)<<")");
+      }
+      ++i;
     }
     return JS_TRUE;
   }
 
   static
   JSBool
-  charMode(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
+  enableKeyRepeat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
+    int delay, interval;
+    if (!JS_ValueToECMAInt32(cx, argv[0], &delay)) return JS_FALSE;
+    if (!JS_ValueToECMAInt32(cx, argv[1], &interval)) return JS_FALSE;
+    if (SDL_EnableKeyRepeat(delay, interval)!=0)
+      EJS_THROW_ERROR(cx,obj,"failed");
+    return JS_TRUE;
+  }
+  
+  static
+  JSBool
+  enableUnicode(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    JSBool b;
-    if (!JS_ValueToBoolean(cx, argv[0],&b))
-      return JS_FALSE;
-    Input::charInput(b==JS_TRUE);
+    int enable;
+    if (!JS_ValueToECMAInt32(cx, argv[0], &enable)) return JS_FALSE;
+    if ((enable<-1)||(enable>1)) EJS_THROW_ERROR(cx,obj,"value out of range");
+    *rval=BOOLEAN_TO_JSVAL(SDL_EnableUNICODE(enable));
+    return JS_TRUE;
+  }
+
+  static
+  JSBool
+  numJoysticks(JSContext *, JSObject *, uintN, jsval *, jsval *rval)
+  {
+    *rval=INT_TO_JSVAL(SDL_NumJoysticks());
     return JS_TRUE;
   }
 
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
   static JSFunctionSpec static_methods[] = {
-    FUNC(poll,0),
-    FUNC(charMode,1),
+    FUNC(getEvents,0),
+    FUNC(enableKeyRepeat,2),
+    FUNC(enableUnicode,1),
+    FUNC(numJoysticks,0),
     EJS_END_FUNCTIONSPEC
   };
 
@@ -134,156 +180,12 @@ extern "C" {
   JSBool
   ejsinput_LTX_onLoad(JSContext* cx, JSObject* global)
   {
-    Input::init();
     JSObject *obj = JS_DefineObject(cx, global,
 				    "Input", NULL, NULL,
 				    JSPROP_ENUMERATE);
     if (!obj) return JS_FALSE;
-    return JS_DefineFunctions(cx, obj, static_methods);
-  }
-
-  JSBool
-  ejsinput_LTX_onUnLoad()
-  {
-    Input::deinit();
-    return JS_TRUE;
+    if (!JS_DefineFunctions(cx, obj, static_methods))
+      return JS_FALSE;
+    return ejsjoystick_onLoad(cx,obj);
   }
 }
-
-
-
-//! use this to root objects in callbacks
-struct CbRoot
-{
-  CbRoot(JSContext* _cx, void* _obj) : cx(_cx), obj(_obj)
-  {
-    EJS_CHECK(cx&&obj);
-    if (!JS_AddRoot(cx,obj)) {
-      cx=NULL;
-      obj=NULL;
-      throw CallbackError();
-    }
-  }
-  ~CbRoot()
-  {
-    if (cx&&obj)
-      JS_RemoveRoot(cx,obj);
-  }
-protected:
-  JSContext* cx;
-  void* obj;
-};
-
-void
-Input::quitHandler()
-{
-  EJS_CHECK(pollData.cx&&pollData.obj);
-  JSContext* cx=pollData.cx;
-  JSObject* obj=pollData.obj;
-  jsval dummy;
-  if (!JS_CallFunctionName(cx, obj, "handleQuit", 0, NULL, &dummy))
-    throw CallbackError();
-}
-
-void
-Input::toggleFullscreenHandler()
-{
-  EJS_CHECK(pollData.cx&&pollData.obj);
-  JSContext* cx=pollData.cx;
-  JSObject* obj=pollData.obj;
-  jsval dummy;
-  if (!JS_CallFunctionName(cx, obj, "toggleFullscreen", 0, NULL, &dummy))
-    throw CallbackError();
-}
-
-void
-Input::iconifyHandler()
-{
-  EJS_CHECK(pollData.cx&&pollData.obj);
-  JSContext* cx=pollData.cx;
-  JSObject* obj=pollData.obj;
-  jsval dummy;
-  if (!JS_CallFunctionName(cx, obj, "iconify", 0, NULL, &dummy))
-    throw CallbackError();
-}
-
-//! input layer calls this if we should resize (f.e. the input layer got a message from a window manager)
-void
-Input::resizeHandler(int sx, int sy)
-{
-  // resize neccessary? prevent possible endless loop where video subsystem generates input event
-  // hmm still shit 
-  // 
-  // UPDATE: i implemented a workaround in sdl/input.cpp (NEED_RESIZE_HACK)
-  // 
-  // the (sdlopengl) video subsystem generates resize requests - this is a real problem with wm's like sawfish....
-  // corresponding discussion on SDL ML: http://www.libsdl.org/pipermail/sdl/2003-July/thread.html#55073
-  // Idea: perhaps sawfish does also react on application requested resizes and tries to resize
-  // to the application requested size in small steps, too - hmm (this would explain the alternating resizes)
-  // 1. test with different wm's
-  // 2. take a look at the sawfish source
-  // 3. how did I do it in TUD? / read the Xlib manual
-  // 4. read the SDL source
-  //  if ((sx==org::jgachine::JGachine::width)&&(sy==org::jgachine::JGachine::height))
-  //    return;
-
-  // tell the video layer to actually resize
-  //  Video::resize(sx,sy);
-}
-
-void
-Input::charHandler(Unicode uc)
-{
-  // todo this should be a compile time check
-  assert(sizeof(Unicode)==sizeof(jschar));
-  EJS_CHECK(pollData.cx&&pollData.obj);
-  JSContext* cx=pollData.cx;
-  JSObject* obj=pollData.obj;
-
-  jschar s[1];
-  s[0]=uc;
-  JSString* js=JS_NewUCStringCopyN(cx, s, 1);
-  if (!js) throw CallbackError();
-  CbRoot root(cx,js);
-  
-  jsval args[1];
-  args[0]=STRING_TO_JSVAL(js);
-
-  jsval dummy;
-  if (!JS_CallFunctionName(cx, obj, "handleChar", 1, args, &dummy))
-    throw CallbackError();
-}
-
-
-
-void
-Input::devStateHandler(const Input::DevState& d)
-{
-  EJS_CHECK(pollData.cx&&pollData.obj);
-  std::ostringstream o;
-  o << "handleInput(new DevState("<<int(d.devno)<<","<<int(d.x)<<","<<int(d.y)<<","<<int(d.buttons)<<"));\n";
-
-  // We can't use JS_EvaluateScript since the stack would be wrong
-  JSFunction *func;
-  JSObject* fobj;
-  const char* fbody="throw new Error(msg);";
-  const char* argnames[]={"msg"};
-  if (!(func=JS_CompileFunction(pollData.cx, pollData.obj, NULL,
-			       1, argnames,
-			       o.str().c_str(), o.str().length(),
-			       EJS_FUNCTIONNAME, 0)))
-    throw CallbackError();
-
-  // root function
-  if ( (!(fobj = JS_GetFunctionObject(func)))
-       || (!JS_AddNamedRoot(pollData.cx, &fobj, "fobj")) )
-    throw CallbackError();
-
-  jsval dummy;
-  if (!JS_CallFunction(pollData.cx, pollData.obj, func, 0, NULL, &dummy)) {
-    JS_RemoveRoot(pollData.cx, &fobj);
-    throw CallbackError();
-  }
-  JS_RemoveRoot(pollData.cx, &fobj);
-}
-

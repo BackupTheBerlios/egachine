@@ -1,3 +1,7 @@
+2004-12-31  Jens Thiele  <karme@berlios.de>
+
+	* new input module exposing most of SDL's functionality
+
 2004-12-30  Jens Thiele  <karme@berlios.de>
 
 	* replaced serialize/deserialize with jsolait.lang.jsonToObj/objToJson

@@ -1,6 +1,3 @@
-the input layer of the jgachine
+input layer wrapping sdl events
 
-available input:
-- gamepad like devices (left, right, up, down, buttons)
-- quit
-- text input (must be switched on and off)
+in input.js the old input layer now is implemented in javascript

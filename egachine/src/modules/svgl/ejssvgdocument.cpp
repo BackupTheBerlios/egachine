@@ -258,12 +258,6 @@ extern "C" {
     return JS_TRUE;
   }
 
-  static
-  void
-  svgdocument_finalize(JSContext *cx, JSObject *obj)
-  {
-  }
-
   JSBool
   ejssvgdocument_onLoad(JSContext *cx, JSObject *module)
   {

@@ -3,23 +3,8 @@ General TODO list (each module might have its own)
 ================================================================================
 SECURITY RELATED BUGS:
 --------------------------------------------------------------------------------
-serialize/deserialize
-problem remaining:
-deserializing is done with eval
-this is okay on client side but not on server side
-because CLIENTS SHOULD NOT BE ALLOWED TO RUN CODE ON THE SERVER
-=> supply a limited deserialize for the server (a stripped down ObjectLiteral
-parser without side effects)
-
-we will use JSON for this
-
-clients only send primitive messages to the server
-At the moment clients are able to send javascript code to the server
-and via the server to the other clients
-nice hacking game isn't it?
-(theoretically this is not really such a problem since the server does not allow
-to do much: no file access, only one outgoing tcp connection
-but you can grab a javascript cluster and ...)
+jsolait does use eval at some points
+make sure this doesn't allow clients to execute code on server
 --------------------------------------------------------------------------------
 spidermonkey bug: assertion in jsarena.c:274 fails
 this only happens with the debug build
@@ -27,6 +12,23 @@ i posted it to the newsgroup
 perhaps only the assert is wrong ;-) ?
 see:
 http://bugzilla.mozilla.org/show_bug.cgi?id=239721
+--------------------------------------------------------------------------------
+spidermonkey bug:
+https://bugzilla.mozilla.org/show_bug.cgi?id=271716
+https://bugzilla.mozilla.org/show_bug.cgi?id=271718
+https://bugzilla.mozilla.org/show_bug.cgi?id=271734
+https://bugzilla.mozilla.org/show_bug.cgi?id=271739
+
+a = new Array(); while (1) { (a = new Array(a)).sort();}
+
+or
+
+var i=100000;
+var a;
+while (--i) {
+      (a = new Array(a)).length;
+}
+
 --------------------------------------------------------------------------------
 server network code must be non-blocking (or use threads)
 now a client can simply block the server => DOS
@@ -637,23 +639,6 @@ Another problem is to generate docu for the wrapped native code
 
 => perhaps the best solution is to write the docu manually
 --------------------------------------------------------------------------------
-spidermonkey bug:
-https://bugzilla.mozilla.org/show_bug.cgi?id=271716
-https://bugzilla.mozilla.org/show_bug.cgi?id=271718
-https://bugzilla.mozilla.org/show_bug.cgi?id=271734
-https://bugzilla.mozilla.org/show_bug.cgi?id=271739
-
-a = new Array(); while (1) { (a = new Array(a)).sort();}
-
-or
-
-var i=100000;
-var a;
-while (--i) {
-      (a = new Array(a)).length;
-}
-
---------------------------------------------------------------------------------
 currently loading a (native) module twice is a error / throws an exception
 this is probably a bad idea
 hmm
@@ -971,8 +956,23 @@ we now have many different serialization approaches
 	goal: don't use eval (security)
 	use JSON (subset of javascript object literals)
 --------------------------------------------------------------------------------
-================================================================================
 
+jsolait integration
+jsolait adds some functions to standard prototypes?
+
+perhaps use some ideas of jsolait regarding module stuff
+
+both network examples are quite shit at the moment
+
+netpong.js:
+- server produces data faster than client is able to consume
+
+netorigpong.js:
+- client may produce data faster than server is able to consume
+  (many input events)
+- timeshift (via keyboard) does not work anymore
+
+================================================================================
 
 
 

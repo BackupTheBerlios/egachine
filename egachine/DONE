@@ -549,3 +549,22 @@ build stuff:
 
 should now work?
 --------------------------------------------------------------------------------
+we now use jsolait json for client to server communication
+=> the following is no more true:
+
+serialize/deserialize
+problem remaining:
+deserializing is done with eval
+this is okay on client side but not on server side
+because CLIENTS SHOULD NOT BE ALLOWED TO RUN CODE ON THE SERVER
+=> supply a limited deserialize for the server (a stripped down ObjectLiteral
+parser without side effects)
+
+clients only send primitive messages to the server
+At the moment clients are able to send javascript code to the server
+and via the server to the other clients
+nice hacking game isn't it?
+(theoretically this is not really such a problem since the server does not allow
+to do much: no file access, only one outgoing tcp connection
+but you can grab a javascript cluster and ...)
+--------------------------------------------------------------------------------

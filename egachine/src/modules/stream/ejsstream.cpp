@@ -127,6 +127,10 @@ extern "C" {
   stream_close(JSContext* cx, JSObject* obj, uintN argc, jsval*, jsval* rval)
   {
     GET_STREAM_OBJ;
+    jsval owner;
+    EJS_CHECK(JS_GetReservedSlot(cx,obj,0,&owner));
+    EJS_CHECK(JSVAL_IS_BOOLEAN(owner));
+    if (owner!=JSVAL_TRUE) EJS_THROW_ERROR(cx, obj, "Can't close this stream");
     delete stream;
     return JS_SetPrivate(cx,obj,NULL);
   }

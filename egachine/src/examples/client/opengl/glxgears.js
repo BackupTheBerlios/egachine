@@ -8,9 +8,9 @@
    Shameslessly hacked from glxgears.c and test.js
 */
 
-if (!EGachine.client) throw "This file must be run by egachine";
-if (!EGachine.checkVersion(0,0,5)) throw "at least version 0.0.5 required";
-if (!this.gl) throw "This game needs OpenGL";
+if (!EGachine.client) throw new Error("This file must be run by egachine");
+if (!EGachine.checkVersion(0,0,5)) throw new Error("at least version 0.0.5 required");
+if (!this.gl) throw new Error("This game needs OpenGL");
 
 view_rotx = 20.0;
 view_roty = 30.0;
@@ -262,7 +262,7 @@ function gldisplay()
     }
 }
 
-function handleInput(i)
+Input.handleInput=function(i)
 {
   joypad[i.dev]=i;
 }

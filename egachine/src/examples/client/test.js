@@ -154,7 +154,7 @@ xsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7\
 ');
 
 // handle input events
-handleInput=function(i){
+Input.handleInput=function(i){
   print("got input:");
   for (var x in i){print(x+"="+i[x]);}
 }

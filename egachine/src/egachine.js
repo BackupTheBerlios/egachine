@@ -61,7 +61,7 @@ function isFromProto(o,prop) {
 function forall(obj,func,idfunc){
   var m={};
   if (!idfunc) idfunc=function(x){return hashObject(x).toString();};
-  if (!func) throw "need function";
+  if (!func) throw new Error("need function");
   function _forall(x) {
     if (typeof(x) != 'object') {
       func(x,false);
@@ -102,7 +102,7 @@ function serialize(x) {
     if (typeof(x) != 'object') return;
     if ((depthFirst)||(isEmptyProto(x.__proto__))) return;
     if ((x._p)&&(!isFromProto(x,"_p")))
-      throw "TODO: property _p not allowed";
+      throw new Error("TODO: property _p not allowed");
     x._p=x.__proto__;
   }));
   var r=x.toSource();
@@ -142,7 +142,7 @@ function watchall(cobj,cname,gf){
 
   function _watchall(pobj,cobj,cname,scope,gf){
     //  print(scope);
-    if (!gf) throw "need generic function";
+    if (!gf) throw new Error("need generic function");
     if (typeof(cobj) != 'object') {
       var f=gf(scope);
       //    print(f.toSource());
@@ -175,20 +175,18 @@ function watchall(cobj,cname,gf){
 // misc extensions
 Number.prototype.convertTo=function(base,padTo){
     var s=this.toString(base);
-    if (!padTo || s.length>=padTo) throw "Does not fit";
+    if (!padTo || s.length>=padTo) throw new Error("Does not fit");
     return Math.pow(10,padTo-s.length).toString().slice(1)+s;
 }
 
-// EGachine object
-// for now it only holds resources (maps resource names to resources)
-// todo: perhaps rename it
+//! EGachine object
 EGachine={};
 EGachine.r={};
 EGachine.addResource=function(name,res){
   EGachine.r[name]=res;
 }
 EGachine.getResource=function(name){
-  if (!EGachine.r[name]) throw "Resource '"+name+"' not found";
+  if (!EGachine.r[name]) throw new Error("Resource '"+name+"' not found");
   return EGachine.r[name];
 }
 
@@ -198,7 +196,7 @@ EGachine.getResource=function(name){
 */
 EGachine.checkVersion=function(maj,min,mic)
 {
-  if (!this.version) throw "Could not determine version";
+  if (!this.version) throw new Error("Could not determine version");
   if (maj<this.version.maj) return true;
   if (maj>this.version.major) return false;
   if (min<this.version.min) return true;
@@ -208,27 +206,42 @@ EGachine.checkVersion=function(maj,min,mic)
   return true;
 }
 
-// Video object
+//! Audio object
+if (this.Audio) {
+  Audio._playMusic=Audio.playMusic;
+  Audio.playMusic=function(resname) {
+    var res=EGachine.getResource(resname);
+    var dec=Base64.decode(res);
+    Audio._playMusic(dec);
+  };
 
+  Audio.samples={};
+
+  Audio._loadSample=Audio.loadSample;
+  Audio._playSample=Audio.playSample;
+
+  Audio.loadSample=function(resname) {
+    var res=EGachine.getResource(resname);
+    var dec=Base64.decode(res);
+    var sid=Audio._loadSample(dec);
+    Audio.samples[resname]=sid;
+    return sid;
+  };
+  Audio.playSample=function(resname) {
+    var sid=Audio.samples[resname];
+    if (sid==undefined)
+      sid=Audio.loadSample(resname);
+    return Audio._playSample(sid);
+  }
+}
+
+//! Video object
 if (!this.Video) {
-  // the server does not have a native Video Object
-  // create dummy - because the server may well use
-  // the scenegraph
+  // the server does not have native Video and Input objects
+  // todo: he does not need them? - perhaps add a client.js
+  // corresponding to the server.js
   Video={};
-  Video.getColor=function(){return [];};
-  Video.setColor=function(){};
-  Video.pushMatrix=function(){};
-  Video.popMatrix=function(){};
-  Video.translate=function(){};
-  Video.rotate=function(){};
-  Video.scale=function(){};
-  Video.createTexture=function(){return 1;};
-  Video.drawTexture=function(){};
-
-  // the server does not have opengl either
-  gl={};
-  gl.GetFloatv=function(){return {};};
-
+  Input={};
   EGachine.server=true;
 }else{
   EGachine.client=true;
@@ -239,7 +252,10 @@ Video.textures={};
 // color stack
 Video.colors=[];
 
-// map resname to texture id
+//! map resname to texture id
+/*!
+  create texture from resource if necessary
+*/
 Video.getTextureID=function(resname){
   var tid=Video.textures[resname];
   if (tid) return tid;
@@ -284,17 +300,17 @@ function DevState(dev,x,y,buttons){
 // (prototype of the prototypes)
 function Node() {
 }
-Node.prototype.paint=function(dt){
+Node.prototype.paint=function(){
   if (!this.children) return;
   for (var i=0;i<this.children.length;++i)
     if (!this.children[i].disabled) {
-      if (typeof(this.children[i].paint) != 'function') {
-	print(this.children[i].toSource());
-	print(this.children[i].__proto__.toSource());
-	print(this.children[i].paint);
-      }
-      this.children[i].paint(dt);
+      this.children[i].paint();
     }
+}
+Node.prototype.step=function(dt){
+  if (!this.children) return;
+  for (var i=0;i<this.children.length;++i)
+    this.children[i].step(dt);
 }
 Node.prototype.addNode=function(n){
   if (!this.children) this.children=[];
@@ -307,10 +323,10 @@ function Rotate(degrees) {
   this.degrees=degrees;
 }
 Rotate.prototype=new Node();
-Rotate.prototype.paint=function(dt){
+Rotate.prototype.paint=function(){
   Video.pushMatrix();
   Video.rotate(this.degrees.value);
-  Node.prototype.paint.call(this,dt);
+  Node.prototype.paint.call(this);
   Video.popMatrix();
 }
 
@@ -319,9 +335,9 @@ function Texture(resname){
   this.resname=resname;
 }
 Texture.prototype=new Node();
-Texture.prototype.paint=function(dt){
+Texture.prototype.paint=function(){
   Video.drawTexture(Video.getTextureID(this.resname));
-  Node.prototype.paint.call(this,dt);
+  Node.prototype.paint.call(this);
 }
 
 // derived object Scale
@@ -329,10 +345,10 @@ function Scale(v) {
   this.v=v;
 }
 Scale.prototype=new Node();
-Scale.prototype.paint=function(dt){
+Scale.prototype.paint=function(){
   Video.pushMatrix();
   Video.scale(this.v.x,this.v.y);
-  Node.prototype.paint.call(this,dt);
+  Node.prototype.paint.call(this);
   Video.popMatrix();
 }
 
@@ -341,10 +357,10 @@ function Translate(v) {
   this.v=v;
 }
 Translate.prototype=new Node();
-Translate.prototype.paint=function(dt){
+Translate.prototype.paint=function(){
   Video.pushMatrix();
   translate(this.v.x,this.v.y);
-  Node.prototype.paint.call(this,dt);
+  Node.prototype.paint.call(this);
   Video.popMatrix();
 }
 
@@ -356,15 +372,15 @@ function Sprite(resname,size,pos,degrees) {
   this.resname=resname;
 }
 Sprite.prototype=new Node();
-Sprite.prototype.paint=function(dt){
+Sprite.prototype.paint=function(){
   Video.pushMatrix();
   Video.translate(this.pos.x,this.pos.y);
-  if (this.degrees) Video.rotate(this.degrees.value)
-		      Video.pushMatrix();
+  if (this.degrees) Video.rotate(this.degrees.value);
+  Video.pushMatrix();
   Video.scale(this.size.x,this.size.y);
   Video.drawTexture(Video.getTextureID(this.resname));
   Video.popMatrix();
-  Node.prototype.paint.call(this,dt);
+  Node.prototype.paint.call(this);
   Video.popMatrix();
 }
 
@@ -376,7 +392,7 @@ function Mover(speed, rotspeed) {
   this.last=0;
 }
 Mover.prototype=new Node();
-Mover.prototype.paint=function(dt){
+Mover.prototype.step=function(dt){
   var ct=this.time+dt;
   if (ct-this.last<1) {
     dontwatch=true;
@@ -395,7 +411,7 @@ Mover.prototype.paint=function(dt){
     }
   }
   dontwatch=false;
-  Node.prototype.paint.call(this,dt);
+  Node.prototype.step.call(this,dt);
 }
 
 // derived object Color
@@ -403,10 +419,10 @@ function Color(r,g,b,a) {
   this.c=[r,g,b,a];
 }
 Color.prototype=new Node();
-Color.prototype.paint=function(dt){
+Color.prototype.paint=function(){
   Video.pushColor();
   Video.setColor(this.c[0],this.c[1],this.c[2],this.c[3]);
-  Node.prototype.paint.call(this,dt);
+  Node.prototype.paint.call(this);
   Video.popColor();
 }
 

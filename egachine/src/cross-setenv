@@ -11,6 +11,7 @@ export DLLWRAP=i586-mingw32msvc-dllwrap
 export AS=i586-mingw32msvc-as
 export NM=i586-mingw32msvc-nm
 export OBJDUMP=i586-mingw32msvc-objdump
+export STRIP=i586-mingw32msvc-strip
 
 #settings very specific to my setup
 export PATH="/usr/local/i586-mingw32msvc/bin:$HOME/develop/cross/bin:$PATH"

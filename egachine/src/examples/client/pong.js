@@ -184,7 +184,7 @@ a/Fa/B3G/wWKvKShjDb2ywAAAABJRU5ErkJggg==\
 ');
 
 // handle input events
-handleInput=function(i){
+Input.handleInput=function(i){
   joypad[i.dev]={x:i.x, y:i.y, buttons:i.buttons};
 }
 

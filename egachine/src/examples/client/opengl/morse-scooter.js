@@ -19,9 +19,9 @@
 // small opengl demo for egachine
 
 
-if (!EGachine.client) throw "This file must be run by egachine";
-if (!EGachine.checkVersion(0,0,5)) throw "at least version 0.0.5 required";
-if (!this.gl) throw "This game needs OpenGL";
+if (!EGachine.client) throw new Error("This file must be run by egachine");
+if (!EGachine.checkVersion(0,0,5)) throw new Error("at least version 0.0.5 required");
+if (!this.gl) throw new Error("This game needs OpenGL");
 
 
 players=[];
@@ -36,7 +36,7 @@ pads=[];
 var morseText="Please morse:"+morse;
 
 
-function handleInput(i){
+Input.handleInput=function(i){
   if ((i.dev!=undefined)&&(i.dev>=0)&&(i.dev<2)) {
     if (pads[i.dev]) {
       var c=-1;

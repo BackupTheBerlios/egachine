@@ -252,7 +252,7 @@ Socket::connect(){
 
   SocketAddress saddr(haddr,iaddr.second);
   std::string hstring(saddr.toString());
-  std::cerr << "Connecting to: "<<hstring<<std::endl;
+  JGACHINE_INFO("Connecting to: "<<hstring);
 
 #ifndef JGACHINE_RESTORECONNECT  
   if (::connect(handle, saddr.getSockAddr(), saddr.getSize())== -1)

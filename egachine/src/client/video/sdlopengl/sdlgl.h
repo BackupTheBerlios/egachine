@@ -28,24 +28,9 @@
 #include <errno.h>
 #include <iostream>
 
-#if defined(WINDOOF)
-// define NOMINMAX - otherwise min and max are defined as macros !
-#define NOMINMAX
-#include <windows.h>
-#undef NOMINMAX
-#endif
-
-#ifdef DLOPEN_OPENGL
-
-#define FUNC(ret,name,parm) extern ret (* name ) parm
-#include "minigl.h"
-#include "glfunctions.h"
-#undef FUNC
-
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
+#define NO_SDL_GLEXT
+#include <SDL_opengl.h>
+#undef NO_SDL_GLEXT
 
 #include "error.h"
 
@@ -60,25 +45,5 @@
 */
 int
 printGLErrors();
-
-
-#ifdef DLOPEN_OPENGL
-//! load OpenGL library at runtime
-void
-loadGL(const std::string &libGL);
-//! load GLU library at runtime
-void
-loadGLU(const std::string &libGLU);
-//! lookup GL and GLU symbols
-void
-lookupGLSymbols();
-//! deinit GL and GLU symbols
-/*
-  sets all function pointers to zero
-  for easier debugging
-*/
-void
-deinitGLSymbols();
-#endif
 
 #endif

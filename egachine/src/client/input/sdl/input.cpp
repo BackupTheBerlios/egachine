@@ -22,12 +22,13 @@
    \author Jens Thiele
 */
 
-#include "../input.h"
-
 #include <SDL.h>
 #include <cassert>
 #include <vector>
 #include <iostream>
+
+#include "../input.h"
+#include "error.h"
 
 // #define NEED_RESIZE_HACK 
 
@@ -70,7 +71,6 @@ Keys keys[2]={
   normal mode (keyboard is used as joypad like device)
 */
 static bool charMode=false;
-
 
 
 void
@@ -382,7 +382,7 @@ handleEvent(const SDL_Event &event)
       }
 #endif
     default:
-      std::cerr << "Got unknown event => we drop it\n";
+      JGACHINE_INFO("Got unknown event => we drop it ("<<unsigned(event.type)<<")");
       return true;
     }
 }

@@ -240,7 +240,6 @@ function drawGLScene(){
   gl.Rotatef(xrot,1.0,0.0,0.0);			// Rotate On The X Axis
   gl.Rotatef(yrot,0.0,1.0,0.0);			// Rotate On The Y Axis
 
-  print("bind texture: "+texture);
   gl.BindTexture(GL_TEXTURE_2D, texture);   // choose the texture to use.
 
   gl.Begin(GL_QUADS);		                // begin drawing a cube

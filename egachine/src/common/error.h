@@ -28,12 +28,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#define JGACHINE_ERRORSTR "errno="<<errno<<":"<<strerror(errno)
-#define JGACHINE_FUNCTIONNAME __PRETTY_FUNCTION__
-#define JGACHINE_HERE __FILE__ << ":" << __LINE__ << ":" << JGACHINE_FUNCTIONNAME
-#define JGACHINE_MSG(jgachineLevelP, jgachineMsgP) do{std::cerr << jgachineLevelP << JGACHINE_HERE << ": " << jgachineMsgP << "(" << JGACHINE_ERRORSTR << ")\n";}while(0)
-#define JGACHINE_WARN(msg) JGACHINE_MSG("WARNING: ",msg)
-
 /*
   \def JGACHINE_STR(s)
   \brief JGACHINE_STR converts the macro argument to a string constant
@@ -47,6 +41,15 @@
 */
 #define JGACHINE_XSTR(s) JGACHINE_STR(s)
 
+#define JGACHINE_ERRORSTR "errno="<<errno<<":"<<strerror(errno)
+#define JGACHINE_FUNCTIONNAME __PRETTY_FUNCTION__
+#define JGACHINE_HERE __FILE__ ":" << __LINE__ << ":" << JGACHINE_FUNCTIONNAME
+#define JGACHINE_MSG(jgachineLevelP, jgachineMsgP) do{std::cerr << jgachineLevelP << JGACHINE_HERE << ":\n    " << jgachineMsgP << "\n    (" << JGACHINE_ERRORSTR << ")\n";}while(0)
+#define JGACHINE_WARN(msg) JGACHINE_MSG("WARNING: ",msg)
+#define JGACHINE_INFO(msg) JGACHINE_MSG("INFO: ",msg)
+#define JGACHINE_ERROR(msg) JGACHINE_MSG("ERROR: ",msg)
+
+
 /*
   \def JGACHINE_CHECK(expr)
   \brief JGACHINE_CHECK is like assert but takes also effect when NDEBUG is defined
@@ -57,7 +60,7 @@
 
 /*!
   \def JGACHINE_FATAL(msg)
-  \brief fatal error - exit with a short message
+  \brief fatal error - abort with a short message
 */
 #define JGACHINE_FATAL(msg) do{jgachine_fatal(__FILE__, __LINE__, JGACHINE_FUNCTIONNAME, msg);}while(0)
 

@@ -34,7 +34,7 @@ Net.handleDataAvailable=function(id) {
   var msg=this.connections[id].recv(len);
   // todo security hole - clients should not be allowed to execute code on server
   var i=deserialize(msg);
-  handleInput(i);
+  Input.handleInput(i);
 }
 
 Net.sendTo=function(id,msg) {

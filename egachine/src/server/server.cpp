@@ -1,3 +1,27 @@
+/*
+ * Copyright (C) 2004 Jens Thiele <karme@berlios.de>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+/*!
+   \file server/server.cpp
+   \brief egaserver
+   \author Jens Thiele
+*/
+
 #include <cstring>
 #include <string>
 #include <iostream>
@@ -204,40 +228,39 @@ void
 handleNewConnection(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf> streamPtr)
 {
   assert(streamPtr.get());
-  std::cerr << "New connection ("<<id<<")\n";
+  JGACHINE_INFO("New connection ("<<id<<")");
   jsval rval;
   jsval args[2];
   JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0]));
+
   JSNetwork::newStreamObject(streamPtr.get(),&args[1]);
-  JSObject* obj=getNetObject();
-  if (!JS_CallFunctionName(ECMAScript::cx, obj, "handleNewConnection", 2, args, &rval)) {
-    std::cerr << "error while calling handleNewConnection\n";
-  }
+
+  ECMAScript::callFunction("Net","handleNewConnection",2,args);
 }
 
 void
 handleDataAvailable(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf> streamPtr)
 {
   assert(streamPtr.get());
-  //  std::cerr << "Data available ("<<id<<")\n";
   jsval rval;
   jsval args[1];
+
   JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0]));
-  JSObject* obj=getNetObject();
-  if (!JS_CallFunctionName(ECMAScript::cx, obj, "handleDataAvailable", 1, args, &rval)) {
-    std::cerr << "error while calling handleDataAvailable\n";
-  }
+
+  ECMAScript::callFunction("Net","handleDataAvailable",1,args);
 }
 
 void
 handleConnectionClosed(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf> streamPtr)
 {
   assert(streamPtr.get());
-  std::cerr << "Connection ("<<id<<") closed\n";
+  JGACHINE_INFO("Connection ("<<id<<") closed");
   jsval rval;
   jsval args[1];
+
   JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0]));
-  JS_CallFunctionName(ECMAScript::cx, ECMAScript::glob, "handleConnectionClosed", 1, args, &rval);
+
+  ECMAScript::callFunction("Net","handleConnectionClosed", 1, args);
 }
 
 
@@ -276,120 +299,87 @@ static
 void
 deinit()
 {
+  if (incoming.get()) {
+    incoming=JGACHINE_SMARTPTR<NetStreamBufServer>();
+  }
+
   Network::deinit();
   Timer::deinit();
   ECMAScript::deinit();
 }
 
-
 int
 main(int argc, char **argv)
 {
-  char* commonlib="egachine.js";
-  char* serverlib="server.js";
-
-  int ret=0;
-  if (ECMAScript::init()) {
-
-    // parse config files - this is done before we register our functions
-    // since they may use config variables !!
-
-    // todo - path serparator and $HOME
-    char* sysconf="/etc/egachine/server.js";
-    char* userconf="server/config.js";
-
-    std::ifstream sysin(sysconf);
-    if (sysin.good()) {
-      ECMAScript::eval(sysin,sysconf);
-    }
-    std::ifstream userin(userconf);
-    if (userin.good()) {
-      ECMAScript::eval(userin,userconf);
-    }
-
-    // now register our objects/functions
-
-    if (JSTimer::init()
-	&& JSNetwork::init()) 
-      {
-	Timer::init();
-	Network::init();
-
-	// copy command line arguments to the interpreter
-	ECMAScript::copyargv(argc,argv);
-	
-	// create server socket
-	jsval rval;
-	char* script="listenPort;\n";
-	int port=0;
-	if (JS_EvaluateScript(ECMAScript::cx, ECMAScript::glob, script, strlen(script),JGACHINE_FUNCTIONNAME, 1, &rval)) {
-	  if ((JSVAL_IS_INT(rval))&&(port=JSVAL_TO_INT(rval))) {
-	    incoming=JGACHINE_SMARTPTR<NetStreamBufServer>(new NetStreamBufServer(port));
-	    if (!incoming) return JS_FALSE;
-	    try {
-	      if (!incoming->init()) return JS_FALSE;
-	    }catch(const SocketError &e){
-	      std::cout << "Could not listen on port: "<<port<<". Error:"<<e.what()<<std::endl;
-	      ::deinit();
-	      return 1;
-	    }
-
-	    incoming->newConnection.connect(SigC::slot(handleNewConnection));
-	    incoming->dataAvailable.connect(SigC::slot(handleDataAvailable));
-	    incoming->connectionClosed.connect(SigC::slot(handleConnectionClosed));
-
-	    JSObject *obj=getNetObject();
-	    JGACHINE_CHECK(JS_DefineFunctions(ECMAScript::cx, obj, static_methods));
-	  }
-	}
-	
-	{
-	  std::ifstream in(commonlib);
-	  if (!in.good()) {
-	    ::deinit();
-	    std::cout << "File missing: \"" << commonlib << "\"" << std::endl;
-	    return 1;
-	  }
-	  ret|=ECMAScript::eval(in,commonlib);
-	}
-	
-	{
-	  std::ifstream in(serverlib);
-	  if (!in.good()) {
-	    ::deinit();
-	    std::cout << "File missing: \"" << serverlib << "\"" << std::endl;
-	    return 1;
-	  }
-	  ret|=ECMAScript::eval(in,serverlib);
-	}
-
-	// copy version information to the interpreter
-	ECMAScript::setVersion("EGachine.version");
-
-	if (argc<2)
-	  ret|=ECMAScript::eval(std::cin,"stdin");
-	else{
-	  std::ifstream in(argv[1]);
-	  if (!in.good()) {
-	    ::deinit();
-	    std::cout << "File not found: \"" << argv[1] << "\"" << std::endl;
-	    return 1;
-	  }
-	  ret|=ECMAScript::eval(in,argv[1]);
-	}
-      }else{
-	ret|=4;
-	std::cerr << "error registering functions/objects with interpreter\n";
-      }
-  }else{
-    std::cerr << "error initializing interpreter\n";
-    ret|=1;
+  if (!ECMAScript::init()) {
+    JGACHINE_ERROR("could not inititialize interpreter");
+    ECMAScript::deinit();
+    return EXIT_FAILURE;
   }
 
-  if (incoming.get()) {
-    incoming=JGACHINE_SMARTPTR<NetStreamBufServer>();
+  ECMAScript::parseConfig("server.js");
+
+  // now register our objects/functions
+  if (!(JSTimer::init()&& JSNetwork::init())) {
+    JGACHINE_ERROR("could not register functions/objects with interpreter");
+    ECMAScript::deinit();
+    return EXIT_FAILURE;
   }
+
+  Timer::init();
+  Network::init();
+
+  // copy command line arguments to the interpreter
+  ECMAScript::copyargv(argc,argv);
+	
+  // create server socket
+  int port=ECMAScript::evalInt32("this.listenPort != undefined ? this.listenPort : 47000");
+
+  //  NetStreamBufServer* dummy=new NetStreamBufServer(port);
+  //  incoming=JGACHINE_SMARTPTR<NetStreamBufServer>(dummy);
+
+  incoming=JGACHINE_SMARTPTR<NetStreamBufServer>(new NetStreamBufServer(port));
+  JGACHINE_CHECK(incoming);
+
+  try {
+    JGACHINE_CHECK(incoming->init());
+  }catch(const SocketError &e){
+    JGACHINE_ERROR("Could not listen on port: "<<port<<": "<<e.what());
+    ::deinit();
+    return EXIT_FAILURE;
+  }
+
+  incoming->newConnection.connect(SigC::slot(handleNewConnection));
+  incoming->dataAvailable.connect(SigC::slot(handleDataAvailable));
+  incoming->connectionClosed.connect(SigC::slot(handleConnectionClosed));
+
+  JSObject *obj=getNetObject();
+  JGACHINE_CHECK(JS_DefineFunctions(ECMAScript::cx, obj, static_methods));
+	
+  // load libs
+  ECMAScript::parseLib("egachine.js");
+  ECMAScript::parseLib("server.js");
+	
+  // copy command line arguments to the interpreter
+  ECMAScript::copyargv(argc,argv);
+
+  // copy version information to the interpreter
+  ECMAScript::setVersion("EGachine.version");
+
+  int ret=EXIT_SUCCESS;
   
+  if (argc<2) {
+    if (!ECMAScript::eval(std::cin,"stdin")) ret=EXIT_FAILURE;
+  }else{
+    std::ifstream in(argv[1]);
+    if (in.good()) {
+      if (!ECMAScript::eval(in,argv[1])) ret=EXIT_FAILURE;
+    }else{
+      ret=EXIT_FAILURE;
+      JGACHINE_ERROR("Could not open file: \""<<argv[1]<<"\"");
+    }
+  }
+
   ::deinit();
   return ret;
 }

@@ -42,6 +42,7 @@
 ECMA_BEGIN_FUNC (js_gluErrorString)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum error;
   if (!ecma_to_GLenum (argv[0], error))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -56,6 +57,7 @@ ECMA_BEGIN_FUNC (js_gluErrorString)
 ECMA_BEGIN_FUNC (js_gluGetString)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum name;
   if (!ecma_to_GLenum (argv[0], name))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -72,6 +74,7 @@ ECMA_BEGIN_FUNC (js_gluGetString)
 ECMA_BEGIN_VOID_FUNC (js_gluLookAt)
 {
   ECMA_CHECK_NUM_ARGS (9);
+  assert (cx == ECMAScript::cx);
   GLdouble eyeX;
   if (!ecma_to_GLdouble (argv[0], eyeX))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -120,6 +123,7 @@ ECMA_BEGIN_VOID_FUNC (js_gluLookAt)
 ECMA_BEGIN_VOID_FUNC (js_gluOrtho2D)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLdouble left;
   if (!ecma_to_GLdouble (argv[0], left))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -141,6 +145,7 @@ ECMA_BEGIN_VOID_FUNC (js_gluOrtho2D)
 ECMA_BEGIN_VOID_FUNC (js_gluPerspective)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLdouble fovy;
   if (!ecma_to_GLdouble (argv[0], fovy))
     ECMA_ERROR ("argument 0 has wrong type");

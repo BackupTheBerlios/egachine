@@ -12,11 +12,11 @@ function InputField(text,maxlen)
   this.done=false;
   this.text=text;
   // register member function as callback => bind member function
-  handleChar=function(obj){return function(c){obj.handleChar(c);}}(this);
+  Input.handleChar=function(obj){return function(c){obj.handleChar(c);}}(this);
   Input.charMode(true);
 }
 InputField.prototype.handleChar=function(c){
-  print(c.charCodeAt(0));
+  //  print(c.charCodeAt(0));
   switch(c) {
   case "\u0000":
     break;
@@ -26,14 +26,13 @@ InputField.prototype.handleChar=function(c){
     break;
   case "\u000D":
     // enter
-    print ("done");
     this.done=true;
     break;
   default:
     if (this.text.length<this.maxlen)
       this.text=this.text+c;
   }
-  print (this.text);
+  //  print (this.text);
 }
 
 function connect(host,port) {
@@ -106,7 +105,7 @@ function connect(host,port) {
   var hp=inputField.text.split(":",2);
   host=hp[0];
   port=hp[1];
-  print ("connect to "+host+":"+port);
+
   // todo in the moment we can't handle errors
   // we have to be careful
   // if we allow catching errors we should not allow

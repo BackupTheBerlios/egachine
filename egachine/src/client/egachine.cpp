@@ -28,6 +28,7 @@
 #include <fstream>
 #include <cassert>
 #include <sstream>
+#include <cstdlib>
 
 #include "ecmascript.h"
 
@@ -43,19 +44,20 @@
 #include "network/network.h"
 #include "network/jsnetwork.h"
 
+#include "audio/audio.h"
+#include "audio/jsaudio.h"
+
 #include "error.h"
 
 void deinit()
 {
-  JGACHINE_MSG("Info:"," deinit");
-  
+  Audio::deinit();
   Network::deinit();
   Input::deinit();
-  JGACHINE_MSG("Info:"," pre Video::deinit");
   Video::deinit();
-  JGACHINE_MSG("Info:"," post Video::deinit");
   Timer::deinit();
 
+  JSAudio::deinit();
   JSTimer::deinit();
   JSInput::deinit();
   JSVideo::deinit();
@@ -68,7 +70,8 @@ void
 Input::quitHandler()
 {
   ::deinit();
-  exit(0);
+  // hmm perhaps a bad idea to use exit
+  exit(EXIT_SUCCESS);
 }
 
 void
@@ -120,9 +123,9 @@ Input::charHandler(Unicode uc)
   jsval args[1];
   jsval rval;
   args[0]=STRING_TO_JSVAL(js);
-  if (!JS_CallFunctionName(ECMAScript::cx, ECMAScript::glob, "handleChar", 1, args, &rval)) {
-    std::cerr << "error while calling handleChar\n";
-  }
+
+  ECMAScript::callFunction("Input","handleChar",1,args);
+
   JGACHINE_CHECK(JS_RemoveRoot(ECMAScript::cx,js));
 }
 
@@ -130,24 +133,10 @@ void
 Input::devStateHandler(const Input::DevState& d)
 {
   std::ostringstream o;
-  o << "handleInput(new DevState("<<int(d.devno)<<","<<int(d.x)<<","<<int(d.y)<<","<<int(d.buttons)<<"));\n";
+  o << "Input.handleInput(new DevState("<<int(d.devno)<<","<<int(d.x)<<","<<int(d.y)<<","<<int(d.buttons)<<"));\n";
   std::istringstream i(o.str());
   ECMAScript::eval(i,JGACHINE_FUNCTIONNAME);
 }
-
-
-static
-int32
-getJSIntValue(const char* name, int32 defaultv)
-{
-  jsval rval;
-  int32 res=defaultv;
-  if (JS_EvaluateScript(ECMAScript::cx, ECMAScript::glob, name, strlen(name),JGACHINE_FUNCTIONNAME, 1, &rval)
-      &&JS_ValueToInt32(ECMAScript::cx, rval, &res))
-    return res;
-  return defaultv;
-}
-
 
 #ifndef main
 int main(int argc, char **argv)
@@ -162,64 +151,68 @@ extern "C" {
 int cppmain(int argc,char *argv[])
 #endif
 {
-  int ret=0;
-  if (ECMAScript::init()) {
-    // parse config files - this is done before we register our functions
-    // since they may use config variables !!
+  if (!ECMAScript::init()) {
+    JGACHINE_ERROR("could not inititialize interpreter");
+    ECMAScript::deinit();
+    return EXIT_FAILURE;
+  }
 
-    // todo - path serparator and $HOME
-    char* sysconf="/etc/egachine/client.js";
-    char* userconf="client/config.js";
+  ECMAScript::parseConfig("client.js");
 
-    std::ifstream sysin(sysconf);
-    if (sysin.good()) {
-      ECMAScript::eval(sysin,sysconf);
-    }
-    std::ifstream userin(userconf);
-    if (userin.good()) {
-      ECMAScript::eval(userin,userconf);
-    }
-
-    // now register our objects/functions
-
-    if (JSTimer::init()
+  // now register our objects/functions
+  if (!(JSTimer::init()
 	&& JSVideo::init()
 	&& JSInput::init()
-	&& JSNetwork::init()) 
-      {
-	Timer::init();
-	Video::init(getJSIntValue("width",0),getJSIntValue("height",0),getJSIntValue("fullscreen",1));
-	Input::init();
-	Network::init();
-	
-	{
-	  // now load library
-	  char* lib="egachine.js";
-	  std::ifstream in(lib);
-	  JGACHINE_CHECK(in.good());
-	  ret|=ECMAScript::eval(in,lib);
-	}
+	&& JSNetwork::init()
+	&& JSAudio::init()
+	)) {
+    JGACHINE_ERROR("could not register functions/objects with interpreter");
+    ECMAScript::deinit();
+    return EXIT_FAILURE;
+  }
 
-	// copy command line arguments to the interpreter
-	ECMAScript::copyargv(argc,argv);
-	
-	// copy version information to the interpreter
-	ECMAScript::setVersion("EGachine.version");
+#define GETCONF(param,default) int param=ECMAScript::evalInt32("this." #param "!= undefined ? this." #param ":" #default)
+  GETCONF(width,0);
+  GETCONF(height,0);
+  GETCONF(fullscreen,1);
+#undef GETCONF
+  AudioConfig ac;
+#define GETCONF(param,default) ac.param=ECMAScript::evalInt32("this." #param "!=undefined ? this." #param ":" #default)
+  GETCONF(srate,44100);
+  GETCONF(sbits,16);
+  GETCONF(sbuffers,512);
+  GETCONF(stereo,1);
+#undef GETCONF
 
-	if (argc<2)
-	  ret|=ECMAScript::eval(std::cin,"stdin");
-	else{
-	  std::ifstream in(argv[1]);
-	  JGACHINE_CHECK(in.good());
-	  ret|=ECMAScript::eval(in,argv[1]);
-	}
-      }else{
-	ret|=4;
-	std::cerr << "error registering functions/objects with interpreter\n";
-      }
+
+  Timer::init();
+  // todo: catch exceptions
+  Video::init(width,height,fullscreen);
+  Audio::init(ac);
+  Input::init();
+  Network::init();
+	
+  // now load library
+  ECMAScript::parseLib("egachine.js");
+  
+  // copy command line arguments to the interpreter
+  ECMAScript::copyargv(argc,argv);
+  
+  // copy version information to the interpreter
+  ECMAScript::setVersion("EGachine.version");
+
+  int ret=EXIT_SUCCESS;
+  
+  if (argc<2) {
+    if (!ECMAScript::eval(std::cin,"stdin")) ret=EXIT_FAILURE;
   }else{
-    std::cerr << "error initializing interpreter\n";
-    ret|=1;
+    std::ifstream in(argv[1]);
+    if (in.good()) {
+      if (!ECMAScript::eval(in,argv[1])) ret=EXIT_FAILURE;
+    }else{
+      ret=EXIT_FAILURE;
+      JGACHINE_ERROR("Could not open file: \""<<argv[1]<<"\"");
+    }
   }
 
   deinit();

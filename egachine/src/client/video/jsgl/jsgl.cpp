@@ -1,6 +1,8 @@
+#include <cassert>
 #include "jsgl.h"
 #include "ecmascript.h"
-// TODO: this assumes we use sdl
+// TODO: this assumes we use sdl - it is here to include gl.h in a platform
+// independant manner
 #include "../sdlopengl/sdlgl.h"
 
 #include "jsgl_convert.h"

@@ -107,7 +107,7 @@ while (<STDIN>) {
 	  }
 	}
 	print "{\n";
-	print "ECMA_CHECK_NUM_ARGS($nump);\n";
+	print "ECMA_CHECK_NUM_ARGS($nump);\nassert(cx==ECMAScript::cx);";
 	if ($nump) {
 	  for ($i=0; $i<$nump;++$i) {
 	    $t=$p[$i][0];

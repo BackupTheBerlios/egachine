@@ -25,7 +25,6 @@
 #ifndef GLFONT_H
 #define GLFONT_H
 
-#include "typedefs.h"
 #include "smartptr.h"
 #include <vector>
 #include <string>

@@ -34,19 +34,50 @@ namespace ECMAScript
   extern JSRuntime *rt;
   extern JSContext *cx;
   extern JSObject  *glob;
-  extern JSClass global_class;
   
   bool init();
   void deinit();
 
-  int
+  bool
+  eval(jsval &rval, const char* script, unsigned scriptlen, const char* resname=0);
+
+  //! read script from stream and evaluate it
+  /*!
+    \param rval the value returned from the script
+    \param in the stream to read the script from
+    \param resname resource associated with the script - used for error reporting
+
+    \return true on success, false on error
+  */
+  bool
+  eval(jsval &rval, std::istream &in,const char* resname=0);
+
+  bool
   eval(std::istream &in,const char* resname=0);
+
+  //! evaluate expression returning a number which fits into an int32
+  int32
+  evalInt32(const char* expression);
+
+  //! call a member function/property by name
+  bool
+  callFunction(jsval &rval, const char *objname, const char* fname, jsuint argc=0, jsval* argv=NULL);
+  
+  //! call a member function/property by name
+  bool
+  callFunction(const char* objname, const char* fname, jsuint argc=0, jsval* argv=NULL);
 
   void
   copyargv(int argc, char** argv);
 
   void
   setVersion(const char* varname);
+
+  void
+  parseConfig(const char* config);
+
+  void
+  parseLib(const char* config);
 };
 
 // macros to help with writing wrappers
@@ -114,5 +145,16 @@ namespace ECMAScript
 
 //! wrap a native function (without return value) in namespace ns which takes 4 floating point argument(s) (jsdouble)
 #define ECMA_VOID_FUNC_FLOAT4(ns,name) ECMA_BEGIN_STATIC_VOID_FUNC(name) { ECMA_ARGS_TO_FLOAT_ARRAY(4,d);ns::name(d[0],d[1],d[2],d[3]);return JS_TRUE;}
+
+// TODO: bug? - len correct? number of chars in the unicode string?
+#define ECMA_STRING_TO_CHARVEC(val,ctype,len) do{if (!JSVAL_IS_STRING(val)) return JS_FALSE; \
+    JSString *strtype=JS_ValueToString(cx, val); \
+    if (!strtype) return JS_FALSE; \
+    ctype=JS_GetStringBytes(strtype); \
+    if (!ctype) return JS_FALSE; \
+    len=JS_GetStringLength(strtype); \
+  }while(0)
+
+
 
 #endif

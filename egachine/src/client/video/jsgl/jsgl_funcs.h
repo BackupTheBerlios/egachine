@@ -2,6 +2,7 @@
 ECMA_BEGIN_VOID_FUNC (js_glClearIndex)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat c;
   if (!ecma_to_GLfloat (argv[0], c))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -12,6 +13,7 @@ ECMA_BEGIN_VOID_FUNC (js_glClearIndex)
 ECMA_BEGIN_VOID_FUNC (js_glClearColor)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLclampf red;
   if (!ecma_to_GLclampf (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -31,6 +33,7 @@ ECMA_BEGIN_VOID_FUNC (js_glClearColor)
 ECMA_BEGIN_VOID_FUNC (js_glClear)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLbitfield mask;
   if (!ecma_to_GLbitfield (argv[0], mask))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -41,6 +44,7 @@ ECMA_BEGIN_VOID_FUNC (js_glClear)
 ECMA_BEGIN_VOID_FUNC (js_glIndexMask)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint mask;
   if (!ecma_to_GLuint (argv[0], mask))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -51,6 +55,7 @@ ECMA_BEGIN_VOID_FUNC (js_glIndexMask)
 ECMA_BEGIN_VOID_FUNC (js_glColorMask)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLboolean red;
   if (!ecma_to_GLboolean (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -70,6 +75,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColorMask)
 ECMA_BEGIN_VOID_FUNC (js_glAlphaFunc)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum func;
   if (!ecma_to_GLenum (argv[0], func))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -83,6 +89,7 @@ ECMA_BEGIN_VOID_FUNC (js_glAlphaFunc)
 ECMA_BEGIN_VOID_FUNC (js_glBlendFunc)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum sfactor;
   if (!ecma_to_GLenum (argv[0], sfactor))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -96,6 +103,7 @@ ECMA_BEGIN_VOID_FUNC (js_glBlendFunc)
 ECMA_BEGIN_VOID_FUNC (js_glLogicOp)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum opcode;
   if (!ecma_to_GLenum (argv[0], opcode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -106,6 +114,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLogicOp)
 ECMA_BEGIN_VOID_FUNC (js_glCullFace)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -116,6 +125,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCullFace)
 ECMA_BEGIN_VOID_FUNC (js_glFrontFace)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -126,6 +136,7 @@ ECMA_BEGIN_VOID_FUNC (js_glFrontFace)
 ECMA_BEGIN_VOID_FUNC (js_glPointSize)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat size;
   if (!ecma_to_GLfloat (argv[0], size))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -136,6 +147,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPointSize)
 ECMA_BEGIN_VOID_FUNC (js_glLineWidth)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat width;
   if (!ecma_to_GLfloat (argv[0], width))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -146,6 +158,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLineWidth)
 ECMA_BEGIN_VOID_FUNC (js_glLineStipple)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLint factor;
   if (!ecma_to_GLint (argv[0], factor))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -159,6 +172,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLineStipple)
 ECMA_BEGIN_VOID_FUNC (js_glPolygonMode)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum face;
   if (!ecma_to_GLenum (argv[0], face))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -172,6 +186,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPolygonMode)
 ECMA_BEGIN_VOID_FUNC (js_glPolygonOffset)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLfloat factor;
   if (!ecma_to_GLfloat (argv[0], factor))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -189,6 +204,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPolygonOffset)
 ECMA_BEGIN_VOID_FUNC (js_glEdgeFlag)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLboolean flag;
   if (!ecma_to_GLboolean (argv[0], flag))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -201,6 +217,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEdgeFlag)
 ECMA_BEGIN_VOID_FUNC (js_glScissor)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -224,6 +241,7 @@ ECMA_BEGIN_VOID_FUNC (js_glScissor)
 ECMA_BEGIN_VOID_FUNC (js_glDrawBuffer)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -234,6 +252,7 @@ ECMA_BEGIN_VOID_FUNC (js_glDrawBuffer)
 ECMA_BEGIN_VOID_FUNC (js_glReadBuffer)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -244,6 +263,7 @@ ECMA_BEGIN_VOID_FUNC (js_glReadBuffer)
 ECMA_BEGIN_VOID_FUNC (js_glEnable)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum cap;
   if (!ecma_to_GLenum (argv[0], cap))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -254,6 +274,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEnable)
 ECMA_BEGIN_VOID_FUNC (js_glDisable)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum cap;
   if (!ecma_to_GLenum (argv[0], cap))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -264,6 +285,7 @@ ECMA_BEGIN_VOID_FUNC (js_glDisable)
 ECMA_BEGIN_FUNC (js_glIsEnabled)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum cap;
   if (!ecma_to_GLenum (argv[0], cap))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -276,6 +298,7 @@ ECMA_BEGIN_FUNC (js_glIsEnabled)
 ECMA_BEGIN_VOID_FUNC (js_glEnableClientState)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum cap;
   if (!ecma_to_GLenum (argv[0], cap))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -286,6 +309,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEnableClientState)
 ECMA_BEGIN_VOID_FUNC (js_glDisableClientState)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum cap;
   if (!ecma_to_GLenum (argv[0], cap))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -304,6 +328,7 @@ ECMA_BEGIN_VOID_FUNC (js_glDisableClientState)
 ECMA_BEGIN_VOID_FUNC (js_glPushAttrib)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLbitfield mask;
   if (!ecma_to_GLbitfield (argv[0], mask))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -314,6 +339,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPushAttrib)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glPopAttrib)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glPopAttrib ();
   return JS_TRUE;
 }
@@ -321,6 +347,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glPopAttrib)
 ECMA_BEGIN_VOID_FUNC (js_glPushClientAttrib)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLbitfield mask;
   if (!ecma_to_GLbitfield (argv[0], mask))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -331,6 +358,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPushClientAttrib)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glPopClientAttrib)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glPopClientAttrib ();
   return JS_TRUE;
 }
@@ -338,6 +366,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glPopClientAttrib)
 ECMA_BEGIN_FUNC (js_glRenderMode)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -350,6 +379,7 @@ ECMA_BEGIN_FUNC (js_glRenderMode)
 ECMA_BEGIN_FUNC_VOID (js_glGetError)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   GLenum nres = glGetError ();
   if (!ecma_from_GLenum (nres, rval))
     ECMA_ERROR ("could not convert result of type GLenum");
@@ -359,6 +389,7 @@ ECMA_BEGIN_FUNC_VOID (js_glGetError)
 ECMA_BEGIN_FUNC (js_glGetString)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum name;
   if (!ecma_to_GLenum (argv[0], name))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -371,6 +402,7 @@ ECMA_BEGIN_FUNC (js_glGetString)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glFinish)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glFinish ();
   return JS_TRUE;
 }
@@ -378,6 +410,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glFinish)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glFlush)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glFlush ();
   return JS_TRUE;
 }
@@ -385,6 +418,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glFlush)
 ECMA_BEGIN_VOID_FUNC (js_glHint)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -398,6 +432,7 @@ ECMA_BEGIN_VOID_FUNC (js_glHint)
 ECMA_BEGIN_VOID_FUNC (js_glClearDepth)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLclampd depth;
   if (!ecma_to_GLclampd (argv[0], depth))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -408,6 +443,7 @@ ECMA_BEGIN_VOID_FUNC (js_glClearDepth)
 ECMA_BEGIN_VOID_FUNC (js_glDepthFunc)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum func;
   if (!ecma_to_GLenum (argv[0], func))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -418,6 +454,7 @@ ECMA_BEGIN_VOID_FUNC (js_glDepthFunc)
 ECMA_BEGIN_VOID_FUNC (js_glDepthMask)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLboolean flag;
   if (!ecma_to_GLboolean (argv[0], flag))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -428,6 +465,7 @@ ECMA_BEGIN_VOID_FUNC (js_glDepthMask)
 ECMA_BEGIN_VOID_FUNC (js_glDepthRange)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLclampd near_val;
   if (!ecma_to_GLclampd (argv[0], near_val))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -441,6 +479,7 @@ ECMA_BEGIN_VOID_FUNC (js_glDepthRange)
 ECMA_BEGIN_VOID_FUNC (js_glClearAccum)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLfloat red;
   if (!ecma_to_GLfloat (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -460,6 +499,7 @@ ECMA_BEGIN_VOID_FUNC (js_glClearAccum)
 ECMA_BEGIN_VOID_FUNC (js_glAccum)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum op;
   if (!ecma_to_GLenum (argv[0], op))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -473,6 +513,7 @@ ECMA_BEGIN_VOID_FUNC (js_glAccum)
 ECMA_BEGIN_VOID_FUNC (js_glMatrixMode)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -483,6 +524,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMatrixMode)
 ECMA_BEGIN_VOID_FUNC (js_glOrtho)
 {
   ECMA_CHECK_NUM_ARGS (6);
+  assert (cx == ECMAScript::cx);
   GLdouble left;
   if (!ecma_to_GLdouble (argv[0], left))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -508,6 +550,7 @@ ECMA_BEGIN_VOID_FUNC (js_glOrtho)
 ECMA_BEGIN_VOID_FUNC (js_glFrustum)
 {
   ECMA_CHECK_NUM_ARGS (6);
+  assert (cx == ECMAScript::cx);
   GLdouble left;
   if (!ecma_to_GLdouble (argv[0], left))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -533,6 +576,7 @@ ECMA_BEGIN_VOID_FUNC (js_glFrustum)
 ECMA_BEGIN_VOID_FUNC (js_glViewport)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -552,6 +596,7 @@ ECMA_BEGIN_VOID_FUNC (js_glViewport)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glPushMatrix)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glPushMatrix ();
   return JS_TRUE;
 }
@@ -559,6 +604,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glPushMatrix)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glPopMatrix)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glPopMatrix ();
   return JS_TRUE;
 }
@@ -566,6 +612,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glPopMatrix)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glLoadIdentity)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glLoadIdentity ();
   return JS_TRUE;
 }
@@ -573,6 +620,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glLoadIdentity)
 ECMA_BEGIN_VOID_FUNC (js_glLoadMatrixd)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble m[16];
   if (!ecma_to_GLdouble_VEC (argv[0], m, 16))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -583,6 +631,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLoadMatrixd)
 ECMA_BEGIN_VOID_FUNC (js_glLoadMatrixf)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat m[16];
   if (!ecma_to_GLfloat_VEC (argv[0], m, 16))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -593,6 +642,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLoadMatrixf)
 ECMA_BEGIN_VOID_FUNC (js_glMultMatrixd)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble m[16];
   if (!ecma_to_GLdouble_VEC (argv[0], m, 16))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -603,6 +653,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultMatrixd)
 ECMA_BEGIN_VOID_FUNC (js_glMultMatrixf)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat m[16];
   if (!ecma_to_GLfloat_VEC (argv[0], m, 16))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -613,6 +664,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultMatrixf)
 ECMA_BEGIN_VOID_FUNC (js_glRotated)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLdouble angle;
   if (!ecma_to_GLdouble (argv[0], angle))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -632,6 +684,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRotated)
 ECMA_BEGIN_VOID_FUNC (js_glRotatef)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLfloat angle;
   if (!ecma_to_GLfloat (argv[0], angle))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -651,6 +704,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRotatef)
 ECMA_BEGIN_VOID_FUNC (js_glScaled)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLdouble x;
   if (!ecma_to_GLdouble (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -667,6 +721,7 @@ ECMA_BEGIN_VOID_FUNC (js_glScaled)
 ECMA_BEGIN_VOID_FUNC (js_glScalef)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLfloat x;
   if (!ecma_to_GLfloat (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -683,6 +738,7 @@ ECMA_BEGIN_VOID_FUNC (js_glScalef)
 ECMA_BEGIN_VOID_FUNC (js_glTranslated)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLdouble x;
   if (!ecma_to_GLdouble (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -699,6 +755,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTranslated)
 ECMA_BEGIN_VOID_FUNC (js_glTranslatef)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLfloat x;
   if (!ecma_to_GLfloat (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -715,6 +772,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTranslatef)
 ECMA_BEGIN_FUNC (js_glIsList)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint list;
   if (!ecma_to_GLuint (argv[0], list))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -727,6 +785,7 @@ ECMA_BEGIN_FUNC (js_glIsList)
 ECMA_BEGIN_VOID_FUNC (js_glDeleteLists)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLuint list;
   if (!ecma_to_GLuint (argv[0], list))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -740,6 +799,7 @@ ECMA_BEGIN_VOID_FUNC (js_glDeleteLists)
 ECMA_BEGIN_FUNC (js_glGenLists)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLsizei range;
   if (!ecma_to_GLsizei (argv[0], range))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -752,6 +812,7 @@ ECMA_BEGIN_FUNC (js_glGenLists)
 ECMA_BEGIN_VOID_FUNC (js_glNewList)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLuint list;
   if (!ecma_to_GLuint (argv[0], list))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -765,6 +826,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNewList)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glEndList)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glEndList ();
   return JS_TRUE;
 }
@@ -772,6 +834,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glEndList)
 ECMA_BEGIN_VOID_FUNC (js_glCallList)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint list;
   if (!ecma_to_GLuint (argv[0], list))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -784,6 +847,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCallList)
 ECMA_BEGIN_VOID_FUNC (js_glListBase)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint base;
   if (!ecma_to_GLuint (argv[0], base))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -794,6 +858,7 @@ ECMA_BEGIN_VOID_FUNC (js_glListBase)
 ECMA_BEGIN_VOID_FUNC (js_glBegin)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -804,6 +869,7 @@ ECMA_BEGIN_VOID_FUNC (js_glBegin)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glEnd)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glEnd ();
   return JS_TRUE;
 }
@@ -811,6 +877,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glEnd)
 ECMA_BEGIN_VOID_FUNC (js_glVertex2d)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLdouble x;
   if (!ecma_to_GLdouble (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -824,6 +891,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex2d)
 ECMA_BEGIN_VOID_FUNC (js_glVertex2f)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLfloat x;
   if (!ecma_to_GLfloat (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -837,6 +905,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex2f)
 ECMA_BEGIN_VOID_FUNC (js_glVertex2i)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -850,6 +919,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex2i)
 ECMA_BEGIN_VOID_FUNC (js_glVertex2s)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLshort x;
   if (!ecma_to_GLshort (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -863,6 +933,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex2s)
 ECMA_BEGIN_VOID_FUNC (js_glVertex3d)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLdouble x;
   if (!ecma_to_GLdouble (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -879,6 +950,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex3d)
 ECMA_BEGIN_VOID_FUNC (js_glVertex3f)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLfloat x;
   if (!ecma_to_GLfloat (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -895,6 +967,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex3f)
 ECMA_BEGIN_VOID_FUNC (js_glVertex3i)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -911,6 +984,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex3i)
 ECMA_BEGIN_VOID_FUNC (js_glVertex3s)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLshort x;
   if (!ecma_to_GLshort (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -927,6 +1001,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex3s)
 ECMA_BEGIN_VOID_FUNC (js_glVertex4d)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLdouble x;
   if (!ecma_to_GLdouble (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -946,6 +1021,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex4d)
 ECMA_BEGIN_VOID_FUNC (js_glVertex4f)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLfloat x;
   if (!ecma_to_GLfloat (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -965,6 +1041,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex4f)
 ECMA_BEGIN_VOID_FUNC (js_glVertex4i)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -984,6 +1061,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex4i)
 ECMA_BEGIN_VOID_FUNC (js_glVertex4s)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLshort x;
   if (!ecma_to_GLshort (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1003,6 +1081,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex4s)
 ECMA_BEGIN_VOID_FUNC (js_glVertex2dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[2];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1013,6 +1092,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex2dv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex2fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[2];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1023,6 +1103,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex2fv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex2iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[2];
   if (!ecma_to_GLint_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1033,6 +1114,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex2iv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex2sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[2];
   if (!ecma_to_GLshort_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1043,6 +1125,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex2sv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex3dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[3];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1053,6 +1136,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex3dv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex3fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[3];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1063,6 +1147,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex3fv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex3iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[3];
   if (!ecma_to_GLint_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1073,6 +1158,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex3iv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex3sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[3];
   if (!ecma_to_GLshort_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1083,6 +1169,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex3sv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex4dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[4];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1093,6 +1180,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex4dv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex4fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[4];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1103,6 +1191,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex4fv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex4iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[4];
   if (!ecma_to_GLint_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1113,6 +1202,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex4iv)
 ECMA_BEGIN_VOID_FUNC (js_glVertex4sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[4];
   if (!ecma_to_GLshort_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1123,6 +1213,7 @@ ECMA_BEGIN_VOID_FUNC (js_glVertex4sv)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3b)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLbyte nx;
   if (!ecma_to_GLbyte (argv[0], nx))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1139,6 +1230,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3b)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3d)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLdouble nx;
   if (!ecma_to_GLdouble (argv[0], nx))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1155,6 +1247,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3d)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3f)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLfloat nx;
   if (!ecma_to_GLfloat (argv[0], nx))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1171,6 +1264,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3f)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3i)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLint nx;
   if (!ecma_to_GLint (argv[0], nx))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1187,6 +1281,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3i)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3s)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLshort nx;
   if (!ecma_to_GLshort (argv[0], nx))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1203,6 +1298,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3s)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3bv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLbyte v[3];
   if (!ecma_to_GLbyte_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1213,6 +1309,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3bv)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[3];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1223,6 +1320,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3dv)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[3];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1233,6 +1331,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3fv)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[3];
   if (!ecma_to_GLint_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1243,6 +1342,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3iv)
 ECMA_BEGIN_VOID_FUNC (js_glNormal3sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[3];
   if (!ecma_to_GLshort_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1253,6 +1353,7 @@ ECMA_BEGIN_VOID_FUNC (js_glNormal3sv)
 ECMA_BEGIN_VOID_FUNC (js_glIndexd)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble c;
   if (!ecma_to_GLdouble (argv[0], c))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1263,6 +1364,7 @@ ECMA_BEGIN_VOID_FUNC (js_glIndexd)
 ECMA_BEGIN_VOID_FUNC (js_glIndexf)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat c;
   if (!ecma_to_GLfloat (argv[0], c))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1273,6 +1375,7 @@ ECMA_BEGIN_VOID_FUNC (js_glIndexf)
 ECMA_BEGIN_VOID_FUNC (js_glIndexi)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint c;
   if (!ecma_to_GLint (argv[0], c))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1283,6 +1386,7 @@ ECMA_BEGIN_VOID_FUNC (js_glIndexi)
 ECMA_BEGIN_VOID_FUNC (js_glIndexs)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort c;
   if (!ecma_to_GLshort (argv[0], c))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1293,6 +1397,7 @@ ECMA_BEGIN_VOID_FUNC (js_glIndexs)
 ECMA_BEGIN_VOID_FUNC (js_glIndexub)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLubyte c;
   if (!ecma_to_GLubyte (argv[0], c))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1313,6 +1418,7 @@ ECMA_BEGIN_VOID_FUNC (js_glIndexub)
 ECMA_BEGIN_VOID_FUNC (js_glColor3b)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLbyte red;
   if (!ecma_to_GLbyte (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1329,6 +1435,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3b)
 ECMA_BEGIN_VOID_FUNC (js_glColor3d)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLdouble red;
   if (!ecma_to_GLdouble (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1345,6 +1452,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3d)
 ECMA_BEGIN_VOID_FUNC (js_glColor3f)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLfloat red;
   if (!ecma_to_GLfloat (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1361,6 +1469,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3f)
 ECMA_BEGIN_VOID_FUNC (js_glColor3i)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLint red;
   if (!ecma_to_GLint (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1377,6 +1486,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3i)
 ECMA_BEGIN_VOID_FUNC (js_glColor3s)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLshort red;
   if (!ecma_to_GLshort (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1393,6 +1503,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3s)
 ECMA_BEGIN_VOID_FUNC (js_glColor3ub)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLubyte red;
   if (!ecma_to_GLubyte (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1409,6 +1520,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3ub)
 ECMA_BEGIN_VOID_FUNC (js_glColor3ui)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLuint red;
   if (!ecma_to_GLuint (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1425,6 +1537,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3ui)
 ECMA_BEGIN_VOID_FUNC (js_glColor3us)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLushort red;
   if (!ecma_to_GLushort (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1441,6 +1554,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3us)
 ECMA_BEGIN_VOID_FUNC (js_glColor4b)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLbyte red;
   if (!ecma_to_GLbyte (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1460,6 +1574,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4b)
 ECMA_BEGIN_VOID_FUNC (js_glColor4d)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLdouble red;
   if (!ecma_to_GLdouble (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1479,6 +1594,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4d)
 ECMA_BEGIN_VOID_FUNC (js_glColor4f)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLfloat red;
   if (!ecma_to_GLfloat (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1498,6 +1614,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4f)
 ECMA_BEGIN_VOID_FUNC (js_glColor4i)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLint red;
   if (!ecma_to_GLint (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1517,6 +1634,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4i)
 ECMA_BEGIN_VOID_FUNC (js_glColor4s)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLshort red;
   if (!ecma_to_GLshort (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1536,6 +1654,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4s)
 ECMA_BEGIN_VOID_FUNC (js_glColor4ub)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLubyte red;
   if (!ecma_to_GLubyte (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1555,6 +1674,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4ub)
 ECMA_BEGIN_VOID_FUNC (js_glColor4ui)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLuint red;
   if (!ecma_to_GLuint (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1574,6 +1694,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4ui)
 ECMA_BEGIN_VOID_FUNC (js_glColor4us)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLushort red;
   if (!ecma_to_GLushort (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1593,6 +1714,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4us)
 ECMA_BEGIN_VOID_FUNC (js_glColor3bv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLbyte v[3];
   if (!ecma_to_GLbyte_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1603,6 +1725,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3bv)
 ECMA_BEGIN_VOID_FUNC (js_glColor3dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[3];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1613,6 +1736,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3dv)
 ECMA_BEGIN_VOID_FUNC (js_glColor3fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[3];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1623,6 +1747,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3fv)
 ECMA_BEGIN_VOID_FUNC (js_glColor3iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[3];
   if (!ecma_to_GLint_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1633,6 +1758,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3iv)
 ECMA_BEGIN_VOID_FUNC (js_glColor3sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[3];
   if (!ecma_to_GLshort_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1643,6 +1769,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3sv)
 ECMA_BEGIN_VOID_FUNC (js_glColor3ubv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLubyte v[3];
   if (!ecma_to_GLubyte_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1653,6 +1780,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3ubv)
 ECMA_BEGIN_VOID_FUNC (js_glColor3uiv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint v[3];
   if (!ecma_to_GLuint_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1663,6 +1791,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3uiv)
 ECMA_BEGIN_VOID_FUNC (js_glColor3usv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLushort v[3];
   if (!ecma_to_GLushort_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1673,6 +1802,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor3usv)
 ECMA_BEGIN_VOID_FUNC (js_glColor4bv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLbyte v[4];
   if (!ecma_to_GLbyte_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1683,6 +1813,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4bv)
 ECMA_BEGIN_VOID_FUNC (js_glColor4dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[4];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1693,6 +1824,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4dv)
 ECMA_BEGIN_VOID_FUNC (js_glColor4fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[4];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1703,6 +1835,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4fv)
 ECMA_BEGIN_VOID_FUNC (js_glColor4iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[4];
   if (!ecma_to_GLint_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1713,6 +1846,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4iv)
 ECMA_BEGIN_VOID_FUNC (js_glColor4sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[4];
   if (!ecma_to_GLshort_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1723,6 +1857,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4sv)
 ECMA_BEGIN_VOID_FUNC (js_glColor4ubv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLubyte v[4];
   if (!ecma_to_GLubyte_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1733,6 +1868,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4ubv)
 ECMA_BEGIN_VOID_FUNC (js_glColor4uiv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint v[4];
   if (!ecma_to_GLuint_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1743,6 +1879,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4uiv)
 ECMA_BEGIN_VOID_FUNC (js_glColor4usv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLushort v[4];
   if (!ecma_to_GLushort_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1753,6 +1890,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColor4usv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord1d)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble s;
   if (!ecma_to_GLdouble (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1763,6 +1901,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord1d)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord1f)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat s;
   if (!ecma_to_GLfloat (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1773,6 +1912,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord1f)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord1i)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint s;
   if (!ecma_to_GLint (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1783,6 +1923,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord1i)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord1s)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort s;
   if (!ecma_to_GLshort (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1793,6 +1934,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord1s)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord2d)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLdouble s;
   if (!ecma_to_GLdouble (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1806,6 +1948,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord2d)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord2f)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLfloat s;
   if (!ecma_to_GLfloat (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1819,6 +1962,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord2f)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord2i)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLint s;
   if (!ecma_to_GLint (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1832,6 +1976,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord2i)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord2s)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLshort s;
   if (!ecma_to_GLshort (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1845,6 +1990,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord2s)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord3d)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLdouble s;
   if (!ecma_to_GLdouble (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1861,6 +2007,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord3d)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord3f)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLfloat s;
   if (!ecma_to_GLfloat (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1877,6 +2024,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord3f)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord3i)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLint s;
   if (!ecma_to_GLint (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1893,6 +2041,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord3i)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord3s)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLshort s;
   if (!ecma_to_GLshort (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1909,6 +2058,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord3s)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord4d)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLdouble s;
   if (!ecma_to_GLdouble (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1928,6 +2078,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord4d)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord4f)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLfloat s;
   if (!ecma_to_GLfloat (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1947,6 +2098,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord4f)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord4i)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLint s;
   if (!ecma_to_GLint (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1966,6 +2118,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord4i)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord4s)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLshort s;
   if (!ecma_to_GLshort (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1985,6 +2138,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord4s)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord1dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[1];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -1995,6 +2149,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord1dv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord1fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[1];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2005,6 +2160,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord1fv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord1iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[1];
   if (!ecma_to_GLint_VEC (argv[0], v, 1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2015,6 +2171,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord1iv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord1sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[1];
   if (!ecma_to_GLshort_VEC (argv[0], v, 1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2025,6 +2182,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord1sv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord2dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[2];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2035,6 +2193,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord2dv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord2fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[2];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2045,6 +2204,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord2fv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord2iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[2];
   if (!ecma_to_GLint_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2055,6 +2215,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord2iv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord2sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[2];
   if (!ecma_to_GLshort_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2065,6 +2226,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord2sv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord3dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[3];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2075,6 +2237,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord3dv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord3fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[3];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2085,6 +2248,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord3fv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord3iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[3];
   if (!ecma_to_GLint_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2095,6 +2259,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord3iv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord3sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[3];
   if (!ecma_to_GLshort_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2105,6 +2270,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord3sv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord4dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[4];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2115,6 +2281,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord4dv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord4fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[4];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2125,6 +2292,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord4fv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord4iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[4];
   if (!ecma_to_GLint_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2135,6 +2303,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord4iv)
 ECMA_BEGIN_VOID_FUNC (js_glTexCoord4sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[4];
   if (!ecma_to_GLshort_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2145,6 +2314,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexCoord4sv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos2d)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLdouble x;
   if (!ecma_to_GLdouble (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2158,6 +2328,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos2d)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos2f)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLfloat x;
   if (!ecma_to_GLfloat (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2171,6 +2342,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos2f)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos2i)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2184,6 +2356,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos2i)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos2s)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLshort x;
   if (!ecma_to_GLshort (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2197,6 +2370,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos2s)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos3d)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLdouble x;
   if (!ecma_to_GLdouble (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2213,6 +2387,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos3d)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos3f)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLfloat x;
   if (!ecma_to_GLfloat (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2229,6 +2404,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos3f)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos3i)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2245,6 +2421,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos3i)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos3s)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLshort x;
   if (!ecma_to_GLshort (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2261,6 +2438,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos3s)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos4d)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLdouble x;
   if (!ecma_to_GLdouble (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2280,6 +2458,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos4d)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos4f)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLfloat x;
   if (!ecma_to_GLfloat (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2299,6 +2478,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos4f)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos4i)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2318,6 +2498,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos4i)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos4s)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLshort x;
   if (!ecma_to_GLshort (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2337,6 +2518,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos4s)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos2dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[2];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2347,6 +2529,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos2dv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos2fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[2];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2357,6 +2540,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos2fv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos2iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[2];
   if (!ecma_to_GLint_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2367,6 +2551,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos2iv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos2sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[2];
   if (!ecma_to_GLshort_VEC (argv[0], v, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2377,6 +2562,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos2sv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos3dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[3];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2387,6 +2573,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos3dv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos3fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[3];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2397,6 +2584,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos3fv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos3iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[3];
   if (!ecma_to_GLint_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2407,6 +2595,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos3iv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos3sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[3];
   if (!ecma_to_GLshort_VEC (argv[0], v, 3))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2417,6 +2606,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos3sv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos4dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble v[4];
   if (!ecma_to_GLdouble_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2427,6 +2617,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos4dv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos4fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat v[4];
   if (!ecma_to_GLfloat_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2437,6 +2628,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos4fv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos4iv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint v[4];
   if (!ecma_to_GLint_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2447,6 +2639,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos4iv)
 ECMA_BEGIN_VOID_FUNC (js_glRasterPos4sv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLshort v[4];
   if (!ecma_to_GLshort_VEC (argv[0], v, 4))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2457,6 +2650,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRasterPos4sv)
 ECMA_BEGIN_VOID_FUNC (js_glRectd)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLdouble x1;
   if (!ecma_to_GLdouble (argv[0], x1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2476,6 +2670,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRectd)
 ECMA_BEGIN_VOID_FUNC (js_glRectf)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLfloat x1;
   if (!ecma_to_GLfloat (argv[0], x1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2495,6 +2690,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRectf)
 ECMA_BEGIN_VOID_FUNC (js_glRecti)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLint x1;
   if (!ecma_to_GLint (argv[0], x1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2514,6 +2710,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRecti)
 ECMA_BEGIN_VOID_FUNC (js_glRects)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLshort x1;
   if (!ecma_to_GLshort (argv[0], x1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2555,6 +2752,7 @@ ECMA_BEGIN_VOID_FUNC (js_glRects)
 ECMA_BEGIN_VOID_FUNC (js_glArrayElement)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint i;
   if (!ecma_to_GLint (argv[0], i))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2565,6 +2763,7 @@ ECMA_BEGIN_VOID_FUNC (js_glArrayElement)
 ECMA_BEGIN_VOID_FUNC (js_glDrawArrays)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2585,6 +2784,7 @@ ECMA_BEGIN_VOID_FUNC (js_glDrawArrays)
 ECMA_BEGIN_VOID_FUNC (js_glShadeModel)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2595,6 +2795,7 @@ ECMA_BEGIN_VOID_FUNC (js_glShadeModel)
 ECMA_BEGIN_VOID_FUNC (js_glLightf)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum light;
   if (!ecma_to_GLenum (argv[0], light))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2611,6 +2812,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLightf)
 ECMA_BEGIN_VOID_FUNC (js_glLighti)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum light;
   if (!ecma_to_GLenum (argv[0], light))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2635,6 +2837,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLighti)
 ECMA_BEGIN_VOID_FUNC (js_glLightModelf)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum pname;
   if (!ecma_to_GLenum (argv[0], pname))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2648,6 +2851,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLightModelf)
 ECMA_BEGIN_VOID_FUNC (js_glLightModeli)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum pname;
   if (!ecma_to_GLenum (argv[0], pname))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2665,6 +2869,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLightModeli)
 ECMA_BEGIN_VOID_FUNC (js_glMaterialf)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum face;
   if (!ecma_to_GLenum (argv[0], face))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2681,6 +2886,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMaterialf)
 ECMA_BEGIN_VOID_FUNC (js_glMateriali)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum face;
   if (!ecma_to_GLenum (argv[0], face))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2705,6 +2911,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMateriali)
 ECMA_BEGIN_VOID_FUNC (js_glColorMaterial)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum face;
   if (!ecma_to_GLenum (argv[0], face))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2718,6 +2925,7 @@ ECMA_BEGIN_VOID_FUNC (js_glColorMaterial)
 ECMA_BEGIN_VOID_FUNC (js_glPixelZoom)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLfloat xfactor;
   if (!ecma_to_GLfloat (argv[0], xfactor))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2731,6 +2939,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPixelZoom)
 ECMA_BEGIN_VOID_FUNC (js_glPixelStoref)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum pname;
   if (!ecma_to_GLenum (argv[0], pname))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2744,6 +2953,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPixelStoref)
 ECMA_BEGIN_VOID_FUNC (js_glPixelStorei)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum pname;
   if (!ecma_to_GLenum (argv[0], pname))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2757,6 +2967,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPixelStorei)
 ECMA_BEGIN_VOID_FUNC (js_glPixelTransferf)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum pname;
   if (!ecma_to_GLenum (argv[0], pname))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2770,6 +2981,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPixelTransferf)
 ECMA_BEGIN_VOID_FUNC (js_glPixelTransferi)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum pname;
   if (!ecma_to_GLenum (argv[0], pname))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2801,6 +3013,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPixelTransferi)
 ECMA_BEGIN_VOID_FUNC (js_glCopyPixels)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLint x;
   if (!ecma_to_GLint (argv[0], x))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2823,6 +3036,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyPixels)
 ECMA_BEGIN_VOID_FUNC (js_glStencilFunc)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum func;
   if (!ecma_to_GLenum (argv[0], func))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2839,6 +3053,7 @@ ECMA_BEGIN_VOID_FUNC (js_glStencilFunc)
 ECMA_BEGIN_VOID_FUNC (js_glStencilMask)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint mask;
   if (!ecma_to_GLuint (argv[0], mask))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2849,6 +3064,7 @@ ECMA_BEGIN_VOID_FUNC (js_glStencilMask)
 ECMA_BEGIN_VOID_FUNC (js_glStencilOp)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum fail;
   if (!ecma_to_GLenum (argv[0], fail))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2865,6 +3081,7 @@ ECMA_BEGIN_VOID_FUNC (js_glStencilOp)
 ECMA_BEGIN_VOID_FUNC (js_glClearStencil)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint s;
   if (!ecma_to_GLint (argv[0], s))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2875,6 +3092,7 @@ ECMA_BEGIN_VOID_FUNC (js_glClearStencil)
 ECMA_BEGIN_VOID_FUNC (js_glTexGend)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum coord;
   if (!ecma_to_GLenum (argv[0], coord))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2891,6 +3109,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexGend)
 ECMA_BEGIN_VOID_FUNC (js_glTexGenf)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum coord;
   if (!ecma_to_GLenum (argv[0], coord))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2907,6 +3126,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexGenf)
 ECMA_BEGIN_VOID_FUNC (js_glTexGeni)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum coord;
   if (!ecma_to_GLenum (argv[0], coord))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2935,6 +3155,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexGeni)
 ECMA_BEGIN_VOID_FUNC (js_glTexEnvf)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2951,6 +3172,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexEnvf)
 ECMA_BEGIN_VOID_FUNC (js_glTexEnvi)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2975,6 +3197,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexEnvi)
 ECMA_BEGIN_VOID_FUNC (js_glTexParameterf)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -2991,6 +3214,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexParameterf)
 ECMA_BEGIN_VOID_FUNC (js_glTexParameteri)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3030,6 +3254,7 @@ ECMA_BEGIN_VOID_FUNC (js_glTexParameteri)
 ECMA_BEGIN_VOID_FUNC (js_glBindTexture)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3047,6 +3272,7 @@ ECMA_BEGIN_VOID_FUNC (js_glBindTexture)
 ECMA_BEGIN_FUNC (js_glIsTexture)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint texture;
   if (!ecma_to_GLuint (argv[0], texture))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3063,6 +3289,7 @@ ECMA_BEGIN_FUNC (js_glIsTexture)
 ECMA_BEGIN_VOID_FUNC (js_glCopyTexImage1D)
 {
   ECMA_CHECK_NUM_ARGS (7);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3091,6 +3318,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyTexImage1D)
 ECMA_BEGIN_VOID_FUNC (js_glCopyTexImage2D)
 {
   ECMA_CHECK_NUM_ARGS (8);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3123,6 +3351,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyTexImage2D)
 ECMA_BEGIN_VOID_FUNC (js_glCopyTexSubImage1D)
 {
   ECMA_CHECK_NUM_ARGS (6);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3148,6 +3377,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyTexSubImage1D)
 ECMA_BEGIN_VOID_FUNC (js_glCopyTexSubImage2D)
 {
   ECMA_CHECK_NUM_ARGS (8);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3193,6 +3423,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyTexSubImage2D)
 ECMA_BEGIN_VOID_FUNC (js_glEvalCoord1d)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble u;
   if (!ecma_to_GLdouble (argv[0], u))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3203,6 +3434,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalCoord1d)
 ECMA_BEGIN_VOID_FUNC (js_glEvalCoord1f)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat u;
   if (!ecma_to_GLfloat (argv[0], u))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3213,6 +3445,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalCoord1f)
 ECMA_BEGIN_VOID_FUNC (js_glEvalCoord1dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble u[1];
   if (!ecma_to_GLdouble_VEC (argv[0], u, 1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3223,6 +3456,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalCoord1dv)
 ECMA_BEGIN_VOID_FUNC (js_glEvalCoord1fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat u[1];
   if (!ecma_to_GLfloat_VEC (argv[0], u, 1))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3233,6 +3467,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalCoord1fv)
 ECMA_BEGIN_VOID_FUNC (js_glEvalCoord2d)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLdouble u;
   if (!ecma_to_GLdouble (argv[0], u))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3246,6 +3481,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalCoord2d)
 ECMA_BEGIN_VOID_FUNC (js_glEvalCoord2f)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLfloat u;
   if (!ecma_to_GLfloat (argv[0], u))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3259,6 +3495,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalCoord2f)
 ECMA_BEGIN_VOID_FUNC (js_glEvalCoord2dv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble u[2];
   if (!ecma_to_GLdouble_VEC (argv[0], u, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3269,6 +3506,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalCoord2dv)
 ECMA_BEGIN_VOID_FUNC (js_glEvalCoord2fv)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat u[2];
   if (!ecma_to_GLfloat_VEC (argv[0], u, 2))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3279,6 +3517,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalCoord2fv)
 ECMA_BEGIN_VOID_FUNC (js_glMapGrid1d)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLint un;
   if (!ecma_to_GLint (argv[0], un))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3295,6 +3534,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMapGrid1d)
 ECMA_BEGIN_VOID_FUNC (js_glMapGrid1f)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLint un;
   if (!ecma_to_GLint (argv[0], un))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3311,6 +3551,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMapGrid1f)
 ECMA_BEGIN_VOID_FUNC (js_glMapGrid2d)
 {
   ECMA_CHECK_NUM_ARGS (6);
+  assert (cx == ECMAScript::cx);
   GLint un;
   if (!ecma_to_GLint (argv[0], un))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3336,6 +3577,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMapGrid2d)
 ECMA_BEGIN_VOID_FUNC (js_glMapGrid2f)
 {
   ECMA_CHECK_NUM_ARGS (6);
+  assert (cx == ECMAScript::cx);
   GLint un;
   if (!ecma_to_GLint (argv[0], un))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3361,6 +3603,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMapGrid2f)
 ECMA_BEGIN_VOID_FUNC (js_glEvalPoint1)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLint i;
   if (!ecma_to_GLint (argv[0], i))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3371,6 +3614,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalPoint1)
 ECMA_BEGIN_VOID_FUNC (js_glEvalPoint2)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLint i;
   if (!ecma_to_GLint (argv[0], i))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3384,6 +3628,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalPoint2)
 ECMA_BEGIN_VOID_FUNC (js_glEvalMesh1)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3400,6 +3645,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalMesh1)
 ECMA_BEGIN_VOID_FUNC (js_glEvalMesh2)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3422,6 +3668,7 @@ ECMA_BEGIN_VOID_FUNC (js_glEvalMesh2)
 ECMA_BEGIN_VOID_FUNC (js_glFogf)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum pname;
   if (!ecma_to_GLenum (argv[0], pname))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3435,6 +3682,7 @@ ECMA_BEGIN_VOID_FUNC (js_glFogf)
 ECMA_BEGIN_VOID_FUNC (js_glFogi)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum pname;
   if (!ecma_to_GLenum (argv[0], pname))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3454,6 +3702,7 @@ ECMA_BEGIN_VOID_FUNC (js_glFogi)
 ECMA_BEGIN_VOID_FUNC (js_glPassThrough)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat token;
   if (!ecma_to_GLfloat (argv[0], token))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3466,6 +3715,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPassThrough)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glInitNames)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glInitNames ();
   return JS_TRUE;
 }
@@ -3473,6 +3723,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glInitNames)
 ECMA_BEGIN_VOID_FUNC (js_glLoadName)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint name;
   if (!ecma_to_GLuint (argv[0], name))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3483,6 +3734,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLoadName)
 ECMA_BEGIN_VOID_FUNC (js_glPushName)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLuint name;
   if (!ecma_to_GLuint (argv[0], name))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3493,6 +3745,7 @@ ECMA_BEGIN_VOID_FUNC (js_glPushName)
 ECMA_BEGIN_VOID_FUNC_VOID (js_glPopName)
 {
   ECMA_CHECK_NUM_ARGS (0);
+  assert (cx == ECMAScript::cx);
   glPopName ();
   return JS_TRUE;
 }
@@ -3507,6 +3760,7 @@ ECMA_BEGIN_VOID_FUNC_VOID (js_glPopName)
 ECMA_BEGIN_VOID_FUNC (js_glCopyTexSubImage3D)
 {
   ECMA_CHECK_NUM_ARGS (9);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3550,6 +3804,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyTexSubImage3D)
 ECMA_BEGIN_VOID_FUNC (js_glCopyColorSubTable)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3572,6 +3827,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyColorSubTable)
 ECMA_BEGIN_VOID_FUNC (js_glCopyColorTable)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3600,6 +3856,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyColorTable)
 ECMA_BEGIN_VOID_FUNC (js_glBlendEquation)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum mode;
   if (!ecma_to_GLenum (argv[0], mode))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3610,6 +3867,7 @@ ECMA_BEGIN_VOID_FUNC (js_glBlendEquation)
 ECMA_BEGIN_VOID_FUNC (js_glBlendColor)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLclampf red;
   if (!ecma_to_GLclampf (argv[0], red))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3629,6 +3887,7 @@ ECMA_BEGIN_VOID_FUNC (js_glBlendColor)
 ECMA_BEGIN_VOID_FUNC (js_glHistogram)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3648,6 +3907,7 @@ ECMA_BEGIN_VOID_FUNC (js_glHistogram)
 ECMA_BEGIN_VOID_FUNC (js_glResetHistogram)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3664,6 +3924,7 @@ ECMA_BEGIN_VOID_FUNC (js_glResetHistogram)
 ECMA_BEGIN_VOID_FUNC (js_glMinmax)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3680,6 +3941,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMinmax)
 ECMA_BEGIN_VOID_FUNC (js_glResetMinmax)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3700,6 +3962,7 @@ ECMA_BEGIN_VOID_FUNC (js_glResetMinmax)
 ECMA_BEGIN_VOID_FUNC (js_glConvolutionParameterf)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3718,6 +3981,7 @@ ECMA_BEGIN_VOID_FUNC (js_glConvolutionParameterf)
 ECMA_BEGIN_VOID_FUNC (js_glConvolutionParameteri)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3736,6 +4000,7 @@ ECMA_BEGIN_VOID_FUNC (js_glConvolutionParameteri)
 ECMA_BEGIN_VOID_FUNC (js_glCopyConvolutionFilter1D)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3758,6 +4023,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyConvolutionFilter1D)
 ECMA_BEGIN_VOID_FUNC (js_glCopyConvolutionFilter2D)
 {
   ECMA_CHECK_NUM_ARGS (6);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3795,6 +4061,7 @@ ECMA_BEGIN_VOID_FUNC (js_glCopyConvolutionFilter2D)
 ECMA_BEGIN_VOID_FUNC (js_glActiveTexture)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum texture;
   if (!ecma_to_GLenum (argv[0], texture))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3805,6 +4072,7 @@ ECMA_BEGIN_VOID_FUNC (js_glActiveTexture)
 ECMA_BEGIN_VOID_FUNC (js_glClientActiveTexture)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLenum texture;
   if (!ecma_to_GLenum (argv[0], texture))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3829,6 +4097,7 @@ ECMA_BEGIN_VOID_FUNC (js_glClientActiveTexture)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1d)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3842,6 +4111,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1d)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1dv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3855,6 +4125,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1dv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1f)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3868,6 +4139,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1f)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1fv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3881,6 +4153,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1fv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1i)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3894,6 +4167,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1i)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1iv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3907,6 +4181,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1iv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1s)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3920,6 +4195,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1s)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1sv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3933,6 +4209,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord1sv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2d)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3949,6 +4226,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2d)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2dv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3962,6 +4240,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2dv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2f)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3978,6 +4257,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2f)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2fv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -3991,6 +4271,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2fv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2i)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4007,6 +4288,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2i)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2iv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4020,6 +4302,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2iv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2s)
 {
   ECMA_CHECK_NUM_ARGS (3);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4036,6 +4319,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2s)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2sv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4049,6 +4333,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord2sv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3d)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4068,6 +4353,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3d)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3dv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4081,6 +4367,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3dv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3f)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4100,6 +4387,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3f)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3fv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4113,6 +4401,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3fv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3i)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4132,6 +4421,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3i)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3iv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4145,6 +4435,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3iv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3s)
 {
   ECMA_CHECK_NUM_ARGS (4);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4164,6 +4455,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3s)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3sv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4177,6 +4469,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord3sv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4d)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4199,6 +4492,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4d)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4dv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4212,6 +4506,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4dv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4f)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4234,6 +4529,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4f)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4fv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4247,6 +4543,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4fv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4i)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4269,6 +4566,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4i)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4iv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4282,6 +4580,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4iv)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4s)
 {
   ECMA_CHECK_NUM_ARGS (5);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4304,6 +4603,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4s)
 ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4sv)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLenum target;
   if (!ecma_to_GLenum (argv[0], target))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4317,6 +4617,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultiTexCoord4sv)
 ECMA_BEGIN_VOID_FUNC (js_glLoadTransposeMatrixd)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble m[16];
   if (!ecma_to_GLdouble_VEC (argv[0], m, 16))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4327,6 +4628,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLoadTransposeMatrixd)
 ECMA_BEGIN_VOID_FUNC (js_glLoadTransposeMatrixf)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat m[16];
   if (!ecma_to_GLfloat_VEC (argv[0], m, 16))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4337,6 +4639,7 @@ ECMA_BEGIN_VOID_FUNC (js_glLoadTransposeMatrixf)
 ECMA_BEGIN_VOID_FUNC (js_glMultTransposeMatrixd)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLdouble m[16];
   if (!ecma_to_GLdouble_VEC (argv[0], m, 16))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4347,6 +4650,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultTransposeMatrixd)
 ECMA_BEGIN_VOID_FUNC (js_glMultTransposeMatrixf)
 {
   ECMA_CHECK_NUM_ARGS (1);
+  assert (cx == ECMAScript::cx);
   GLfloat m[16];
   if (!ecma_to_GLfloat_VEC (argv[0], m, 16))
     ECMA_ERROR ("argument 0 has wrong type");
@@ -4357,6 +4661,7 @@ ECMA_BEGIN_VOID_FUNC (js_glMultTransposeMatrixf)
 ECMA_BEGIN_VOID_FUNC (js_glSampleCoverage)
 {
   ECMA_CHECK_NUM_ARGS (2);
+  assert (cx == ECMAScript::cx);
   GLclampf value;
   if (!ecma_to_GLclampf (argv[0], value))
     ECMA_ERROR ("argument 0 has wrong type");

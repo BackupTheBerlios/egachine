@@ -5,10 +5,12 @@
 
 // connection to server
 static NetStreamBuf* outgoing=0;
+static int connectAttempts=0;
 
 extern "C" {
   ECMA_BEGIN_FUNC(jsnet_connect) 
   {
+    if (connectAttempts) ECMA_ERROR("Security: Already tried to establish an outgoing connection");
     ECMA_CHECK_NUM_ARGS(2);
     // we allow only one connection for security reasons
     if (outgoing) return JS_FALSE;
@@ -20,11 +22,12 @@ extern "C" {
     char* ctype=JS_GetStringBytes(strtype);
     if (!ctype) return JS_FALSE;
     try {
+      ++connectAttempts;
       outgoing=new NetStreamBuf(InternetAddress(ctype,port));
       if (!outgoing) return JS_FALSE;
       if (!JSNetwork::newStreamObject(outgoing,rval)) return JS_FALSE;
     }catch(const SocketError &e){
-      JS_ReportError(cx,"Connection failed");
+      JS_ReportError(cx,e.what());
       return JS_FALSE;
     }
     return JS_TRUE;

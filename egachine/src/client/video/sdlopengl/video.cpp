@@ -31,7 +31,6 @@
 #include "../video.h"
 #include "sdlgl.h"
 #include "texture.h"
-#include "typedefs.h"
 #include "smartptr.h"
 #include <map>
 #include "fontdata.h"
@@ -52,34 +51,12 @@
 
 
 #if defined(WIN32)
-// #define NEED_WIN32_HACK 1
-#include <SDL_main.h>
-#include <windows.h>
 #ifdef near
 #undef near
 #endif
 #ifdef far
 #undef far
 #endif
-
-
-#ifdef NEED_WIN32_HACK
-
-#define USE_MESSAGEBOX 1
-
-/* Show an error message */
-static 
-void ShowError(const char *title, const char *message)
-{
-  /* If USE_MESSAGEBOX is defined, you need to link with user32.lib */
-#ifdef USE_MESSAGEBOX
-  MessageBox(NULL, message, title, MB_ICONEXCLAMATION|MB_OK);
-#else
-  fprintf(stderr, "%s: %s\n", title, message);
-#endif
-}
-#endif // NEED_WIN32_HACK
-
 #endif // WIN32
 
 static bool m_lineSmooth=true;
@@ -219,8 +196,6 @@ void resize(int width, int height, int m_flags)
   if (width==0) width=1;
   if (height==0) height=1;
 
-  JGACHINE_MSG("Info:","::resize: "<<width<<","<<height);
-
   if (!(video=SDL_SetVideoMode(width, height, 0, m_flags))) {
     JGACHINE_WARN(SDL_GetError());
     JGACHINE_THROW((std::string("Couldn't set video mode: ")+SDL_GetError()).c_str());
@@ -234,19 +209,6 @@ Video::resize(int width, int height)
   SDL_Surface* video=SDL_GetVideoSurface();
   if (!video) return;
   ::resize(width,height,video->flags);
-}
-
-static
-void
-killWindow()
-{
-  // set all function pointers zero
-#ifdef DLOPEN_OPENGL
-  deinitGLSymbols();
-#endif
-  SDL_QuitSubSystem(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK);
-  //  JGACHINE_MSG("Info:","SDL_Quit()");
-  SDL_Quit();
 }
 
 static
@@ -330,77 +292,13 @@ createWindow(int width, int height, bool fullscreen)
   //  if (getGUIConfig().quality<=1) {glDisable(GL_DITHER);GL_ERRORS();}
 }
 
-#if 0
-extern "C" {
-  //! signal handler for fatal signals - to ensurce SDL_Quit is always called
-  /*!
-    \note
-    wanted to use sdl's parachute mechanism which catches fatal signals
-    that are not yet catched
-    gcj catches signals
-    (f.e. SIGSEGV and throws a java NullPointerException)
-    => even on a segfault we should reach deinit
-    (hmm perhaps user code should not be able to catch such exceptions!)
-    but somehow SDL thinks gcj doesn't catch signals?
-    => we do not use sdl's parachute
-
-    some fatal signals are not caught by gcj nor by SDL
-
-    should we call SDL_Quit - no matter what happens?
-    but perhaps this could lead to more serious problems than
-    the onces we have if SDL_Quit isn't called
-
-    hmm for testing i tried raise but:
-    raise(SIGSEGV);
-    and
-    ((char*)10)[9]='x';
-    are not treated equally
-
-
-    for now i am happy with gcj's handling of SIGSEGV
-  */
-  static
-  void
-  catchFatalSignal(int sig)
-  {
-    //    JGACHINE_MSG("Info:","SDL_Quit()");
-    SDL_Quit();
-
-    JGACHINE_FATAL("fatal signal");
-  }
-}
-#endif
-
 void Video::init(int width, int height,bool fullscreen)
 {
-#if defined(NEED_WIN32_HACK)
-  // hack for mingw to replace/reproduce SDL_main stuff
-  //  ShowError("WinMain() error", "will do preininit now");
-  if ( SDL_Init(SDL_INIT_NOPARACHUTE) < 0 ) {
-    std::string error(SDL_GetError());
-    ShowError("WinMain() error", error.c_str());
-    JGACHINE_THROW((std::string("Could not preinit SDL: ")+error).c_str());
-  }
-  SDL_SetModuleHandle(GetModuleHandle(NULL));
-  // todo redirect stdout and stderr to files like SDL_main does
-#endif
-
   textures=new Textures();
   if ( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK|SDL_INIT_NOPARACHUTE) < 0 ) {
     JGACHINE_THROW((std::string("Couldn't init SDL: ")+SDL_GetError()).c_str());
   }
   atexit(SDL_Quit);
-  
-#if 0
-  signal(SIGILL, catchFatalSignal);
-#endif
-  
-#ifdef DLOPEN_OPENGL
-  loadGL(getGUIConfig().libGL);
-  loadGLU(getGUIConfig().libGLU);
-  lookupGLSymbols();
-#endif  
-
   
   if ((!width)||(!height)) {
     // try to use current resolution
@@ -423,7 +321,6 @@ void Video::init(int width, int height,bool fullscreen)
 	JGACHINE_MSG("Info:", "using unknown subsystem:"<<info.subsystem);
       }
 #elif defined (WM_WIN)
-      // TODO
       width=GetSystemMetrics(SM_CXSCREEN);
       height=GetSystemMetrics(SM_CYSCREEN);
       JGACHINE_MSG("Info:", "w:"<<width<<" h:"<<height);
@@ -460,7 +357,8 @@ void Video::deinit()
     delete textures;
     textures=NULL;
   }
-  killWindow();
+  SDL_QuitSubSystem(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK);
+  SDL_Quit();
 }
 
 
@@ -494,20 +392,6 @@ Video::createTexture(unsigned dsize, const char* data, const char *extension, co
   (*textures)[id]=t;
   return id;
 }
-
-/*
-int
-Video::createTexture(const std::string &resname)
-{
-  // TODO: security / speed
-  std::string res;
-  std::ifstream in(resname.c_str());
-  JGACHINE_CHECK(in.good());
-  char c;
-  while (in.get(c)) res+=c;
-  return createTexture(res.length(),res.c_str());
-}
-*/
 
 void
 Video::drawQuad(float w, float h)
@@ -578,8 +462,6 @@ Video::getColor()
   glGetFloatv(GL_CURRENT_COLOR, c);
   return Color(c[0],c[1],c[2],c[3]);
 }
-
-
 
 void
 Video::pushMatrix()

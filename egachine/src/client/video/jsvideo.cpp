@@ -35,14 +35,11 @@ extern "C" {
   
   ECMA_BEGIN_FUNC(createTexture){
     ECMA_CHECK_NUM_ARGS(1);
-    if (!JSVAL_IS_STRING(argv[0])) return JS_FALSE;
-    JSString *strtype=JS_ValueToString(cx, argv[0]);
-    if (!strtype) return false;
-    char* ctype=JS_GetStringBytes(strtype);
-    if (!ctype) return false;
-    // TODO: bug - this does return the number of chars in the unicode string?
-    // but this is not a unicode string? hmm
-    size_t len=JS_GetStringLength(strtype);
+
+    char* ctype;
+    size_t len;
+    ECMA_STRING_TO_CHARVEC(argv[0],ctype,len);
+
     jsdouble tid=Video::createTexture(len,ctype);
     // todo simply return number
     if (!JS_NewNumberValue(cx,tid,rval)) return JS_FALSE;
@@ -144,8 +141,6 @@ else if (!JS_ValueToNumber(cx, v[y], &(d[y]))) d[y]=z; \
     GETPROP("near",4,-1.0);
     GETPROP("far",5,1.0);
 #undef GETPROP
-
-    JGACHINE_MSG("Info:", "near:"<<d[4]<<" far:"<<d[5]);
 
     Video::ViewportCoordinates vc(d[0],d[1],d[2],d[3],d[4],d[5]);
     vc.set();

@@ -17,9 +17,9 @@
  */
 
 /*!
-   \file common/ecmascript.cpp
-   \brief 
-   \author Jens Thiele
+  \file common/ecmascript.cpp
+  \brief 
+  \author Jens Thiele
 */
 
 /* include the JS engine API header */
@@ -43,9 +43,18 @@ extern "C" {
   }
   
   static
-  void printError(JSContext *, const char *message, JSErrorReport *report) {
-    std::cerr << "JS Error in " << (report->filename ? report->filename : "NULL") 
-	      << " on line " << report->lineno << ": " << message << std::endl;
+  void printError(JSContext *cx, const char *message, JSErrorReport *report) {
+    std::cerr << "JSERROR: "<< (report->filename ? report->filename : "NULL") << ":" << report->lineno << ":\n"
+	      << "    " << message << "\n";
+    if (report->linebuf)
+      std::cerr << report->linebuf << std::endl;
+    if (report->tokenptr)
+      std::cerr << report->tokenptr << std::endl;
+    std::cerr << "    Flags:";
+    if (JSREPORT_IS_WARNING(report->flags)) std::cerr << " WARNING";
+    if (JSREPORT_IS_EXCEPTION(report->flags)) std::cerr << " EXCEPTION";
+    if (JSREPORT_IS_STRICT(report->flags)) std::cerr << " STRICT";
+    std::cerr << " (Error number: " << report->errorNumber << ")\n";
   }
 
   //! hash value for object 
@@ -72,31 +81,111 @@ extern "C" {
   }
 }
 
+static
+JSClass global_class = {
+  "global",0,
+  JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
+  JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
+  ECMA_END_CLASS_SPEC
+};
+
+//! if there are pending exceptions print stacktrace and clear them
+static
+void
+handleExceptions()
+{
+  if (JS_IsExceptionPending(ECMAScript::cx)) {
+    jsval error;
+    if (!JS_GetPendingException(ECMAScript::cx, &error)) {
+      JGACHINE_MSG("Error:", "Could not get exception");
+    }else{
+      // todo: print stack trace
+    }
+    // we clear pending exceptions because we wish to use this context again
+    JS_ClearPendingException(ECMAScript::cx);
+  }
+}
+
 namespace ECMAScript
 {
   JSRuntime *rt;
   JSContext *cx;
   JSObject  *glob;
-  JSClass global_class = {
-    "global",0,
-    JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
-    JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
-    ECMA_END_CLASS_SPEC
-  };
   
-  int
-  eval(std::istream &in,const char* resname)
+  bool
+  eval(jsval &rval, const char* script, unsigned scriptlen, const char* resname)
+  {
+    JGACHINE_CHECK(script);
+    JGACHINE_CHECK(scriptlen>0);
+    if (!JS_EvaluateScript(ECMAScript::cx, ECMAScript::glob, script, scriptlen, resname, 1, &rval)) {
+      //      JGACHINE_WARN("script execution failed");
+      handleExceptions();
+      return false;
+    }
+    return true;
+  }
+  
+  bool
+  eval(jsval &rval, std::istream &in,const char* resname)
   {
     std::string script;
     char c;
     while (in.get(c)) script+=c;
-    
+    return eval(rval,script.c_str(),script.length(),resname);
+  }
+
+  bool
+  eval(std::istream &in,const char* resname)
+  {
     jsval rval;
-    if (!JS_EvaluateScript(ECMAScript::cx, ECMAScript::glob, script.c_str(), script.length(),resname, 1, &rval)) {
-      std::cout << "script execution failed" << std::endl;
-      return 2;
+    return eval(rval,in,resname);
+  }
+
+  int32
+  evalInt32(const char* expression)
+  {
+    jsval rval;
+    int32 res;
+    std::ostringstream here;
+    here << JGACHINE_HERE;
+    JGACHINE_CHECK(ECMAScript::eval(rval, expression, strlen(expression),here.str().c_str())
+		   &&JS_ValueToInt32(ECMAScript::cx, rval, &res));
+    return res;
+  }
+
+  bool
+  callFunction(jsval &rval, const char *objname, const char* fname, jsuint argc, jsval* argv)
+  {
+    JGACHINE_CHECK(objname);
+    JGACHINE_CHECK(fname);
+    if (argc>0) JGACHINE_CHECK(argv);
+    
+    jsval oval;
+    if (!JS_GetProperty(ECMAScript::cx, ECMAScript::glob,objname,&oval)) {
+      JGACHINE_ERROR("object: \""<<objname<<"\" does not exist");
+      return false;
     }
-    return 0;
+    if (!JSVAL_IS_OBJECT(oval)) {
+      JGACHINE_ERROR("\""<<objname<<"\" is not an object");
+      return false;
+    }
+
+    JSObject *obj;
+    JGACHINE_CHECK((obj=JSVAL_TO_OBJECT(oval)));
+
+    if (!JS_CallFunctionName(ECMAScript::cx, obj, fname, argc, argv, &rval)) {
+      JGACHINE_WARN("error while calling function \""<<objname<<"."<<fname<<"\"");
+      handleExceptions();
+      return false;
+    }
+    return true;
+  }
+
+  bool
+  callFunction(const char* objname, const char* fname, jsuint argc, jsval* argv)
+  {
+    jsval rval;
+    return callFunction(rval,objname,fname,argc,argv);
   }
   
   bool init() 
@@ -176,5 +265,75 @@ namespace ECMAScript
     }
     JS_ShutDown();
   }
+
+
+  void
+  parseConfig(const char* config)
+  {
+    JGACHINE_CHECK(config);
+    bool gotsysconf=false;
+#ifdef SYSCONFDIR
+    {
+      std::string c(JGACHINE_XSTR(SYSCONFDIR)"/");
+      c+=config;
+      std::ifstream sysin(c.c_str());
+      if (sysin.good()) {
+	gotsysconf=true;
+	ECMAScript::eval(sysin,c.c_str());
+      }
+    }
+#endif
+    if (!gotsysconf) {
+      // perhaps we are not installed - or run on a system
+      // were SYSCONFDIR was not set (f.e. win32)
+      std::string c("etc/");
+      c+=config;
+      std::ifstream sysin(c.c_str());
+      if (sysin.good()) {
+	gotsysconf=true;
+	ECMAScript::eval(sysin,c.c_str());
+      }
+    }
+
+    char* home=getenv("HOME");
+    if (home) {
+      std::string userconf(home);
+      userconf+="/.egachine/";
+      userconf+=config;
+      std::ifstream userin(userconf.c_str());
+      if (userin.good()) {
+	ECMAScript::eval(userin,userconf.c_str());
+      }
+    }
+  }
+
+  void
+  parseLib(const char* config)
+  {
+    JGACHINE_CHECK(config);
+    bool gotsysconf=false;
+#ifdef DATADIR
+    {
+      std::string c(JGACHINE_XSTR(DATADIR)"/egachine/");
+      c+=config;
+      std::ifstream sysin(c.c_str());
+      if (sysin.good()) {
+	gotsysconf=true;
+	ECMAScript::eval(sysin,c.c_str());
+      }
+    }
+#endif
+    if (!gotsysconf) {
+      // perhaps we are not installed - or run on a system
+      // were DATADIR was not set (f.e. win32)
+      std::ifstream sysin(config);
+      if (sysin.good()) {
+	gotsysconf=true;
+	ECMAScript::eval(sysin,config);
+      }else
+	JGACHINE_FATAL((std::string("Could not find library file:")+config).c_str());
+    }
+  }
+
 }
 

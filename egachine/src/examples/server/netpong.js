@@ -1,6 +1,8 @@
 // networked pong clone
-if (!EGachine.server) throw "This file must be run by egaserver";
-if (!EGachine.checkVersion(0,0,4)) throw "at least version 0.0.4 required";
+if (!EGachine.server) 
+  throw new Error("This file must be run by egaserver");
+if (!EGachine.checkVersion(0,0,6)) 
+  throw new Error("at least version 0.0.6 required");
 
 print("Server is now running\nListening for connections on port "+listenPort);
 print("ATTENTION: at the moment the server is insecure.");
@@ -16,7 +18,7 @@ spriteSize=new V2D(0.1,0.1);
 addResources();
 
 // handle input events (from network)
-function handleInput(i){
+Input.handleInput=function(i){
   if ((i.dev!=undefined)&&(i.dev>=0)&&(i.dev<2))
     rackets[i.dev].speed.y=i.y*1/3;
 }
@@ -24,9 +26,10 @@ function handleInput(i){
 // handle new client connection
 function handleNewConnection(id,stream){
   // code we send to the client - which executes it
+  // this is quite generic and should work for any similar networked game
   Net.sendTo(id,"\
-if (!EGachine.checkVersion(0,0,4)) throw 'at least version 0.0.4 required';\
-handleInput=function(i){\
+if (!EGachine.checkVersion(0,0,6)) throw new Error('at least version 0.0.6 required');\
+Input.handleInput=function(i){\
   var msg=serialize(i); \
   var h=msg.length.convertTo(16,6); \
   stream.send(h); \
@@ -40,6 +43,7 @@ while (true) { \
   now=Timer.getTimeStamp(); \
   dt=(now-last)/1000000; \
   last=now; \
+  root.step(dt); \
   root.paint(dt); \
   Input.poll(); \
   if (stream.select(0)) readMsg(); \
@@ -47,7 +51,6 @@ while (true) { \
 }");
 
 }
-
 
 // clip value to [min,max]
 function clip(min,max,value)
@@ -116,7 +119,9 @@ root=new Node()
   .addNode(new Mover(ball.speed,ball.rotspeed)
 	   .addNode(new Sprite("ball",spriteSize,ball.pos,ball.degrees)));
 
-// distribute objects to all clients
+// distribute scenegraph to all clients
+// NOTE: changes to the scenegraph are automatically distributed
+// to the clients
 Net.distribute(root,"root");
 
 // main game loop
@@ -131,7 +136,7 @@ while(true) {
   // get input events
   Net.poll();
   // update scenegraph
-  root.paint(dt);
+  root.step(dt);
   // move ball
   ball.step(dt);
   // send updates to clients

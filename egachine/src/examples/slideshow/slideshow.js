@@ -7,6 +7,7 @@ ejs.ModuleLoader.load("Audio");
 ejs.ModuleLoader.load("Video");
 ejs.ModuleLoader.load("File");
 ejs.ModuleLoader.load("sg");
+sg.Video=Video;
 var stderr=ejs.ModuleLoader.get("Stream").stderr;
 var oldinput;
 

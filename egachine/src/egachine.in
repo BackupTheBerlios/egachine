@@ -28,6 +28,7 @@ ejs.ModuleLoader.load("Input");
 ejs.ModuleLoader.load("Audio");
 ejs.ModuleLoader.load("Net");
 ejs.ModuleLoader.load("sg");
+sg.Video=Video;
 ejs.ModuleLoader.load("Timer");
 ejs.ModuleLoader.load("Base64");
 var useSVG=true;

@@ -33,7 +33,7 @@ install -dv $EXDIR/misc
 
 cd $SRCDIR/examples
 for a in $(find -name "*.js"); do
-    if head -1 $a |grep -v DONTINSTALL; then
+    if head -1 $a |grep -v DONTINSTALL >/dev/null; then
 	$INSTDATA $a $EXDIR/$a;
     fi
 done

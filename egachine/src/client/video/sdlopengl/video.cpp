@@ -302,7 +302,7 @@ void Video::init(int width, int height,bool fullscreen)
   
   if ((!width)||(!height)) {
     // try to use current resolution
-    JGACHINE_MSG("Info:", "try to use current resolution");
+    JGACHINE_INFO("try to use current screen resolution");
     
     // thanks to Stephan Ferraro
     // http://www.libsdl.org/pipermail/sdl/2003-December/058783.html
@@ -314,21 +314,19 @@ void Video::init(int width, int height,bool fullscreen)
     if (SDL_GetWMInfo(&info)) {
 #if defined(WM_X11)
       if ( info.subsystem == SDL_SYSWM_X11 ) {
-	JGACHINE_MSG("Info:", "seems we are using X11");
 	width = DisplayWidth(info.info.x11.display, 0);
 	height = DisplayHeight(info.info.x11.display, 0);
       }else{
-	JGACHINE_MSG("Info:", "using unknown subsystem:"<<info.subsystem);
+	JGACHINE_WARN("using unknown subsystem:"<<info.subsystem);
       }
 #elif defined (WM_WIN)
       width=GetSystemMetrics(SM_CXSCREEN);
       height=GetSystemMetrics(SM_CYSCREEN);
-      JGACHINE_MSG("Info:", "w:"<<width<<" h:"<<height);
 #else
 #error implement it
 #endif
     }else
-      JGACHINE_MSG("Info:", "could not get window manager information");
+      JGACHINE_WARN("could not get window manager information");
   }
 
   createWindow(width,height,fullscreen);

@@ -58,6 +58,9 @@ binary-indep: build install
 # Build architecture-dependent files here.
 binary-arch: build install
 	rm $(CURDIR)/debian/egachine/usr/share/doc/egachine/COPYING
+	mv $(CURDIR)/debian/egachine/usr/share/doc/egachine/ChangeLog \
+	   $(CURDIR)/debian/egachine/usr/share/doc/egachine/changelog
+	gzip -9 $(CURDIR)/debian/egachine/usr/share/doc/egachine/changelog
 	dh_testdir
 	dh_testroot
 	dh_installdocs

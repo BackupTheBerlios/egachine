@@ -6,7 +6,6 @@ Net.dist={};
 
 // watch all properties and distribute changes to clients
 Net.genericwatch=function(fqprop) {
-  //return new Function("p","o","n",'if ((n!=o)&&(!dontwatch)) Net.enqueue("'+fqprop+'="+n+";");return n;');
   return function(p,o,n){if ((n!=o)&&(!dontwatch)) Net.enqueue(fqprop+'='+n+';');return n;};
 }
 
@@ -17,7 +16,6 @@ Net.distribute=function(obj,oid){
 }
 
 Net.handleNewConnection=function(id,stream) {
-  print("new connection: "+id);
   this.connections[id]=stream;
   var obj;
   for (obj in this.dist)
@@ -26,7 +24,6 @@ Net.handleNewConnection=function(id,stream) {
 }
 
 Net.handleDataAvailable=function(id) {
-  print("data available: "+id);
   var h=this.connections[id].recv(6);
   var len=Number("0x"+h);
   if ((h.length==0)||(len==0)) {

@@ -32,11 +32,6 @@
 
 // global functions - todo: there perhaps should be none
 
-/*
-function Copy(obj){
-  for (var i in obj) this[i] = obj[i];
-  }*/
-
 // is the passed object an empty prototype? (empty object)
 function isEmptyProto(p) {
   return (p=={}.__proto__);
@@ -126,6 +121,54 @@ function deserialize(str) {
   return x;
 }
 
+//! watch all properties in the object graph 
+/*
+  on change of a property call a generated function 
+  \param gf function which generates the watch function
+  if gf is not passed genericwatch is used
+  
+  \note properties coming from a prototype aren't watched
+  this is because this caused trouble with serialization
+  TODO: inspect this situation and understand what happens
+  if you set a watch on property which comes from a prototype
+*/
+function watchall(cobj,cname,gf){
+
+  // return function which can act as watch callback and simply
+  // print some debug info
+  function genericwatch(y) {
+    return function(p,o,n){print(y+'='+n+';');return n;};
+  };
+
+  function _watchall(pobj,cobj,cname,scope,gf){
+    //  print(scope);
+    if (!gf) throw "need generic function";
+    if (typeof(cobj) != 'object') {
+      var f=gf(scope);
+      //    print(f.toSource());
+      pobj.watch(cname,f);
+      return;
+    }
+    if (cobj instanceof Array) {
+      var k;
+      for (var k in cobj) {
+	_watchall(cobj, cobj[k], k, scope+"["+k+"]", gf);
+      }
+    }else{
+      var k;
+      for (var k in cobj) {
+	if ((k[0]!='_')&&(!isFromProto(cobj,k)))
+	  _watchall(cobj, cobj[k], k, scope+"."+k,     gf);
+      }
+    }
+  }
+
+  if (!gf) gf=genericwatch;
+  _watchall(undefined,cobj,cname,cname,gf);
+}
+
+
+
 // end global functions --------------------------------------------------------
 
 
@@ -136,9 +179,9 @@ Number.prototype.convertTo=function(base,padTo){
     return Math.pow(10,padTo-s.length).toString().slice(1)+s;
 }
 
-// EGachine class
+// EGachine object
 // for now it only holds resources (maps resource names to resources)
-// todo: perhaps rename this class
+// todo: perhaps rename it
 EGachine={};
 EGachine.r={};
 EGachine.addResource=function(name,res){
@@ -165,11 +208,7 @@ EGachine.checkVersion=function(maj,min,mic)
   return true;
 }
 
-// Video class
-
-// todo we use .__proto__ instead of .prototype 
-// because the Video object prototype is somehow
-// not correctly initialized
+// Video object
 
 if (!this.Video) {
   // the server does not have a native Video Object
@@ -200,10 +239,7 @@ Video.getTextureID=function(resname){
   var tid=Video.textures[resname];
   if (tid) return tid;
   var res=EGachine.getResource(resname);
-  //  print("res.length: "+res.length);
-  //  var dec=unescape(res);
   var dec=Base64.decode(res);
-  //  print("dec.length: "+dec.length);
   tid=Video.textures[resname]=Video.createTexture(dec);
   return tid;
 };
@@ -217,21 +253,20 @@ Video.popColor=function() {
   Video.setColor(c[0],c[1],c[2],c[3]);
 }
 
-// vector class - TODO: operator +,-,... - perhaps native code
+// vector object - TODO: operator +,-,... - perhaps native code
 function V2D(x,y){
   this.x=x;
   this.y=y;
 }
 
-
-// degrees class - TODO: operator +,-
-// this is mainly a class to get reference semantic / wrap primitive type
+// degrees object - TODO: operator +,-
+// this is mainly to get reference semantic / wrap primitive type
 function Degrees(deg){
   this.value=deg;
 }
 
 // devstate class
-// this holds the state of yojbad like input device
+// this holds the state of joypad like input device
 function DevState(dev,x,y,buttons){
   this.dev=dev;
   this.x=x;
@@ -370,210 +405,6 @@ Color.prototype.paint=function(dt){
   Video.popColor();
 }
 
-// a first object serializer hack
-// based on code from Daniel Fournier  ( thanks!)
-
-/*
-// todo: hashfunc is called not only for objects
-// perhaps improve hashObject to work with functions, and similar "objects"
-function hashfunc(obj) {
-if (typeof(obj)=='object') return hashObject(obj).toString();
-return obj.toSource();
-}
-
-
-// enter new scope
-Serializer.prototype._push=function(v){
-this.scope.push(v);
-this.fqscope+=v;
-}
-// leave scope
-Serializer.prototype._pop=function(){
-  this.scope.pop();
-  var r='';
-  for (var i=0;i<this.scope.length;++i) {
-    r+=this.scope[i];
-  }
-  this.fqscope=r;
-}
-
-// this object has been serialized
-Serializer.prototype._serialized=function(obj){
-  var key=hashfunc(obj);
-  var slot=this._hash[key];
-  if (!slot) slot=this._hash[key]=[];
-  slot.push({o:obj,s:this.fqscope});
-}
-
-/ *
-  Serializer.prototype._serializedObj=function(obj){
-  obj._serialized=this.fqscope;
-  }
-* /
-
-// is this object already serialized?
-Serializer.prototype._getSerialized=function(obj){
-  / *
-
-  // we use two methods to detect if an object was already
-  // serialized
-  // for "real" objects we add a property _serialized on serialization
-  // which stores the name as we serialized it
-  // for other objects we try to use a hash table
-
-  var ot=typeof(obj);
-  if ((ot!='object')||(obj instanceof Array)) {
-  * /
-  var key=hashfunc(obj);
-  var slot=this._hash[key];
-  if (!slot) return false;
-  for (var i=0;i<slot.length;++i) {
-    if (slot[i].o==obj) {
-      return slot[i].s;
-    }
-  }
-  return false;
-  / *
-    }
-    var s=obj._serialized;
-    if (!s) return false;
-    if ((obj.__proto__)&&(obj.__proto__._serialized == obj._serialized)) return false;
-    return s; * /
-}
-
-Serializer.prototype.serialize=function(object, id){
-if (!object) throw "object required";
-  if (!id) throw "id required";
-  this.scope=[];
-  this.fqscope='';
-  this._push(id);
-  this.append="";
-  this._hash=[];
-  var res=id + "=" + this._serialize(object)+";\n"+this.append;
-
-  // remove _serialize properties
-  // did not work with circles
-  //  this._deleteSerialized(object);
-
-  // debug hashfunc
-  / *
-    var key,slot,c,ctotal=0;
-    for (key in this._hash) {
-    c=-1;
-    for (slot in this._hash[key]) c++;
-    ctotal+=c;
-    print ("key: "+key+" collisions:"+c);
-    }
-    print ("total collisions:"+ctotal);
-  * /
-  return res;
-}
-
-/ *
-  does not work with circles
-  perhaps somehow use 2 stages?
-  Serializer.prototype._deleteSerialized=function(object){
-  if (typeof(object) != 'object') return;
-  var k;
-  if (object instanceof Array) {
-  for (k in object) this._deleteSerialized(object[k]);
-  return;
-  }
-  for (k in object) {
-  if (k == '_serialized')
-  delete object[k];
-  else
-  this._deleteSerialized(object[k]);
-  }
-  if ((object.__proto__)&&(!isEmptyProto(object.__proto__)))
-  this._deleteSerialized(object.__proto__);
-  }
-* /
-
-Serializer.prototype._serialize=function(object){
-  var ot=typeof(object);
-  if (ot == 'string') {
-    this._pop();
-    return "'" + object + "'";
-  }
-  if (ot == 'function') {
-    this._serialized(object);
-    this._pop();
-    return object.toString();
-  }
-  if (ot != 'object') {
-    // numbers, booleans
-    this._pop();
-    return object;
-  }
-
-  // i don't need to serialize dates
-  // if (object instanceof Date) {
-  //     this._serialized(object);
-  //     this._pop();
-  //     return object.toSource();
-  //     }
-
-
-  var closeSymbol, objectString = '', stored = '';
-  if (object instanceof Array) {
-    // array
-    this._serialized(object);
-
-    closeSymbol = ']';
-    objectString += '[';
-    var c=0;
-    for (var k in object) {
-      if ((stored=this._getSerialized(object[k])))
-	this.append+=this.fqscope+"["+k+"]="+stored+";\n";
-      else{
-	if (c>0) objectString+=',';
-	c++;
-	this._push("["+k+"]");
-	objectString += this._serialize(object[k]);
-      }
-    }
-  } else {
-    // object
-
-    //    this._serializedObj(object);
-    this._serialized(object);
-
-    closeSymbol = '}';
-    objectString += '{';
-    var c=0;
-    for (var k in object) {
-      // test if this member comes from our prototype
-      if ((object.__proto__[k]!=object[k])&&(k!='_serialized')) {
-	if ((stored=this._getSerialized(object[k])))
-	  this.append+=this.fqscope+"."+k+"="+stored+";\n";
-	else{
-	  if (c>0) objectString+=',';
-	  c++;
-	  this._push("."+k);
-	  objectString += k + ':' + this._serialize(object[k]);
-	}
-      }
-    }
-    // serialize prototype
-    if ((object.__proto__)&&(!isEmptyProto(object.__proto__))) {
-      if ((stored=this._getSerialized(object.__proto__)))
-	this.append+=this.fqscope+".__proto__="+stored+";\n";
-      else{
-	if (c>0) objectString+=',';
-	c++;
-	this._push(".__proto__");
-	objectString += "__proto__" + ':' + this._serialize(object.__proto__);
-      }
-    }
-  }
-  objectString += closeSymbol;
-  this._pop();
-  return objectString;
-}
-*/
-
-
 //! restricted deserializer/eval
 /*!
   does not deserialize functions
@@ -651,57 +482,6 @@ Serializer.prototype._serialize=function(object){
 function deserialize(str) {
 }
 */
-
-// watchall
-
-// return function which can act as watch callback and simply
-// print some debug info
-var genericwatch=function(y) {
-  // bug woraround, see also:
-  // <407E34E1.5080207@meer.net> 
-  // and http://bugzilla.mozilla.org/show_bug.cgi?id=240577)
-  // I applied the patch => not needed anymore
-  // return new Function("p","o","n",'print("'+y+'="+n+";");return n;');
-
-  return function(p,o,n){print(y+'='+n+';');return n;};
-}
-
-//! watch all properties in the object graph 
-/*
-  on change of a property call a generated function 
-  \param gf function which generates the watch function
-  if gf is not passed genericwatch is used
-  
-  \note properties coming from a prototype aren't watched
-*/
-function watchall(cobj,cname,gf){
-  function _watchall(pobj,cobj,cname,scope,gf){
-    //  print(scope);
-    if (!gf) throw "need generic function";
-    if (typeof(cobj) != 'object') {
-      var f=gf(scope);
-      //    print(f.toSource());
-      pobj.watch(cname,f);
-      return;
-    }
-    if (cobj instanceof Array) {
-      var k;
-      for (var k in cobj) {
-	_watchall(cobj, cobj[k], k, scope+"["+k+"]", gf);
-      }
-    }else{
-      var k;
-      for (var k in cobj) {
-	if ((k[0]!='_')&&(!isFromProto(cobj,k)))
-	  _watchall(cobj, cobj[k], k, scope+"."+k,     gf);
-      }
-    }
-  }
-
-  if (!gf) gf=genericwatch;
-  _watchall(undefined,cobj,cname,cname,gf);
-}
-
 
 // begin base 64 stuff:
 /* Copyright (C) 1999 Masanao Izumo <mo@goice.co.jp>

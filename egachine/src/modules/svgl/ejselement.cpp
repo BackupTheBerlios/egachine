@@ -23,8 +23,7 @@
 
 #include <w3c/svg/Element.hpp>
 #include <w3c/svg/SVGElement.hpp>
-#include "ejselement.h"
-#include "ejstext.h"
+#include "ejsallelements.h"
 #include <cassert>
 
 extern "C" {
@@ -33,17 +32,59 @@ extern "C" {
   void
   element_finalize(JSContext *cx, JSObject *obj);
 
+#define GET_NTHIS dom::Element* nthis=NULL;		\
+    if (!ejselement_GetNative(cx,obj,nthis)) return JS_FALSE
+
+  enum element_propid {
+    CHILD_NODES
+  };
+
+  static JSPropertySpec element_props[] = {
+    {"childNodes", CHILD_NODES, JSPROP_READONLY},
+    {0}
+  };
+
+  static JSBool
+  element_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+
   static
   JSClass element_class = {
     "Element",
     JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
+    JS_PropertyStub,  JS_PropertyStub, element_getProperty, JS_PropertyStub,
     JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  element_finalize,
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-#define GET_NTHIS dom::Element* nthis=NULL;		\
-    if (!ejselement_GetNative(cx,obj,nthis)) return JS_FALSE
+  static JSBool
+  element_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+  {
+    EJS_INFO(JS_GetStringBytes(JS_ValueToString(cx,id)));
+
+    EJS_CHECK_CLASS(cx, obj, element_class);
+    dom::Element* nthis=(dom::Element *)JS_GetPrivate(cx,obj);
+    if (!nthis)
+      // perhaps still constructing
+      return JS_TRUE;
+
+    if (!JSVAL_IS_INT(id)) return JS_TRUE;
+    jsint slot=JSVAL_TO_INT(id);
+    switch (slot) {
+    case CHILD_NODES:
+      {
+	// create and return NodeList wrapper object
+	const dom::NodeList* nl=nthis->getChildNodes();
+	JSObject* r=ejs_NewNodeList(cx, obj, nl);
+	if (!r) return JS_FALSE; // <- todo: right thing to report error in property hook?
+	*vp=OBJECT_TO_JSVAL(r);
+	break;
+      }
+    default:
+      break;
+    }
+    return JS_TRUE;
+  }
+
 
   // functions inherited from dom::Node
 #define EJS_FUNC(x) element_##x
@@ -90,16 +131,11 @@ extern "C" {
 #undef FUNC
 
 
-
   static
   JSBool
   element_cons
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
-    if (!JS_IsConstructing(cx)) {
-      // todo
-      EJS_THROW_ERROR(cx,obj,"not yet implemented");
-    }
     return JS_TRUE;
   }
 
@@ -110,7 +146,7 @@ extern "C" {
     EJS_CHECK(JS_GET_CLASS(cx, obj) == &element_class);
     dom::Element* element=(dom::Element *)JS_GetPrivate(cx,obj);
     if (!element) return;
-    delete element;
+    //    delete element;
   }
 
   JSBool
@@ -120,7 +156,7 @@ extern "C" {
 				     NULL,
 				     &element_class,
 				     element_cons, 0,
-				     NULL, element_methods,
+				     element_props, element_methods,
 				     NULL, NULL);
     if (!element) return JS_FALSE;
     return JS_TRUE;

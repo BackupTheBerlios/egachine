@@ -4,3 +4,28 @@ svgdoc
     .appendChild(svg
 	.appendChild(rect)
 	.appendChild(text));
+--------------------------------------------------------------------------------
+still crashing if GLFT_FONTDIR is not set
+--------------------------------------------------------------------------------
+now we have lots of similar code
+=> time to clean up / improve
+
+nodefuncs.h:appendChild:
+ich muss von einem JSObject das native object nach dom::Node* casten
+und zwar sicher
+kann ich nicht einfach sowas wie
+(dom::Node *)JS_GetPrivate(cx,obj) für alle machen ?
+sprich nur schauen ob die klasse ein wrapper für ne klasse ist,
+die in irgendeiner form von dom::Node abgeleitet ist
+
+also ist die eigentliche frage ob folgendes sicher ist
+(Base*)((void*)new Sub())->baseFunc();
+also ob upcasts den pointer immer gleich lassen?
+
+hmm multiple inheritance?
+--------------------------------------------------------------------------------
+svgl uses libgc garbage collector
+it seems to work but i still should take a look at the details
+(i think this will lead to trouble at some time)
+hmm valgrind leakcheck doesn't work when loading svgl module
+--------------------------------------------------------------------------------

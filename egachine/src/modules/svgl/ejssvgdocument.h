@@ -2,6 +2,7 @@
 #define EJS_SVGDOCUMENT_H
 
 #include <ejsmodule.h>
+#include <w3c/svg/SVGDocument.hpp>
 
 extern "C" {
 

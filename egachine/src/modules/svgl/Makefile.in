@@ -41,7 +41,7 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = src/modules/svgl
 DIST_COMMON = README $(dist_pkgdata_DATA) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+	$(srcdir)/Makefile.in TODO
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -59,7 +59,7 @@ pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 ejssvgl_la_LIBADD =
 am_ejssvgl_la_OBJECTS = ejssvgl.lo ejssvgdocument.lo ejsnode.lo \
-	ejselement.lo ejstext.lo
+	ejsnodelist.lo ejselement.lo ejstext.lo
 ejssvgl_la_OBJECTS = $(am_ejssvgl_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
@@ -239,11 +239,14 @@ ejssvgl_la_SOURCES = \
 	ejssvgdocument.cpp \
 	ejsnode.h \
 	ejsnode.cpp \
+	ejsnodelist.h \
+	ejsnodelist.cpp \
 	ejselement.h \
 	ejselement.cpp \
 	ejstext.h \
 	ejstext.cpp \
-	nodefuncs.h
+	nodefuncs.h \
+	ejsallelements.h
 
 ejssvgl_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SVGL_LIBS@
 dist_pkgdata_DATA = svgl.js
@@ -319,6 +322,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejselement.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejsnode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejsnodelist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejssvgdocument.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejssvgl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejstext.Plo@am__quote@

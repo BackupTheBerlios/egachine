@@ -21,13 +21,10 @@
   \author Jens Thiele
 */
 
-#include <w3c/svg/SVGDocument.hpp>
 #include <w3c/svg/SVGSVGElement.hpp>
 #include <w3c/svg/SVGRectElement.hpp>
 #include <svgl/Parser.hpp>
-#include "ejssvgdocument.h"
-#include "ejselement.h"
-#include "ejstext.h"
+#include "ejsallelements.h"
 #include <cassert>
 
 extern "C" {
@@ -41,7 +38,7 @@ extern "C" {
     "SVGDocument",
     JSCLASS_HAS_PRIVATE,
     JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
-    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  svgdocument_finalize,
+    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  JS_FinalizeStub, // svgdocument_finalize,
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
@@ -99,8 +96,8 @@ extern "C" {
     std::cerr << "node type: " << ((int)element->getNodeType()) << std::endl;
     
     // now create javascript wrapper object for element
-    // TODO: what about polymorphism? shouldn't we create a specialized element?
-    // and who is the owner of the native object? gc -> creash
+    // TODO: what about polymorphism? shouldn't we create a specialized element? I think no
+    // and who is the owner of the native object? gc -> crash?
     // perhaps we must map native to js object?
     // or is svgl always the owner of the native object?
     JSObject* njsobj=ejs_NewElement(cx,obj,element);
@@ -229,7 +226,7 @@ extern "C" {
     EJS_CHECK(JS_GET_CLASS(cx, obj) == &svgdocument_class);
     svg::SVGDocument* nthis=(svg::SVGDocument *)JS_GetPrivate(cx,obj);
     if (!nthis) return;
-    delete nthis;
+    //    delete nthis;
   }
 
   JSBool

@@ -28,6 +28,7 @@ text.appendChild(svgdoc.createTextNode("\u00C4tsch;-)"));
 text.setAttribute("style","font-size:32;text-anchor:middle;fill:black");
 text.setAttribute("x",160);
 text.setAttribute("y",100);
+text.childNodes.item(0).setNodeValue("Hello");
 svgdoc
     .appendChild(svg
 	.appendChild(rect)

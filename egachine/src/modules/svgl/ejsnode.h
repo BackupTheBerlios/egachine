@@ -15,6 +15,9 @@ JSObject*
 ejs_NewNode(JSContext *cx, JSObject *obj, dom::Node* node);
 
 JSBool
+ejsnode_class(JSContext *cx, JSObject *obj);
+
+JSBool
 ejsnode_GetNative(JSContext* cx, JSObject * obj, dom::Node* &native);
 
 #endif

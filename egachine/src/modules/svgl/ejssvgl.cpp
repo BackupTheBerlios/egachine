@@ -33,10 +33,7 @@
 #include <w3c/svg/SVGSVGElement.hpp>
 
 #include <ejsmodule.h>
-#include "ejssvgdocument.h"
-#include "ejsnode.h"
-#include "ejselement.h"
-#include "ejstext.h"
+#include "ejsallelements.h"
 
 
 // TODO: this is probably not portable
@@ -142,6 +139,7 @@ extern "C" {
     // register DOM wrappers
     if (!ejssvgdocument_onLoad(cx,global)) return JS_FALSE;
     if (!ejsnode_onLoad(cx,global))        return JS_FALSE;
+    if (!ejsnodelist_onLoad(cx,global))    return JS_FALSE;
     if (!ejselement_onLoad(cx,global))     return JS_FALSE;
     if (!ejstext_onLoad(cx,global))        return JS_FALSE;
     return JS_TRUE;

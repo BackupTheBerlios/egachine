@@ -9,9 +9,13 @@ EJS_FUNC(appendChild)
   if ((!JSVAL_IS_OBJECT(argv[0]))||(!(jschild=JSVAL_TO_OBJECT(argv[0]))))
     EJS_THROW_ERROR(cx,obj,"object as arg 0 required");
   
-  // todo: exceptions
+  // todo: it seems we should return the jschild object
   *rval=OBJECT_TO_JSVAL(obj);
-  
+
+  // todo: exceptions
+
+  // cast jschild's native object to dom::Node *
+
   dom::Element* element=NULL;
   if (ejselement_class(cx, jschild)&&ejselement_GetNative(cx,jschild,element)) {
     nthis->appendChild(element);
@@ -20,6 +24,11 @@ EJS_FUNC(appendChild)
   dom::Text* text=NULL;
   if (ejstext_class(cx, jschild)&&ejstext_GetNative(cx,jschild,text)) {
     nthis->appendChild(text);
+    return JS_TRUE;
+  }
+  dom::Node* node=NULL;
+  if (ejsnode_class(cx, jschild)&&ejsnode_GetNative(cx,jschild,node)) {
+    nthis->appendChild(node);
     return JS_TRUE;
   }
   EJS_THROW_ERROR(cx,obj,"not yet supported");

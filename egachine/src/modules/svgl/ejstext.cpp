@@ -21,8 +21,7 @@
   \author Jens Thiele
 */
 
-#include "ejstext.h"
-#include "ejselement.h"
+#include "ejsallelements.h"
 #include <cassert>
 
 extern "C" {
@@ -75,7 +74,7 @@ extern "C" {
     EJS_CHECK(JS_GET_CLASS(cx, obj) == &text_class);
     dom::Text* text=(dom::Text *)JS_GetPrivate(cx,obj);
     if (!text) return;
-    delete text;
+    //    delete text;
   }
 
   JSBool

@@ -22,7 +22,7 @@
 */
 
 #include <w3c/dom/Node.hpp>
-#include "ejsnode.h"
+#include "ejsallelements.h"
 #include <cassert>
 
 extern "C" {
@@ -40,77 +40,30 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-  // todo: clean up
+#define GET_NTHIS dom::Node* nthis=NULL;			\
+    if (!ejsnode_GetNative(cx,obj,nthis)) return JS_FALSE
 
-  // todo: is this class check good enough to make this dangerous cast safe?
-  // Remember: if (JS_GET_CLASS(cx, obj) != &node_class) did not work
-  // because JS_THREADSAFE was not defined correctly (defined or undefined)
-
-#define GET_NODE_OBJ dom::Node* node=NULL;			\
-    if (!ejsnode_GetNative(cx,obj,node)) return JS_FALSE
-
-  // todo: this is a method of Node (Node->Node)
-  static
-  JSBool
-  node_setNodeValue(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
-  {
-    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_NODE_OBJ;
-    JSString *strtype=JS_ValueToString(cx, argv[0]);
-    if (!strtype) return JS_FALSE;
-    unicode::String* value=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
-    try{
-      node->setNodeValue(value);
-    }catch(const dom::DOMException &e){
-      // todo: throw dom exception
-      EJS_THROW_ERROR(cx,obj,e.what());
-    }
-    return JS_TRUE;
-  }
-
-  // TODO: this is a method of Node (SVGDocument is also a Node)
-  // currently duplicated
-  static
-  JSBool
-  node_appendChild(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
-  {
-    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_NODE_OBJ;
-    if (!JSVAL_IS_OBJECT(argv[0])) EJS_THROW_ERROR(cx,obj,"object as arg 0 required");
-    
-    // todo: node expected as agrument not neccessary an node
-    dom::Node* cnode=NULL;
-    if (!ejsnode_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),cnode)) return JS_FALSE;
-    // todo: exception
-    node->appendChild(cnode);
-    *rval=argv[0];
-    return JS_TRUE;
-  }
+#define EJS_FUNC(x) node_##x
+#include "nodefuncs.h"
+#undef EJS_FUNC
   
-#undef GET_NODE_OBJ
+#undef GET_NTHIS
 
 #define FUNC(name, args) { #name,node_##name,args,0,0}
 
   static JSFunctionSpec node_methods[] = {
     FUNC(setNodeValue,1),
-    //    FUNC(setAttribute,2),
     FUNC(appendChild,1),
     EJS_END_FUNCTIONSPEC
   };
 
 #undef FUNC
 
-
-
   static
   JSBool
   node_cons
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
-    if (!JS_IsConstructing(cx)) {
-      // todo
-      EJS_THROW_ERROR(cx,obj,"not yet implemented");
-    }
     return JS_TRUE;
   }
 
@@ -121,7 +74,7 @@ extern "C" {
     EJS_CHECK(JS_GET_CLASS(cx, obj) == &node_class);
     dom::Node* node=(dom::Node *)JS_GetPrivate(cx,obj);
     if (!node) return;
-    delete node;
+    //    delete node;
   }
 
   JSBool
@@ -151,10 +104,15 @@ ejs_NewNode(JSContext *cx, JSObject *obj, dom::Node* node)
 }
 
 JSBool
+ejsnode_class(JSContext *cx, JSObject *obj)
+{
+  return JS_GET_CLASS(cx, obj) == &node_class;
+}
+
+JSBool
 ejsnode_GetNative(JSContext* cx, JSObject * obj, dom::Node* &native)
 {
-  if (JS_GET_CLASS(cx, obj) != &node_class)
-    EJS_THROW_ERROR(cx,obj,"incompatible object type");
+  EJS_CHECK_CLASS(cx, obj, node_class);
   native=(dom::Node *)JS_GetPrivate(cx,obj);
   if (!native)
     EJS_THROW_ERROR(cx,obj,"no valid dom::Node object");

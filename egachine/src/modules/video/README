@@ -1,21 +1,130 @@
 Video module
 
-Description:
+Description:  Video module  providing basic 2D  functionality.  At the
+moment there is only one implementation using SDL  to setup the OpenGL
+context and the gl module for the rendering.  The  API is like a small
+subset  of  the OpenGL API  in  2D.   Additionally  texture loading is
+simplified by   using SDL_image  to   convert compressed  raster image
+formats to OpenGL textures.  The purpose of  this module is to provide
+a smaller base for the simple scene-graph  module (sg) to make porting
+easier.  It should not  be too diffcult  to implement this API using a
+traditional 2D  API.  (The  aplha-blending might be  problematic). For
+example it should be  possible   to write  a pure  SDL  implementation
+(without OpenGL) or even one based upon SVG (perhaps based on the svgl
+module)
 
-provides basic 2D functionality.   The current implementation uses SDL
-to setup the OpenGL context and the gl module for  the rendering.  The
-API is  like a small subset   of the OpenGL  API in  2D.  Additionally
-texture  loading is  simplified.   The purpose  of  this module  is to
-provide a smaller base for the simple scene-graph  module (sg) to make
-porting easier.  It should  not be too diffcult  to implement this API
-using   a  traditional  2D    API.   (The   aplha-blending  might   be
-problematic). For example  it should be possible  to write a pure  SDL
-implementation (without OpenGL) or even   one based upon SVG  (perhaps
-based on the svgl module)
+Security:
+Depends on security of SDL and SDL_image.
+
+Module configuration options:
+getResource:  function mapping resource name to resource
+fullscreen:   wether to try to use a fullscreen mode
+width:        wished screen resoultion width
+height:       wished screen resoultion height
 
 Module dependencies:
 Video -> gl
 
-Library dependencies:
+Native library dependencies:
+
 Video -> libSDL
 Video -> libSDL_image
+Video -> libGL
+
+Functions:
+
+//! swap front and back buffer
+swapBuffers()
+
+//! create texture from image
+/*!
+	\return texture ID
+*/
+Number createTexture(String image)
+
+//! draw texture
+drawTexture(Number TID, Number width=1, Number height=1)
+
+//! draw text
+drawText(String text, boolean hcentered=false, boolean vcentered=false)
+
+//! toggle fullscreen mode
+toggleFullscreen()
+
+//! show mouse cursor
+/*!
+	-1 => query
+	0 => off
+	1 => on
+	\return current state of cursor
+*/
+Number showMouseCursor([Number])
+
+//! map resname to texture id
+/*!
+  create texture from resource if necessary
+*/
+getTextureID(String)
+
+//! push current transformation matrix
+pushMatrix()
+
+//! pop current transformation matrix
+popMatrix()
+
+//! get current color vector
+Array getColor4v()
+
+//! set current color
+setColor(Number r, Number g, Number b)
+
+//! set current color and alpha
+setColor4(Number r, Number g, Number b, Number a)
+
+//! set current color and alpha from array
+setColor4v(Array color)
+
+//! push current color and alpha
+pushColor()
+
+//! pop current color and alpha
+popColor()
+
+//! apply rotation to current transformation matrix
+rotate(Number degrees)
+
+//! apply translation to current transformation matrix
+translate(Number x, Number y)
+
+//! apply scale to current transformation matrix
+scale
+
+//! clear current back buffer
+clear()
+
+//! set clear color
+setClearColor()
+
+//! draw line with current color
+drawLine(Number x1, Number y1, Number x2, Number y2)
+
+//! draw centered rectangle 
+drawRectangle(Number w, Number h)
+
+//! setup coordinate system of current viewport
+/*!
+	expects one object as argument with properties:
+	left:  coordinate at left border
+	right: coordinate at right border
+	top: coordinate at top border
+	bottom: coordinate at bottom border
+	[near: z near clipping plane=-100]
+	[far: z far clipping plane=100]
+*/
+setViewportCoords(Object)
+
+//! get current viewport
+Array getViewport()
+
+//! set current viewport
+setViewport(Array)

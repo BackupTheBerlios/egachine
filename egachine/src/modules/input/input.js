@@ -465,7 +465,9 @@
     evt.eventPhase=Input.Event.AT_TARGET;
     target.dispatchEvent(evt);
   };
-  
+  Input.clearEventListeners=function(){
+    target.clear();
+  };
 
   Input.handleMouse=function(e) {
     var domevent=Input.toMouseEvent(e);

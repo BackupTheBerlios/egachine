@@ -4,6 +4,15 @@ if ((typeof EGachine == 'undefined')||(!EGachine.client))
 EGachine.checkVersion("0.1.1");
 ejs.ModuleLoader.load("svgl");
 
+/*
+  this script is quite a hack
+  since it tries to run egachine apps within egachine
+
+  this shows why having a windowing system / wm and os is fine ;-)
+  the slideshow would like to run multiple egachines
+  => would require a port of egachine to egachine ;-)
+*/
+
 var stderr=ejs.ModuleLoader.get("Stream").stderr;
 var File=ejs.ModuleLoader.get("File");
 var oldinput;
@@ -22,11 +31,6 @@ function ifstream(fname) {
   throw Error("Could not open file: "+fname);
 };
 
-function loadFile(fname) {
-  var stream=ifstream(fname);
-  return stream.readAll();
-};
-
 function readline(istream){
   var res="";
   var c;
@@ -37,16 +41,10 @@ function readline(istream){
   return res;
 };
 
-function loadSVG(fname) {
-  document=new svgl.SVGDocument(loadFile(fname));
-  document.documentElement=document.getDocumentElement();
-  svgl.selectDocument(document);
-  document._handleScripts(this);
-};
-
 function handleNavigation(i) {
   function setArrowColor(id,color) {
-    document.getElementById(id).setAttribute("style","fill:"+color+";stroke:black;stroke-width:6;stroke-opacity:0.06");
+    var elem=document.getElementById(id);
+    if (elem) elem.setAttribute("style","fill:"+color+";stroke:black;stroke-width:6;stroke-opacity:0.06");
   };
 
   var ret=0;
@@ -109,6 +107,28 @@ function displayTextPage(page) {
   return np;
 };
 
+function displaySVG(fname) {
+  var e;
+  var oldd=document;
+  Input.devListeners=[];
+  Input.addDevListener(function(i){
+			 var np=handleNavigation(i);
+			 if (np!=0) {
+			   throw np;
+			 }
+		       });
+  try{
+    svgl.viewFile(findExample(fname));
+  }catch(e){
+    if (typeof e == 'number') {
+      document=oldd;
+      svgl.selectDocument(document);
+      return e;
+    };
+    throw e;
+  };
+};
+
 function restoreGL()
 {
   var viewport=Video.getViewport();
@@ -124,7 +144,7 @@ function restoreGL()
   gl.Disable(GL_DEPTH_TEST);
   //  gl.Enable(GL_LINE_SMOOTH);
   //  gl.Enable(GL_POLYGON_SMOOTH);
-}
+};
 
 function displayScript(fname) {
   var np=0;
@@ -186,7 +206,10 @@ function parsePages(fname) {
       // start new page
       if (line[0]=="@") {
 	fname=line.slice(1).replace(/\n$/,'');
-	cpage={script:line.slice(1),display:function(){return displayScript(fname);}};
+	if (fname.slice(-4)==".svg")
+	  cpage={script:line.slice(1),display:function(){return displaySVG(fname);}};
+	else
+	  cpage={script:line.slice(1),display:function(){return displayScript(fname);}};
       }else{
 	cpage={lines:[],display:function(){return displayTextPage(this);}};
       }
@@ -214,7 +237,10 @@ function main() {
   var pages;
   var cpage=0;
   var jump;
-  loadSVG("client/slideshow-back.svg");
+
+  // global
+  document=svgl.load(findExample("client/slideshow-back.svg"));
+  svgl.selectDocument(document);
   pages=parsePages("client/slideshow-pages.txt");
   while (true) {
     jump=pages[cpage].display();

@@ -404,68 +404,33 @@ function resume() {
 
 function init() {
   var Input=ejs.ModuleLoader.get("Input");
-  Input.handleChar=function(c){
-    switch (c) {
-      case " ": /* space */
-      if (gameState == "running")
-        drop(currentShape, board);
-      break;
-      case "H":
-      case "h":
-      pause();
-      alert("Keys:\n"+
-            "-------------------------------------\n\n"+
-            "h : Display this help\n"+
-            "n : Start new game\n"+
-            "p : Toggle pause game\n"+
-            "up    : Rotate piece counterclockwise\n"+
-            "down  : Rotate piece clocwise\n"+
-            "left  : Move piece left\n"+
-            "right : Move piece right\n"+
-            "space : Drop piece\n");
-      resume();
-      break;
-      case "p":
-      if (gameState == "running") 
-        pause();
-      else
-        resume();
-      break;
-      case "w": /* up */
-      if (gameState == "running")
-        rotate(currentShape, board, -1);
-      break;
-      case "s": /* down */
-      if (gameState == "running")
-        rotate(currentShape, board, 1);
-      break;
-      case "a": /* left */
-      if (gameState == "running")
-        move(currentShape, board, -1, 0);
-      break;
-      case "d": /* right */
-      if (gameState == "running")
-        move(currentShape, board, 1, 0);
-      break;
-      default:
-//      Stream.stderr.write("unhandled char: '"+c+"'\n");
-    }
-  }
+  Input.addDevListener(function(i){
+			 if (gameState != "running")
+			   return;
+			 if (i.dev==0) {
+			   if (i.x<0)
+			     move(currentShape, board, -1, 0);
+			   else if (i.x>0)
+			     move(currentShape, board, 1, 0);
+			   if (i.y>0)
+			     rotate(currentShape, board, -1);
+			   else if (i.y<0)
+			     rotate(currentShape, board, 1);
+			   if (i.buttons)
+			     drop(currentShape, board);
+			 };
+		       });
 
   board = new Grid(COLS, ROWS, "black", "#0000ff", HPAD, VPAD, COLS+1, ROWS+1, document.getElementById("board"));
   preview = new Grid(4,4, "black", "#ff0000", 2*HPAD+COLS+1, VPAD, 5, 5, document.getElementById("preview"));
   
   startNewGame();
-  
-  // initialize event processing:
-  //  document.documentElement.addEventListener("keydown", keyHandler, false);
-  Input.charMode(true);
 }
 
 init();
 ]]>
 </script>
-  <text x="1" y="1" style="font-size:1;fill:black">SVG Tetris - Press 'h' for help.</text>
+  <text x="1" y="1" style="font-size:1;fill:black">SVG Tetris</text>
   <g id="preview" style="stroke-width:0.02" />
   <g id="board" style="stroke-width:0.02" />
 </svg>

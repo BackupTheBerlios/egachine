@@ -10,7 +10,7 @@ computer games.
 --
 Why computer games?
 - Motivation, fun
-- creativity
+- Creativity
 - Physics
 - Mathematics
 - (English)
@@ -26,12 +26,11 @@ Requirements
 - portable / cross-platform
 - low hardware requirements
 --
-Progaming
+Programing
 - beginer friendly
 - text based (any text editor)
 - rapid development
 - interpreter, scripting language
-- JavaScript
 --
 EGachine features
 - free software
@@ -44,27 +43,39 @@ EGachine features
 EJS
 - extensible JavaScript shell
 - core for EGachine
+- using mozilla's JavaScript
+  interpreter SpiderMonkey
 - small and simple
 - modules (native and or JavaScript)
 --
 Video modules
 - OpenGL language bindings
+- Video layer 
+  (basic 2D functionality)
 - a simple scene-graph
 - SVG
 --
-OpenGL module
+(Open)GL module
 - OpenGL: cross-platform API for
   hardware accelerated graphics
 - bindings close to the C API
 - for the advanced users
-- simple setup
-- simple texture loading
+- not yet complete
 - (graphics hardware is cheap now)
 --
 @client/opengl/glxgears.js
 --
+Video (layer) module
+- graphics initialisation
+- providing basic 2D functionality
+  (using gl module)
+- rotate / translate
+- drawing primitives
+- texture/image loading
+--
 Simple scene-graph
-- based upon OpenGL bindings
+- based upon video module
+  (no direct OpenGL dependency)
 - for beginners
 - good enough to move some sprites
 EGachine.sceneGraph
@@ -76,11 +87,25 @@ EGachine.sceneGraph
 --
 @client/balls.js
 --
-SVG Module
+SVG
 - SVG: scaleable vector graphics
-- experimental
-- huge
-- buggy / unsecure
+- SVG 1.1 W3C recommendation
+- huge:
+  "SVG is a 600+ pages specification
+  which uses other specifications (CSS,
+  DOM, SMIL) of comparable sizes."
+- animation: 
+  declarative and/or scripting
+--
+SVG module
+- using SVGL
+- providing SVG scripting
+- ECMAScript bindings for a very
+  small subset of DOM level 1
+  and DOM level 2 (mouse) events
+- experimental, buggy, unsafe
+--
+@svg/svgtetris.svg
 --
 Audio module
 - very basic functionality
@@ -102,7 +127,7 @@ For advanced users:
 Network Module
 - basic stream interface
   (read/write)
-- distributed scene graph
+- distributed object graph
 --
 Artwork:
 Free choice:

@@ -41,12 +41,27 @@
   svgl.Node.prototype.DOCUMENT_FRAGMENT_NODE = 11;
   svgl.Node.prototype.NOTATION_NODE = 12;
 
+  //! load SVG file
+  /*!
+    \return SVG document object
+   */
+  svgl.load=function(fileName) {
+    var document;
+    var File=ejs.ModuleLoader.get("File");
+    var stream=File.read(fileName);
+    if (stream.inAvailable()<=0)
+      throw Error("Could not open file: "+fileName);
+    
+    document=new svgl.SVGDocument(stream.readAll());
+    document.documentElement=document.getDocumentElement();
+    return document;
+  }
+
   //! simple SVG viewer
   svgl.viewFile=function(fileName) {
     var gl=ejs.ModuleLoader.get("gl");
     var Timer=ejs.ModuleLoader.get("Timer");
     var svgl=ejs.ModuleLoader.get("svgl");
-    var File=ejs.ModuleLoader.get("File");
     var stderr=ejs.ModuleLoader.get("Stream").stderr;
 
     var timeOut;
@@ -149,6 +164,8 @@
     function addMouseListener(type) {
       Input.addEventListener(type,function(evt){return mouse(evt);},false);
     };
+    
+    Input.clearEventListeners();
 
     addMouseListener("mousemove");
     addMouseListener("mousedown");
@@ -203,13 +220,8 @@
 	Video.swapBuffers();
       };
 
-    var stream=File.read(fileName);
-    if (stream.inAvailable()<=0)
-      throw Error("Could not open file: "+fileName);
-    
     // todo: hmm global
-    document=new svgl.SVGDocument(stream.readAll());
-    document.documentElement=document.getDocumentElement();
+    document=svgl.load(fileName);
     svgl.selectDocument(document);
 
     // todo: hmm global

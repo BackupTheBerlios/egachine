@@ -123,8 +123,11 @@ extern "C" {
     dom::String* value=NULL;
     if (!jsToDomString(cx,argv[0],value)) return JS_FALSE;
     dom::Element* element=nthis->getElementById(value);
-    // handle error !!
-    EJS_CHECK(element);
+    if (!element) {
+      // todo: is returning null correct? (did not find it in the spec)
+      *rval=OBJECT_TO_JSVAL(element);
+      return JS_TRUE;
+    }
 
     JSObject* njsobj=ejs_WrapElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
@@ -170,9 +173,11 @@ extern "C" {
 	dom::Node* node;
 	dom::Text* text;
 	if ((node=nl->item(i))&&((text=dynamic_cast<dom::Text *>(node)))) {
+#if 0
 	  std::cerr << "  node name:  " << (*node->getNodeName())      << std::endl;
 	  std::cerr << "  node type:  " << ((int)node->getNodeType())  << std::endl;
 	  std::cerr << "  node value: " << (*node->getNodeValue()) << std::endl;
+#endif
 	  dom::String* script=node->getNodeValue();
 	  EJS_CHECK(JSVAL_IS_OBJECT(argv[0]));
 	  if (script->getType()==dom::String::string_utf16) {

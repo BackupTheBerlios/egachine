@@ -74,12 +74,11 @@ extern "C" {
   static
   JSBool
   GC
-  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  (JSContext *cx, JSObject *, uintN, jsval *, jsval *rval)
   {
+#if 0
     JSRuntime *rt = JS_GetRuntime(cx);
     assert(rt);
-
-#if 0
     uint32 preBytes;
     preBytes = rt->gcBytes;
 #endif
@@ -124,9 +123,8 @@ extern "C" {
   static
   JSBool
   MaybeGC
-  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  (JSContext *cx, JSObject *, uintN, jsval *, jsval *)
   {
-    JSRuntime *rt = JS_GetRuntime(cx);
     JS_MaybeGC(cx);
     return JS_TRUE;
   }

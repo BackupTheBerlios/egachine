@@ -64,13 +64,9 @@ Net.server._movie="";
 Net.server._buffer=new Stream.StringStream();
 Net.server.objWriter=new Stream.ObjectWriter(Net.server._buffer);
 
-// todo: remove this hack
-dontwatch=false;
-
 Monitorable.Monitorable.prototype.monitor={
   onSet:function(obj,prop,val){
-    if ((!dontwatch)
-	&&(prop!="monitor")
+    if ((prop!="monitor")
 	&&(Net.server.objWriter.written(obj))) {
       //      Stream.stderr.write("set: '"+Net.server.objWriter._serialized[util.getObjectID(obj)].n+"'\n");
       Net.server.objWriter.updateProperty(obj,prop,val);

@@ -218,34 +218,4 @@
     sg.Video.popMatrix();
   };
 
-  // derived object Mover (deprecated)
-  sg.Mover=cons(function(speed, rotspeed) {
-			    this.speed=speed;
-			    this.rotspeed=rotspeed;
-			    this.time=0;
-			    this.last=0;
-			  });
-  sg.Mover.prototype=new sg.Node();
-  sg.Mover.prototype.step=function(dt){
-    var i,ct=this.time+dt;
-    if (ct-this.last<2) {
-      dontwatch=true;
-      this.time=ct;
-    }else{
-      this.time=ct;
-      this.last=this.time;
-    }
-    if (this.children)
-      for (i=0;i<this.children;++i){
-	this[i].pos.x+=this.speed.x*dt;
-	this[i].pos.y+=this.speed.y*dt;
-	if (this.rotspeed) {
-	  this[i].degrees.value+=this.rotspeed.value*dt;
-	  if (this[i].degrees.value>360) this[i].degrees.value-=360;
-	  if (this[i].degrees.value<0) this[i].degrees.value+=360;
-	}
-      }
-    dontwatch=false;
-    sg.Node.prototype.step.call(this,dt);
-  };
  })(this);

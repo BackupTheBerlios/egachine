@@ -1,28 +1,56 @@
 svgl = svgl svgldom
+zlib = zlib
+stream = stream
+file = file
+net = net server
+audio = audio
+timer = timer
+gl = opengl
+
 if BUILD_SVGL
 MAYBE_SVGL = $(svgl)
 endif
+if BUILD_ZLIB
+MAYBE_ZLIB = $(zlib)
+endif
+if BUILD_STREAM
+MAYBE_STREAM = $(stream)
+endif
+if BUILD_FILE
+MAYBE_FILE = $(file)
+endif
+if BUILD_NET
+MAYBE_NET = $(net)
+endif
+if BUILD_AUDIO
+MAYBE_AUDIO = $(audio)
+endif
+if BUILD_TIMER
+MAYBE_TIMER = $(timer)
+endif
+if BUILD_GL
+MAYBE_GL = $(gl)
+endif
 
 tests = \
-	audio \
 	ejsexit \
 	example \
 	load \
 	untrusted \
-	zlib \
 	monitorable \
-	stream \
-	file \
-	net \
-	server \
 	egares \
-	timer \
 	scope \
-	smbug240577 \
-	opengl
+	smbug240577
 
 check_SCRIPTS = \
 	$(tests) \
+	$(MAYBE_ZLIB) \
+	$(MAYBE_STREAM) \
+	$(MAYBE_FILE) \
+	$(MAYBE_NET) \
+	$(MAYBE_AUDIO) \
+	$(MAYBE_TIMER) \
+	$(MAYBE_GL) \
 	$(MAYBE_SVGL)
 
 TESTS = $(check_SCRIPTS)
@@ -34,5 +62,5 @@ EXTRA_DIST = \
 	untrusted.js \
 	common \
 	$(tests) \
-	$(svgl)
+	$(svgl) $(zlib) $(stream) $(file) $(net) $(audio) $(timer) $(gl)
 

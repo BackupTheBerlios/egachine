@@ -347,3 +347,8 @@ egachine-base: includes the server which only depends on ejs
                (not ejs-multimedia) => server could be installed on a typical
 	       server machine (no X, no OpenGL, no SDL, ...)
 --------------------------------------------------------------------------------
+don't link everything against libz
+--------------------------------------------------------------------------------
+write a spidermonkey embeding "best practice" document"
+started and for now is at http://egachine.berlios.de/embedding-sm-best-practice/
+--------------------------------------------------------------------------------

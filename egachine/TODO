@@ -88,10 +88,6 @@ but it does not handle addition and removal of properties!
 --------------------------------------------------------------------------------
 somehow remove dontwatch hack
 --------------------------------------------------------------------------------
-write docu / tutorial
-autogenerate docu for javascript stuff?
-problematic since underspecified
---------------------------------------------------------------------------------
 solve the win32 opengl 1.1 problem
 probably use glew
 perhaps i should split the opengl wrapper stuff completely out of egachine
@@ -217,9 +213,6 @@ major: script wants 2.2.3 (=> 3.2.3 not okay and 1.2.3 not okay)
 we make no guarantee that this scheme is established until version 1!!
 expose spidermonkey/javascript version
 --------------------------------------------------------------------------------
-write DOCU!
-perhaps use jsdoc
---------------------------------------------------------------------------------
 allow #!/usr/.../egachine at beginning of scripts
 to allow "normal" execution on unix systems
 --------------------------------------------------------------------------------
@@ -313,9 +306,6 @@ charset:
 strings/messages:
 	javascript has no special features for translating messages?
 	come up with some framework
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-write a spidermonkey embeding "best practice" document"
 --------------------------------------------------------------------------------
 audio:
 
@@ -836,8 +826,6 @@ namens kacke
 stdin,stdout,... sind in Stream :-(((
 nicht sehr schön
 --------------------------------------------------------------------------------
-don't link everything against libz
---------------------------------------------------------------------------------
 problem: input layer depends on video layer and must be able to exit
 why?
 input layer gets:
@@ -942,6 +930,23 @@ perhaps i should use JS_ConstructObject where i am using JS_NewObject ?!
 splitted binary packages
 perhaps i should split the source, too? not now
 --------------------------------------------------------------------------------
-configure.ac:
-ejs itself should not be linked against libz and libsigc++
---------------------------------------------------------------------------------
+Documentation:
+
+API Docu:
+autogenerate docu for javascript stuff?
+problematic since JS is "underspecified"
+
+searched for something like doxygen/javadoc/...:
+- many projects generate from the javascript source c++ or java source and 
+  pass it along to doxygen/javadoc (this aproach has its problems)
+
+jsdoc (http://jsdoc.sourceforge.net/ auch via javadoc)
+there was another jsdoc
+jsunit
+burstlib
+
+Another problem is to generate docu for the wrapped native code
+
+
+
+

@@ -11,6 +11,8 @@ ejs.ModuleLoader.load("File");
 if (!File.mode.read)
 	throw new Error("failed");
 stream=File.open("Makefile",File.mode.read);
+function assert(x){if (!x()) throw new Error(x.toSource());};
+assert(function(){return stream instanceof Stream;});
 if ((s=stream.read(10))!="# Makefile")
 	throw new Error("failed: \""+s+"\"");
 stream=File.read("Makefile");
@@ -21,8 +23,6 @@ stream=File.write(fname);
 stream.write("Hello World");
 stream.sync();
 stream=File.read(fname);
-s=stream.read(11);
-if (s!="Hello World")
-	throw new Error("failed: \""+s+"\"");
+assert(function(){return stream.read(11)=="Hello World";});
 '
 rm delme-filetest-346x63hg3

@@ -4,12 +4,27 @@ contains various utility functions which don't fit anywhere else
 but don't introduce external library dependencies nor do they
 depend upon other modules.
 
-The util.ieval and util.isCompilableUnit functions allow to write
-a interactive shell. The simplest interactive shell:
+Native functions:
+
+//! test if String contains a compileable unit of JavaScript code
+boolean isCompileableUnit(String)
+
+//! get a unique object ID (good for the lifetime of the object)
+number getObjectID(Object)
+
+//! run garbage collector
+GC()
+
+//! maybe run garbage collector
+MaybeGC()
+
+JavaScript functions are in utils.js, and documented there.
+
+
+Examples:
+
+A simple interactive shell using ieval:
 #!/usr/bin/ejs
 var Stream=ejs.ModuleLoader.get("Stream");
 var util=ejs.ModuleLoader.get("util");
 util.ieval.call(this,Stream.stdin,Stream.stdout,Stream.stderr);
-
-The util.getObjectID function returns a unique key value for an
-arbitrary object.

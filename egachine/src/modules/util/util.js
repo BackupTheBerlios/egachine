@@ -4,6 +4,13 @@
   if (!fname) throw new Error("Could not find module: 'ejsutil.la'");
   ejs.ModuleLoader.loadNative.call(util,"ejsutil",fname.substring(0,fname.lastIndexOf(".")));
 
+  //! interactive eval 
+  /*!
+    1. reads JavaScript code from istream until completion of a compilable unit
+    2. evaluates JavaScript code
+    3. writes result to ostream and errors to estream
+    4. repeat with 1.
+  */
   util.ieval=function(istream,ostream,estream){
     function readline(){
       var res="";

@@ -66,16 +66,82 @@ extern "C" {
     return JS_TRUE;
   }
 
+  //! garbage collection
+  /*!
+    \return array [before, after, break]
+  */
+  
+  static
+  JSBool
+  GC
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    JSRuntime *rt = JS_GetRuntime(cx);
+    assert(rt);
+
+#if 0
+    uint32 preBytes;
+    preBytes = rt->gcBytes;
+#endif
+
+    JS_GC(cx);
+
+#if 0
+    // return some statistics
+    // disabled because we can't do this with the public API
+    // we would have to include jscntxt.h which in turn
+    // includes private headers not shipped with the debian libsmjs-dev
+    // package
+
+    uint32 afterBytes = rt->gcBytes;
+    uint32 brk=
+#ifdef XP_UNIX
+            (uint32)sbrk(0)
+#else
+            0
+#endif
+      ;
+      
+    JSObject *nobj=JS_NewArrayObject(cx, 0, NULL);
+    if (!nobj) return JS_FALSE;
+    *rval=OBJECT_TO_JSVAL(nobj);
+
+    jsval n;
+
+    if ((!JS_NewNumberValue(cx, preBytes, &n))
+	|| (!JS_SetElement(cx, nobj, 0, &n))) return JS_FALSE;
+
+    if ((!JS_NewNumberValue(cx, afterBytes, &n))
+	|| (!JS_SetElement(cx, nobj, 1, &n))) return JS_FALSE;
+
+    if ((!JS_NewNumberValue(cx, brk, &n))
+	|| (!JS_SetElement(cx, nobj, 2, &n))) return JS_FALSE;
+#endif
+
+    return JS_TRUE;
+  }
+
+  static
+  JSBool
+  MaybeGC
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    JSRuntime *rt = JS_GetRuntime(cx);
+    JS_MaybeGC(cx);
+    return JS_TRUE;
+  }
+  
 #define FUNC(name, args) { #name,name,args,0,0}
 
   static JSFunctionSpec static_methods[] = {
     FUNC(getObjectID,0),
     FUNC(isCompilableUnit,1),
+    FUNC(GC,0),
+    FUNC(MaybeGC,0),
     EJS_END_FUNCTIONSPEC
   };
 
 #undef FUNC
-
   
   //! function called after module is loaded
   /*!

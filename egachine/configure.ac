@@ -20,7 +20,7 @@ AC_SUBST(LIBLTDL)
 AC_LIBTOOL_DLOPEN
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
-dnl AC_CONFIG_SUBDIRS(libltdl)
+AC_CONFIG_SUBDIRS(libltdl)
 
 dnl we only use the c++ compiler (=> we do want to do the tests with c++
 dnl because we need CXXFLAGS right and not only CFLAGS)
@@ -31,7 +31,7 @@ dnl check for spidermonkey
 dnl Get misc stuff right
 dnl todo: this is shit and should be done by spidermonkey itself
 case "$host" in
-	*-*-mingw32*)
+	*-*-cygwin* | *-*-mingw32*)
 		CPPFLAGS="$CPPFLAGS -DXP_WIN"
 		;;
 	*-*-linux*)
@@ -121,6 +121,78 @@ if test x$enable_net = xyes; then
 	fi
 	dnl networking module requires sigc 1.0.x
 	AM_PATH_SIGC(1.0.0)
+
+	dnl test if we need any libs for socket function
+	dnl todo: this is quite ugly
+	SOCKET_LIBS=""
+	dnl added for SunOS
+	dnl unfortunately we cannot use this to detect wsock32
+	dnl todo: we should not add to LIBS only to SOCKET_LIBS
+	dnl how to do this? (without duplicating AC_SEARCH_LIBS
+	dnl or a diff hack)
+	AC_SEARCH_LIBS(socket, [socket bsd], [found_socket=1])
+	AC_SEARCH_LIBS(inet_pton, nsl)
+
+	dnl if we have libwsock32 use it - this is not as nice as AC_SEARCH_LIBS
+	dnl but it seems to be the only solution in the moment
+	if test "x$found_socket" = "x"; then
+		AC_MSG_CHECKING([for socket in -lwsock32])
+		AC_LANG([C++])
+		LIBS_BACKUP="$LIBS"
+		SOCKET_LIBS="-lwsock32"
+		LIBS="$LIBS $SOCKET_LIBS"
+		AC_TRY_LINK([
+			#if defined(__WIN32__) || defined(WIN32)
+				#define __USE_W32_SOCKETS
+				#include <windows.h>
+			#endif
+			],
+			[
+				#ifndef WIN32
+					thisfunctiondoesnotexist();
+				#endif
+				int  handle = socket (PF_INET, SOCK_STREAM, 0);
+			],
+			[AC_MSG_RESULT([yes])],
+			[
+				AC_MSG_ERROR([Could not find required socket function])
+			]
+		)
+	        LIBS="$LIBS_BACKUP"
+	fi
+	AC_SUBST(SOCKET_LIBS)
+fi
+
+dnl the timer module
+AC_ARG_ENABLE([timer],
+	AS_HELP_STRING([--enable-timer],
+	[Build timer module [[default=yes]]]),
+	[], enable_timer=yes)
+if test x$enable_timer = xyes; then
+	TIMER_LIBS=""
+	case "$host" in
+		*-*-cygwin* | *-*-mingw32*)
+			dnl use winmm if available todo: this is shit
+			AC_MSG_CHECKING([for timeGetTime in -lwinmm])
+			AC_LANG([C++])
+			LIBS_BACKUP="$LIBS"
+			TIMER_LIBS="-lwinmm"
+			LIBS="$LIBS $TIMER_LIBS"
+			AC_TRY_LINK([
+				#include <windows.h>
+				],
+				[
+					unsigned long n=timeGetTime();
+				],
+				[AC_MSG_RESULT([yes])],
+				[
+					AC_MSG_ERROR([Could not find required timeGetTime function])
+				]
+			)
+		        LIBS="$LIBS_BACKUP"
+		;;
+	esac
+	AC_SUBST(TIMER_LIBS)
 fi
 
 dnl the gl module (opengl)

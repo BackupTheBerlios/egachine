@@ -154,9 +154,11 @@ SIGC_CFLAGS = @SIGC_CFLAGS@
 SIGC_CONFIG = @SIGC_CONFIG@
 SIGC_LIBS = @SIGC_LIBS@
 SIGC_MACROS = @SIGC_MACROS@
+SOCKET_LIBS = @SOCKET_LIBS@
 STRIP = @STRIP@
 SVGL_CFLAGS = @SVGL_CFLAGS@
 SVGL_LIBS = @SVGL_LIBS@
+TIMER_LIBS = @TIMER_LIBS@
 VERSION = @VERSION@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_AS = @ac_ct_AS@
@@ -202,6 +204,7 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = @EJS_CFLAGS@ -I\$(top_srcdir) @SIGC_CFLAGS@
@@ -209,7 +212,7 @@ pkglib_LTLIBRARIES = ejstimer.la
 ejstimer_la_SOURCES = \
 	timestamp.h timestamp.cpp ejstimer.cpp
 
-ejstimer_la_LDFLAGS = -module @MODULE_LDFLAGS@
+ejstimer_la_LDFLAGS = -module @MODULE_LDFLAGS@ @TIMER_LIBS@
 EXTRA_DIST = export.sym
 all: all-am
 

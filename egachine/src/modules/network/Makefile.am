@@ -10,7 +10,7 @@ ejsnet_la_SOURCES = \
 	server.h \
 	ejsserver.h ejsserver.cpp
 
-ejsnet_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SIGC_LIBS@
+ejsnet_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SIGC_LIBS@ @SOCKET_LIBS@
 
 dist_pkgdata_DATA = net.js
 EXTRA_DIST = export.sym

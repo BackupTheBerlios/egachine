@@ -1,0 +1,13 @@
+#!/bin/bash
+../src/ejs <<EOF
+ejs.ModuleLoader.load("util");
+if (typeof util.getStack != "function") throw Error("failed 1");
+EOF
+../src/ejs <<EOF
+if (typeof ejs.ModuleLoader.get("util").getStack != "function") throw Error("failed 2");
+EOF
+../src/ejs <<EOF
+ejs.ModuleLoader.load("util");
+if (typeof mod != 'undefined') throw Error("failed 3");
+if (typeof fname != 'undefined') throw Error("failed 3");
+EOF

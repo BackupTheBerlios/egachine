@@ -1,0 +1,19 @@
+Simple audio module providing:
+
+//! play music (String contains music)
+playMusic(String)
+
+//! load sa sample (String contains sample)
+/*!
+	\returns sample ID
+*/
+Number loadSample(String)
+
+//! play sample referenced by ID
+/*!
+	\returns channel ID
+*/
+playSample(Number)
+
+//! stop playing sample on channel referenced by ID
+stopSample(Number)

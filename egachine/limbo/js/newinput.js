@@ -5,6 +5,9 @@ loops=0;
 numEvents=0;
 maxEvents=0;
 quit=false;
+Stream=ejs.ModuleLoader.get("Stream");
+stderr=Stream.stderr;
+stdout=Stream.stdout;
 do{
   if (!Input.waitEvent())
     stderr.write("Warning: error while waiting for event");
@@ -32,6 +35,16 @@ do{
 	Video.drawQuad(width/20,width/20);
 	Video.setColor(0,0,0);
 	Video.drawQuad(width/40,width/40);
+	Video.popMatrix();
+
+	Video.setColor(1,1,1);
+	Video.pushMatrix();
+	Video.translate(e.x,0);
+	Video.drawLine(0,0,0,height);
+	Video.popMatrix();
+	Video.pushMatrix();
+	Video.translate(0,height-e.y);
+	Video.drawLine(0,0,width,0);
 	Video.popMatrix();
 	Video.swapBuffers();
       };

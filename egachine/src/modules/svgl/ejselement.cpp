@@ -105,9 +105,10 @@ extern "C" {
     dom::String* value=NULL;
     if (!jsToDomString(cx,argv[1],value)) return JS_FALSE;
 
+    /*
     EJS_INFO("Set Attribute: '"
 	     << *name << "' ("<<name->getLength()<<")" 
-	     << " to '" << *value <<"' ("<<value->getLength()<<")");
+	     << " to '" << *value <<"' ("<<value->getLength()<<")"); */
 
     // todo: catch exceptions
     nthis->setAttribute(name,value);

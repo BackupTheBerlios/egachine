@@ -1,4 +1,10 @@
 // this script is evaluated by egaserver on startup
+EGachine.server=true;
+
+// todo remove those?
+Video={};
+Input={};
+
 // extend network object
 Net.connections={};
 Net.queue="";
@@ -72,3 +78,50 @@ Net.update=function() {
 }
 
 Net.distribute(EGachine.r,"EGachine.r");
+
+
+//! watch all properties in the object graph 
+/*
+  on change of a property call a generated function 
+  \param gf function which generates the watch function
+  if gf is not passed genericwatch is used
+  
+  \note properties coming from a prototype aren't watched
+  this is because this caused trouble with serialization
+  TODO: inspect this situation and understand what happens
+  if you set a watch on property which comes from a prototype
+*/
+function watchall(cobj,cname,gf){
+
+  // return function which can act as watch callback and simply
+  // print some debug info
+  function genericwatch(y) {
+    return function(p,o,n){print(y+'='+n+';');return n;};
+  };
+
+  function _watchall(pobj,cobj,cname,scope,gf){
+    //  print(scope);
+    if (!gf) throw new Error("need generic function");
+    if (typeof(cobj) != 'object') {
+      var f=gf(scope);
+      //    print(f.toSource());
+      pobj.watch(cname,f);
+      return;
+    }
+    if (cobj instanceof Array) {
+      var k;
+      for (var k in cobj) {
+	_watchall(cobj, cobj[k], k, scope+"["+k+"]", gf);
+      }
+    }else{
+      var k;
+      for (var k in cobj) {
+	if ((k[0]!='_')&&(!isFromProto(cobj,k)))
+	  _watchall(cobj, cobj[k], k, scope+"."+k,     gf);
+      }
+    }
+  }
+
+  if (!gf) gf=genericwatch;
+  _watchall(undefined,cobj,cname,cname,gf);
+}

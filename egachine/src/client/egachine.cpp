@@ -47,6 +47,8 @@
 #include "audio/audio.h"
 #include "audio/jsaudio.h"
 
+#include "common/jszlib.h"
+
 #include "error.h"
 
 void deinit()
@@ -57,6 +59,7 @@ void deinit()
   Video::deinit();
   Timer::deinit();
 
+  JSZlib::deinit();
   JSAudio::deinit();
   JSTimer::deinit();
   JSInput::deinit();
@@ -170,6 +173,7 @@ int cppmain(int argc,char *argv[])
 	&& JSInput::init()
 	&& JSNetwork::init()
 	&& JSAudio::init()
+	&& JSZlib::init()
 	)) {
     JGACHINE_ERROR("could not register functions/objects with interpreter");
     ECMAScript::deinit();
@@ -197,7 +201,8 @@ int cppmain(int argc,char *argv[])
   Input::init();
   Network::init();
 	
-  // now load library
+  // now load libraries
+  ECMAScript::parseLib("common.js");
   ECMAScript::parseLib("egachine.js");
   
   // copy command line arguments to the interpreter

@@ -42,6 +42,7 @@
 #include "network/network.h"
 #include "network/jsnetwork.h"
 
+#include "common/jszlib.h"
 
 class NetStreamBufServer {
 public:
@@ -305,6 +306,11 @@ deinit()
 
   Network::deinit();
   Timer::deinit();
+
+  JSZlib::deinit();
+  JSTimer::deinit();
+  JSNetwork::deinit();
+
   ECMAScript::deinit();
 }
 
@@ -320,7 +326,7 @@ main(int argc, char **argv)
   ECMAScript::parseConfig("server.js");
 
   // now register our objects/functions
-  if (!(JSTimer::init()&& JSNetwork::init())) {
+  if (!(JSTimer::init()&& JSNetwork::init()) &&   JSZlib::init()) {
     JGACHINE_ERROR("could not register functions/objects with interpreter");
     ECMAScript::deinit();
     return EXIT_FAILURE;
@@ -329,9 +335,6 @@ main(int argc, char **argv)
   Timer::init();
   Network::init();
 
-  // copy command line arguments to the interpreter
-  ECMAScript::copyargv(argc,argv);
-	
   // create server socket
   int port=ECMAScript::evalInt32("this.listenPort != undefined ? this.listenPort : 47000");
 
@@ -357,7 +360,7 @@ main(int argc, char **argv)
   JGACHINE_CHECK(JS_DefineFunctions(ECMAScript::cx, obj, static_methods));
 	
   // load libs
-  ECMAScript::parseLib("egachine.js");
+  ECMAScript::parseLib("common.js");
   ECMAScript::parseLib("server.js");
 	
   // copy command line arguments to the interpreter

@@ -216,7 +216,7 @@ namespace ECMAScript
     return true;
   }
 
-  void copyargv(int argc, char** argv) 
+  void copyargv(int argc, char** argv)
   {
     // copy argument vector to interpreter
     // TODO: make this in a cleaner way

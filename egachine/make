@@ -14,7 +14,7 @@ if [ "x$DEBUG" = "x" ]; then
 else
     SM_BUILDDIR="Linux_All_DBG.OBJ"
 fi
-LDFLAGS="$LDFLAGS -g -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -rdynamic"
+LDFLAGS="$LDFLAGS -g -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
 COMMONFLAGS="-I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_UNIX $(sigc-config --cflags) -DSYSCONFDIR=$SYSCONFDIR -DDATADIR=$DATADIR"
 SERVERFLAGS=""
 CLIENTFLAGS="$(sdl-config --cflags)"
@@ -23,8 +23,8 @@ SDLMIXERLIBS="-lSDL_mixer -lvorbisfile -lvorbis -logg -lsmpeg"
 # build spidermonkey
 cd $SPIDERMONKEY_SRCDIR
 
-make -f Makefile.ref clean
-rm -rf *.OBJ
+#make -f Makefile.ref clean
+#rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
 
 # build egachine
@@ -46,6 +46,10 @@ echo Link egachine
 run "$CXX -o egachine $LDFLAGS $(find -name *.o|grep -v server|grep -v tools) -lsmjs $SDLMIXERLIBS $(sdl-config --libs) $(sigc-config --libs) -lGL -lGLU -lSDL_image"
 # link server
 echo Link egaserver
-run "$CXX -o egaserver $LDFLAGS $(find -name *.o|grep -v client|grep -v tools) -lsmjs $(sigc-config --libs)"
+run "$CXX -o egaserver $LDFLAGS $(find -name *.o|grep -v client|grep -v tools) -lsmjs $(sigc-config --libs) -lz"
+# link egares
+echo Link egaserver
+run "$CXX -o egares $LDFLAGS $(find -name *.o|grep -v client|grep -v server) -lsmjs -lz"
+
 
 

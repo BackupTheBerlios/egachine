@@ -339,4 +339,9 @@ das würde auf sowas wie std::vector wrappen rauslaufen
 jetzt schlaf ich mal besser
 das war ja jetzt alles sehr chaotisch
 --------------------------------------------------------------------------------
+update all resources
+remove legacy resource code
+update install, crossmake
+fix file read buf in egares.cpp (file is closed before reading)
+--------------------------------------------------------------------------------
 

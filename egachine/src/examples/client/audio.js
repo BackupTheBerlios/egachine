@@ -25,6 +25,7 @@ Video.swapBuffers();
 Video.translate((1+1/3)/2,1/2);
 
 addResources();
+
 Audio.playMusic("eric-adios");
 
 start=Timer.getTimeStamp();

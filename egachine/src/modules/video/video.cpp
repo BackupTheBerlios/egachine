@@ -33,6 +33,10 @@
 #include <csignal>
 #include <SDL_syswm.h>
 
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
 #include "video.h"
 #include "sdlgl.h"
 #include "texture.h"
@@ -229,6 +233,11 @@ createWindow(int width, int height, bool fullscreen)
 
 void Video::init(int width, int height,bool fullscreen)
 {
+  // hack to get sync to retrace (works at least on linux nvidia)
+#ifdef HAVE_STDLIB_H
+  putenv("__GL_SYNC_TO_VBLANK=1");
+#endif
+
   textures=new Textures();
   if ( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK|SDL_INIT_NOPARACHUTE) < 0 ) {
     throw Video::FatalError((std::string("Couldn't init SDL: ")+SDL_GetError()).c_str());

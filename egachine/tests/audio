@@ -19,31 +19,37 @@ function runtest () {
 
 runtest 'ejs.ModuleLoader.load("Audio");'
 
-
 runtest '
-ejs.ModuleLoader.load("Audio");
-ejs.ModuleLoader.load("Timer");
-samples={};
-wavheader="\x52\x49\x46\x46\x24\x02\x00\x00\x57\x41\x56\x45\x66\x6d\x74\x20\x10\x00\x00\x00\x01\x00\x01\x00\x44\xac\x00\x00\x44\xac\x00\x00\x01\x00\x08\x00\x64\x61\x74\x61\x00\x02\x00\x00";
-
-music="c c c aaaa aaaa aaaa c c c     ";
-
-function createSample(name,freq,volume) {
+function synthesize(freq,volume) {
   var wav=wavheader;
   m=Math.floor(4*freq/(44100/512));
   for (i=0;i<512;++i)
     wav+=String.fromCharCode(Math.sin(m*Math.PI*i/512)*127*volume+127);
-  samples[name]=Audio.loadSample(wav);
-}
+  return {decode:function(){return this.wav;},wav:wav};
+};
+
+ejs.config.Audio.getResource=function(resname){
+    var volume=0.5;
+    switch(resname) {
+	case "a":
+	    return synthesize(440,volume);
+	case "c":
+	    return synthesize(264,volume);
+	default:
+	    throw Error("Unknown resource:\""+resname+"\"");
+    };
+};
 
 function playSample(name,sec) {
   rep=Math.floor(sec*44100/512);
-  Audio.playSample(samples[name],rep);
-}
+  Audio.playSample(name,rep);
+};
 
-volume=0.5;
-createSample("a",440,volume);
-createSample("c",264,volume);
+ejs.ModuleLoader.load("Audio");
+ejs.ModuleLoader.load("Timer");
+wavheader="\x52\x49\x46\x46\x24\x02\x00\x00\x57\x41\x56\x45\x66\x6d\x74\x20\x10\x00\x00\x00\x01\x00\x01\x00\x44\xac\x00\x00\x44\xac\x00\x00\x01\x00\x08\x00\x64\x61\x74\x61\x00\x02\x00\x00";
+
+music="c c c aaaa aaaa aaaa c c c     ";
 
 var note=0;
 while (true) {

@@ -32,11 +32,6 @@
 #include <SDL_opengl.h>
 #undef NO_SDL_GLEXT
 
-#include "error.h"
-
-#define DEBUG_GL(msg)
-//#define DEBUG_GL(msg) JGACHINE_MSG("DEBUG: OpenGL: ", msg)
-
 #define GL_ERRORS() do{if (printGLErrors()) std::cout << "gl error at - see above";}while(0)
 
 //! print OpenGL errors

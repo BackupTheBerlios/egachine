@@ -1,9 +1,8 @@
 #include "sdlgl.h"
 
-#include <SDL.h>
 #include <iostream>
 #include <iomanip>
-#include <stdexcept>
+#include "error.h"
 
 int
 printGLErrors()

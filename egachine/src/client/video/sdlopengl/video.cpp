@@ -28,17 +28,18 @@
 #include <fstream>
 
 #include <SDL.h>
+#include <map>
+#include <cassert>
+#include <csignal>
+#include <SDL_syswm.h>
+
 #include "../video.h"
 #include "sdlgl.h"
 #include "texture.h"
 #include "smartptr.h"
-#include <map>
 #include "fontdata.h"
 #include "glfont.h"
-#include <cassert>
-#include <csignal>
-
-#include <SDL_syswm.h>
+#include "error.h"
 
 // Determine type of window manager we are probably using
 #if defined(__unix__)

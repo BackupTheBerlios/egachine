@@ -27,6 +27,7 @@
 //#include "typedefs.h"
 #include "texture.h"
 #include <SDL_image.h>
+#include "error.h"
 
 Texture::Texture(int size)
 {

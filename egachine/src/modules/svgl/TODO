@@ -3,6 +3,14 @@ svgl uses libgc garbage collector
 it seems to work but i still should take a look at the details
 (i think this will lead to trouble at some time)
 hmm valgrind leakcheck doesn't work when loading svgl module
+
+at the moment svgl is the owner of the native objects
+wrapper objects are created on demand and may be garbage collected
+then the wrapper object will vanish (with all its state not written through
+to the native object => BUG)
+
+the assumption is that the native object will always live longer than the
+wrapper object (this assumption may be wrong, too)
 --------------------------------------------------------------------------------
 must dom object constructors be in global scope?
 --------------------------------------------------------------------------------
@@ -13,7 +21,6 @@ scripting together with declarative animation?
 we dont support external script files:
 <script xlink:href="foo.js" /> will not work
 --------------------------------------------------------------------------------
-hmm setAttribute("fill",color) does not work for circles
---------------------------------------------------------------------------------
 dom level 2 event bubbling probably not correctly implemented
+the reported coordinates are wrong?
 --------------------------------------------------------------------------------

@@ -84,8 +84,7 @@
 	  subevt.type="mouseout";
 	  subevt.target=oldTarget;
 	  subevt.relatedTarget=newTarget;
-	  //	  stderr.write("setNewTarget (mouseout): "+subevt.toSource()+"\n");
-	  debug("mouseout: target: "+subevt.target.nodeName+" relatedTarget: "+subevt.relatedTarget.nodeName);
+	  //debug("mouseout: target: "+subevt.target.nodeName+" relatedTarget: "+subevt.relatedTarget.nodeName);
 	  Input.dispatchEvent(subevt);
 	}
 
@@ -156,6 +155,7 @@
       dispatch(evt);
       if (evt.type=="mouseup") {
 	// todo: perhaps the evt was modified!! clone mouseup before dispatch
+	// todo: click does not always happen on mouseup
 	evt.type="click";
 	dispatch(evt);
       }
@@ -227,7 +227,10 @@
     // todo: hmm global
     setTimeout=function(toeval,ms) {
       // todo: should it be possible to set multiple timeouts?
-      timeOut={func:function(){eval(toeval);},timeOut:ms*1000,remain:ms*1000};
+      if (typeof toeval == "function")
+	timeOut={func:function(){toeval();},timeOut:ms*1000,remain:ms*1000};
+      else
+	timeOut={func:function(){eval(toeval);},timeOut:ms*1000,remain:ms*1000};
     };
     
     document._handleScripts(this);

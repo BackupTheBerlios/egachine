@@ -23,6 +23,7 @@
 
 #include <w3c/svg/Element.hpp>
 #include <w3c/svg/SVGElement.hpp>
+#include <w3c/svg/SVGStylable.hpp>
 #include "ejsallelements.h"
 #include "strutils.h"
 #include <cassert>
@@ -58,7 +59,7 @@ extern "C" {
 
     // todo: hmmm
     if (svg::SVGElement *svgelement = dynamic_cast<svg::SVGElement *>(nthis)) {
-      svgelement->updateStyle(NULL);
+      svgelement->updateStyle(dynamic_cast<svg::SVGStylable*>(svgelement->getParentNode()));
     }
     return JS_TRUE;
   }

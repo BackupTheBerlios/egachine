@@ -117,8 +117,42 @@ extern "C" {
   JSBool
   ejsaudio_LTX_onLoad(JSContext* cx, JSObject* module)
   {
-    // todo: get from javascript / config file
     AudioConfig ac;
+    jsval val;
+
+#define GET_STRING(prop) do{						\
+      if (!ejs_evalExpression(cx,module,"ejs.config.Audio."#prop,&val))	\
+	JS_ClearPendingException(cx);					\
+      else{								\
+	JSString* s=NULL;char *cstr=NULL;				\
+	if ((!(s=JS_ValueToString(cx,val)))				\
+	    || (!(cstr=JS_GetStringBytes(s)))) return JS_FALSE;		\
+	ac.prop=cstr;							\
+      }									\
+    }while(0)
+
+    GET_STRING(sdriver);
+    GET_STRING(sdevice);
+    
+#define GET_INT32(prop) do{						\
+      if (!ejs_evalExpression(cx,module,"ejs.config.Audio."#prop,&val))	\
+	JS_ClearPendingException(cx);					\
+      else								\
+	if (!JS_ValueToECMAInt32(cx,val,&ac.prop)) return JS_FALSE;	\
+    }while(0)
+    
+    GET_INT32(srate);
+    GET_INT32(sbits);
+    GET_INT32(sbuffers);
+
+    if (!ejs_evalExpression(cx,module,"ejs.config.Audio.stereo",&val))
+      JS_ClearPendingException(cx);
+    else{
+      JSBool jsb;
+      if (!JS_ValueToBoolean(cx, val, &jsb)) return JS_FALSE;
+      ac.stereo=jsb;
+    }
+
     Audio::init(ac);
 
     if (!JS_DefineFunctions(cx, module, static_methods)) return JS_FALSE;

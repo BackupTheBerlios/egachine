@@ -70,7 +70,7 @@
 	     toMove.setAttribute("transform","translate("+x+" 0)");
 	     return;
 	   };
-	   var now=Date.now();
+	   var now=new Date().getTime();
 	   x+=0.5*(now-last);
 	   last=now;
 	   // debug(x);
@@ -81,7 +81,7 @@
 	 function startMove(evt) {
 	   var t=evt.target;
 	   makeRed(t);
-	   last=Date.now();
+	   last=new Date().getTime();
 	   toMove=document.getElementById("l0");
 	   moving=true;
 	   move();

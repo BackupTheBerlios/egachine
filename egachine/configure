@@ -21172,7 +21172,7 @@ LDFLAGS="$LDFLAGS -thread-safe -pthread"
 MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.sym"
 
 
-                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile tests/Makefile src/Makefile src/etc/Makefile src/examples/Makefile src/modules/Makefile src/modules/example/Makefile src/modules/zlib/Makefile src/modules/monitorable/Makefile src/modules/stream/Makefile src/modules/file/Makefile src/modules/network/Makefile src/modules/bytearray/Makefile src/modules/egachine/Makefile src/modules/base64/Makefile src/modules/timer/Makefile src/modules/gl/Makefile src/modules/video/Makefile src/modules/input/Makefile src/modules/audio/Makefile src/modules/svgl/Makefile boost/Makefile"
+                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile tests/Makefile src/Makefile src/etc/Makefile src/examples/Makefile src/modules/Makefile src/modules/example/Makefile src/modules/zlib/Makefile src/modules/monitorable/Makefile src/modules/stream/Makefile src/modules/file/Makefile src/modules/network/Makefile src/modules/bytearray/Makefile src/modules/egachine/Makefile src/modules/base64/Makefile src/modules/timer/Makefile src/modules/gl/Makefile src/modules/video/Makefile src/modules/video/boost/Makefile src/modules/input/Makefile src/modules/audio/Makefile src/modules/svgl/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -21773,10 +21773,10 @@ do
   "src/modules/timer/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/timer/Makefile" ;;
   "src/modules/gl/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/gl/Makefile" ;;
   "src/modules/video/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/video/Makefile" ;;
+  "src/modules/video/boost/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/video/boost/Makefile" ;;
   "src/modules/input/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/input/Makefile" ;;
   "src/modules/audio/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/audio/Makefile" ;;
   "src/modules/svgl/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/svgl/Makefile" ;;
-  "boost/Makefile" ) CONFIG_FILES="$CONFIG_FILES boost/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

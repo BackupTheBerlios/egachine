@@ -246,9 +246,9 @@ AC_OUTPUT([
 	src/modules/timer/Makefile
 	src/modules/gl/Makefile
 	src/modules/video/Makefile
+	src/modules/video/boost/Makefile
 	src/modules/input/Makefile
 	src/modules/audio/Makefile
 	src/modules/svgl/Makefile
-	boost/Makefile
 ])
 

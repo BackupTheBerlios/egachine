@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = boost src tests
+SUBDIRS = src tests
 
 EXTRA_DIRST = bootstrap

@@ -19438,6 +19438,7 @@ case "$host" in
 echo "$as_me: WARNING: Unknown host type: $host assuming unix for spidermonkey" >&2;}
 		;;
 esac
+CPPFLAGS="$CPPFLAGS -DJS_THREADSAFE"
 
 
 if test "${ac_cv_header_jsapi_h+set}" = set; then
@@ -19580,10 +19581,10 @@ if test $ac_cv_header_jsapi_h = yes; then
   :
 else
 
-	{ { echo "$as_me:$LINENO: error: Could not find required header 'jsapi.h'
-Perhaps you have to add some -I/path/tojsapiheader to your CPPFLAGS" >&5
+		{ { echo "$as_me:$LINENO: error: Could not find required header 'jsapi.h'
+			Perhaps you have to add some -I/path/tojsapiheader to your CPPFLAGS" >&5
 echo "$as_me: error: Could not find required header 'jsapi.h'
-Perhaps you have to add some -I/path/tojsapiheader to your CPPFLAGS" >&2;}
+			Perhaps you have to add some -I/path/tojsapiheader to your CPPFLAGS" >&2;}
    { (exit 1); exit 1; }; }
 
 fi

@@ -47,11 +47,11 @@ dnl probably if it uses libnspr
 dnl why do we have to know? because jsapi.h has some "#ifdef JS_THREADSAFE" ...
 dnl for example JS_GET_CLASS
 dnl if we detect this the wrong way this will result in stack corruption
-dnl CPPFLAGS="$CPPFLAGS -DJS_THREADSAFE"
+CPPFLAGS="$CPPFLAGS -DJS_THREADSAFE"
 
 AC_CHECK_HEADER([jsapi.h], [], [
-	AC_MSG_ERROR([Could not find required header 'jsapi.h'
-Perhaps you have to add some -I/path/tojsapiheader to your CPPFLAGS])
+		AC_MSG_ERROR([Could not find required header 'jsapi.h'
+			Perhaps you have to add some -I/path/tojsapiheader to your CPPFLAGS])
 ])
 
 AC_SEARCH_LIBS(JS_InitStandardClasses, [js smjs mozjs], , [

@@ -1,6 +1,4 @@
-// svg tiny supports all svg 1.1 paths except the elliptical arc curve command
-
-// => we need: cubic bezier curves, quadratic bezier curves
+// see also glbezier.js (using glMap to draw bezier curve)
 
 function Bezier(controlpoints)
 {
@@ -187,6 +185,3 @@ while (true)
   Video.swapBuffers();
   Timer.uSleep(10000);
 }
-
-
-

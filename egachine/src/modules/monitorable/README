@@ -1,12 +1,13 @@
-In fact this object allows the implementation/implements some kind
-of a MOP. Operations on this object are interceptable in JavaScript 
-itself by using and forwarding interception mechanisms present in 
-the SpiderMonkey Interpreter.
+This module provides the Monitorable object (constructor).
 
-The motivitation to do this was to allow an easy implementation
-of object distribution (modifications in the object graph on one
-host (the server) are distributed to the clients and the existent
-JavaScript functionality (getter, setter, watch) is not enough
-to do this.
+This  object  reflects  the SpiderMonkey hooks  for  adding, deleting,
+getting and setting object properties back to JavaScript.  You can set
+the special property "monitor" to  an object which may have properties
+onAdd, onDelete, onGet and onSet set  to functions which are called if
+the corresponding SpiderMonkey hook is called.
 
-
+In       EGachine  this is       used  to  implement   the distributed
+scene-graph. Modifications in the  object   graph on server side   are
+automatically distributed    to  the   clients.    Existent JavaScript
+functionality  (getter, setter, watch) is not  enough to do this since
+you can't intercept property addition and removal.

@@ -170,15 +170,9 @@ Resource.prototype.toString=function(){
 EGachine={};
 EGachine.r={};
 EGachine.addResource=function(name,res){
-  if (res!=undefined){
-    // legacy case (TODO: remove it)
-    print("legacy resource:"+name+" this is deprecated\n");
-    EGachine.r[name]=new Resource(name,Base64.decode(res));
-  }else if (typeof(name) == 'object') {
-    var resource=name;
-    resource.__proto__=Resource.prototype;
-    EGachine.r[resource.name]=resource;
-  }
+  var resource=name;
+  resource.__proto__=Resource.prototype;
+  EGachine.r[resource.name]=resource;
 }
 EGachine.getResource=function(name){
   if (!EGachine.r[name]) throw new Error("Resource '"+name+"' not found");

@@ -327,6 +327,3 @@ perhaps wrap:
 std::streambuf (nearly done in the network part)
 std::vector
 --------------------------------------------------------------------------------
-update all resources
-remove legacy resource code
---------------------------------------------------------------------------------

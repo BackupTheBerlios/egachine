@@ -18,8 +18,20 @@ GC()
 //! maybe run garbage collector
 MaybeGC()
 
-JavaScript functions are in utils.js, and documented there.
+//! seal object or object graph
+seal([boolean])
 
+//! clone function object
+cloneFunction(f)
+
+//! clear object scope
+clearScope(object)
+
+//! get or set version (when setting the old version is returned)
+[String] JSVersion([String])
+
+
+JavaScript functions are in utils.js, and documented there.
 
 Examples:
 

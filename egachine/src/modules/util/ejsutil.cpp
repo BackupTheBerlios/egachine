@@ -16,9 +16,50 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+/*
+  parts are taken from spidermonkey example shell js.c
+   
+
+  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+  *
+  * The contents of this file are subject to the Mozilla Public License Version
+  * 1.1 (the "License"); you may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at
+  * http://www.mozilla.org/MPL/
+  *
+  * Software distributed under the License is distributed on an "AS IS" basis,
+  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+  * for the specific language governing rights and limitations under the
+  * License.
+  *
+  * The Original Code is Mozilla Communicator client code, released
+  * March 31, 1998.
+  *
+  * The Initial Developer of the Original Code is
+  * Netscape Communications Corporation.
+  * Portions created by the Initial Developer are Copyright (C) 1998
+  * the Initial Developer. All Rights Reserved.
+  *
+  * Contributor(s):
+  *
+  * Alternatively, the contents of this file may be used under the terms of
+  * either of the GNU General Public License Version 2 or later (the "GPL"),
+  * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+  * in which case the provisions of the GPL or the LGPL are applicable instead
+  * of those above. If you wish to allow use of your version of this file only
+  * under the terms of either the GPL or the LGPL, and not to allow others to
+  * use your version of this file under the terms of the MPL, indicate your
+  * decision by deleting the provisions above and replace them with the notice
+  * and other provisions required by the GPL or the LGPL. If you do not delete
+  * the provisions above, a recipient may use your version of this file under
+  * the terms of any one of the MPL, the GPL or the LGPL.
+  *
+  */
+
 /*!
-   \brief Util module
-   \author Jens Thiele
+  \brief Util module
+  \author Jens Thiele
+   
 */
 
 #include <iostream>
@@ -74,8 +115,11 @@ extern "C" {
   static
   JSBool
   GC
-  (JSContext *cx, JSObject *, uintN, jsval *, jsval *rval)
+  (JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
   {
+    // todo: safe for untrusted code?
+    EJS_CHECK_TRUSTED(cx,obj);
+
 #if 0
     JSRuntime *rt = JS_GetRuntime(cx);
     assert(rt);
@@ -95,9 +139,9 @@ extern "C" {
     uint32 afterBytes = rt->gcBytes;
     uint32 brk=
 #ifdef XP_UNIX
-            (uint32)sbrk(0)
+      (uint32)sbrk(0)
 #else
-            0
+      0
 #endif
       ;
       
@@ -122,10 +166,92 @@ extern "C" {
 
   static
   JSBool
-  MaybeGC
-  (JSContext *cx, JSObject *, uintN, jsval *, jsval *)
+  maybeGC
+  (JSContext *cx, JSObject *obj, uintN, jsval *, jsval *)
   {
+    // todo: safe for untrusted code?
+    EJS_CHECK_TRUSTED(cx,obj);
+
     JS_MaybeGC(cx);
+    return JS_TRUE;
+  }
+
+  //! seal object (taken from spidermonkey js.c)
+  static JSBool
+  seal(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
+  {
+    // todo: safe for untrusted code?
+    EJS_CHECK_TRUSTED(cx,obj);
+
+    JSObject *target;
+    JSBool deep = JS_FALSE;
+    
+    if (!JS_ConvertArguments(cx, argc, argv, "o/b", &target, &deep))
+      return JS_FALSE;
+    if (!target)
+      return JS_TRUE;
+    return JS_SealObject(cx, target, deep);
+  }
+
+  //! cloneFunction (taken from spidermonkey js.c - clone)
+  static JSBool
+  cloneFunction(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    // todo: safe for untrusted code?
+    EJS_CHECK_TRUSTED(cx,obj);
+
+    JSFunction *fun;
+    JSObject *funobj, *parent, *clone;
+    
+    fun = JS_ValueToFunction(cx, argv[0]);
+    if (!fun)
+      return JS_FALSE;
+    funobj = JS_GetFunctionObject(fun);
+    if (argc > 1) {
+      if (!JS_ValueToObject(cx, argv[1], &parent))
+	return JS_FALSE;
+    } else {
+      parent = JS_GetParent(cx, funobj);
+    }
+    clone = JS_CloneFunctionObject(cx, funobj, parent);
+    if (!clone)
+      return JS_FALSE;
+    *rval = OBJECT_TO_JSVAL(clone);
+    return JS_TRUE;
+  }
+
+  //! clearScope (taken from spidermonkey js.c)
+  static JSBool
+  clearScope(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
+  {
+    // todo: safe for untrusted code?
+    EJS_CHECK_TRUSTED(cx,obj);
+
+    if (argc != 0 && !JS_ValueToObject(cx, argv[0], &obj))
+      return JS_FALSE;
+    JS_ClearScope(cx, obj);
+    return JS_TRUE;
+  }
+
+  //! get or set js version
+  static JSBool
+  ejs_JSVersion(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    // todo: safe for untrusted code?
+    EJS_CHECK_TRUSTED(cx,obj);
+
+    JSVersion ret;
+    JSString *s=NULL;
+    if (argc > 0) {
+      if (!(s=JS_ValueToString(cx,argv[0]))) return JS_FALSE;
+      JSVersion nv=JS_StringToVersion(JS_GetStringBytes(s));
+      EJS_INFO(nv);
+      ret=JS_SetVersion(cx, nv);
+    }else
+      ret=JS_GetVersion(cx);
+    if (!(s=JS_NewStringCopyZ(cx,JS_VersionToString(ret))))
+      return JS_FALSE;
+    *rval = STRING_TO_JSVAL(s);
     return JS_TRUE;
   }
   
@@ -135,7 +261,11 @@ extern "C" {
     FUNC(getObjectID,0),
     FUNC(isCompilableUnit,1),
     FUNC(GC,0),
-    FUNC(MaybeGC,0),
+    FUNC(maybeGC,0),
+    {"seal",            seal,           1, 0, 1},
+    FUNC(cloneFunction,1),
+    FUNC(clearScope,1),
+    {"JSVersion",       ejs_JSVersion,  0, 0, 0},
     EJS_END_FUNCTIONSPEC
   };
 

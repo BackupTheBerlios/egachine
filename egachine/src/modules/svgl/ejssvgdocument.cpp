@@ -50,7 +50,7 @@ extern "C" {
   // because JS_THREADSAFE was not defined correctly (defined or undefined)
 
 #define GET_SVGDOCUMENT_OBJ svg::SVGDocument* svgdocument=NULL;		\
-    ejssvgdocument_GetNative(cx,obj,svgdocument);			\
+    ejssvgdocument_GetNative(cx,obj,svgdocument)
 
   static
   JSBool
@@ -67,7 +67,11 @@ extern "C" {
     // for now we interpret ucs-2 as utf16 which should work?
     // TODO: check above, check for exceptions, how does svgl GC?
     
-    dom::Element* element=svgdocument->createElement(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
+    // TODO: shit
+    //    dom::Element* element=svgdocument->createElement(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
+    // it seems we must use internString otherwise createElement does not work as expected?
+    // TODO: take a look at the details
+    dom::Element* element=svgdocument->createElement(unicode::String::internStringUtf16(JS_GetStringChars(strtype)));
     assert(element);
     
     // now create javascript wrapper object for element
@@ -78,6 +82,23 @@ extern "C" {
     return JS_TRUE;
   }
 
+  // TODO: duplicated: see ejselement.cpp
+  static
+  JSBool
+  svgdocument_appendChild(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    GET_SVGDOCUMENT_OBJ;
+    if (!JSVAL_IS_OBJECT(argv[0])) EJS_THROW_ERROR(cx,obj,"object as arg 0 required");
+
+    dom::Element* element=NULL;
+    if (!ejselement_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),element)) return JS_FALSE;
+    // todo: exception
+    svgdocument->appendChild(element);
+    *rval=argv[0];
+    return JS_TRUE;
+  }
+  
   static
   JSBool
   svgdocument_addSample(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
@@ -117,6 +138,7 @@ extern "C" {
 
   static JSFunctionSpec svgdocument_methods[] = {
     FUNC(createElement,1),
+    FUNC(appendChild,1),
     FUNC(addSample,0),
     EJS_END_FUNCTIONSPEC
   };
@@ -173,4 +195,3 @@ ejssvgdocument_GetNative(JSContext* cx, JSObject * obj, svg::SVGDocument* &nativ
     EJS_THROW_ERROR(cx,obj,"no valid svgdocument object");
   return JS_TRUE;
 }
-

@@ -41,7 +41,9 @@ static svgl::DisplayManager * displayManager=NULL;
 extern "C" {
 
 
-  static JSBool display(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  static
+  JSBool
+  display(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     svg::SVGDocument* svgdoc=NULL;
@@ -50,6 +52,7 @@ extern "C" {
     if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),svgdoc))
       return JS_FALSE;
     displayManager->display(svgdoc);
+    return JS_TRUE;
   }
 
 

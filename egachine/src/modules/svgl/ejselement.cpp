@@ -47,17 +47,55 @@ extern "C" {
   // because JS_THREADSAFE was not defined correctly (defined or undefined)
 
 #define GET_ELEMENT_OBJ dom::Element* element=NULL;			\
-    if (JS_GET_CLASS(cx, obj) != &element_class)			\
-      EJS_THROW_ERROR(cx,obj,"incompatible object type");		\
-    element=(dom::Element *)JS_GetPrivate(cx,obj);			\
-    if (!element)							\
-      EJS_THROW_ERROR(cx,obj,"no valid dom::Element object")
+    if (!ejselement_GetNative(cx,obj,element)) return JS_FALSE
+
+  static
+  JSBool
+  element_setAttribute(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
+    GET_ELEMENT_OBJ;
+    // todo: root string!
+    JSString *strtype=JS_ValueToString(cx, argv[0]);
+    if (!strtype) return JS_FALSE;
+    unicode::String* name=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
+
+    strtype=JS_ValueToString(cx, argv[1]);
+    if (!strtype) return JS_FALSE;
+    unicode::String* value=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
+
+    // todo: catch exceptions
+    element->setAttribute(name,value);
+    
+    return JS_TRUE;
+  }
+
+  // TODO: this is a method of Node (SVGDocument is also a Node)
+  // currently duplicated
+  static
+  JSBool
+  element_appendChild(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    GET_ELEMENT_OBJ;
+    if (!JSVAL_IS_OBJECT(argv[0])) EJS_THROW_ERROR(cx,obj,"object as arg 0 required");
+    
+    // todo: node expected as agrument not neccessary an element
+    dom::Element* celement=NULL;
+    if (!ejselement_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),celement)) return JS_FALSE;
+    // todo: exception
+    element->appendChild(celement);
+    *rval=argv[0];
+    return JS_TRUE;
+  }
   
 #undef GET_ELEMENT_OBJ
 
 #define FUNC(name, args) { #name,element_##name,args,0,0}
 
   static JSFunctionSpec element_methods[] = {
+    FUNC(setAttribute,2),
+    FUNC(appendChild,1),
     EJS_END_FUNCTIONSPEC
   };
 
@@ -109,5 +147,17 @@ ejs_NewElement(JSContext *cx, JSObject *obj, dom::Element* element)
   // this object is not rooted !!
   JSObject *res=JS_NewObject(cx,&element_class, NULL,NULL);
   if (!res) return NULL;
+  if (!JS_SetPrivate(cx,res,(void *)element)) return NULL;
   return res;
+}
+
+JSBool
+ejselement_GetNative(JSContext* cx, JSObject * obj, dom::Element* &native)
+{
+  if (JS_GET_CLASS(cx, obj) != &element_class)
+    EJS_THROW_ERROR(cx,obj,"incompatible object type");
+  native=(dom::Element *)JS_GetPrivate(cx,obj);
+  if (!native)
+    EJS_THROW_ERROR(cx,obj,"no valid dom::Element object");
+  return JS_TRUE;
 }

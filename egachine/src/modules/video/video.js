@@ -1,4 +1,7 @@
 (function(Video){
+  // module configuration options
+  var getResource=ejs.config.Video.getResource;
+
   // load native library
   var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsvideo.la");
   if (!fname) throw new Error("Could not find module: 'ejsvideo.la'");
@@ -19,7 +22,7 @@
   Video.getTextureID=function(resname){
     var tid=Video.textures[resname];
     if (tid) return tid;
-    var res=EGachine.getResource(resname);
+    var res=getResource(resname);
     var dec=res.decode();
     tid=Video.textures[resname]=Video.createTexture(dec);
     return tid;

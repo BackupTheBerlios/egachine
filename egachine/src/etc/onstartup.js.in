@@ -14,6 +14,9 @@ ejs.config={
     sbits:16,
     sbuffers:512,
     stereo:true,
+  },
+  EGachine:{
+    port:47000
   }
 };
 

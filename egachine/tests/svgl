@@ -9,7 +9,8 @@ var stderr=ejs.ModuleLoader.get("Stream").stderr;
 
 if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
 	stderr.write("Warning no stencil buffer\n");
-
+ejs.config.Input = ejs.config.Input || {};
+ejs.config.Input.toggleFullscreen=function(){return Video.toggleFullscreen();};
 ejs.ModuleLoader.load("svgl");
 function debug(x){stderr.write(x+"\n");}
 

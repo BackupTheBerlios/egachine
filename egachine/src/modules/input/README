@@ -12,8 +12,12 @@ Additionally you can get mouse events  similar to the  W3C DOM level 2
 mouse events by  registering a callback via the Input.addEventListener
 function.
 
+Module configuration options: [default]
+exit: function called to exit [ejs.exit]
+toggleFullscreen: function called to toggle fullscreen video mode
+
 Module dependencies:
-Input -> Video
+none
 
 Library dependencies:
 Input -> libSDL

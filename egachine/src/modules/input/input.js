@@ -1,11 +1,13 @@
 (function(Input) {
+  // module configuration options
+  var exit=ejs.config.Input.exit || ejs.exit;
+  var toggleFullscreen=ejs.config.Input.toggleFullscreen;
+
   // load native library
   if (this.Input) return;
   var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsinput.la");
   if (!fname) throw new Error("Could not find module: 'ejsinput.la'");
   ejs.ModuleLoader.loadNative.call(Input,"ejsinput",fname.substring(0,fname.lastIndexOf(".")));
-
-  var Video=ejs.ModuleLoader.get("Video");
 
   Input.NOEVENT=0;
   Input.ACTIVEEVENT=1;
@@ -612,23 +614,11 @@
     {
       if (!e.state) return false;
       switch (e.sym){
-      case Input.KEY_g:
-	if (e.mod & Input.KMOD_CTRL) {
-	  toggleGrab();
-	  return true;
-	}
-	break;
-      case Input.KEY_z:    
-	if (e.mod & Input.KMOD_CTRL) {
-	  Input.iconifyHandler();
-	  return true;
-	}
-	break;
       case Input.KEY_ESCAPE:
-	ejs.exit(true);
+	exit(true);
       case Input.KEY_RETURN:
 	if (e.mod & Input.KMOD_ALT){
-	  Video.toggleFullscreen();
+	  toggleFullscreen();
 	  return true;
 	}
 	break;
@@ -707,7 +697,7 @@
       event=events[i];
       switch (event.type) {
       case Input.QUIT:
-	ejs.exit(true);
+	exit(true);
       case Input.KEYDOWN:
       case Input.KEYUP:
 	if (!Input.enableUnicode(-1)) {

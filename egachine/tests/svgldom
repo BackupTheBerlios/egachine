@@ -4,11 +4,14 @@
 // not really needed for this test
 var Stream=ejs.ModuleLoader.get("Stream");
 var gl=ejs.ModuleLoader.get("gl");
-var Input=ejs.ModuleLoader.get("Input");
+// end of not really needed for this test
+
 var Video=ejs.ModuleLoader.get("Video");
+ejs.config.Input = ejs.config.Input || {};
+ejs.config.Input.toggleFullscreen=function(){return Video.toggleFullscreen();};
+var Input=ejs.ModuleLoader.get("Input");
 if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
 	Stream.stderr.write("Warning no stencil buffer\n");
-// end of not really needed for this test
 
 var svgl=ejs.ModuleLoader.get("svgl");
 var svgdoc=new svgl.SVGDocument();

@@ -3,25 +3,30 @@ Audio module
 Description:
 Simple audio module allowing to play music and samples.
 
-
 Security:
 Depends on security of SDL_mixer and the libraries enabled and used by
 SDL_mixer.
 
+Module configuration options:
+sdriver:      implementation to use
+srate:        sampling rate
+sbits:        sample precision
+sbuffers:     output buffer size
+stereo:       stereo?
 
 Module dependencies:
 None
 
-
 Library dependencies:
 
-The current implementation uses SDL_mixer. SDL_mixer always depends on
-libSDL.  Older versions  ship with a  modified libmikmod whereas newer
-versions   might  be linked   against an  external libmikmod.  Current
-EGachine distributions ship  with  a statically linked CVS  version of
-libSDL_mixer   because  this  module  depends  on   the Mix_LoadMUS_RW
-function only available in newer versions.  Midi,  ogg and mp3 support
-are disabled.
+At  the moment    there   is only   one    implementation.   It   uses
+SDL_mixer.   SDL_mixer always depends  on libSDL.    Older versions of
+SDL_mixer  ship  with a  modified  version  of libmikmod whereas newer
+versions might   be linked  against an  external   libmikmod.  Current
+EGachine distributions ship with a   statically linked CVS version  of
+libSDL_mixer because  this   module  depends on   the   Mix_LoadMUS_RW
+function only available in newer  versions.  Midi, ogg and mp3 support
+are disabled in those builds.
 
 Audio -> libSDL_mixer
 libSDL_mixer -> libSDL

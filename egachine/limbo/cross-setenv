@@ -15,4 +15,4 @@ export STRIP=i586-mingw32msvc-strip
 export PATH="/usr/local/i586-mingw32msvc/bin:$HOME/develop/cross/bin:$PATH"
 export PKG_CONFIG_PATH=/usr/local/i586-mingw32msvc/lib/pkgconfig
 export CPPFLAGS="-I/usr/local/i586-mingw32msvc/include"
-export LDFLAGS="-I/usr/local/i586-mingw32msvc/lib"
+export LDFLAGS="-L/usr/local/i586-mingw32msvc/lib"

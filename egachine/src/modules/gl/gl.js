@@ -1,11 +1,3 @@
-(function(){
-  if (GL_TRUE) return;
-  // load native library
-  var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsgl.la");
-  if (!fname) throw new Error("Could not find module: 'ejsgl.la'");
-  ejs.ModuleLoader.loadNative.call(ejs.getGlobal(),"ejsgl",fname.substring(0,fname.lastIndexOf(".")));
- })();
-
 // opengl constants
 // did not put them into gl. because
 // gl.Begin(GL_LINES) is nicer than gl.Begin(gl.LINES) or similar
@@ -672,5 +664,12 @@ const GL_Q=0x2003;
 const GL_TEXTURE_GEN_R=0x0C62;
 const GL_TEXTURE_GEN_Q=0x0C63;
 
-// we need video module
-if (!this.Video) ejs.ModuleLoader.load("Video");
+(function(mod){
+  // load native library
+  var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsgl.la");
+  if (!fname) throw new Error("Could not find module: 'ejsgl.la'");
+  ejs.ModuleLoader.loadNative.call(mod,"ejsgl",fname.substring(0,fname.lastIndexOf(".")));
+
+  // we need video module
+  var Video=ejs.ModuleLoader.get("Video");
+ })(this);

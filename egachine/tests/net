@@ -10,11 +10,6 @@ ejs.ModuleLoader.load("Net");
 
 echo '
 ejs.ModuleLoader.load("Net");
-if (!Net._loadedScript) throw ("Script not loaded");
-'|../src/ejs
-
-echo '
-ejs.ModuleLoader.load("Net");
 try{
     stream=Net.connect("127.0.0.2",13);
     throw new Error("127.0.0.2 should not exist");

@@ -2,15 +2,16 @@
 ../src/ejs <<EOF
 
 // not really needed for this test
-ejs.ModuleLoader.load("Stream");
-ejs.ModuleLoader.load("gl");
-ejs.ModuleLoader.load("Input");
+var Stream=ejs.ModuleLoader.get("Stream");
+var gl=ejs.ModuleLoader.get("gl");
+var Input=ejs.ModuleLoader.get("Input");
+var Video=ejs.ModuleLoader.get("Video");
 if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
 	stderr.write("Warning no stencil buffer\n");
 // end of not really needed for this test
 
-ejs.ModuleLoader.load("svgl");
-var svgdoc=new SVGDocument();
+var svgl=ejs.ModuleLoader.get("svgl");
+var svgdoc=new svgl.SVGDocument();
 // create svg element
 var svg=svgdoc.createElement("svg");
 svg.setAttribute("width",320);
@@ -29,10 +30,9 @@ text.setAttribute("style","font-size:32;text-anchor:middle;fill:black");
 text.setAttribute("x",160);
 text.setAttribute("y",100);
 text.childNodes.item(0).setNodeValue("Hello");
-svgdoc
-    .appendChild(svg
-	.appendChild(rect)
-	.appendChild(text));
+svgdoc.appendChild(svg);
+svg.appendChild(rect);
+svg.appendChild(text);
 
 var i;
 for (i=0;i<400;++i) {

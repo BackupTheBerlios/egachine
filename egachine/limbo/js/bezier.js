@@ -155,7 +155,7 @@ Video.setViewportCoords({left:0,right:sx,bottom:0,top:sy});
 //gl.Enable(GL_LINE_SMOOTH);
 gl.LineWidth(1280/1000);
 if (gl.GetError()) throw gl.GetError();
-test=new Bezier([new V2D(sx/8,-sy),new V2D(sx,sy),new V2D(0,sy),new V2D(7/8*sx,-sy)]);
+test=new Bezier([new sg.V2D(sx/8,-sy),new sg.V2D(sx,sy),new sg.V2D(0,sy),new sg.V2D(7/8*sx,-sy)]);
 test.subdivide(4/3/50);
 var dl=gl.GenLists(1);
 gl.NewList(dl,GL_COMPILE);

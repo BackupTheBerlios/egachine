@@ -1,7 +1,42 @@
 #!/bin/bash
 ../src/ejs <<EOF
+function assert(f) {
+  if (!f()) throw Error("Assertion failed: "+f.toSource());
+};
+
+function expect(f,exp) {
+  var res=f();
+  if (res!=exp)
+    throw Error("expect failed: "+f.toSource()+"="+uneval(res)+"!="+uneval(exp));
+};
+
+function isStream(stream)
+{
+  expect(function(){return typeof stream;},"object");
+  expect(function(){return stream.__proto__;},x.Stream.prototype);
+  expect(function(){return stream.constructor;},x.Stream);
+  expect(function(){return stream.constructor.name;},"Stream");
+  assert(function(){return stream instanceof x.Stream;});
+}
+
+x=ejs.ModuleLoader.get("Stream");
+Stream=x.Stream;
+
+expect(function(){return typeof x.Stream;},"function");
+expect(function(){return x.Stream.name;},"Stream");
+
+stream=new x.Stream();
+
+isStream(stream);
+isStream(x.stdin);
+isStream(x.stdout);
+isStream(x.stderr);
+EOF
+
+../src/ejs <<EOF
 ejs.ModuleLoader.load("Stream");
-s=new Stream();
+
+s=new Stream.Stream();
 success=true;
 try{
 	s.write("huhu");
@@ -23,20 +58,20 @@ try{
 	success=false;
 }catch(e){}
 if (!success) throw new Error("failed");
-if (!stdin) throw new Error("failed: stdin");
-if (!stdout) throw new Error("failed: stdout");
-if (!stderr) throw new Error("failed: stderr");
+if (!Stream.stdin) throw new Error("failed: Stream.stdin");
+if (!Stream.stdout) throw new Error("failed: Stream.stdout");
+if (!Stream.stderr) throw new Error("failed: Stream.stderr");
 EOF
 
 echo 'Hello World!'|../src/ejs <(echo '
 ejs.ModuleLoader.load("Stream");
-if ((s=stdin.read(11))!="Hello World") throw s;
+if ((s=Stream.stdin.read(11))!="Hello World") throw s;
 ')
 
 O=$(echo '
 ejs.ModuleLoader.load("Stream");
 print=function(x){
-    stdout.write(x);
+    Stream.stdout.write(x);
 }
 println=function(x){print(x+"\n");}
 println("Hello World");
@@ -49,7 +84,7 @@ fi
 
 O=$(echo '
 ejs.ModuleLoader.load("Stream");
-stderr.write("Hello World");
+Stream.stderr.write("Hello World");
 '|../src/ejs 2>&1)
 
 if [ "x$O" != "xHello World" ]; then
@@ -59,7 +94,7 @@ fi
 O=$(echo '
 ejs.ModuleLoader.load("Stream");
 x=100;
-stdout.write(x);
+Stream.stdout.write(x);
 '|../src/ejs)
 
 if [ "x$O" != "x100" ]; then

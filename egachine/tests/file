@@ -12,7 +12,8 @@ if (!File.mode.read)
 	throw new Error("failed");
 stream=File.open("Makefile",File.mode.read);
 function assert(x){if (!x()) throw new Error(x.toSource());};
-assert(function(){return stream instanceof Stream;});
+str=ejs.ModuleLoader.get("Stream");
+assert(function(){return stream instanceof str.Stream;});
 if ((s=stream.read(10))!="# Makefile")
 	throw new Error("failed: \""+s+"\"");
 stream=File.read("Makefile");

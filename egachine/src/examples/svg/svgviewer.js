@@ -1,6 +1,7 @@
 ejs.ModuleLoader.load("gl");
 ejs.ModuleLoader.load("EGachine");
 ejs.ModuleLoader.load("Input");
+ejs.ModuleLoader.load("Timer");
 
 if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
   stderr.write("Warning no stencil buffer\n");
@@ -61,7 +62,7 @@ if (argv.length<2) {
 stream=File.read(argv[1]);
 if (stream.inAvailable()<=0)
   throw Error("Could not open file: "+argv[1]);
-document=new SVGDocument(stream.read(stream.inAvailable()));
+document=new svgl.SVGDocument(stream.read(stream.inAvailable()));
 document.documentElement=document.getDocumentElement();
 
 /*

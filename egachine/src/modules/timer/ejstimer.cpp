@@ -70,13 +70,10 @@ extern "C" {
 #undef FUNC
 
   JSBool
-  ejstimer_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejstimer_LTX_onLoad(JSContext *cx, JSObject *module)
   {
     Timer::init();
-    JSObject *obj = JS_DefineObject(cx, global,
-				    "Timer", NULL, NULL, JSPROP_ENUMERATE);
-    if (!obj) return JS_FALSE;
-    return JS_DefineFunctions(cx, obj, static_methods);
+    return JS_DefineFunctions(cx, module, static_methods);
   }
 
   JSBool
@@ -85,5 +82,4 @@ extern "C" {
     Timer::deinit();
     return JS_TRUE;
   }
-
 }

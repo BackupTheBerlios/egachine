@@ -17,7 +17,6 @@ editbuild = sed \
 	"@abs_top_srcdir@/src/modules/network"\,\
 	"@abs_top_srcdir@/src/modules/bytearray"\,\
 	"@abs_top_srcdir@/src/modules/egachine"\,\
-	"@abs_top_srcdir@/src/modules/base64"\,\
 	"@abs_top_srcdir@/src/modules/timer"\,\
 	"@abs_top_srcdir@/src/modules/gl"\,\
 	"@abs_top_srcdir@/src/modules/video"\,\
@@ -25,9 +24,9 @@ editbuild = sed \
 	"@abs_top_srcdir@/src/modules/audio"\,\
 	"@abs_top_srcdir@/src/modules/svgl"\,\
 	"@abs_top_srcdir@/src/modules/util"\,\
-	"@abs_top_srcdir@/src/modules/graphviz"\,\
 	"@abs_top_srcdir@/src/modules/jsolait"\,\
 	"@abs_top_srcdir@/src/modules"\,\
+	"@abs_top_srcdir@/src/modules/jsmisc"\,\
 	,g' \
 	-e 's,@libraryPath\@,\
 	"@abs_top_builddir@/src/modules/example"\,\

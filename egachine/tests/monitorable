@@ -1,7 +1,7 @@
 #!/bin/sh
 echo '
 success=false;
-ejs.ModuleLoader.load("Monitorable");
+this.Monitorable=ejs.ModuleLoader.get("Monitorable").Monitorable;
 ejs.ModuleLoader.load("Stream");
 function println(x){stdout.write(x+"\n");stdout.sync();}
 function chopLine(x){

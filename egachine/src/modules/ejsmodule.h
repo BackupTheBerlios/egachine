@@ -67,6 +67,30 @@
 
 // end of public API -------------------------------------------------
 
+//! evaluate in current scope: "(function(){return "+expr+";})()"
+inline
+JSBool
+ejs_evalExpression(JSContext* cx, JSObject* obj, const char* expr, jsval* rval)
+{
+  std::string fbody("return ");
+  fbody+=expr;
+  fbody+=";";
+  JSFunction *func;
+  JSObject* fobj;
+  if (!(func=JS_CompileFunction(cx, obj, NULL,
+				0, NULL,
+				fbody.c_str(), fbody.length(),	
+				NULL, 0))) return JS_FALSE;
+  // root function
+  if (! (((fobj = JS_GetFunctionObject(func))) && (JS_AddNamedRoot(cx, &fobj, "fobj"))) )
+    return JS_FALSE;
+  JSBool ret=JS_TRUE;
+  if (!JS_CallFunction(cx, obj, func, 0, NULL, rval))
+    ret=JS_FALSE;
+  if (!JS_RemoveRoot(cx, &fobj))
+    ret=JS_FALSE;
+  return ret;
+}
 
 //! not part of the public api
 inline

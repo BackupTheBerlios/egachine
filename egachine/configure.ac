@@ -332,7 +332,6 @@ AC_CONFIG_FILES([
 	src/modules/network/Makefile
 	src/modules/bytearray/Makefile
 	src/modules/egachine/Makefile
-	src/modules/base64/Makefile
 	src/modules/timer/Makefile
 	src/modules/gl/Makefile
 	src/modules/video/Makefile
@@ -341,8 +340,8 @@ AC_CONFIG_FILES([
 	src/modules/audio/Makefile
 	src/modules/svgl/Makefile
 	src/modules/util/Makefile
-	src/modules/graphviz/Makefile
 	src/modules/jsolait/Makefile
+	src/modules/jsmisc/Makefile
 ])
 
 AC_OUTPUT

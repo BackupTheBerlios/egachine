@@ -59,6 +59,14 @@ SDL_mixer/mikmod?
 SDL_image?
 --------------------------------------------------------------------------------
 the svgl module is completely insecure at the moment
+--------------------------------------------------------------------------------
+glft seems buggy
+font which made trouble:
+/usr/share/fonts/truetype/aircut3.ttf
+
+Remember:
+InitHelper.cpp sets default font path, too
+overwriting glft's one !
 ================================================================================
 
 
@@ -635,6 +643,13 @@ diff -u -r1.1.1.1 SVGDocument.cpp
 --------------------------------------------------------------------------------
 JS_ConstructObject vs. JS_NewObject !!
 perhaps i should use JS_ConstructObject where i am using JS_NewObject ?!
+
+JS_NewObject makes an object of the given class but does not call the class
+constructor.  JS_ConstructObject is JS_NewObject plus a call to the class
+constructor, found by looking up the class name in the last object on the scope
+chain.  JS_DefineObject is a convenience that does JS_NewObject and then
+JS_DefineProperty to name that new object in another object, via a new property.
+
 --------------------------------------------------------------------------------
 splitted binary packages
 perhaps i should split the source, too? not now
@@ -961,21 +976,6 @@ http://jan.kollhof.net/publications/svgopen2004.html
 
 inkscape
 --------------------------------------------------------------------------------
-serialization:
-
-the new serialization is quite slow
-
-we now have many different serialization approaches
-2 will remain:
-- server to clients:
-	goal: try to serialize as complete as possible
-	(prototypes, sharp variables, ...)
-	support "incremental" serialization (later modification)
-	distributed object graph
-- client to server:
-	goal: don't use eval (security)
-	use JSON (subset of javascript object literals)
---------------------------------------------------------------------------------
 
 jsolait integration
 jsolait adds some functions to standard prototypes?
@@ -995,10 +995,134 @@ netorigpong.js:
 --------------------------------------------------------------------------------
 perhaps write a JSON c++ bridge a la dope or JSON c++ sigc++
 and use it for easy (but slow!) wrapping ?
+--------------------------------------------------------------------------------
+module unloading?
+would be nice and useful
+f.e. egachine could use it to be able to unload unsecure modules before
+entering untrusted mode (the svgl module)
+and of course one could load new versions of modules without restart
+
+this could be done in combination with other module improvements
+but it should stay as simple as possible!!
+--------------------------------------------------------------------------------
+it would be nice if egachine could use the svgl module
+(and if not while running untrusted games at least on startup
+for menu stuff)
+on the other hand the svgl module is really big (~2.5M) - and will grow
+
+the big question:
+should egachine depend on the svgl module or not?
+use it optionally?
 ================================================================================
-
-
 
 Performance problems:
 
 - scene graph traversion is quite slow
+- serialization: the new serialization (ObjectWriter and reader) is quite slow
+
+
+wollte grad ein svg terminal / interactive shell schreiben
+ist doch recht aufwendig
+
+javakara
+http://www.educeth.ch/informatik/karatojava/javakara/
+
+tutorial machen
+das ich für die vorführung verwende
+tutorial selbst benutzt egachine+SVG
+
+
+bin dabei removeChild bug zu finden (fixed ?)
+--------------------------------------------------------------------------------
+tspan?
+also slide show:
+wie mache ich das jetzt soll ich da mein text file basiertes benutzen
+oder doch einfach SVG?
+--------------------------------------------------------------------------------
+also problem bei der presentation ist, daß meine ganzen demos total den
+namespace vollmüllen und ich noch keinen mechanismus habe damit umzugehen
+
+jetzt kann ich entweder die demos ändern oder einen solchen mechanismus
+machen
+
+auf jedenfall müssen ja presentation und demo kooperieren
+(zwecks navigation!)
+am schönsten wären sowieso eingebettete demos
+das ganze ist halt echt ein hack
+--------------------------------------------------------------------------------
+gl error handling is shit
+--------------------------------------------------------------------------------
+habe name clash
+zw. svgl Text und egachine.js Text !!
+=> create sg (scenegraph) module
+--------------------------------------------------------------------------------
+module stuff:
+make it similar to jsolait
+but also a bit different
+ejs.ModuleLoader.import(namespace,modulename)
+where namespace is some object which the module
+should use to define it's functions in.
+Why should?
+some modules might still prefer to pollute the
+global namespace
+(f.e. the gl module for its gl constants)
+
+import is a key word :-(
+ejs.ModuleLoader.load(namespace, modulename)
+
+is this really better than jsolait's approach?
+
+problem with my approach
+loading a module twice:
+since you can pass in a non-empty namespace
+we can't return a namespace only containing the module
+on the second load
+
+problem with jsolait's approach
+there is no simple way to import one namespace into
+another one since not all members will be enumerable
+
+on the other hand such a feature would have to handle
+collisions
+
+okay we go with jsolaits approach
+hmm - makes it difficult not to break compatibility
+
+i make both
+
+hmmm
+perhaps we should simply use jsolaits module loading
+no need to have two module loading frameworks!
+eiter use jsoltait's one or remove jsolait's one
+
+hmm no
+--------------------------------------------------------------------------------
+okay bin beim modul kram ummodeln
+tests schlagen fehl
+gibt merkwürdige effekte mit anderem this
+evtl. kann man das abschalten s.h jsapi.h
+(globale variablen usw.)
+
+hmm
+clean up
+
+also das mit meinem modullader ist so als ob das modul der globale namensraum
+wäre
+nein nicht ganz
+nur beim lesen?
+
+--------------------------------------------------------------------------------
+shit jetzt schien alles gut ist es aber nicht
+denn er sucht den constructor anhand clasp->name
+
+lsg.: NewObject nehmen => constructor wird nicht aufgerufen
+und proto setzen nicht finden lassen
+
+hmm nicht so richtig gut
+liegt es vielleicht am parent?
+--------------------------------------------------------------------------------
+complete module transition
+
+war debei alles voll fertig zu machen
+1. presentation
+2. beispiele

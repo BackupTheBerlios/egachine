@@ -60,6 +60,16 @@ extern "C" {
 
   static
   JSBool
+  stopMusic(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
+  {
+    // sound disabled?
+    if (!Audio::audio) return JS_TRUE;
+    Audio::audio->stopMusic();
+    return JS_TRUE;
+  }
+  
+  static
+  JSBool
   loadSample(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     // sound disabled?
@@ -96,6 +106,7 @@ extern "C" {
 
   static JSFunctionSpec static_methods[] = {
     FUNC(playMusic,3),
+    FUNC(stopMusic,0),
     FUNC(loadSample,1),
     FUNC(playSample,2),
     EJS_END_FUNCTIONSPEC
@@ -104,16 +115,13 @@ extern "C" {
 #undef FUNC
 
   JSBool
-  ejsaudio_LTX_onLoad(JSContext* cx, JSObject* global)
+  ejsaudio_LTX_onLoad(JSContext* cx, JSObject* module)
   {
     // todo: get from javascript / config file
     AudioConfig ac;
     Audio::init(ac);
 
-    JSObject *obj = JS_DefineObject(cx, global, "Audio", NULL, NULL,
-				    JSPROP_ENUMERATE);
-    if (!obj) return JS_FALSE;
-    if (!JS_DefineFunctions(cx, obj, static_methods)) return JS_FALSE;
+    if (!JS_DefineFunctions(cx, module, static_methods)) return JS_FALSE;
     return JS_TRUE;
   }
 

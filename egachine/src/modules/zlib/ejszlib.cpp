@@ -150,12 +150,9 @@ extern "C" {
     \return JS_TRUE on success
   */
   JSBool
-  ejszlib_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejszlib_LTX_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *o = JS_DefineObject(cx, global, "Zlib", NULL, NULL,
-				  JSPROP_ENUMERATE);
-    if (!o) return JS_FALSE;
-    return JS_DefineFunctions(cx, o, static_methods);
+    return JS_DefineFunctions(cx, module, static_methods);
   }
   
   //! function called before module is unloaded

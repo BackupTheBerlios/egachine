@@ -27,16 +27,12 @@ ejs.ModuleLoader.load("Video");
 ejs.ModuleLoader.load("Input");
 ejs.ModuleLoader.load("Audio");
 ejs.ModuleLoader.load("Net");
-var useSVG=false;
+ejs.ModuleLoader.load("sg");
+ejs.ModuleLoader.load("Timer");
+ejs.ModuleLoader.load("Base64");
+var useSVG=true;
 
-EGachine.version={string:"@PACKAGE_VERSION@"};
-(function(){
-  var x=EGachine.version.string.split(".");
-  EGachine.version.major=x[0];
-  EGachine.version.minor=x[1];
-  EGachine.version.micro=x[2];
- })();
-
+EGachine.version=new EGachine.Version("@PACKAGE_VERSION@");
 EGachine.client=true;
 
 EGachine.connectDialog=function(host,port){
@@ -208,6 +204,16 @@ EGachine.connectDialog=function(host,port){
   };
 };
 
+//! register function to be called each step in time
+/*!
+  \note if stepSize is 0 or undefined f is called as often as
+  possible / useful
+*/
+EGachine.step=function(f,stepSize) {
+  // todo: for now we always ignore stepSize
+  EGachine._step=f;
+};
+
 Audio._playMusic=Audio.playMusic;
 Audio.playMusic=function(resname) {
   var res=EGachine.getResource(resname);
@@ -237,34 +243,56 @@ Audio.playSample=function(resname,repeat) {
   return Audio._playSample(sid,repeat);
 };
 
-addResources();
-//Audio.playMusic("...");
+(function(){
+  addResources();
+  //Audio.playMusic("...");
 
-if ((argv.length<2)||(argv.length==3)) {
-  if (useSVG) {
-    try{
-      useSVG=true;
-      ejs.ModuleLoader.load("svgl");
-    }catch(e){
-      useSVG=false;
+  if ((argv.length<2)||(argv[1]=="-c")) {
+    if (useSVG) {
+      try{
+	useSVG=true;
+	ejs.ModuleLoader.load("svgl");
+      }catch(e){
+	useSVG=false;
+      };
     };
-  }
+    EGachine.connectDialog(argv[2],argv[3]);
+    ejs.exit(true);
+  }else if ((argv[1]!="-h")&&(argv[1]!="--help")) {
+    ejs.loadUntrusted(argv[1]);
+    if (EGachine._step) {
+      // application without its own main loop
+      // => we provide the main loop
+      var start,last,now;
+      last=start=Timer.getTimeStamp();
+      while (true) {
+	now=Timer.getTimeStamp();
+	dt=(now-last)/1000000.0;
+	last=now;
 
-  EGachine.connectDialog(argv[1],argv[2]);
-  ejs.exit(true);
-};
+	// get input events
+	Input.poll();
 
-if ((argv.length>3)||(argv[1]=="-h")||(argv[1]=="--help")) {
-  stderr.write("Usage: egachine [-h|--help|FILE|[host port]] [OPTION]...\n");
-  ejs.exit(true);
-};
+	// clear screen
+	if (EGachine.sceneGraph)
+	  Video.clear();
 
-if (argv.length==2) {
-  ejs.loadUntrusted(argv[1]);
-  ejs.exit(true);
-};
+	EGachine._step(dt);
 
-function addResources(){
+	// paint scenegraph
+	if (EGachine.sceneGraph) {
+	  EGachine.sceneGraph.paint(dt);
+	  Video.swapBuffers();
+	};
+      };
+    };
+    ejs.exit(true);
+  }else{
+    stderr.write("Usage: egachine [-h|--help|FILE|[-c host port]] [OPTION]...\n");
+    ejs.exit(true);
+  };
+
+  function addResources(){
 EGachine.addResource(
 ({name:"egachine.svg", size:5368, z:true, data:"\
 eJy9WF1vG7cSfc+v2Lt+aR/E5fCbiuUC18kNCqT3Fm3a4j4qWsraVt4VpLUd99f3DFdSJMt2G7RwgCC\
@@ -301,4 +329,5 @@ SYCJe3aGGUwnMDZ9F1rBtqB5dmnn04UxXlamnR64zk7GVehzDs49cL6GxgaKCB/5hjpeW6zfOuy83r1\
 I8TWB9/yjz4PyJER2LaIzK7Fw0djCjIjkgBPj7/tDmzM6mlPn6lIWO8pueipU+jZdCvFXL2+dfM5yvQ\
 ncLxWybIgaMHQxfR3iO0/yeHrsGVef5zPG417eqmf3rgWnaz6XLRbfrduMX/03fx6g84zJZp\
 "}));
-};
+  };
+})();

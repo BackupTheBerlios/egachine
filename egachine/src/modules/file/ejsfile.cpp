@@ -25,8 +25,7 @@
 #include <fstream>
 #include "ejsmodule.h"
 
-
-// this code is also in ejsnet.cpp
+// todo: similar code is also in ejsnet.cpp
 JSBool
 newStreamObject(JSContext* cx, JSObject* obj, std::streambuf* stream, jsval* rval)
 {
@@ -38,13 +37,10 @@ newStreamObject(JSContext* cx, JSObject* obj, std::streambuf* stream, jsval* rva
   // this is only safe if we know that the created javascript object 
   // is of the correct class (stream_class) otherwise this would be dangerous
 
-  std::string script("new Stream()");
   jsval streamval;
-  if (!JS_EvaluateScript(cx, obj, 
-			 script.c_str(), script.length(),
-			 __PRETTY_FUNCTION__ , 1,
-			 &streamval))
+  if (!ejs_evalExpression(cx,obj,"new (ejs.ModuleLoader.get(\"Stream\").Stream)()",&streamval))
     return JS_FALSE;
+
   // todo: is this enough to root this object?
   *rval=streamval;
   if (!JSVAL_IS_OBJECT(streamval))
@@ -123,15 +119,12 @@ extern "C" {
 #undef FUNC
 
   JSBool
-  ejsfile_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejsfile_LTX_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *obj = JS_DefineObject(cx, global,
-				    "File", NULL, NULL, JSPROP_ENUMERATE);
-    if (!obj) return JS_FALSE;
-    if (!JS_DefineFunctions(cx, obj, file_static_methods)) return JS_FALSE;
+    if (!JS_DefineFunctions(cx, module, file_static_methods)) return JS_FALSE;
     return JS_TRUE;
   }
-
+  
   JSBool
   ejsfile_LTX_onUnLoad()
   {

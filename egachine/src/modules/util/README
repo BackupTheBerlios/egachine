@@ -7,9 +7,9 @@ depend upon other modules.
 The util.ieval and util.isCompilableUnit functions allow to write
 a interactive shell. The simplest interactive shell:
 #!/usr/bin/ejs
-ejs.ModuleLoader.load("Stream");
-ejs.ModuleLoader.load("util");
-util.ieval.call(this,stdin,stdout,stderr);
+var Stream=ejs.ModuleLoader.get("Stream");
+var util=ejs.ModuleLoader.get("util");
+util.ieval.call(this,Stream.stdin,Stream.stdout,Stream.stderr);
 
 The util.getObjectID function returns a unique key value for an
 arbitrary object.

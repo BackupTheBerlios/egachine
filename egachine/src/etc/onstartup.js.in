@@ -5,10 +5,15 @@ ejs.config={
   }
 };
 
+// -- end of configuration --
+// todo: move the stuff below out from etc (as much as possible)
+
+//! get global object
 ejs.getGlobal=function(){
   return ejs.__parent__;
 };
 
+//! find file in any directory contained in path array
 ejs.ModuleLoader.findFile=function(path,fname) {
   var i;
   var cname;
@@ -18,17 +23,53 @@ ejs.ModuleLoader.findFile=function(path,fname) {
   }
 };
 
-ejs.ModuleLoader.load=function(module) {
-  //  if (ejs.getGlobal()[module]) return;
-  var lmodule=module.toLowerCase();
-  var fname=ejs.ModuleLoader.findFile(ejs.config.modules.scriptPath,lmodule+".js");
-  if (fname) return ejs.ModuleLoader.loadScript.call(ejs.getGlobal(),fname);
+//! module constructor
+ejs.Module=function(){};
+
+// remember loaded modules
+ejs.ModuleLoader.modules={};
+
+//! load module and return a newly created namespace object containing it
+/*!
+  \return already loaded module or load it
+
+  \note: some modules might define constants/... 
+  outside of the namespace (module object)
+*/
+ejs.ModuleLoader.get=function(moduleName) {
+  var e,module,lmname,fname;
+
+  lmname=moduleName.toLowerCase();
   
-  fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejs"+lmodule+".la")
-  if (!fname) throw new Error("Could not find module: '"+module+"'");
-  return ejs.ModuleLoader.loadNative.call(ejs.getGlobal(),"ejs"+lmodule, fname.substring(0,fname.lastIndexOf(".")));
+  // already loaded?
+  if ((module=ejs.ModuleLoader.modules[lmname])) return module;
+  
+  // load
+  ejs.ModuleLoader.modules[lmname]=module=new ejs.Module();
+  var fname=ejs.ModuleLoader.findFile(ejs.config.modules.scriptPath,lmname+".js");
+  if (fname) {
+    ejs.ModuleLoader.loadScript.call(module,fname);
+  }else{
+    fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejs"+lmname+".la")
+    if (!fname) throw new Error("Could not find module: '"+moduleName+"'");
+    ejs.ModuleLoader.loadNative.call(module,"ejs"+lmname, fname.substring(0,fname.lastIndexOf(".")));
+  }
+  ejs.ModuleLoader.modules[lmname]=module;
+  
+  return module;
 };
 
+//! import module into default namespace
+ejs.ModuleLoader.load=function(moduleName) {
+  var module;
+  var global=ejs.getGlobal();
+  module=ejs.ModuleLoader.get(moduleName);
+  if (global[moduleName] && (global[moduleName]!=module))
+    throw Error("namespace collision: "+moduleName+" already defined");
+  ejs.getGlobal()[moduleName]=module;
+};
+
+//! load and evaluate a JavaScript script
 ejs.load=function(file) {
   // todo: should we allow to load libs from everywhere too?
   if (!ejs.ModuleLoader.fileIsReadable(file))
@@ -36,6 +77,7 @@ ejs.load=function(file) {
   return ejs.ModuleLoader.loadScript.call(ejs.getGlobal(),file);
 };
 
+//! load and evaluate an untrusted JavaScript script
 ejs.loadUntrusted=function(file) {
   if (!ejs.ModuleLoader.fileIsReadable(file))
     throw new Error("Could not open file: '"+file+"'");
@@ -52,5 +94,3 @@ ejs.resolve=function(name,flags) {
   return false;
 }
 */
-
-//load=ejs.load;

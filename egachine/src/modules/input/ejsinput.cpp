@@ -134,6 +134,14 @@ extern "C" {
 
   static
   JSBool
+  waitEvent(JSContext *cx, JSObject *, uintN, jsval *, jsval *rval)
+  {
+    *rval=INT_TO_JSVAL(SDL_WaitEvent(NULL));
+    return JS_TRUE;
+  }
+  
+  static
+  JSBool
   enableKeyRepeat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
@@ -169,6 +177,7 @@ extern "C" {
 
   static JSFunctionSpec static_methods[] = {
     FUNC(getEvents,0),
+    FUNC(waitEvent,0),
     FUNC(enableKeyRepeat,2),
     FUNC(enableUnicode,1),
     FUNC(numJoysticks,0),
@@ -178,14 +187,10 @@ extern "C" {
 #undef FUNC
 
   JSBool
-  ejsinput_LTX_onLoad(JSContext* cx, JSObject* global)
+  ejsinput_LTX_onLoad(JSContext* cx, JSObject* module)
   {
-    JSObject *obj = JS_DefineObject(cx, global,
-				    "Input", NULL, NULL,
-				    JSPROP_ENUMERATE);
-    if (!obj) return JS_FALSE;
-    if (!JS_DefineFunctions(cx, obj, static_methods))
+    if (!JS_DefineFunctions(cx, module, static_methods))
       return JS_FALSE;
-    return ejsjoystick_onLoad(cx,obj);
+    return ejsjoystick_onLoad(cx,module);
   }
 }

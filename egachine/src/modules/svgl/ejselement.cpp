@@ -27,6 +27,8 @@
 #include "strutils.h"
 #include <cassert>
 
+static JSObject *elementProto = NULL;
+
 extern "C" {
 
   static
@@ -102,11 +104,11 @@ extern "C" {
     if (!jsToDomString(cx,argv[0],name)) return JS_FALSE;
     dom::String* value=NULL;
     if (!jsToDomString(cx,argv[1],value)) return JS_FALSE;
-    /*
-    std::cerr << "Set Attribute: '"
-	      << *name << "' ("<<name->getLength()<<")" 
-	      << " to '" << *value <<"' ("<<value->getLength()<<")\n";
-    */
+
+    EJS_INFO("Set Attribute: '"
+	     << *name << "' ("<<name->getLength()<<")" 
+	     << " to '" << *value <<"' ("<<value->getLength()<<")");
+
     // todo: catch exceptions
     nthis->setAttribute(name,value);
 
@@ -151,6 +153,7 @@ extern "C" {
   element_cons
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
+    EJS_INFO("called");
     return JS_TRUE;
   }
 
@@ -165,15 +168,15 @@ extern "C" {
   }
 
   JSBool
-  ejselement_onLoad(JSContext *cx, JSObject *global)
+  ejselement_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *element = JS_InitClass(cx, global,
-				     NULL,
-				     &element_class,
-				     element_cons, 0,
-				     element_props, element_methods,
-				     NULL, NULL);
-    if (!element) return JS_FALSE;
+    elementProto = JS_InitClass(cx, module,
+				NULL,
+				&element_class,
+				element_cons, 0,
+				element_props, element_methods,
+				NULL, NULL);
+    if (!elementProto) return JS_FALSE;
     return JS_TRUE;
   }
 }
@@ -182,9 +185,10 @@ JSObject*
 ejs_NewElement(JSContext *cx, JSObject *obj, dom::Element* element)
 {
   assert(element);
+  assert(elementProto);
   // todo: should we set parent?
   // this object is not rooted !!
-  JSObject *res=JS_NewObject(cx,&element_class, NULL,NULL);
+  JSObject *res=JS_NewObject(cx,&element_class, elementProto, NULL);
   if (!res) return NULL;
   if (!JS_SetPrivate(cx,res,(void *)element)) return NULL;
   return res;

@@ -101,6 +101,7 @@ extern "C" {
 
     dom::Element* element=nthis->createElement(tag);
     assert(element);
+    EJS_INFO(tag << " " << element);
 
     // TODO: perhaps create specialized wrapper object
     JSObject* njsobj=ejs_NewElement(cx,obj,element);
@@ -280,10 +281,9 @@ extern "C" {
   svgdocument_cons
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
-    if (!JS_IsConstructing(cx)) {
-      // todo
-      EJS_THROW_ERROR(cx,obj,"not yet implemented");
-    }
+    // todo
+    if (!JS_IsConstructing(cx)) EJS_THROW_ERROR(cx,obj,"not yet implemented");
+
     svg::SVGDocument* doc=NULL;
 
     try{
@@ -326,9 +326,9 @@ extern "C" {
   }
 
   JSBool
-  ejssvgdocument_onLoad(JSContext *cx, JSObject *global)
+  ejssvgdocument_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *svgdocument = JS_InitClass(cx, global,
+    JSObject *svgdocument = JS_InitClass(cx, module,
 					 NULL,
 					 &svgdocument_class,
 					 svgdocument_cons, 0,

@@ -33,3 +33,7 @@ hmm should there be a 1:1 mapping between native and wrapper (DOM) objects?
 (at the moment we can have different js object representing the same native
 object
 --------------------------------------------------------------------------------
+must dom object constructors be in global scope?
+--------------------------------------------------------------------------------
+remove empty native constructors and finalizers if possible
+--------------------------------------------------------------------------------

@@ -18,7 +18,7 @@ sy=1;
 input=[0,0];
 rackets=[];
 points=[];
-spriteSize=new V2D(0.1,0.1);
+spriteSize=new sg.V2D(0.1,0.1);
 
 // add our resources (see at the end of the file)
 addResources();
@@ -71,10 +71,10 @@ function clip(min,max,value)
 
 // our Ball object
 Ball=constructor(function() {
-		   this.speed=new V2D(-1/4,-1/4);
-		   this.rotspeed=new Degrees(300);
-		   this.degrees=new Degrees(0);
-		   this.pos=new V2D(sx/2,sy/2);
+		   this.speed=new sg.V2D(-1/4,-1/4);
+		   this.rotspeed=new sg.Degrees(300);
+		   this.degrees=new sg.Degrees(0);
+		   this.pos=new sg.V2D(sx/2,sy/2);
 		 });
 
 Ball.prototype.restart=function(){
@@ -122,29 +122,29 @@ Ball.prototype.step=function(dt){
 ball=new Ball();
 
 // build our scenegraph
-root=new Node()
+root=new sg.Node()
 // racket of player one (right, green)
-  .add(new Color(0,1,0,1)
-       .add(rackets[0]=new Sprite("racket",
+  .add(new sg.Color(0,1,0,1)
+       .add(rackets[0]=new sg.Sprite("racket",
 				  spriteSize,
-				  new V2D(sx-spriteSize.x/2,sy/2))))
+				  new sg.V2D(sx-spriteSize.x/2,sy/2))))
 // racket of player two (left, red)
-  .add(new Color(1,0,0,1)
-       .add(rackets[1]=new Sprite("racket",
+  .add(new sg.Color(1,0,0,1)
+       .add(rackets[1]=new sg.Sprite("racket",
 				  spriteSize,
-				  new V2D(spriteSize.x/2,sy/2))))
+				  new sg.V2D(spriteSize.x/2,sy/2))))
 // the ball
-  .add(new Sprite("ball",spriteSize,ball.pos,ball.degrees))
+  .add(new sg.Sprite("ball",spriteSize,ball.pos,ball.degrees))
 // display points for player one
-  .add(new Color(0,1,0,1)
-       .add(new Translate(new V2D(0.92*sx,0.9*sy))
-	    .add(new Scale(new V2D(sx*0.05,sx*0.05))
-		 .add((points[0]=new Text("0",true))))))
+  .add(new sg.Color(0,1,0,1)
+       .add(new sg.Translate(new sg.V2D(0.92*sx,0.9*sy))
+	    .add(new sg.Scale(new sg.V2D(sx*0.05,sx*0.05))
+		 .add((points[0]=new sg.Text("0",true))))))
 // display points for player two
-  .add(new Color(1,0,0,1)
-       .add(new Translate(new V2D(0.08*sx,0.9*sy))
-	    .add(new Scale(new V2D(sx*0.05,sx*0.05))
-		 .add((points[1]=new Text("0",true))))));
+  .add(new sg.Color(1,0,0,1)
+       .add(new sg.Translate(new sg.V2D(0.08*sx,0.9*sy))
+	    .add(new sg.Scale(new sg.V2D(sx*0.05,sx*0.05))
+		 .add((points[1]=new sg.Text("0",true))))));
 
 // distribute scenegraph to all clients
 // NOTE: changes to the scenegraph are automatically distributed

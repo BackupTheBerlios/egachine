@@ -1,128 +1,112 @@
 // simple pong clone
 
-if (!EGachine.client) throw "This file must be run by egachine";
-if (!EGachine.checkVersion(0,0,7)) throw "at least version 0.0.7 required";
+if ((typeof EGachine == 'undefined')||(!EGachine.client))
+  throw "This file must be run by egachine";
+EGachine.checkVersion("0.1.1");
 
-// array - with current state of input devices
-joypad=[];
+function init() {
+  // array - with current state of input devices
+  var joypad=[];
+  var viewport=Video.getViewport();
+  var sx=viewport[2];
+  var sy=viewport[3];
+  var rackets=[];
+  var points=[];
+  var spriteSize=new sg.V2D(sx/10,sx/10);
 
-viewport=Video.getViewport();
-sx=viewport[2];
-sy=viewport[3];
-rackets=[];
-points=[];
-spriteSize=new V2D(sx/10,sx/10);
+  addResources();
 
+  // register gamepad event listener
+  Input.addDevListener(function(i){
+			 joypad[i.dev]={x:i.x, y:i.y, buttons:i.buttons};
+		       });
 
-addResources();
+  // clip value to [min,max]
+  function clip(min,max,value)
+  {
+    if (value<min) return min;
+    if (value>max) return max;
+    return value;
+  };
 
-// handle input events
-Input.handleInput=function(i){
-  joypad[i.dev]={x:i.x, y:i.y, buttons:i.buttons};
-}
-
-// clip value to [min,max]
-function clip(min,max,value)
-{
-  if (value<min) return min;
-  if (value>max) return max;
-  return value;
-}
-
-// ball object
-function Ball() {
-  this.speed=new V2D(-sx/3,-sx/3);
-  this.degrees=new Degrees(0);
-  this.rotspeed=sx/3;
-  this.pos=new V2D(sx/2,sy/2);
-}
-Ball.prototype.restart=function(){
-  this.pos.x=sx/2;
-  this.pos.y=sy/2;
-}
-Ball.prototype.step=function(dt){
-  this.pos.x+=this.speed.x*dt;
-  this.pos.y+=this.speed.y*dt;
-  this.degrees.value+=this.rotspeed*dt;
-  // collission detection with walls
-  if (this.pos.y<0) {
-    this.pos.y=0;
-    this.speed.y*=-1;
-  }else if (this.pos.y>sy){
-    this.pos.y=sy;
-    this.speed.y*=-1;
-  }
-  // collision with rackets
-  for (var i=0;i<2;i++) {
-    var dx=this.pos.x-rackets[i].pos.x;
-    var dy=this.pos.y-rackets[i].pos.y;
-    if (((Math.abs(dx)<spriteSize.x/2)&&(Math.abs(dy)<spriteSize.y))
-	&&(((this.pos.x<sx/2)&&(this.speed.x<0))||((this.pos.x>sx/2)&&(this.speed.x>0)))) {
-      this.speed.x*=-1;
-      this.rotspeed*=-1;
+  // ball object
+  function Ball() {
+    this.speed=new sg.V2D(-sx/3,-sx/3);
+    this.degrees=new sg.Degrees(0);
+    this.rotspeed=sx/3;
+    this.pos=new sg.V2D(sx/2,sy/2);
+  };
+  Ball.prototype.restart=function(){
+    this.pos.x=sx/2;
+    this.pos.y=sy/2;
+  };
+  Ball.prototype.step=function(dt){
+    this.pos.x+=this.speed.x*dt;
+    this.pos.y+=this.speed.y*dt;
+    this.degrees.value+=this.rotspeed*dt;
+    // collission detection with walls
+    if (this.pos.y<0) {
+      this.pos.y=0;
+      this.speed.y*=-1;
+    }else if (this.pos.y>sy){
+      this.pos.y=sy;
+      this.speed.y*=-1;
     }
-  }
-  // points
-  if (this.pos.x<0) {
-    this.restart();
-    ++(points[0].text);
-  }else if (this.pos.x>sx) {
-    this.restart();
-    ++(points[1].text);
-  }
-}
-
-ball=new Ball();
-
-// build our scenegraph
-root=new Node()
-  .add(new Color(1,0,0,1)
-       .add(rackets[1]=new Sprite("racket",spriteSize,new V2D(spriteSize.x/2,sy/2))))
-  .add(new Color(0,1,0,1)
-       .add(rackets[0]=new Sprite("racket",spriteSize,new V2D(sx-1-spriteSize.x/2,sy/2))))
-  .add(new Sprite("ball",spriteSize,ball.pos,ball.degrees))
-  // display points for player one
-  .add(new Color(0,1,0,1)
-       .add(new Translate(new V2D(0.92*sx,0.9*sy))
-	    .add(new Scale(new V2D(sx*0.05,sx*0.05))
-		 .add((points[0]=new Text("0",true))))))
-  // display points for player two
-  .add(new Color(1,0,0,1)
-       .add(new Translate(new V2D(0.08*sx,0.9*sy))
-	    .add(new Scale(new V2D(sx*0.05,sx*0.05))
-		 .add((points[1]=new Text("0",true))))));
-
-start=Timer.getTimeStamp();
-last=start;
-// main game loop
-while(true){
-  now=Timer.getTimeStamp();
-  dt=(now-last)/1000000.0;
-  last=now;
-
-  // get input events
-  Input.poll();
-  // clear screen
-  Video.clear();
-  // paint scenegraph
-  root.paint(dt);
-
-  // move rackets
-  for (var r=0;r<2;++r) {
-    if (joypad[r]) {
-      rackets[r].pos.y+=joypad[r].y*400.0*dt;
-      rackets[r].pos.y=clip(spriteSize.y/2, sy-1-spriteSize.y/2, rackets[r].pos.y);
+    // collision with rackets
+    for (var i=0;i<2;i++) {
+      var dx=this.pos.x-rackets[i].pos.x;
+      var dy=this.pos.y-rackets[i].pos.y;
+      if (((Math.abs(dx)<spriteSize.x/2)&&(Math.abs(dy)<spriteSize.y))
+	  &&(((this.pos.x<sx/2)&&(this.speed.x<0))||((this.pos.x>sx/2)&&(this.speed.x>0)))) {
+	this.speed.x*=-1;
+	this.rotspeed*=-1;
+      }
     }
-  }
-  // move ball
-  ball.step(dt);
+    // points
+    if (this.pos.x<0) {
+      this.restart();
+      ++(points[0].text);
+    }else if (this.pos.x>sx) {
+      this.restart();
+      ++(points[1].text);
+    }
+  };
 
-  // display new screen
-  Video.swapBuffers();
-}
+  ball=new Ball();
 
-function addResources(){
-  // resources are generated by the egares utility
+  // build our scenegraph
+  EGachine.sceneGraph=new sg.Node()
+    .add(new sg.Color(1,0,0,1)
+	 .add(rackets[1]=new sg.Sprite("racket",spriteSize,new sg.V2D(spriteSize.x/2,sy/2))))
+    .add(new sg.Color(0,1,0,1)
+	 .add(rackets[0]=new sg.Sprite("racket",spriteSize,new sg.V2D(sx-1-spriteSize.x/2,sy/2))))
+    .add(new sg.Sprite("ball",spriteSize,ball.pos,ball.degrees))
+    // display points for player one
+    .add(new sg.Color(0,1,0,1)
+	 .add(new sg.Translate(new sg.V2D(0.92*sx,0.9*sy))
+	      .add(new sg.Scale(new sg.V2D(sx*0.05,sx*0.05))
+		   .add((points[0]=new sg.Text("0",true))))))
+    // display points for player two
+    .add(new sg.Color(1,0,0,1)
+	 .add(new sg.Translate(new sg.V2D(0.08*sx,0.9*sy))
+	      .add(new sg.Scale(new sg.V2D(sx*0.05,sx*0.05))
+		   .add((points[1]=new sg.Text("0",true))))));
+  
+  // register function to be called for each step in time
+  EGachine.step(function(dt){
+		  // move rackets
+		  for (var r=0;r<2;++r) {
+		    if (joypad[r]) {
+		      rackets[r].pos.y+=joypad[r].y*sy/2*dt;
+		      rackets[r].pos.y=clip(spriteSize.y/2, sy-1-spriteSize.y/2, rackets[r].pos.y);
+		    }
+		  }
+		  // move ball
+		  ball.step(dt);
+		});
+  
+  function addResources(){
+    // resources are generated by the egares utility
 EGachine.addResource(
 ({name:"racket", size:1762, data:"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVA\
 AAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxEAAAsRAX9kX5EAAAAHdElNRQfTCwEUEBTcJV/VAAAGc0lE\
@@ -270,4 +254,6 @@ kyErWCZna0YamC7TlCUzBRxetS1YbIxiv9dO9VH3vaLJ899U1+ZeeRHb+7v1Lxv0LPvr6N+m6jaQUcp\
 UgISYpXsA00dmbRTD2E7WOZ6hgmOnkv0JeBDzBHzhdj6T6nhN173C6c2vt7f+qpfmvrzD94+N3DcLyL\
 3WiN3S043IWbl3I7ovr6hLwE1GRNj3q7TejbujDf2pPc85Ex+8K0//6VLf69vjf0/b5n89BvtzjjM7+\
 vQvbobsdZOKps2v+XnTra8Fq/Fa/Fa/B3G/wWKvKShjDb2ywAAAABJRU5ErkJggg=="}));
-}
+  }
+};
+init();

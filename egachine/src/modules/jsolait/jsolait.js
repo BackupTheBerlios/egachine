@@ -20,14 +20,17 @@
   Modified by Jens Thiele <karme@berlios.de> for ejs
 */
 
+(function(jsolait){
+  var File=ejs.ModuleLoader.get("File");
+  var util=ejs.ModuleLoader.get("util");
 
 /**    
     Evaluates script in a global scope.
     @param [0]  The code to evaluate.
 */
 globalEval=function(){
-    return eval(arguments[0]);
-}
+  return eval.call(ejs.getGlobal(),arguments[0]);
+};
 
 
 /**
@@ -118,10 +121,10 @@ Class = function(className, superClass, classScope){
 }    
 Class.toString = function(){
     return "[object Class]";
-}
+};
 Class.createPrototype=function(){ 
     throw "Can't use Class as a super class.";
-}
+};
 
 /**
     Creates a new module and registers it.
@@ -131,17 +134,22 @@ Class.createPrototype=function(){
                                      As 1st parameter it will get the module variable.                                     
 */
 Module = function(name, version, moduleScope){
-    var mod = new Object();
-    mod.version = version;
-    mod.name = name;
-    mod.toString=function(){
-        return "[module '%s' version: %s]".format(mod.name, mod.version);
-    }
+  var mod;
+  if (name != "jsolait")
+    mod = new Object();
+  else
+    mod=jsolait;
+
+  mod.version = version;
+  mod.name = name;
+  mod.toString=function(){
+    return "[module '%s' version: %s]".format(mod.name, mod.version);
+  }
     
-    /**
-        Base class for all module-Exceptions.
-    */
-    mod.Exception=Class("Exception", function(publ){
+  /**
+     Base class for all module-Exceptions.
+  */
+  mod.Exception=Class("Exception", function(publ){
         /**
             Initializes a new Exception.
             @param msg           The error message for the user.
@@ -190,7 +198,7 @@ Module = function(name, version, moduleScope){
     
     //todo: set classNames for anonymous classes.
     for(var n in mod){
-        if(mod[n].className == "anonymous"){
+      if((typeof mod[n] == 'object') && (mod[n].className == "anonymous")){
             mod[n].className = n;
         }
     }
@@ -214,9 +222,6 @@ Module.createPrototype=function(){
     some String enhancements.
 */
 Module("jsolait", "0.1.0", function(mod){
-    ///The global jsolait object.
-    jsolait=mod;
-    
     ///base url for user modules.
     mod.baseURL=".";
     ///The URL where jsolait is installed.
@@ -258,6 +263,7 @@ Module("jsolait", "0.1.0", function(mod){
             try{//to load module from location calculated above
                 src = getFile(modURL);
             }catch(e){//module could not be found at the location.
+	      throw e;
                 throw new mod.ModuleImportFailed(name, modURL, e);
             }
             
@@ -649,6 +655,5 @@ Module("stringformat", "0.1.0", function(mod){
 })
 
 //let jsolait do some startup initialization
-if (typeof File == "undefined") ejs.ModuleLoader.load("File");
-if (typeof util == "undefined") ejs.ModuleLoader.load("util");
 jsolait.init();
+ })(this);

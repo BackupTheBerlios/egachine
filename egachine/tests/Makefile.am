@@ -41,7 +41,8 @@ tests = \
 	egares \
 	scope \
 	smbug240577 \
-	jsolait
+	jsolait \
+	util
 
 check_SCRIPTS = \
 	$(tests) \

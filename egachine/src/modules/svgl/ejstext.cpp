@@ -24,6 +24,8 @@
 #include "ejsallelements.h"
 #include <cassert>
 
+static JSObject *textProto = NULL;
+
 extern "C" {
 
   static
@@ -77,15 +79,15 @@ extern "C" {
   }
 
   JSBool
-  ejstext_onLoad(JSContext *cx, JSObject *global)
+  ejstext_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *text = JS_InitClass(cx, global,
-				     NULL,
-				     &text_class,
-				     text_cons, 0,
-				     NULL, text_methods,
-				     NULL, NULL);
-    if (!text) return JS_FALSE;
+    textProto = JS_InitClass(cx, module,
+			     NULL,
+			     &text_class,
+			     text_cons, 0,
+			     NULL, text_methods,
+			     NULL, NULL);
+    if (!textProto) return JS_FALSE;
     return JS_TRUE;
   }
 }
@@ -94,9 +96,11 @@ JSObject*
 ejs_NewText(JSContext *cx, JSObject *obj, dom::Text* text)
 {
   assert(text);
+  assert(textProto);
+
   // todo: should we set parent?
   // this object is not rooted !!
-  JSObject *res=JS_NewObject(cx,&text_class, NULL,NULL);
+  JSObject *res=JS_NewObject(cx,&text_class, textProto, NULL);
   if (!res) return NULL;
   if (!JS_SetPrivate(cx,res,(void *)text)) return NULL;
   return res;

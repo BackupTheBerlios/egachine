@@ -222,6 +222,7 @@ struct EJSShell
     //    if (!JS_InitStandardClasses(cx, glob)) return EXIT_FAILURE;
     JS_SetErrorReporter(cx, printError);
     JS_SetGlobalObject(cx, glob);
+    JS_SetOptions(cx, JS_GetOptions(cx) | JSOPTION_VAROBJFIX);
 
     return EXIT_SUCCESS;
   }

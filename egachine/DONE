@@ -568,3 +568,16 @@ nice hacking game isn't it?
 to do much: no file access, only one outgoing tcp connection
 but you can grab a javascript cluster and ...)
 --------------------------------------------------------------------------------
+we now have many different serialization approaches
+2 will remain:
+- server to clients:
+	goal: try to serialize as complete as possible
+	(prototypes, sharp variables, ...)
+	support "incremental" serialization (later modification)
+	distributed object graph
+- client to server:
+	goal: don't use eval (security)
+	use JSON (subset of javascript object literals)
+
+done: removed the old one
+--------------------------------------------------------------------------------

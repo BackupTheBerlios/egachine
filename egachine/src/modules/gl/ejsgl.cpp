@@ -400,14 +400,12 @@ extern "C" {
 #undef FUNC
 
   JSBool
-  ejsgl_LTX_onLoad(JSContext* cx, JSObject* global)
+  ejsgl_LTX_onLoad(JSContext* cx, JSObject* module)
   {
-    JSObject *globj = JS_DefineObject(cx, global, "gl", NULL, NULL,
-				      JSPROP_ENUMERATE);
-    if (!globj) return JS_FALSE;
-    if (!JS_DefineFunctions(cx, globj, gl_static_methods)) return JS_FALSE;
+    if (!JS_DefineFunctions(cx, module, gl_static_methods)) return JS_FALSE;
     
-    JSObject *gluobj = JS_DefineObject(cx, global, "glu", NULL, NULL,
+    // todo: shit
+    JSObject *gluobj = JS_DefineObject(cx, JS_GetGlobalObject(cx), "glu", NULL, NULL,
 				       JSPROP_ENUMERATE);
     if (!gluobj) return JS_FALSE;
     return JS_DefineFunctions(cx, gluobj, glu_static_methods);

@@ -163,9 +163,9 @@ extern "C" {
   }
 
   JSBool
-  ejsstream_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejsstream_LTX_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *stream = JS_InitClass(cx, global,
+    JSObject *stream = JS_InitClass(cx, module,
 				    NULL,
 				    &stream_class,
 				    stream_cons, 0,
@@ -174,8 +174,11 @@ extern "C" {
     if (!stream) return JS_FALSE;
     // create stdin, stdout, stderr streams
     JSObject *obj;
+
+    // we have to pass in the proto since the name of our class will clash
+    // with the name of the module?
     
-    if (!(obj=JS_DefineObject(cx, global,"stdin", &stream_class, NULL, JSPROP_ENUMERATE)))
+    if (!(obj=JS_DefineObject(cx, module,"stdin", &stream_class, stream, JSPROP_ENUMERATE)))
       return JS_FALSE;
     if (!JS_SetPrivate(cx,obj,(void *)std::cin.rdbuf()))
       return JS_FALSE;
@@ -183,7 +186,7 @@ extern "C" {
     if (!JS_SetReservedSlot(cx,obj,0,JSVAL_FALSE))
       return JS_FALSE;
 
-    if (!(obj=JS_DefineObject(cx, global,"stdout", &stream_class, NULL, JSPROP_ENUMERATE)))
+    if (!(obj=JS_DefineObject(cx, module,"stdout", &stream_class, stream, JSPROP_ENUMERATE)))
       return JS_FALSE;
     if (!JS_SetPrivate(cx,obj,(void *)std::cout.rdbuf()))
       return JS_FALSE;
@@ -191,7 +194,7 @@ extern "C" {
     if (!JS_SetReservedSlot(cx,obj,0,JSVAL_FALSE))
       return JS_FALSE;
 
-    if (!(obj=JS_DefineObject(cx, global,"stderr", &stream_class, NULL, JSPROP_ENUMERATE)))
+    if (!(obj=JS_DefineObject(cx, module,"stderr", &stream_class, stream, JSPROP_ENUMERATE)))
       return JS_FALSE;
     if (!JS_SetPrivate(cx,obj,(void *)std::cerr.rdbuf()))
       return JS_FALSE;

@@ -30,20 +30,20 @@ println("ATTENTION: at the moment the server is insecure.");
 getProfile=false;
 sx=1+1/3;
 sy=1;
-racketSize=new V2D(0.05,0.1);
-racket=new Quad(racketSize);
+racketSize=new sg.V2D(0.05,0.1);
+racket=new sg.Quad(racketSize);
 rackets=[];
 points=[];
-ballSize=new V2D(0.025,0.025);
+ballSize=new sg.V2D(0.025,0.025);
 bgColor=[0.58,0.29,0.06,1];
 topBorder=sy/5;
 bottomBorder=sy/10;
 fieldMiddle=((sy-topBorder)+bottomBorder)/2;
-ballStartPos=new V2D(sx/2,fieldMiddle);
+ballStartPos=new sg.V2D(sx/2,fieldMiddle);
 borderColor=[1,1,1,1];
-moveUp=new V2D(0,1/2/1000000);
-moveDown=new V2D(0,-1/2/1000000);
-dontMove=new V2D(0,0);
+moveUp=new sg.V2D(0,1/2/1000000);
+moveDown=new sg.V2D(0,-1/2/1000000);
+dontMove=new sg.V2D(0,0);
 // wished step size
 stepSize=40000;
 
@@ -182,7 +182,7 @@ function advanceTo(time) {
     points[1].add(time, new Points(1+points[1][points[1].children-1].points,true));
   }else if ((xcol<0)||(ycol<0)){
     // collission response
-    ball.appendMove(time, new LinMover(ballPos, new V2D(ballSpeed.x*xcol,ballSpeed.y*ycol)));
+    ball.appendMove(time, new LinMover(ballPos, new sg.V2D(ballSpeed.x*xcol,ballSpeed.y*ycol)));
   }
 };
 
@@ -190,7 +190,7 @@ function advanceTo(time) {
 TimeShift=constructor(function(shift) {
 			this.shift=shift;
 		      });
-TimeShift.prototype=new Node();
+TimeShift.prototype=new sg.Node();
 TimeShift.prototype.paint=function(time){
   Node.prototype.paint.call(this,time-this.shift);
 };
@@ -205,14 +205,14 @@ LinMover=constructor(function(pos, speed, rot, rotspeed) {
 		       this.rotspeed=rotspeed;
 		     });
 LinMover.prototype.getPos=function(time){
-  return new V2D(this.pos.x+this.speed.x*time,this.pos.y+this.speed.y*time);
+  return new sg.V2D(this.pos.x+this.speed.x*time,this.pos.y+this.speed.y*time);
 };
 LinMover.prototype.getSpeed=function(time){
   return this.speed;
 };
 LinMover.prototype.getRot=function(time){
   var rot;
-  if (!this.rot) rot=new Degrees(0);
+  if (!this.rot) rot=new sg.Degrees(0);
   if (this.rotspeed) rot.inc(this.rotspeed.value*time);
   return rot;
 };
@@ -229,7 +229,7 @@ Marray.prototype.push=function(v){
 
 // derived object TimeSwitch
 TimeSwitch=constructor(function () {});
-TimeSwitch.prototype=new Node();
+TimeSwitch.prototype=new sg.Node();
 TimeSwitch.prototype.getInterval=function(time){
   // find active interval - TODO: use better algo (this array is sorted)
   var m=this.timeline;
@@ -249,7 +249,7 @@ TimeSwitch.prototype.add=function(time,node){
 
 // derived object MultiMover
 MultiMover=constructor(function(){});
-MultiMover.prototype=new Node();
+MultiMover.prototype=new sg.Node();
 MultiMover.prototype.getInterval=function(time){
   // find active interval
   var m=this.moves;
@@ -374,42 +374,42 @@ Points.prototype.paint=function(){
 };
 
 // build our scenegraph
-root=new Node()
-  .add(new Color(bgColor)
-       .add(new Quad(new V2D(sx,sy-topBorder-bottomBorder),new V2D(sx/2,fieldMiddle))))
+root=new sg.Node()
+  .add(new sg.Color(bgColor)
+       .add(new sg.Quad(new sg.V2D(sx,sy-topBorder-bottomBorder),new sg.V2D(sx/2,fieldMiddle))))
 // racket of player one (right, green)
-  .add(new Color(playerColors(0))
+  .add(new sg.Color(playerColors(0))
        .add(rackets[0]=new MultiMover()
-	    .appendMove(0,new LinMover(new V2D(sx-2*racketSize.x,fieldMiddle),dontMove))
+	    .appendMove(0,new LinMover(new sg.V2D(sx-2*racketSize.x,fieldMiddle),dontMove))
 	    .add(racket)))
 // racket of player two (left, red)
-  .add(new Color(playerColors(1))
+  .add(new sg.Color(playerColors(1))
        .add(rackets[1]=new MultiMover()
-	    .appendMove(0,new LinMover(new V2D(   2*racketSize.x,fieldMiddle),dontMove))
+	    .appendMove(0,new LinMover(new sg.V2D(   2*racketSize.x,fieldMiddle),dontMove))
 	    .add(racket)))
-  .add(new Color(borderColor)
-       .add(new Quad(new V2D(sx,3*0.05/5),new V2D(sx/2,sy-topBorder+3*0.05/5/2)))
-       .add(new Quad(new V2D(sx,2*0.05/5),new V2D(sx/2,bottomBorder-2*0.05/5/2))))
-  .add(new Color(bgColor)
-       .add(new Quad(new V2D(sx,    10*0.05/5),new V2D(sx/2,         sy-topBorder+3*0.05/5+10*0.05/5/2)))
-       .add(new Quad(new V2D(sx-0.1,     0.01),new V2D(sx/2+0.1,sy-topBorder+3*0.05/5+10*0.05/5+0.01/2))))
-  .add(new Color([0,0,0,1])
-       .add(new Quad(new V2D(sx,bottomBorder-2*0.05/5),new V2D(sx/2,(bottomBorder-2*0.05/5)/2))))
+  .add(new sg.Color(borderColor)
+       .add(new sg.Quad(new sg.V2D(sx,3*0.05/5),new sg.V2D(sx/2,sy-topBorder+3*0.05/5/2)))
+       .add(new sg.Quad(new sg.V2D(sx,2*0.05/5),new sg.V2D(sx/2,bottomBorder-2*0.05/5/2))))
+  .add(new sg.Color(bgColor)
+       .add(new sg.Quad(new sg.V2D(sx,    10*0.05/5),new sg.V2D(sx/2,         sy-topBorder+3*0.05/5+10*0.05/5/2)))
+       .add(new sg.Quad(new sg.V2D(sx-0.1,     0.01),new sg.V2D(sx/2+0.1,sy-topBorder+3*0.05/5+10*0.05/5+0.01/2))))
+  .add(new sg.Color([0,0,0,1])
+       .add(new sg.Quad(new sg.V2D(sx,bottomBorder-2*0.05/5),new sg.V2D(sx/2,(bottomBorder-2*0.05/5)/2))))
 // the ball
-  .add(new Color(ballColor(1))
+  .add(new sg.Color(ballColor(1))
        .add((ball=new MultiMover()
-	     .appendMove(0,new LinMover(ballStartPos, new V2D(-1/3/1000000,-1/5/1000000)))
-	     .add(new Quad(ballSize)))))
-  .add(new Translate(new V2D(0,0.85*sy))
+	     .appendMove(0,new LinMover(ballStartPos, new sg.V2D(-1/3/1000000,-1/5/1000000)))
+	     .add(new sg.Quad(ballSize)))))
+  .add(new sg.Translate(new sg.V2D(0,0.85*sy))
        // display points for player one
-       .add(new Color(playerColors(0))
-	    .add(new Translate(new V2D(0.8*sx,0))
-		 .add(new Scale(new V2D(sx*0.05,sx*0.05))
+       .add(new sg.Color(playerColors(0))
+	    .add(new sg.Translate(new sg.V2D(0.8*sx,0))
+		 .add(new sg.Scale(new sg.V2D(sx*0.05,sx*0.05))
 		      .add((points[0]=new TimeSwitch().add(0,new Points(0,true)))))))
        // display points for player two
-       .add(new Color(playerColors(1))
-	    .add(new Translate(new V2D(0.2*sx,0))
-		 .add(new Scale(new V2D(sx*0.05,sx*0.05))
+       .add(new sg.Color(playerColors(1))
+	    .add(new sg.Translate(new sg.V2D(0.2*sx,0))
+		 .add(new sg.Scale(new sg.V2D(sx*0.05,sx*0.05))
 		      .add((points[1]=new TimeSwitch().add(0,new Points(0,true))))))));
 
 // add some motion blur effects
@@ -418,14 +418,14 @@ if (true)
     var i;
     var shadows=3;
     root
-      .add(new Color(playerColors(0,0.5))
+      .add(new sg.Color(playerColors(0,0.5))
 	   .add(new TimeShift(50000)
 		.add(rackets[0])))
-      .add(new Color(playerColors(1,0.5))
+      .add(new sg.Color(playerColors(1,0.5))
 	   .add(new TimeShift(50000)
 		.add(rackets[1])));
     for (i=1;i<=shadows;++i)
-      root.add(new Color(ballColor(1-i/(shadows+2)))
+      root.add(new sg.Color(ballColor(1-i/(shadows+2)))
 	       .add(new TimeShift(1000000*i/20).add(ball)));
   })();
 

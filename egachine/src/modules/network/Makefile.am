@@ -12,5 +12,6 @@ ejsnet_la_SOURCES = \
 
 ejsnet_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SIGC_LIBS@ @SOCKET_LIBS@
 
-dist_pkgdata_DATA = net.js
+# removed net.js
+# dist_pkgdata_DATA = net.js
 EXTRA_DIST = export.sym

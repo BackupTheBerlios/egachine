@@ -2,7 +2,7 @@ gl module:
 OpenGL wrapper module. Tries to be close to the C API.
 
 Differences from the C API:
-- all functions are in the gl object:
+- all functions are in the gl (module) object:
   Example:
   instead of glBegin write gl.Begin
 

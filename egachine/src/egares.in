@@ -22,7 +22,9 @@
   \author Jens Thiele
 */
 
-ejs.ModuleLoader.load("EGachine");
+var EGachine=ejs.ModuleLoader.get("EGachine");
+var Stream=ejs.ModuleLoader.get("Stream");
+var File=ejs.ModuleLoader.get("File");
 
 if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
   stderr.write("Usage: egares [-h|--help|RESNAME] [FILE|-] [OPTION]...\n");
@@ -41,7 +43,7 @@ if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
     resource+=s;
   }
 
-  var res=new Resource(resname,resource);
+  var res=new EGachine.Resource(resname,resource);
   var towrite="EGachine.addResource(\n";
 
   towrite+=res+");\n";
@@ -50,5 +52,5 @@ if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
   if (dec!=resource)
     throw new Error("egares is buggy and something went wrong");
   // puh ;-) good luck
-  stdout.write(towrite);
+  Stream.stdout.write(towrite);
 };

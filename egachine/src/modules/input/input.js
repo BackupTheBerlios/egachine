@@ -1,9 +1,9 @@
-(function() {
+(function(Input) {
   // load native library
   if (this.Input) return;
   var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsinput.la");
   if (!fname) throw new Error("Could not find module: 'ejsinput.la'");
-  ejs.ModuleLoader.loadNative.call(ejs.getGlobal(),"ejsinput",fname.substring(0,fname.lastIndexOf(".")));
+  ejs.ModuleLoader.loadNative.call(Input,"ejsinput",fname.substring(0,fname.lastIndexOf(".")));
 
   Input.NOEVENT=0;
   Input.ACTIVEEVENT=1;
@@ -298,6 +298,17 @@
   Input.KMOD_ALT=768;
   Input.KMOD_META=3072;
 
+  //! register function to be called if gamepad state changes
+  Input.addDevListener=function(f) {
+    if (typeof Input.devListeners == "undefined") Input.devListeners=[];
+    if (!Input.handleInput) Input.handleInput=function(devState) {
+      var i;
+      for (i=0;i<Input.devListeners.length;++i)
+	Input.devListeners[i](devState);
+    };
+    devListeners.push(f);
+    return devListeners.length-1;
+  };
   
   //! todo: this must always work => untrusted code should not be allowed to mess with this
 
@@ -307,8 +318,9 @@
   }
 
   Input.keys=[
-	      [Input.KEY_KP8, Input.KEY_KP2, Input.KEY_KP4, Input.KEY_KP6, Input.KEY_KP0, Input.KEY_KP_PERIOD],
-	      [Input.KEY_w, Input.KEY_s, Input.KEY_a, Input.KEY_d, Input.KEY_1, Input.KEY_2]
+	      [Input.KEY_KP8, Input.KEY_KP2,  Input.KEY_KP4,  Input.KEY_KP6,   Input.KEY_KP0,  Input.KEY_KP_PERIOD],
+	      [Input.KEY_w,   Input.KEY_s,    Input.KEY_a,    Input.KEY_d,     Input.KEY_1,    Input.KEY_2],
+	      [Input.KEY_UP,  Input.KEY_DOWN, Input.KEY_LEFT, Input.KEY_RIGHT, Input.KEY_RALT, Input.KEY_RMETA],
 	      ];
   // all input devices
   Input.devState=[];
@@ -346,11 +358,11 @@
       }catch(e){
       }
     }
-    // add 2 keyboard devices
-    dnum=Input.keyDevMap[0]=Input.devState.length;
-    Input.devState.push(new Input.DevState(dnum));
-    dnum=Input.keyDevMap[1]=Input.devState.length;
-    Input.devState.push(new Input.DevState(dnum));
+    // add keyboard devices
+    for (i=0;i<Input.keys.length;++i) {
+      dnum=Input.keyDevMap[i]=Input.devState.length;
+      Input.devState.push(new Input.DevState(dnum));
+    };
   })();
 
   Input.poll=function(){
@@ -368,7 +380,7 @@
     {
       var dev,m_state,old,pressed,k;
       // map keyboard dev no to real dev no
-      assert(function(){return ((keyDev>=0)&&(keyDev<2));});
+      assert(function(){return ((keyDev>=0)&&(keyDev<Input.keys.length));});
       dev=Input.keyDevMap[keyDev];
       assert(function(){return typeof Input.devState != "undefined";});
       assert(function(){return ((dev>=0)&&(dev<Input.devState.length));});
@@ -459,7 +471,8 @@
 	if (!Input.enableUnicode(-1)) {
 	  if (!handleDevKey(event,0))
 	    if (!handleDevKey(event,1))
-	      handleSpecialKey(event);
+	      if (!handleDevKey(event,2))
+		handleSpecialKey(event);
 	}else{
 	  if (!handleSpecialKey(event)) {
 	    handleKey(event);
@@ -480,4 +493,4 @@
     }
   }
 
- })();
+ })(this);

@@ -26,38 +26,76 @@
 #include "strutils.h"
 #include <cassert>
 
+static JSObject* nodeProto = NULL;
+
+JSBool
+jsvalToNode(JSContext* cx, JSObject* jsthis, jsval jsnode, dom::Node* &result)
+{
+  JSObject* jsobj=NULL;
+  if ((!JSVAL_IS_OBJECT(jsnode))||(!(jsobj=JSVAL_TO_OBJECT(jsnode))))
+    EJS_THROW_ERROR(cx,jsthis,"no object");
+  
+  // cast jsobj's native object to dom::Node *
+  // todo: this is shit
+  dom::Element* element=NULL;
+  if (ejselement_class(cx, jsobj)&&ejselement_GetNative(cx,jsobj,element)) {
+    result=element;
+    assert(result==dynamic_cast<dom::Node *>(element));
+    return JS_TRUE;
+  }
+  dom::Text* text=NULL;
+  if (ejstext_class(cx, jsobj)&&ejstext_GetNative(cx,jsobj,text)) {
+    result=text;
+    assert(result==dynamic_cast<dom::Node *>(text));
+    return JS_TRUE;
+  }
+  dom::Node* node=NULL;
+  if (ejsnode_class(cx, jsobj)&&ejsnode_GetNative(cx,jsobj,node)) {
+    result=node;
+    assert(result==dynamic_cast<dom::Node *>(node));
+    return JS_TRUE;
+  }
+  EJS_THROW_ERROR(cx, jsthis, "not an dom:Node object?");
+}
+
+
 JSBool
 ejs_Node_appendChild
 (JSContext* cx, JSObject* jsthis, dom::Node* nthis, uintN argc, jsval* argv, jsval* rval)
 {
   EJS_CHECK_NUM_ARGS(cx,jsthis,1,argc);
-  JSObject* jschild=NULL;
-  if ((!JSVAL_IS_OBJECT(argv[0]))||(!(jschild=JSVAL_TO_OBJECT(argv[0]))))
-    EJS_THROW_ERROR(cx,jsthis,"object as arg 0 required");
-  
-  // todo: it seems we should return the jschild object
-  *rval=OBJECT_TO_JSVAL(jsthis);
+  dom::Node* child=NULL;
+  if (!jsvalToNode(cx,jsthis,argv[0],child)) return JS_FALSE;
+  assert(child);
 
   // todo: exceptions
+  EJS_INFO(child);
+  nthis->appendChild(child);
 
-  // cast jschild's native object to dom::Node *
+  *rval=argv[0];
+  return JS_TRUE;
+}
 
-  dom::Element* element=NULL;
-  if (ejselement_class(cx, jschild)&&ejselement_GetNative(cx,jschild,element)) {
-    nthis->appendChild(element);
-    return JS_TRUE;
+JSBool
+ejs_Node_removeChild
+(JSContext* cx, JSObject* jsthis, dom::Node* nthis, uintN argc, jsval* argv, jsval* rval)
+{
+  EJS_CHECK_NUM_ARGS(cx,jsthis,1,argc);
+  dom::Node* child=NULL;
+  if (!jsvalToNode(cx,jsthis,argv[0],child)) return JS_FALSE;
+  assert(child);
+
+  // check if this node has hot this child
+  dom::Node *node=nthis->getFirstChild();
+  while (node) {
+    if (node==child) {
+      // todo: exceptions
+      nthis->removeChild(child);
+      return JS_TRUE;
+    }
+    node=node->getNextSibling();
   }
-  dom::Text* text=NULL;
-  if (ejstext_class(cx, jschild)&&ejstext_GetNative(cx,jschild,text)) {
-    nthis->appendChild(text);
-    return JS_TRUE;
-  }
-  dom::Node* node=NULL;
-  if (ejsnode_class(cx, jschild)&&ejsnode_GetNative(cx,jschild,node)) {
-    nthis->appendChild(node);
-    return JS_TRUE;
-  }
-  EJS_THROW_ERROR(cx,jsthis,"not yet supported");
+  EJS_THROW_ERROR(cx, jsthis, "not my child");
 }
 
 JSBool
@@ -71,6 +109,20 @@ ejs_Node_setNodeValue
 
   try{
     nthis->setNodeValue(value);
+  }catch(const dom::DOMException &e){
+    EJS_THROW_ERROR(cx, jsthis, e.what());
+  }
+  return JS_TRUE;
+}
+
+JSBool
+ejs_Node_getNodeValue
+(JSContext* cx, JSObject* jsthis, dom::Node* nthis, uintN argc, jsval* argv, jsval* rval)
+{
+  try{
+    dom::String* value=nthis->getNodeValue();
+    if (!DomStringToJsval(cx, value, rval))
+      return JS_FALSE;
   }catch(const dom::DOMException &e){
     EJS_THROW_ERROR(cx, jsthis, e.what());
   }
@@ -141,15 +193,15 @@ extern "C" {
   }
 
   JSBool
-  ejsnode_onLoad(JSContext *cx, JSObject *global)
+  ejsnode_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *node = JS_InitClass(cx, global,
+    nodeProto = JS_InitClass(cx, module,
 				     NULL,
 				     &node_class,
 				     node_cons, 0,
 				     NULL, node_methods,
 				     NULL, NULL);
-    if (!node) return JS_FALSE;
+    if (!nodeProto) return JS_FALSE;
     return JS_TRUE;
   }
 }
@@ -158,9 +210,11 @@ JSObject*
 ejs_NewNode(JSContext *cx, JSObject *obj, dom::Node* node)
 {
   assert(node);
+  assert(nodeProto);
+  
   // todo: should we set parent?
   // this object is not rooted !!
-  JSObject *res=JS_NewObject(cx,&node_class, NULL,NULL);
+  JSObject *res=JS_NewObject(cx,&node_class, nodeProto, NULL);
   if (!res) return NULL;
   if (!JS_SetPrivate(cx,res,(void *)node)) return NULL;
   return res;

@@ -24,7 +24,7 @@
 
 ejs.ModuleLoader.load("Monitorable");
 
-function constructor(func){
+function adjustConstructor(func){
   return function(){
     // required to get [[class]] right
     var ret=new Monitorable();
@@ -46,14 +46,7 @@ ejs.ModuleLoader.load("Net");
 // todo fetch from config file
 listenPort=47000;
 
-EGachine.version={string:"@PACKAGE_VERSION@"};
-(function(){
-  var x=EGachine.version.string.split(".");
-  EGachine.version.major=x[0];
-  EGachine.version.minor=x[1];
-  EGachine.version.micro=x[2];
- })();
-
+EGachine.version=new EGachine.Version("@PACKAGE_VERSION@");
 EGachine.server=true;
 
 // todo remove those?

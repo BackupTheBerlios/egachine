@@ -1,10 +1,8 @@
-(function(){
-  // module depends on the Stream module
-  if (!this.Stream) ejs.ModuleLoader.load("Stream");
+(function(File){
   // load native library
   var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsfile.la");
   if (!fname) throw new Error("Could not find module: 'ejsfile.la'");
-  ejs.ModuleLoader.loadNative.call(ejs.getGlobal(),"ejsfile",fname.substring(0,fname.lastIndexOf(".")));
+  ejs.ModuleLoader.loadNative.call(File,"ejsfile",fname.substring(0,fname.lastIndexOf(".")));
 
   //! File open modes
   File.mode={
@@ -32,4 +30,4 @@
   File.write=function(name){
     return File.open(name,File.mode.write|File.mode.trunc);
   }
- })();
+ })(this);

@@ -1,3 +1,5 @@
 FUNC(appendChild,1)
+FUNC(removeChild,1)
 FUNC(setNodeValue,1)
+FUNC(getNodeValue,0)
 FUNC(normalize,0)

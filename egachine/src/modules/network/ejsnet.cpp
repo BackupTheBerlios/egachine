@@ -77,13 +77,10 @@ extern "C" {
 #undef FUNC
 
   JSBool
-  ejsnet_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejsnet_LTX_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *obj = JS_DefineObject(cx, global,
-				    "Net", NULL, NULL, JSPROP_ENUMERATE);
-    if (!obj) return JS_FALSE;
-    if (!JS_DefineFunctions(cx, obj, net_static_methods)) return JS_FALSE;
-    return server_onLoad(cx,obj);
+    if (!JS_DefineFunctions(cx, module, net_static_methods)) return JS_FALSE;
+    return server_onLoad(cx,module);
   }
 
   JSBool
@@ -94,6 +91,7 @@ extern "C" {
 
 }
 
+// todo: similar code is also in ejsfile.cpp
 JSBool
 newStreamObject(JSContext* cx, JSObject* obj, NetStreamBuf* stream, jsval* rval)
 {
@@ -105,13 +103,10 @@ newStreamObject(JSContext* cx, JSObject* obj, NetStreamBuf* stream, jsval* rval)
   // this is only safe if we know that the created javascript object 
   // is of the correct class (stream_class) otherwise this would be dangerous
 
-  std::string script("new Stream()");
   jsval streamval;
-  if (!JS_EvaluateScript(cx, obj, 
-			 script.c_str(), script.length(),
-			 __PRETTY_FUNCTION__ , 1,
-			 &streamval))
+  if (!ejs_evalExpression(cx,obj,"new (ejs.ModuleLoader.get(\"Stream\").Stream)()",&streamval))
     return JS_FALSE;
+
   // todo: is this enough to root this object?
   *rval=streamval;
   if (!JSVAL_IS_OBJECT(streamval))

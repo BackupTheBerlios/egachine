@@ -1,2 +1,2 @@
 #!/bin/sh
-echo 'ejs.ModuleLoader.load("example");if (example() != "example function") throw new Error("failed");'|../src/ejs 2>/dev/null
+echo 'var m=ejs.ModuleLoader.get("example");if (m.example() != "example function") throw new Error("failed");'|../src/ejs 2>/dev/null

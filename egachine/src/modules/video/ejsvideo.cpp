@@ -118,19 +118,16 @@ extern "C" {
 #undef FUNC
 
   JSBool
-  ejsvideo_LTX_onLoad(JSContext* cx, JSObject* global)
+  ejsvideo_LTX_onLoad(JSContext* cx, JSObject* module)
   {
     try{
-      Video::init();
+      Video::init(0,0,false);
     }
     catch(const Video::FatalError &error) {
-      EJS_THROW_ERROR(cx,global,error.what());
+      EJS_THROW_ERROR(cx,module,error.what());
     }
     
-    JSObject *obj = JS_DefineObject(cx, global,
-				    "Video", NULL, NULL,JSPROP_ENUMERATE);
-    if (!obj) return JS_FALSE;
-    return JS_DefineFunctions(cx, obj, static_methods);
+    return JS_DefineFunctions(cx, module, static_methods);
   }
 
   JSBool

@@ -154,9 +154,9 @@ extern "C" {
   }
 
   JSBool
-  ejsmonitorable_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejsmonitorable_LTX_onLoad(JSContext *cx, JSObject *module)
   {
-    if (!JS_InitClass(cx, global,
+    if (!JS_InitClass(cx, module,
 		      NULL,
 		      &monitorable_class,
 		      monitorable_cons, 0,

@@ -1,3 +1,23 @@
+2005-01-05  Jens Thiele  <karme@berlios.de>
+
+	* updated examples
+
+	* added presentation/slide show using about egachine using
+	ejs+modules itself
+
+	* egachine provides now a main loop which can be used optionally
+	by registering a function via EGachine.step to be called regulary
+
+2005-01-04  Jens Thiele  <karme@berlios.de>
+
+	* overhauled module loading once more inspired by jsolait to
+	reduce (JavaScript) global namespace/object pollution.
+	Added ejs.ModuleLoader.get(modulename) which returns a
+	(module/namespace) object. Modules should only define 
+	functions/objects within this object. Most modules now do.
+	Except the gl module which still defines GL constants in global
+	scope.
+
 2004-12-31  Jens Thiele  <karme@berlios.de>
 
 	* new input module exposing most of SDL's functionality

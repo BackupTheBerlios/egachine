@@ -38,7 +38,6 @@ SUBDIRS = \
 	$(MAYBE_NET) \
 	bytearray \
 	egachine \
-	base64 \
 	$(MAYBE_TIMER) \
 	$(MAYBE_GL) \
 	$(MAYBE_VIDEO) \
@@ -46,7 +45,7 @@ SUBDIRS = \
 	$(MAYBE_AUDIO) \
 	$(MAYBE_SVGL) \
 	util \
-	graphviz \
+	jsmisc \
 	jsolait
 
 include_HEADERS=ejsmodule.h

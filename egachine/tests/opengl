@@ -1,8 +1,7 @@
 #!/bin/bash
 ../src/ejs <<EOF
 ejs.ModuleLoader.load("gl");
-ejs.ModuleLoader.load("Stream");
-function println(x){stdout.write(x+"\n");};
+function println(x){ejs.ModuleLoader.get("Stream").stdout.write(x+"\n");};
 println("Vendor: "+gl.GetString(GL_VENDOR));
 println("Renderer: "+gl.GetString(GL_RENDERER));
 println("Version: "+gl.GetString(GL_VERSION));

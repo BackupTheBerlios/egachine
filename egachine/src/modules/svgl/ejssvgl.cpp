@@ -30,6 +30,7 @@
 #include <svgl/GLInfo.hpp>
 #include <svgl/getattr.hpp>
 #include <svgl/Context.hpp>
+#include <svgl/ExternalEntityManager.hpp>
 
 #include <w3c/svg/SVGDocument.hpp>
 #include <w3c/svg/SVGSVGElement.hpp>
@@ -77,7 +78,7 @@ extern "C" {
       return JS_FALSE;
 
     // get svg size - todo: should not be done on each display call
-    const svg::SVGSVGElement * thesvgelt = svgdoc->GET_SIMPLE_VAL(RootElement);
+    svg::SVGSVGElement * thesvgelt = svgdoc->GET_SIMPLE_VAL(RootElement);
     if (thesvgelt) {
       svg::SVGLength widthl = thesvgelt->GETVAL(Width);
       svg::SVGLength heightl = thesvgelt->GETVAL(Height);
@@ -86,6 +87,11 @@ extern "C" {
       svgl::Context * svglContext=initHelper->context;
       width = widthl.computeValue(svglContext->dpi, viewbox.getWidth(), svglContext->fontSize, svglContext->fontXHeight);
       height = heightl.computeValue(svglContext->dpi, viewbox.getHeight(), svglContext->fontSize, svglContext->fontXHeight);
+      // todo: why do we do this?
+      svglContext->setViewportWidthHeight(width, height);
+      svglContext->svgOwner = thesvgelt;
+      svglContext->externalEntityManager->register_(svgdoc,unicode::String::createString(""));
+
       // get window size
       float winWidth=initHelper->glinfo->winWidth;
       float winHeight=initHelper->glinfo->winHeight;
@@ -152,22 +158,12 @@ extern "C" {
     \return JS_TRUE on success
   */
   JSBool
-  ejssvgl_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejssvgl_LTX_onLoad(JSContext *cx, JSObject *module)
   {
-    // TODO: svgl needs opengl with:
-    /*
-      GLUT_RGBA | GLUT_DOUBLE | GLUT_STENCIL;
-      initDisplayMode |= GLUT_MULTISAMPLE;
-      initDisplayMode |= GLUT_ALPHA;
-    */
+    // todo: remove usage of global where possible
 
-    // test
-
-    JSObject *svglobj = JS_DefineObject(cx, global, "svgl", NULL, NULL,
-					JSPROP_ENUMERATE);
-    if (!svglobj) return JS_FALSE;
-    if (!JS_DefineFunctions(cx, svglobj, svgl_static_methods)) return JS_FALSE;
-
+    if (!JS_DefineFunctions(cx, module, svgl_static_methods)) return JS_FALSE;
+    JSObject* global=JS_GetGlobalObject(cx);
     try {
       initHelper = svgl::InitHelper::get(new TimeManager(cx,global,0.01), new RedisplayListener(cx,global));
       displayManager = initHelper->displayManager;
@@ -178,18 +174,18 @@ extern "C" {
       initHelper->glinfo->winHeight=viewport[3];
     }
     catch (std::exception& e) {
-      EJS_THROW_ERROR(cx,global,e.what());
+      EJS_THROW_ERROR(cx,module,e.what());
     }
     catch (...) {
-      EJS_THROW_ERROR(cx,global,"unknown exception");
+      EJS_THROW_ERROR(cx,module,"unknown exception");
     }
 
     // register DOM wrappers
-    if (!ejssvgdocument_onLoad(cx,global)) return JS_FALSE;
-    if (!ejsnode_onLoad(cx,global))        return JS_FALSE;
-    if (!ejsnodelist_onLoad(cx,global))    return JS_FALSE;
-    if (!ejselement_onLoad(cx,global))     return JS_FALSE;
-    if (!ejstext_onLoad(cx,global))        return JS_FALSE;
+    if (!ejssvgdocument_onLoad(cx,module)) return JS_FALSE;
+    if (!ejsnode_onLoad(cx,module))        return JS_FALSE;
+    if (!ejsnodelist_onLoad(cx,module))    return JS_FALSE;
+    if (!ejselement_onLoad(cx,module))     return JS_FALSE;
+    if (!ejstext_onLoad(cx,module))        return JS_FALSE;
     return JS_TRUE;
   }
   

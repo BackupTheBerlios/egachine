@@ -1,13 +1,18 @@
 #!/bin/bash
 ../src/ejs <<EOF
 
-ejs.ModuleLoader.load("EGachine");
-ejs.ModuleLoader.load("gl");
+var EGachine=ejs.ModuleLoader.get("EGachine");
+var Video=ejs.ModuleLoader.get("Video");
+var gl=ejs.ModuleLoader.get("gl");
+var Timer=ejs.ModuleLoader.get("Timer");
+var stderr=ejs.ModuleLoader.get("Stream").stderr;
+
 if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
 	stderr.write("Warning no stencil buffer\n");
 
 ejs.ModuleLoader.load("svgl");
-svgdoc=new SVGDocument();
+svgdoc=new svgl.SVGDocument();
+if (! svgdoc instanceof svgl.SVGDocument) throw Error("foo");
 svgdoc.addSample();
 
 function debug(x){stderr.write(x+"\n");}
@@ -26,7 +31,7 @@ test(svgdoc);
 
 addResources();
 
-svgdoc=new SVGDocument(EGachine.getResource("lion.svg").decode());
+svgdoc=new svgl.SVGDocument(EGachine.getResource("lion.svg").decode());
 test(svgdoc);
 
 function addResources(){

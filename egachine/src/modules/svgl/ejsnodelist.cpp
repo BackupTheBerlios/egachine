@@ -25,6 +25,8 @@
 #include "ejsallelements.h"
 #include <cassert>
 
+static JSObject* nodelistProto = NULL;
+
 extern "C" {
 
   static
@@ -101,15 +103,15 @@ extern "C" {
   }
 
   JSBool
-  ejsnodelist_onLoad(JSContext *cx, JSObject *global)
+  ejsnodelist_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *nodelist = JS_InitClass(cx, global,
+    nodelistProto = JS_InitClass(cx, module,
 				     NULL,
 				     &nodelist_class,
 				     nodelist_cons, 0,
 				     NULL, nodelist_methods,
 				     NULL, NULL);
-    if (!nodelist) return JS_FALSE;
+    if (!nodelistProto) return JS_FALSE;
     return JS_TRUE;
   }
 }
@@ -118,11 +120,12 @@ JSObject*
 ejs_NewNodeList(JSContext *cx, JSObject *obj, const dom::NodeList* nodelist)
 {
   assert(nodelist);
+  assert(nodelistProto);
   // todo: should we set parent?
   // this object is not rooted !!
   // todo: should we try to downcast?
 
-  JSObject *res=JS_NewObject(cx,&nodelist_class, NULL,NULL);
+  JSObject *res=JS_NewObject(cx,&nodelist_class, nodelistProto, NULL);
   if (!res) return NULL;
   if (!JS_SetPrivate(cx,res,(void *)nodelist)) return NULL;
   return res;

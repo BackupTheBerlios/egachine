@@ -49,6 +49,7 @@ install -dv $EBINDIR
 install -dv $ELIBDIR
 
 install -s $SPIDERMONKEY_SRCDIR/$SM_BUILDDIR/libsmjs.so $ELIBDIR
+install -s $SPIDERMONKEY_SRCDIR/$SM_BUILDDIR/smjs $ELIBDIR/smjs.bin
 
 cd $SRCDIR
 for a in $PROGRAMS; do
@@ -63,3 +64,14 @@ for a in $PROGRAMS; do
     chmod +x $EBINDIR/$a
 done
 
+for a in $LIBPROGRAMS; do
+    install -s "$a.bin" $ELIBDIR
+
+    cat > $ELIBDIR/$a <<-EOF
+	#!/bin/sh
+	LD_LIBRARY_PATH=$LIBDIR/egachine
+	export LD_LIBRARY_PATH
+	exec $LIBDIR/egachine/$a.bin \$*
+	EOF
+    chmod +x $ELIBDIR/$a
+done

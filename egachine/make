@@ -26,6 +26,7 @@ cd $SPIDERMONKEY_SRCDIR
 make -f Makefile.ref clean
 rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
+cp "$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR/smjs" "$SRCDIR/smjs.bin"
 
 # build SDL_mixer
 cd $SDLMIXER_SRCDIR
@@ -61,7 +62,7 @@ echo Link egares
 run "$CXX -o egares.bin $LDFLAGS $(find -name *.o|grep -v client|grep -v server) $JSLIB -lz"
 
 echo Generating wrapper scripts
-for a in $PROGRAMS; do
+for a in $PROGRAMS $LIBPROGRAMS; do
 cat > $a <<EOF
 #!/bin/sh
 LD_LIBRARY_PATH=$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR 

@@ -58,3 +58,4 @@ fi
 
 
 PROGRAMS="egachine egaserver egares"
+LIBPROGRAMS="smjs"

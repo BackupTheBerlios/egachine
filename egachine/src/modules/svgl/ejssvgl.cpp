@@ -25,6 +25,8 @@
 
 #include <svgl/InitHelper.hpp>
 #include <svgl/DisplayManager.hpp>
+#include <svgl/AnimationManager.hpp>
+#include <svgl/AnimationInfo.hpp>
 #include <svgl/GLInfo.hpp>
 #include <svgl/getattr.hpp>
 #include <svgl/Context.hpp>
@@ -34,7 +36,7 @@
 
 #include <ejsmodule.h>
 #include "ejsallelements.h"
-
+#include "ejstimer.h"
 
 // TODO: this is probably not portable
 #include "GL/gl.h"
@@ -42,6 +44,23 @@
 
 static svgl::DisplayManager * displayManager=NULL;
 static svgl::InitHelper * initHelper=NULL;
+
+class RedisplayListener : public svgl::Animation::RedisplayEventListener {
+public:
+  RedisplayListener(JSContext* _cx, JSObject* _obj) : cx(_cx), obj(_obj)
+  {}
+  
+  virtual void doit(const svgl::Animation::RedisplayEvent&) {
+    jsval rval;
+    // todo: error handling
+    if (!JS_CallFunctionName(cx, obj, "redisplay", 0, NULL, &rval))
+      EJS_WARN("js error");
+  }
+
+protected:
+  JSContext* cx;
+  JSObject* obj;
+};
 
 extern "C" {
 
@@ -57,7 +76,7 @@ extern "C" {
     if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),svgdoc))
       return JS_FALSE;
 
-    // get svg size
+    // get svg size - todo: should not be done on each display call
     const svg::SVGSVGElement * thesvgelt = svgdoc->GET_SIMPLE_VAL(RootElement);
     if (thesvgelt) {
       svg::SVGLength widthl = thesvgelt->GETVAL(Width);
@@ -81,18 +100,47 @@ extern "C" {
 	initHelper->glinfo->ypan=-(winHeight/zoomw-height)/2;
       }
     }
-    // TODO: remove this
-    // svgdoc->updateStyle();
-
     displayManager->display(svgdoc);
     return JS_TRUE;
   }
 
+  static
+  JSBool
+  startAnimation(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
+  {
+    EJS_CHECK(initHelper);
+    EJS_INFO("called");
+
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    svg::SVGDocument* svgdoc=NULL;
+    if (!JSVAL_IS_OBJECT(argv[0]))
+      EJS_THROW_ERROR(cx,obj,"object required as first argument");
+    if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),svgdoc))
+      return JS_FALSE;
+
+    svg::SVGSVGElement * thesvgelt = svgdoc->GET_SIMPLE_VAL(RootElement);
+    thesvgelt->animationTraverse(initHelper->animinfo);
+    initHelper->animinfo->animationManager->start();
+    return JS_TRUE;
+  }
+
+  static
+  JSBool
+  stopAnimation(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
+    EJS_CHECK(initHelper);
+    initHelper->animinfo->animationManager->stop();
+    return JS_TRUE;
+  }
+  
 
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
   static JSFunctionSpec svgl_static_methods[] = {
     FUNC (display, 1),
+    FUNC (startAnimation, 1),
+    FUNC (stopAnimation, 0),
     EJS_END_FUNCTIONSPEC
   };
 
@@ -121,7 +169,7 @@ extern "C" {
     if (!JS_DefineFunctions(cx, svglobj, svgl_static_methods)) return JS_FALSE;
 
     try {
-      initHelper = svgl::InitHelper::get();
+      initHelper = svgl::InitHelper::get(new TimeManager(cx,global,0.01), new RedisplayListener(cx,global));
       displayManager = initHelper->displayManager;
       // get window size (todo: we must get window resize events !)
       int viewport[4];

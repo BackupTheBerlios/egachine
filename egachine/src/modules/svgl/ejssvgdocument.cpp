@@ -82,8 +82,8 @@ extern "C" {
 
     dom::Text* text=nthis->createTextNode(value);
     assert(text);
+
     JSObject* jstext=ejs_NewText(cx,obj,text);
-    // todo: delete text?
     if (!jstext) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(jstext);
     return JS_TRUE;
@@ -96,30 +96,13 @@ extern "C" {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     GET_NTHIS(cx,obj);
 
-    // todo: root string!
-    JSString *strtype=JS_ValueToString(cx, argv[0]);
-    if (!strtype) return JS_FALSE;
+    dom::String* tag;
+    if (!jsToDomString(cx, argv[0], tag)) return JS_FALSE;
 
-    // javascript uses ucs-2 encoding and svgl string does not support it?
-    // for now we interpret ucs-2 as utf16 which should work?
-    // TODO: check above, check for exceptions, how does svgl GC?
-    
-    // TODO: shit
-    //    dom::Element* element=nthis->createElement(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
-    // it seems we must use internString otherwise createElement does not work as expected?
-    // TODO: take a look at the details
-    dom::Element* element=nthis->createElement(unicode::String::internStringUtf16(JS_GetStringChars(strtype),JS_GetStringLength(strtype)));
+    dom::Element* element=nthis->createElement(tag);
     assert(element);
 
-    std::cerr << "tag name: " << (*element->getTagName()) << std::endl;
-    std::cerr << "node name: " << (*element->getNodeName()) << std::endl;
-    std::cerr << "node type: " << ((int)element->getNodeType()) << std::endl;
-    
-    // now create javascript wrapper object for element
-    // TODO: what about polymorphism? shouldn't we create a specialized element? I think no
-    // and who is the owner of the native object? gc -> crash?
-    // perhaps we must map native to js object?
-    // or is svgl always the owner of the native object?
+    // TODO: perhaps create specialized wrapper object
     JSObject* njsobj=ejs_NewElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);
@@ -135,39 +118,21 @@ extern "C" {
 
     dom::String* nsstr=NULL;
     if (!jsToDomString(cx,argv[0],nsstr)) return JS_FALSE;
-    
-    // todo: shit
-    JSString *tagstr=JS_ValueToString(cx, argv[1]);
-    if (!tagstr) return JS_FALSE;
+    dom::String* tag;
+    if (!jsToDomString(cx, argv[1], tag)) return JS_FALSE;
 
-    // javascript uses ucs-2 encoding and svgl string does not support it?
-    // for now we interpret ucs-2 as utf16 which should work?
-    // TODO: check above, check for exceptions, how does svgl GC?
-    
-    // TODO: shit
-    //    dom::Element* element=nthis->createElement(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
-    // it seems we must use internString otherwise createElement does not work as expected?
-    // TODO: take a look at the details
-    dom::Element* element=nthis->createElementNS(nsstr,
-						 unicode::String::internStringUtf16(JS_GetStringChars(tagstr),JS_GetStringLength(tagstr)));
+    dom::Element* element=nthis->createElementNS(nsstr,tag);
     assert(element);
 
-    std::cerr << "tag name: " << (*element->getTagName()) << std::endl;
-    std::cerr << "node name: " << (*element->getNodeName()) << std::endl;
-    std::cerr << "node type: " << ((int)element->getNodeType()) << std::endl;
     
-    // now create javascript wrapper object for element
-    // TODO: what about polymorphism? shouldn't we create a specialized element? I think no
-    // and who is the owner of the native object? gc -> crash?
-    // perhaps we must map native to js object?
-    // or is svgl always the owner of the native object?
+    // TODO: perhaps create specialized wrapper object
     JSObject* njsobj=ejs_NewElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);
     return JS_TRUE;
   }
 
-  
+  // TODO: remove this test
   static
   JSBool
   svgdocument_addSample(JSContext* cx, JSObject* obj, uintN argc, jsval*, jsval*) 
@@ -213,8 +178,7 @@ extern "C" {
     // handle error !!
     EJS_CHECK(element);
 
-    // now create javascript wrapper object for element
-    // TODO: what about polymorphism? shouldn't we create a specialized element?
+    // TODO: perhaps create specialized wrapper object
     JSObject* njsobj=ejs_NewElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);
@@ -230,8 +194,8 @@ extern "C" {
     GET_NTHIS(cx,obj);
     dom::Element* element=nthis->getDocumentElement();
     assert(element);
-    // now create javascript wrapper object for element
-    // TODO: what about polymorphism? shouldn't we create a specialized element?
+
+    // TODO: perhaps create specialized wrapper object
     JSObject* njsobj=ejs_NewElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);

@@ -17,7 +17,9 @@ ejssvgl_la_SOURCES = \
 	ejstext.h \
 	ejstext.cpp \
 	ejsallelements.h \
-	strutils.h
+	strutils.h \
+	ejstimer.h \
+	ejstimer.cpp
 
 ejssvgl_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SVGL_LIBS@
 

@@ -1202,3 +1202,14 @@ war grad dabei zu versuchen das svgtetris zum laufen zu bekommen
 --------------------------------------------------------------------------------
 fix test for SDL_mixer in configure.ac
 --------------------------------------------------------------------------------
+declarative SVG animations
+integration of SVG into EGachine
+--------------------------------------------------------------------------------
+überall strutils verwenden bei dom:String <-> JSString konvertierungen
+1:1 mapping zw. native und js dom objekten?
+clean up todo list
+siehe auch spezielle modul todo listen
+--------------------------------------------------------------------------------
+ejs.exit still sucks
+--------------------------------------------------------------------------------
+experimental declarative animation support destroyed svgviewer functionality

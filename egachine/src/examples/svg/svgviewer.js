@@ -7,9 +7,29 @@ if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
 
 ejs.ModuleLoader.load("svgl");
 
+function reschedule(sec){
+  if (sec<0) throw sec;
+  var start=Timer.getTimeStamp();
+  var dt;
+  Input.poll();
+  if (!sec) sec=0.01;
+  while ((dt=((Timer.getTimeStamp()-start)/1000000))<sec)
+    Timer.uSleep((sec-dt)*1000000);
+  return dt;
+}
+
+function redisplay()
+{
+  gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+  svgl.display(document);
+  Video.swapBuffers();
+}
+
 SVGViewer={
   debug:function(x){stderr.write(x+"\n");},
   run:function(){
+    svgl.startAnimation(document);
+    stderr.write("after start\n");
     var frame=0,start,last,now,dt,i,timeOut;
     last=now=start=Timer.getTimeStamp();
     while(true) {
@@ -27,8 +47,6 @@ SVGViewer={
 	}
       }
 
-      svgl.display(document);
-      Video.swapBuffers();
       Input.poll();
       ++frame;
     };
@@ -73,4 +91,5 @@ function setTimeout(toeval,ms) {
   SVGViewer.timeOut={func:function(){eval(toeval);},timeOut:ms*1000,remain:ms*1000};
 };
 document._handleScripts(this);
-SVGViewer.run();
+svgl.startAnimation(document);
+//SVGViewer.run();

@@ -544,7 +544,7 @@ install-data-local: egares egaserver egachine
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	$(INSTALL_SCRIPT) egares.install $(DESTDIR)$(bindir)/egares
 	$(INSTALL_SCRIPT) egaserver.install $(DESTDIR)$(bindir)/egaserver
-	$(INSTALL_SCRIPT) egaserver.install $(DESTDIR)$(bindir)/egachine
+	$(INSTALL_SCRIPT) egachine.install $(DESTDIR)$(bindir)/egachine
 
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/egares $(DESTDIR)$(bindir)/egaserver $(DESTDIR)$(bindir)/egachine

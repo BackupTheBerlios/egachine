@@ -12,7 +12,7 @@ function println(x){
   Stream.stdout.write(x+"\n");
 };
 
-println("Server is now running\nListening for connections on port "+listenPort);
+println("Server is now running\nListening for connections on port "+Net.server.port);
 println("ATTENTION: at the moment the server is insecure.");
 
 // our game uses an aspect ratio of 1.333:1

@@ -120,6 +120,8 @@ extern "C" {
     int32 port;
     if (!JS_ValueToInt32(cx,argv[0],&port))
       return JS_FALSE;
+    if (!JS_SetProperty(cx, obj, "port", &argv[0])) return JS_FALSE;
+    
     Server* server=new Server(cx,obj,port);
     if ((!server->init())||(!JS_SetPrivate(cx,obj,(void *)server))) {
       delete server;

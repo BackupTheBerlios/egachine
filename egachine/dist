@@ -32,4 +32,5 @@ tar czf ../$EGANAME.tar.gz $EGANAME
 
 cd $TOPSRCDIR
 rm -rf _dist
+rm $TMPFILE
 

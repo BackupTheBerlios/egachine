@@ -6,7 +6,14 @@ SECURITY RELATED BUGS:
 jsolait does use eval at some points
 make sure this doesn't allow clients to execute code on server
 the jsonclass (transformObj) feature seems to be a problem, too
-=> server still executes client code
+=> server probably still executes client code
+
+i asked jan:
+>It should not evaluate arbitrary code, at least that's not the plan.
+>
+>Jan 
+
+=> for now I assume it is ok
 --------------------------------------------------------------------------------
 spidermonkey bug: assertion in jsarena.c:274 fails
 this only happens with the debug build
@@ -87,10 +94,6 @@ if you want to generate an error use EJS_THROW_ERROR
 
 at the moment always the same error exception is thrown and the only way
 to differentiate between them is the message => really bad
---------------------------------------------------------------------------------
-somehow remove dontwatch hack
-dontwatch hack is used by the (deprecated) Mover object
-remove Mover object and dontwatch hack (and examples using Mover)
 --------------------------------------------------------------------------------
 FONT STUFF:
 
@@ -192,8 +195,6 @@ report spidermonkey docu "bugs"
 JS_NewObject: class pointer may be NULL => Object
 FunctionSpec: extra arguments field
 --------------------------------------------------------------------------------
-perhaps complete pong3
---------------------------------------------------------------------------------
 supply version information
 nearly done
 not yet done:
@@ -215,20 +216,6 @@ stdin text input currently is always latin1
 text input via. Input layer is unicode and seems to work quite well
 (via SDL)
 --------------------------------------------------------------------------------
-redesign input layer?
-
-perhaps rethink the gamepad event design
-or the complete input layer?
-the idea was to keep it simple
-but perhaps someone wants mouse input/analog joy input/..
-for now we keep the simple everything is a gamepad
-and you can enter some text aproach
-sometime in the future:
-expose more of the SDL Input stuff
-it is more powerful and there will not be any other implementation
-in the near future
-let user redefine keys / gamepad mapping
---------------------------------------------------------------------------------
 i am not sure if I do create the dll with my mingw cross compiler the right way
 do I need -fPIC, too ? no i don't think so - it seems all win32 code generated
 by mingw is position independant
@@ -248,10 +235,11 @@ currently examples in client/opengl may use gl. and in client/ itself
 they should not use it - otherwise the destinction would be stupid
 i think it would be a good idea to have an explicit subset
 of course this must be documented
-are the scenegraph objects allowed to call gl functions? yes
+are the scenegraph objects allowed to call gl functions? no
 
-end users now have the choice to use the scene-graph+video functions and no
-gl functions (and optionally might use gl functions)
+end users now have the choice to use:
+- video functions (optionally gl)
+- scene-graph+video functions (optionally gl)
 
 in the video module currently remain three gl related functions:
     FUNC(createTexture,1),
@@ -370,72 +358,9 @@ performance?
 nochmal die context geschichten anschauen
 vielleicht kann ich das ja doch gebrauchen
 --------------------------------------------------------------------------------
-PLAN:
-
-also ModuleLoader soll ja scripte laden können
-=> 1. Scripte laden von C++
-
-was ist das problem?
-in Javascript will ich machen:
-ModuleLoader.load("Zlib")
-evtl. mit lazy resolver:
-Zlib.compress lädt automatisch das Zlib module
-
-so ein Modul besteht:
-- aus einem .js (und zwar name.lowercase also bsp. zlib.js)
-oder
-- aus einem.js und einer lib (.so/.dll) (und zwar "ejs"+name.lowercase)
-oder
-- aus einer lib
-
-"Problem" js files finden bzw. wo suchen?
-bei den libs macht das die libltdl für mich
-
-am besten mache ich vielleicht fs funktionalität von js aus verfügbar
-und den ModuleLoader in js
-warum?
-ich wollte es so machen daß die .js module vor und nach dem laden der lib
-was machen können
-
-möglichst wenig native code
-
-
-also neuer Plan:
-1. Scripte laden von C++
-2. Scripte laden von JS, da ModuleLoader das dann braucht und zum großen Teil
-in JS geschrieben wird?
-
-
-zum thema eval
-seither habe ich das ganze script geladen und dann ausgeführt
-bzw. dann wurde es nach ucs2 konvvertiert und dann ausgeführt?
-ziemlich bescheuert
-jetzt mache ich das mal richtig
+sash anschauen?
 --------------------------------------------------------------------------------
-also
-grad ist mein problem ich rufe Evaluate auf mit NULL als obj
-interessant ist auch der jsapi.h Kommentar dazu
-wenn der denn noch aktuell ist?
-
-
-toLower und den "ejs" kram kann ich jetzt aus dem native code entfernen!
-kann ich ja jetzt in js machen
-
-
-Aktuelles Problem:
-moduleloader.js muß gefunden werden
-
-1. nicht installiert
-=> ist in ejsshell/
-2. installiert
-=> $DATADIR/ejs
-
-Beste Lösung man muß install machen!
---------------------------------------------------------------------------------
-sash anschauen
-print modul
---------------------------------------------------------------------------------
-ich sollte mir die nomenklatur anschauen - die scheint bei JS etwas
+ich sollte mir die nomenklatur anschauen - die scheint bei JS bzw. ecma etwas
 "verworren"
 --------------------------------------------------------------------------------
 automatic loading of modules? (resolve hook)
@@ -443,17 +368,17 @@ reflecting the resolve hook back to js seems to be a bad idea
 automatic loading of modules would require the modules to strictly follow
 naming convention and to stay in their scope
 at the moment this is not true and should be improved anyway
+- improved - but there are still some modules ...
 
-clean-up the module / namespace stuff
-a module should if possible only define one object
-what about nesting?
+what about (namespace) nesting? not now
 --------------------------------------------------------------------------------
 derive special exception objects
 --------------------------------------------------------------------------------
-Hmmm now we have:
-"untrusted mode" / runUntrusted / ModuleLoader.disable
-at the moment runUntrusted only disables the ModuleLoader which is not
-what the name suggests - we probably need some kind of security manager
+at the moment security model is very simple:
+untrusted mode (restricted mode)
+
+perhaps we should (or even must?) improve this
+we probably need some kind of security manager
 and perhaps want to use JS API stuff for this
 --------------------------------------------------------------------------------
 byte arrays: (and string handling)
@@ -516,12 +441,6 @@ http://groups.google.de/groups?th=35ba422a08cd0319
 
 use the byte array in the zlib modul
 --------------------------------------------------------------------------------
-monitorable functioniert nicht
-garbage collector crashed
-
-noch mal InitClass Beispiel suchen :-((
-this is fixed?
---------------------------------------------------------------------------------
 private data:
 there is a API function JS_GetInstancePrivate
 unfortunately it does not differentiate between private is null and
@@ -573,6 +492,7 @@ perhaps we should use glib or nspr now?
 glib: no
 we still do not depend upon nspr (but the debian libsmjs is linked against
 nspr anyway since it is using JS_THREADSAFE)
+nspr has user level threads
 --------------------------------------------------------------------------------
 OpenGL ES:
 http://www.khronos.org/opengles/
@@ -591,8 +511,6 @@ register mime type (application/egachine ?)
 we need:
 different SDL_mixer version (see below audio:)
 => compiled statically
-different spidermonkey version
-(the one in testing has bug 240577)
 --------------------------------------------------------------------------------
 take a look at <http://g3d-cpp.sourceforge.net/>
 --------------------------------------------------------------------------------
@@ -650,6 +568,7 @@ constructor, found by looking up the class name in the last object on the scope
 chain.  JS_DefineObject is a convenience that does JS_NewObject and then
 JS_DefineProperty to name that new object in another object, via a new property.
 
+see trouble below - where constructor lookup by name fails
 --------------------------------------------------------------------------------
 splitted binary packages
 perhaps i should split the source, too? not now
@@ -674,45 +593,6 @@ Another problem is to generate docu for the wrapped native code
 => perhaps the best solution is to write the docu manually
 (how does jsolait generate docu?)
 --------------------------------------------------------------------------------
-currently loading a (native) module twice is a error / throws an exception
-this is probably a bad idea
-hmm
-either ejs.ModuleLoader.load should remember which modules are already loaded
-and simply ignore dupilcate requests or the caller must ensure that modules
-aren't loaded twice
-the native module loader (native code) already remembers which (native) modules
-were loaded => would have nearly duplicate code
-but we must be careful since module loading should only be allowed in trusted
-mode
---------------------------------------------------------------------------------
-fix netorigpong2 using Monitorable
-
-puh
-also was ist los
-da muesste ich einiges machen und auf jeden fall müssten dann alles monitorable
-objects sein - maximal könnte ich es mit dem alten kombinieren wo nur änderungen
-existierender properties verschickt werden können
-(arrays fallen flach)
-
-probleme waren bei monitorable2.js monitorable3.js aufgetaucht
-wegen dem serialisieren mal wieder
-sieht so aus als ob ich das doch von hand machen muesste
-(sonst werden objekte dupliziert)
-die idee war dann einfach das erstellen von monitorable objects abzufangen
-und bei dieser gelegenheit mir das zu merken
-und dann normal modifikationen an denen zu verschicken
-dann muß ich aber immernoch die anderen objekte (nicht monitorable)
-serialisieren und die können ja zusammengesetzt sein
-=> zurück beim serialisierungsproblem
-
-da ist dann auch das problem ob die selbe id zweimal vvergeben werden kann
-und das kann sie wenn ein objekt gc'ed wird
-und wie soll ich das mitbekommen?
-irgendwie ist das alles pfusch
-beim Monitorable object könnte ich nen hook machen
-
-das ganze ist im prinzip ein distributed shared memory system
-
 write summary of javascript deffects/pitfalls:
 uneval/toSource and prototype, constructor, __proto__, scope
 typeof / instanceof
@@ -758,20 +638,6 @@ null
 
 mal graphviz mit __parent__ machen
 --------------------------------------------------------------------------------
-bin dabei server neu zu machen
-jetzt mit objectwriter
-wie mache ich da jetzt die broadcast geschichte?
-oder anders wie das ganze?
-1. neuer client connected
-2. muss dem neuen client alle objekte senden (die bereits gesendet wurden),
-   d.h. ich muss den aktuellen zustand herstellen damit ich nachher wieder
-   broadcasten kann
-3. danach sollte 
-
-
-monitor geht grad net - vermutlich wegen children array
-
-also geht jetzt mal so wieder
 hacks entfernen (dontwatch)
 unnötige reste entfernen
 step entfernen aus szenengraph
@@ -1056,62 +922,6 @@ habe name clash
 zw. svgl Text und egachine.js Text !!
 => create sg (scenegraph) module
 --------------------------------------------------------------------------------
-module stuff:
-make it similar to jsolait
-but also a bit different
-ejs.ModuleLoader.import(namespace,modulename)
-where namespace is some object which the module
-should use to define it's functions in.
-Why should?
-some modules might still prefer to pollute the
-global namespace
-(f.e. the gl module for its gl constants)
-
-import is a key word :-(
-ejs.ModuleLoader.load(namespace, modulename)
-
-is this really better than jsolait's approach?
-
-problem with my approach
-loading a module twice:
-since you can pass in a non-empty namespace
-we can't return a namespace only containing the module
-on the second load
-
-problem with jsolait's approach
-there is no simple way to import one namespace into
-another one since not all members will be enumerable
-
-on the other hand such a feature would have to handle
-collisions
-
-okay we go with jsolaits approach
-hmm - makes it difficult not to break compatibility
-
-i make both
-
-hmmm
-perhaps we should simply use jsolaits module loading
-no need to have two module loading frameworks!
-eiter use jsoltait's one or remove jsolait's one
-
-hmm no
---------------------------------------------------------------------------------
-okay bin beim modul kram ummodeln
-tests schlagen fehl
-gibt merkwürdige effekte mit anderem this
-evtl. kann man das abschalten s.h jsapi.h
-(globale variablen usw.)
-
-hmm
-clean up
-
-also das mit meinem modullader ist so als ob das modul der globale namensraum
-wäre
-nein nicht ganz
-nur beim lesen?
-
---------------------------------------------------------------------------------
 shit jetzt schien alles gut ist es aber nicht
 denn er sucht den constructor anhand clasp->name
 
@@ -1121,8 +931,12 @@ und proto setzen nicht finden lassen
 hmm nicht so richtig gut
 liegt es vielleicht am parent?
 --------------------------------------------------------------------------------
-complete module transition
-
-war debei alles voll fertig zu machen
-1. presentation
-2. beispiele
+also svg und namespaces
+müssen die dom objekte bzw. constructors in den global ns?
+zumindest in für die skripte muss es so aussehen als ob
+--------------------------------------------------------------------------------
+map sg to svg
+--------------------------------------------------------------------------------
+how to do timeshift in SVG (decl. anim.)
+(scene-graph node adjusting time rel.) ?
+--------------------------------------------------------------------------------

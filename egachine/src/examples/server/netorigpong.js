@@ -18,10 +18,13 @@
   so daß der server wirklich poll(Infinity) machen kann
 */
 
-if (!EGachine.server) 
+if ((typeof EGachine == 'undefined') || (!EGachine.server))
   throw new Error("This file must be run by egaserver");
-if (!EGachine.checkVersion(0,1,1)) 
-  throw new Error("at least version 0.1.1 required");
+EGachine.checkVersion(0,1,1);
+
+function println(x){
+  Stream.stdout.write(x+"\n");
+};
 
 println("Server is now running\nListening for connections on port "+listenPort);
 println("ATTENTION: at the moment the server is insecure.");
@@ -71,7 +74,7 @@ function profile(f,maxDt)
   ret=f();
   if ((dt=(Timer.getTimeStamp()-s))>maxDt) {
     println(uneval(f)+': '+dt);
-    stdout.sync();
+    Stream.stdout.sync();
   }
   return ret;
 };
@@ -95,41 +98,40 @@ function handleNewConnection(id,stream){
   // code we send to the client - which executes it
   // this is quite generic and should work for any similar networked game
   Net.server.remoteEval(id,"\
-function run(){if (!EGachine.checkVersion(0,1,1))			\
-  throw new Error('at least version 0.1.1 required');			\
-objReader=new ObjectReader(stream);					\
-Input.handleInput=function(i){						\
-  if (i.x) {start+=i.x*1000000;stderr.write(start+'\\n');return;};	\
-  var msg=jsolait.lang.objToJson(i);					\
-  var h=msg.length.convertTo(16,6);					\
-  stream.write(h);							\
-  stream.write(msg);							\
-  stream.sync();							\
-};									\
-function trace(f){var debug=0;if (debug) var s=Timer.getTimeStamp();	\
-  f();									\
-  if (debug) stdout.write(						\
-                    uneval(f)+': '+(Timer.getTimeStamp()-s)+'\\n');	\
-};									\
-function getNow() {return Timer.getTimeStamp()-start;};			\
-Video.setViewportCoords({left:0,right:"+sx+",bottom:0,top:"+sy+"});	\
-start=Timer.getTimeStamp()-("+(now-200000)+");				\
-now=last=getNow();							\
-stepSize=1000000/20;							\
-while (true) {								\
-  while ((dt=((now=getNow())-last))<(stepSize-10000)) {			\
-    Timer.uSleep(stepSize-dt);						\
-  };									\
-  stdout.write('dt:'+dt+'\\n');						\
-  last=now;								\
-  Input.poll();								\
-  if (stream.inAvailable()>0) objReader.read();				\
-  if (typeof root != 'undefined') trace(function(){root.paint(now);});	\
-  Video.swapBuffers();							\
-  Video.clear();							\
-}									\
-};									\
-run();									\
+function run(){EGachine.checkVersion(0,1,1);\
+objReader=new Stream.ObjectReader(stream);			\
+Input.handleInput=function(i){\
+  if (i.x) {start+=i.x*1000000;Stream.stderr.write(start+'\\n');return;};\
+  var msg=EGachine.objToJson(i);\
+  var h=msg.length.convertTo(16,6);\
+  stream.write(h);\
+  stream.write(msg);\
+  stream.sync();\
+};\
+function trace(f){var debug=0;if (debug) var s=Timer.getTimeStamp();\
+  f();\
+  if (debug) Stream.stdout.write(\
+                    uneval(f)+': '+(Timer.getTimeStamp()-s)+'\\n');\
+};\
+function getNow() {return Timer.getTimeStamp()-start;};\
+Video.setViewportCoords({left:0,right:"+sx+",bottom:0,top:"+sy+"});\
+start=Timer.getTimeStamp()-("+(now-200000)+");\
+now=last=getNow();\
+stepSize=1000000/20;\
+while (true) {\
+  while ((dt=((now=getNow())-last))<(stepSize-10000)) {\
+    Timer.uSleep(stepSize-dt);\
+  };\
+  if (0) Stream.stdout.write('dt:'+dt+'\\n');\
+  last=now;\
+  Input.poll();\
+  while (stream.inAvailable()>0) objReader.read();\
+  if (typeof root != 'undefined') trace(function(){root.paint(now);});\
+  Video.swapBuffers();\
+  Video.clear();\
+}\
+};\
+run();\
 ");
 
 };
@@ -187,18 +189,18 @@ function advanceTo(time) {
 };
 
 // object TimeShift
-TimeShift=constructor(function(shift) {
+TimeShift=adjCons(function(shift) {
 			this.shift=shift;
 		      });
 TimeShift.prototype=new sg.Node();
 TimeShift.prototype.paint=function(time){
-  Node.prototype.paint.call(this,time-this.shift);
+  sg.Node.prototype.paint.call(this,time-this.shift);
 };
 
 // object LinMover - linear movement
-LinMover=constructor(function(pos, speed, rot, rotspeed) {
+LinMover=adjCons(function(pos, speed, rot, rotspeed) {
 		       if (!pos) throw new Error("pos undefined");
-		       if (!pos instanceof V2D) throw new Error("pos not a V2D");
+		       if (!pos instanceof sg.V2D) throw new Error("pos not a sg.V2D");
 		       this.pos=pos;
 		       this.speed=speed;
 		       this.rot=rot;
@@ -219,7 +221,7 @@ LinMover.prototype.getRot=function(time){
 
 
 // monitorable array object
-Marray=constructor(function(){this.length=0;});
+Marray=adjCons(function(){this.length=0;});
 Marray.prototype.push=function(v){
   var t=this;
   profile(function(){t[t.length]=v;},stepSize/4);
@@ -228,7 +230,7 @@ Marray.prototype.push=function(v){
 
 
 // derived object TimeSwitch
-TimeSwitch=constructor(function () {});
+TimeSwitch=adjCons(function () {});
 TimeSwitch.prototype=new sg.Node();
 TimeSwitch.prototype.getInterval=function(time){
   // find active interval - TODO: use better algo (this array is sorted)
@@ -242,13 +244,13 @@ TimeSwitch.prototype.paint=function(time){
 };
 TimeSwitch.prototype.add=function(time,node){
   if (!this.timeline) this.timeline=new Marray();
-  Node.prototype.add.call(this,node);
+  sg.Node.prototype.add.call(this,node);
   this.timeline.push(time);
   return this;
 };
 
 // derived object MultiMover
-MultiMover=constructor(function(){});
+MultiMover=adjCons(function(){});
 MultiMover.prototype=new sg.Node();
 MultiMover.prototype.getInterval=function(time){
   // find active interval
@@ -266,7 +268,7 @@ MultiMover.prototype.paint=function(time){
   try{
     if ((pos=this.getPos(time))) Video.translate(pos.x,pos.y);
     if ((rot=this.getRot(time))) Video.rotate(rot.value);
-    Node.prototype.paint.call(this,time);
+    sg.Node.prototype.paint.call(this,time);
   }catch(e){if (e.message!="no match") throw e;}
   Video.popMatrix();
 };
@@ -295,7 +297,7 @@ MultiMover.prototype.appendMove=function(time,_move){
 };
 
 //! point display object
-Points=constructor(function(points) {
+Points=adjCons(function(points) {
 		     this.points=points;
 		   });
 Points.prototype.digits=["\
@@ -443,7 +445,7 @@ while(true) {
   while ((dt=((now=getNow())-last))<(stepSize-10000)) {
     profile(function(){Net.server.poll(stepSize-dt);});
   };
-  //  stdout.write("dt:"+dt+"\n");
+  //  Stream.stdout.write("dt:"+dt+"\n");
   
   // forward simulation
   while ( (now-simTime) > stepSize) {

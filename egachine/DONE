@@ -581,3 +581,117 @@ we now have many different serialization approaches
 
 done: removed the old one
 --------------------------------------------------------------------------------
+redesign input layer?
+
+perhaps rethink the gamepad event design
+or the complete input layer?
+the idea was to keep it simple
+but perhaps someone wants mouse input/analog joy input/..
+for now we keep the simple everything is a gamepad
+and you can enter some text aproach
+sometime in the future:
+expose more of the SDL Input stuff
+it is more powerful and there will not be any other implementation
+in the near future
+let user redefine keys / gamepad mapping
+
+done:
+reimplemented old input layer in javascript on top of new one
+which simply returns javascript objects representing sdl events
+--------------------------------------------------------------------------------
+PLAN:
+
+also ModuleLoader soll ja scripte laden können
+=> 1. Scripte laden von C++
+
+was ist das problem?
+in Javascript will ich machen:
+ModuleLoader.load("Zlib")
+evtl. mit lazy resolver:
+Zlib.compress lädt automatisch das Zlib module
+
+so ein Modul besteht:
+- aus einem .js (und zwar name.lowercase also bsp. zlib.js)
+oder
+- aus einem.js und einer lib (.so/.dll) (und zwar "ejs"+name.lowercase)
+oder
+- aus einer lib
+
+"Problem" js files finden bzw. wo suchen?
+bei den libs macht das die libltdl für mich
+
+am besten mache ich vielleicht fs funktionalität von js aus verfügbar
+und den ModuleLoader in js
+warum?
+ich wollte es so machen daß die .js module vor und nach dem laden der lib
+was machen können
+
+möglichst wenig native code
+
+
+also neuer Plan:
+1. Scripte laden von C++
+2. Scripte laden von JS, da ModuleLoader das dann braucht und zum großen Teil
+in JS geschrieben wird?
+
+
+zum thema eval
+seither habe ich das ganze script geladen und dann ausgeführt
+bzw. dann wurde es nach ucs2 konvvertiert und dann ausgeführt?
+ziemlich bescheuert
+jetzt mache ich das mal richtig
+geht nicht ohne spidermonkey zu ändern (gibt nur latin1 FILE* interface)
+--------------------------------------------------------------------------------
+also
+grad ist mein problem ich rufe Evaluate auf mit NULL als obj
+interessant ist auch der jsapi.h Kommentar dazu
+wenn der denn noch aktuell ist?
+ja das war mit JS_SetOption / super global ....
+
+Aktuelles Problem:
+moduleloader.js muß gefunden werden
+
+1. nicht installiert
+=> ist in ejsshell/
+2. installiert
+=> $DATADIR/ejs
+
+Beste Lösung man muß install machen!
+ne - habe ich jetzt so gelöst, daß onstartup.js gesucht wird
+und das wird bei make und makeinstall via sed modifiziert
+=> no need to do a make install for testing
+--------------------------------------------------------------------------------
+fix netorigpong2 using Monitorable
+
+puh
+also was ist los
+da muesste ich einiges machen und auf jeden fall müssten dann alles monitorable
+objects sein - maximal könnte ich es mit dem alten kombinieren wo nur änderungen
+existierender properties verschickt werden können
+(arrays fallen flach)
+
+probleme waren bei monitorable2.js monitorable3.js aufgetaucht
+wegen dem serialisieren mal wieder
+sieht so aus als ob ich das doch von hand machen muesste
+(sonst werden objekte dupliziert)
+die idee war dann einfach das erstellen von monitorable objects abzufangen
+und bei dieser gelegenheit mir das zu merken
+und dann normal modifikationen an denen zu verschicken
+dann muß ich aber immernoch die anderen objekte (nicht monitorable)
+serialisieren und die können ja zusammengesetzt sein
+=> zurück beim serialisierungsproblem
+
+da ist dann auch das problem ob die selbe id zweimal vvergeben werden kann
+und das kann sie wenn ein objekt gc'ed wird
+und wie soll ich das mitbekommen?
+irgendwie ist das alles pfusch
+beim Monitorable object könnte ich nen hook machen
+
+das ganze ist im prinzip ein distributed shared memory system
+--------------------------------------------------------------------------------
+somehow remove dontwatch hack
+dontwatch hack is used by the (deprecated) Mover object
+remove Mover object and dontwatch hack (and examples using Mover)
+--------------------------------------------------------------------------------
+
+

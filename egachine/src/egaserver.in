@@ -161,7 +161,7 @@ function watchall(cobj,cname,gf){
     }else{
       var k;
       for (var k in cobj) {
-	if ((k[0]!='_')&&(!isFromProto(cobj,k)))
+	if ((k[0]!='_')&&(cobj.hasOwnProperty(k)))
 	  _watchall(cobj, cobj[k], k, scope+"."+k,     gf);
       }
     }

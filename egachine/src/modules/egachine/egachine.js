@@ -41,17 +41,6 @@ function isEmptyProto(p) {
   return (p=={}.__proto__);
 };
 
-// is this property from a prototype?
-// todo: hasOwnProperty?
-function isFromProto(o,prop) {
-  var p=o.__proto__;
-  while (p!=undefined) {
-    if (p[prop]&&(o[prop]==p[prop])) return true;
-    p=p.__proto__;
-  }
-  return false;
-};
-
 //! call function for all properties of an object (and the object itself)
 /*!
   \param obj the object
@@ -77,7 +66,7 @@ function forall(obj,func,idfunc){
     m[hash]=true;
     func(x,false);
     for (var k in x) {
-      if (!isFromProto(x,k))
+      if (x.hasOwnProperty(k))
 	_forall(x[k]);
     };
     func(x,true);
@@ -106,7 +95,7 @@ function serialize(x) {
   forall(x,(function(x,depthFirst){
 	      if (typeof x != 'object') return;
 	      if ((depthFirst)||(isEmptyProto(x.__proto__))) return;
-	      if ((x._p)&&(!isFromProto(x,"_p")))
+	      if ((x._p)&&(x.hasOwnProperty("_p")))
 		throw new Error("TODO: property _p not allowed");
 	      x._p=x.__proto__;
 	    }));

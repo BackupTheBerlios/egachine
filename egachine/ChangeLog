@@ -1,3 +1,7 @@
+2004-12-07  Jens Thiele  <karme@berlios.de>
+
+	* replace isFromProto(o,p) with o.hasOwnProperty(p)
+
 2004-12-06  Jens Thiele  <karme@berlios.de>
 
 	* improved Monitorable object

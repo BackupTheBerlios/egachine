@@ -165,6 +165,7 @@ createWindow(int width, int height, bool fullscreen)
   // todo: perhaps get config as parameters
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 1 );
+  //  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 1 );
 
   // todo check for available screen sizes
   // let user decide which one to use

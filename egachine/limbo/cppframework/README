@@ -1,0 +1,4 @@
+experimental framework for working with spidermonkey in c++
+(i don't use it because the ejs modules should be as simple as possible
+and useable by other projects using the spidermonkey API directly)
+=> i didn't want to introduce a huge framework required by the modules

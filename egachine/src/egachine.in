@@ -23,14 +23,16 @@
 */
 
 ejs.ModuleLoader.load("EGachine");
+ejs.config.Video.getResource=function(resname){return EGachine.getResource(resname);};
 ejs.ModuleLoader.load("Video");
+ejs.config.Input={toggleFullscreen:function(){Video.toggleFullscreen();}};
 ejs.ModuleLoader.load("Input");
 ejs.ModuleLoader.load("Audio");
 ejs.ModuleLoader.load("Stream");
 ejs.ModuleLoader.load("Net");
+ejs.config.sg={Video:Video};
 ejs.ModuleLoader.load("sg");
 ejs.ModuleLoader.load("gl");
-sg.Video=Video;
 ejs.ModuleLoader.load("Timer");
 ejs.ModuleLoader.load("Base64");
 var useSVG=true;
@@ -40,7 +42,7 @@ EGachine.client=true;
 
 EGachine.connectDialog=function(host,port){
   if (!host) host="localhost";
-  if (!port) port=47000;
+  if (!port) port=ejs.config.EGachine.port;
 
   // input field
   function InputField(text,maxlen)

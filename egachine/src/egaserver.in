@@ -40,6 +40,8 @@ function adjCons(func){
   }
 };
 
+ejs.config.sg={adjCons:adjCons};
+
 ejs.ModuleLoader.load("EGachine");
 ejs.ModuleLoader.load("Stream");
 ejs.ModuleLoader.load("Net");
@@ -47,18 +49,14 @@ ejs.ModuleLoader.load("util");
 ejs.ModuleLoader.load("sg");
 ejs.ModuleLoader.load("Timer");
 
-// todo fetch from config file
-listenPort=47000;
-
 EGachine.version=new EGachine.Version("@PACKAGE_VERSION@");
 EGachine.server=true;
 
 // todo remove those?
-Video={};
 Input={};
 
 // extend network object
-Net.server=new Net.Server(listenPort);
+Net.server=new Net.Server(ejs.config.EGachine.port);
 Net.server.connections={};
 Net.server._movie="";
 Net.server._buffer=new Stream.StringStream();
@@ -104,8 +102,7 @@ Net.server.handleDataAvailable=function(id) {
   var len=Number("0x"+h);
   if ((h.length==0)||(len==0)) {
     println("Close connection: "+id);
-    // todo:
-    //    this.connections[id].close();
+    this.connections[id].close();
     delete this.connections[id];
     return;
   }

@@ -52,15 +52,16 @@ function forall(obj,func,idfunc){
   if (!idfunc) idfunc=function(x){return util.getObjectID(x).toString();};
   if (!func) throw new Error("need function");
   function _forall(x) {
+    var hash,k;
     if (typeof x != 'object') {
       func(x,false);
       return;
     };
-    var hash=idfunc(x);
+    hash=idfunc(x);
     if (m[hash]) return;
     m[hash]=true;
     func(x,false);
-    for (var k in x) {
+    for (k in x) {
       if (x.hasOwnProperty(k))
 	_forall(x[k]);
     };
@@ -88,7 +89,7 @@ function delp(x){
   \note temporarily adds property _p as copy of __proto__
 */
 function serialize(x) {
-
+  var r;
   // is the passed object an empty prototype? (empty object)
   function isEmptyProto(p) {
     return (p=={}.__proto__);
@@ -103,7 +104,7 @@ function serialize(x) {
 	      x._p=x.__proto__;
 	    }));
   // now use toSource to serialize
-  var r=x.toSource();
+  r=x.toSource();
   // remove _p properties again
   delp(x);
   return r;
@@ -121,15 +122,17 @@ function deserialize(str) {
 
 // find last element in sorted array-like object not greater than v
 function findLastNotGreater(at,length,v){
+  var last;
   if ((!at)||(!length)) throw new Error("invalid input");
   if (at(0)>v) return -1;
-  var last=length-1;
+  last=length-1;
   if (at(last)<=v) return last;
   
   function _find(l,r) {
-    var d=r-l;
+    var d,m;
+    d=r-l;
     if (d<2) return l;
-    var m=l+(d>>1);
+    m=l+(d>>1);
     if (at(m)>v)
       return _find(l,m);
     else
@@ -151,20 +154,20 @@ if (!constructor)
 
 //! Resource object
 Resource=constructor(function(resname,resource) {
-  this.name=resname;
-  this.size=resource.length;
+		       var comp,uncomp;
+		       this.name=resname;
+		       this.size=resource.length;
 
-  // try if the compressed version is smaller
-  var comp=Base64.encode(Zlib.compress(resource));
-  var uncomp=Base64.encode(resource);
-  if (comp.length<uncomp.length) {
-    this.z=true;
-    this.data=comp;
-  }else{
-    this.data=uncomp;
-  }
-			      });
-
+		       // try if the compressed version is smaller
+		       comp=Base64.encode(Zlib.compress(resource));
+		       uncomp=Base64.encode(resource);
+		       if (comp.length<uncomp.length) {
+			 this.z=true;
+			 this.data=comp;
+		       }else{
+			 this.data=uncomp;
+		       }
+		     });
 
 Resource.prototype.decode=function(){
   if (this.z) return Zlib.uncompress(Base64.decode(this.data),this.size);
@@ -175,8 +178,7 @@ Resource.prototype.toString=function(){
   //! wrap a string to fit into 80 columns
   function wrapString(str)
   {
-    var result="";
-    var s=0,e,cols=80;
+    var result="",s=0,e,cols=80;
     while ((e=s+cols-1)<=str.length) {
       result+=str.substring(s,e)+"\\\n";
       s+=cols-1;
@@ -206,13 +208,13 @@ EGachine.getResource=function(name){
 */
 EGachine.checkVersion=function(maj,min,mic)
 {
-  if (!this.version) throw new Error("Could not determine version");
-  if (maj<this.version.maj) return true;
+  if (!this.version)          throw new Error("Could not determine version");
+  if (maj<this.version.maj)   return true;
   if (maj>this.version.major) return false;
-  if (min<this.version.min) return true;
-  if (min>this.version.min) return false;
-  if (mic<this.version.mic) return true;
-  if (mic>this.version.mic) return false;
+  if (min<this.version.min)   return true;
+  if (min>this.version.min)   return false;
+  if (mic<this.version.mic)   return true;
+  if (mic>this.version.mic)   return false;
   return true;
 };
 
@@ -393,8 +395,9 @@ Node.prototype.paint=function(time){
 };
 // deprecated
 Node.prototype.step=function(dt){
+  var i;
   if (!this.children) return;
-  for (var i=0;i<this.children;++i)
+  for (i=0;i<this.children;++i)
     this[i].step(dt);
 };
 Node.prototype.add=function(n){
@@ -523,7 +526,7 @@ Mover=constructor(function(speed, rotspeed) {
 			   });
 Mover.prototype=new Node();
 Mover.prototype.step=function(dt){
-  var ct=this.time+dt;
+  var i,ct=this.time+dt;
   if (ct-this.last<2) {
     dontwatch=true;
     this.time=ct;
@@ -532,7 +535,7 @@ Mover.prototype.step=function(dt){
     this.last=this.time;
   }
   if (this.children)
-    for (var i=0;i<this.children;++i){
+    for (i=0;i<this.children;++i){
       this[i].pos.x+=this.speed.x*dt;
       this[i].pos.y+=this.speed.y*dt;
       if (this.rotspeed) {

@@ -31,7 +31,7 @@ extern "C" {
   {
     try{
       Input::poll();
-    }catch(const Input::CallbackError &error){
+    }catch(const ECMAScript::CallbackError &error){
       // todo: perhaps use the error
       return JS_FALSE;
     }

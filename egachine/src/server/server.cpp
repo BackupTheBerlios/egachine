@@ -44,6 +44,10 @@
 
 #include "common/jszlib.h"
 
+#ifndef WINDOOF
+#include <signal.h>
+#endif
+
 class NetStreamBufServer {
 public:
   typedef int ID;
@@ -213,6 +217,9 @@ bool NetStreamBufServer::select(const Timer::TimeStamp *timeout){
   return ret;
 }
 
+void sigPipeHandler(int x){
+  JGACHINE_WARN("Ignore SIGPIPE signal");
+}
 
 JSObject*
 getNetObject()
@@ -231,14 +238,12 @@ handleNewConnection(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf> s
   assert(streamPtr.get());
   JGACHINE_INFO("New connection ("<<id<<")");
   jsval args[2];
-  // todo
-  JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0])==JS_TRUE);
-  JGACHINE_CHECK(JSNetwork::newStreamObject(streamPtr.get(),&args[1])==JS_TRUE);
-
-  if (!ECMAScript::callFunction("Net","handleNewConnection",2,args)) {
-    // todo
-    ECMAScript::handleExceptions();
-  }
+  if (!JS_NewNumberValue(ECMAScript::cx,id,&args[0]))
+    throw ECMAScript::CallbackError();
+  if (!JSNetwork::newStreamObject(streamPtr.get(),&args[1]))
+    throw ECMAScript::CallbackError();
+  if (!ECMAScript::callFunction("Net","handleNewConnection",2,args))
+    throw ECMAScript::CallbackError();
 }
 
 void
@@ -248,13 +253,10 @@ handleDataAvailable(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf> s
   jsval rval;
   jsval args[1];
 
-  // todo
-  JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0]));
-
-  if (!ECMAScript::callFunction("Net","handleDataAvailable",1,args)) {
-    // todo
-    ECMAScript::handleExceptions();
-  }
+  if (!JS_NewNumberValue(ECMAScript::cx,id,&args[0]))
+    throw ECMAScript::CallbackError();
+  if (!ECMAScript::callFunction("Net","handleDataAvailable",1,args))
+    throw ECMAScript::CallbackError();
 }
 
 void
@@ -265,13 +267,10 @@ handleConnectionClosed(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf
   jsval rval;
   jsval args[1];
 
-  // todo
-  JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0]));
-
-  if (!ECMAScript::callFunction("Net","handleConnectionClosed", 1, args)) {
-    // todo
-    ECMAScript::handleExceptions();
-  }
+  if (!JS_NewNumberValue(ECMAScript::cx,id,&args[0]))
+    throw ECMAScript::CallbackError();
+  if (!ECMAScript::callFunction("Net","handleConnectionClosed", 1, args))
+    throw ECMAScript::CallbackError();
 }
 
 
@@ -287,15 +286,31 @@ poll()
 }
 
 extern "C" {
-  ECMA_VOID_FUNC_VOID( ,poll);
+  ECMA_BEGIN_STATIC_VOID_FUNC_VOID(poll) 
+  {
+    try{
+      ::poll();
+    }catch(const ECMAScript::CallbackError &error){
+      // todo: perhaps use the error
+      return JS_FALSE;
+    }
+    return JS_TRUE;
+  }
+
   ECMA_BEGIN_VOID_FUNC(closeConnection)
   {
     ECMA_CHECK_NUM_ARGS(1);
     if (!JSVAL_IS_INT(argv[0])) return JS_FALSE;
     int id=JSVAL_TO_INT(argv[0]);
-    JGACHINE_CHECK(incoming);
-    incoming->closeStream(id);
-    return JS_TRUE;
+    if (!incoming) return JS_FALSE;
+    try{
+      incoming->closeStream(id);
+      return JS_TRUE;
+    }catch(const ECMAScript::CallbackError &error){
+      return JS_FALSE;
+    }catch(const std::invalid_argument &error){
+      ECMA_THROW_ERROR(error.what());
+    }
   }
 }
 
@@ -327,6 +342,10 @@ deinit()
 int
 main(int argc, char **argv)
 {
+#ifndef WINDOOF
+  signal(SIGPIPE,sigPipeHandler);
+#endif
+
   if (!ECMAScript::init()) {
     JGACHINE_ERROR("could not inititialize interpreter");
     ECMAScript::deinit();

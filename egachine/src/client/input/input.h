@@ -48,7 +48,7 @@ namespace Input
   
   typedef short int Unicode;
 
-  // callbacks - callbacks are allowed to throw an CallbackError exception
+  // callbacks - Note: callbacks are allowed to throw exceptions
   void quitHandler();
   void toggleFullscreenHandler();
   void iconifyHandler();
@@ -64,12 +64,5 @@ namespace Input
   //! poll for input events
   void poll();
   void deinit();
-
-  struct CallbackError : public std::runtime_error
-  {
-    CallbackError(const std::string &s) : std::runtime_error(s)
-    {}
-  };
-  
 }
 #endif

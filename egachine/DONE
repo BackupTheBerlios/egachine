@@ -171,4 +171,12 @@ and ECMA_THROW_ERROR for errors in my functions
 
 remember:
 after a call to JS_Evaluate... clear pending exceptions!
+
+error handling is most difficult with native functions calling back the
+interpreter which might report errors
+in the input layer we now use c++ exceptions and catch them just before
+returning back to the interpreter (then return JS_FALSE)
+the same should be done in server.cpp:
+callbacks should throw exception on error
+but is sigc++ exception safe? yes i think so
 --------------------------------------------------------------------------------

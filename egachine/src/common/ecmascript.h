@@ -85,6 +85,9 @@ namespace ECMAScript
 
   JSBool
   jsThrow(JSContext *cx, const char* msg);
+
+  struct CallbackError
+  {};
 };
 
 // macros to help with writing wrappers

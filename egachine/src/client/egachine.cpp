@@ -121,7 +121,7 @@ Input::charHandler(Unicode uc)
   jschar s[1];
   s[0]=uc;
   JSString* js=JS_NewUCStringCopyN(ECMAScript::cx, s, 1);
-  if (!js) throw Input::CallbackError("js error");
+  if (!js) throw ECMAScript::CallbackError();
   // todo
   JGACHINE_CHECK(JS_AddRoot(ECMAScript::cx,js));
   jsval args[1];
@@ -130,7 +130,7 @@ Input::charHandler(Unicode uc)
   // todo
   JGACHINE_CHECK(JS_RemoveRoot(ECMAScript::cx,js));
   if (!res)
-    throw Input::CallbackError("js error");
+    throw ECMAScript::CallbackError();
 }
 
 void
@@ -145,7 +145,7 @@ Input::devStateHandler(const Input::DevState& d)
   if (!JS_EvaluateScript(ECMAScript::cx, ECMAScript::glob,
 			 o.str().c_str(), o.str().length(),
 			 JGACHINE_FUNCTIONNAME,1,&rval))
-    throw Input::CallbackError("js error");
+    throw ECMAScript::CallbackError();
 }
 
 #ifndef main

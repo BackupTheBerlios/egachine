@@ -43,6 +43,10 @@ Net.handleDataAvailable=function(id) {
   Input.handleInput(i);
 }
 
+Net.handleConnectionClosed=function(id) {
+  println("Connection "+id+" closed");
+}
+
 Net.sendTo=function(id,msg) {
   var h=msg.length.convertTo(16,6);
   this.connections[id].send(h);

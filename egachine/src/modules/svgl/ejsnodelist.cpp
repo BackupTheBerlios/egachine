@@ -33,11 +33,24 @@ extern "C" {
   void
   nodelist_finalize(JSContext *cx, JSObject *obj);
 
+  static JSBool
+  nodelist_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+
+  // keep enum, node_props and node_getProperty in sync!
+  enum nodelist_propid {
+    LENGTH=-1
+  };
+
+  static JSPropertySpec nodelist_props[] = {
+    {"length", LENGTH, JSPROP_READONLY|JSPROP_SHARED},
+    {0}
+  };
+
   static
   JSClass nodelist_class = {
     "NodeList",
     JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
+    JS_PropertyStub,  JS_PropertyStub, nodelist_getProperty, JS_PropertyStub,
     JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  nodelist_finalize,
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
@@ -47,12 +60,11 @@ extern "C" {
 
   static
   JSBool
-  nodelist_item(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  getItem(JSContext* cx, JSObject* obj, jsval i, jsval* rval) 
   {
-    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     GET_NTHIS(cx,obj);
     uint32 item;
-    if (!JS_ValueToECMAUint32(cx,argv[0],&item)) return JS_FALSE;
+    if (!JS_ValueToECMAUint32(cx,i,&item)) return JS_FALSE;
     dom::Node* node=nthis->item(item);
     if (!node) {
       *rval=OBJECT_TO_JSVAL(node);
@@ -61,6 +73,41 @@ extern "C" {
     JSObject* ret=ejs_WrapNode(cx,obj,node);
     if (!ret) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(ret);
+    return JS_TRUE;
+  }
+
+  static
+  JSBool
+  nodelist_item(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    return getItem(cx, obj, argv[0], rval);
+  }
+
+  static JSBool
+  nodelist_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+  {
+    EJS_CHECK_CLASS(cx, obj, nodelist_class);
+
+    //    EJS_INFO(JS_GetStringBytes(JS_ValueToString(cx,id)));
+    
+    if (!JSVAL_IS_INT(id)) return JS_TRUE;
+    jsint slot=JSVAL_TO_INT(id);
+
+    dom::NodeList* nthis=NULL;
+    nthis=(dom::NodeList *)JS_GetPrivate(cx,obj);
+    if (!nthis) return JS_TRUE;
+    
+    switch (slot) {
+    case LENGTH:
+      {
+	unsigned l=nthis->getLength();
+	*vp=INT_TO_JSVAL(l);
+	break;
+      }
+    default:
+      return getItem(cx, obj, slot, vp);
+    }
     return JS_TRUE;
   }
   
@@ -101,7 +148,7 @@ extern "C" {
 				     NULL,
 				     &nodelist_class,
 				     nodelist_cons, 0,
-				     NULL, nodelist_methods,
+				     nodelist_props, nodelist_methods,
 				     NULL, NULL);
     if (!nodelistProto) return JS_FALSE;
     return JS_TRUE;

@@ -33,11 +33,11 @@ text.childNodes.item(0).setNodeValue("Hello");
 svgdoc.appendChild(svg);
 svg.appendChild(rect);
 svg.appendChild(text);
-
+svgl.selectDocument(svgdoc);
 var i;
 for (i=0;i<400;++i) {
 	gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-	svgl.display(svgdoc);
+	svgl.display();
 	Input.poll();
 	Video.swapBuffers();
 }

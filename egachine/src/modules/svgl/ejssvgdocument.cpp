@@ -133,38 +133,6 @@ extern "C" {
     return JS_TRUE;
   }
 
-  // TODO: remove this test
-  static
-  JSBool
-  svgdocument_addSample(JSContext* cx, JSObject* obj, uintN argc, jsval*, jsval*) 
-  {
-    EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
-    GET_NTHIS(cx,obj);
-
-    svg::SVGSVGElement * thesvgelt = new svg::SVGSVGElement(nthis);
-    thesvgelt->setWidth(450);
-    thesvgelt->setHeight(450);
-
-    nthis->appendChild(thesvgelt);
-
-    svg::SVGRectElement * rect = new svg::SVGRectElement(nthis);
-
-    double w=100,h=100;
-
-    rect->setX(w/2);
-    rect->setY(h/2);
-    rect->setWidth(w);
-    rect->setHeight(h);
-    rect->setFill("blue");
-    rect->setStroke(0,0,0);
-    rect->setStrokeWidth(4);
-    rect->setOpacity(.75);
-
-    thesvgelt->appendChild(rect);
-
-    return JS_TRUE;
-  }
-
   static
   JSBool
   svgdocument_getElementById
@@ -267,7 +235,6 @@ extern "C" {
     FUNC(createTextNode,1)
     FUNC(createElement,1)
     FUNC(createElementNS,2)
-    FUNC(addSample,0)
     FUNC(getElementById,1)
     FUNC(getDocumentElement,0)
     FUNC(_handleScripts,1)

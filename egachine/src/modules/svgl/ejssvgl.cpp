@@ -65,7 +65,7 @@ protected:
 
 //! selected document
 svg::SVGDocument * csvgdoc=NULL;
-//! root svg element of c selected document
+//! root svg element of selected document
 svg::SVGSVGElement* csvgelt=NULL;
 
 extern "C" {
@@ -80,19 +80,23 @@ extern "C" {
       EJS_THROW_ERROR(cx,obj,"object required as first argument");
     if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),csvgdoc))
       return JS_FALSE;
-
-    csvgdoc->updateStyle();
-
-    EJS_CHECK(initHelper && initHelper->context);
-    svgl::Context * svglContext=initHelper->context;
-    // todo: get a name / and this should probably be done on document creation
-    svglContext->externalEntityManager->register_(csvgdoc,unicode::String::createString(""));
-
-    initHelper->animinfo->animationManager->stop();
-    initHelper->animinfo->animationManager->unsubscribe_all();
+    EJS_CHECK(csvgdoc);
 
     csvgelt = csvgdoc->GET_SIMPLE_VAL(RootElement);
     if (csvgelt) {
+      // todo: why?
+      csvgelt->setOwnerAndViewPort(csvgelt, csvgelt);
+
+      csvgdoc->updateStyle();
+
+      EJS_CHECK(initHelper && initHelper->context);
+      svgl::Context * svglContext=initHelper->context;
+      // todo: get a name / and this should probably be done on document creation
+      svglContext->externalEntityManager->register_(csvgdoc,unicode::String::createString(""));
+
+      initHelper->animinfo->animationManager->stop();
+      initHelper->animinfo->animationManager->unsubscribe_all();
+
       csvgelt->animationTraverse(initHelper->animinfo);
 
       svg::SVGLength widthl = csvgelt->GETVAL(Width);
@@ -128,6 +132,8 @@ extern "C" {
   {
     if (csvgdoc&&csvgelt&&displayManager)
       displayManager->display(csvgdoc);
+    else
+      EJS_WARN("you must select a document via selectDocument first");
     return JS_TRUE;
   }
 
@@ -144,12 +150,11 @@ extern "C" {
   JSBool
   stopAnimation(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
   {
-    EJS_CHECK(initHelper);
+    EJS_CHECK(initHelper && initHelper->animinfo && initHelper->animinfo->animationManager);
     initHelper->animinfo->animationManager->stop();
     return JS_TRUE;
   }
   
-
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
   static JSFunctionSpec svgl_static_methods[] = {

@@ -11,26 +11,21 @@ if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
 	stderr.write("Warning no stencil buffer\n");
 
 ejs.ModuleLoader.load("svgl");
-svgdoc=new svgl.SVGDocument();
-if (! svgdoc instanceof svgl.SVGDocument) throw Error("foo");
-svgdoc.addSample();
-
 function debug(x){stderr.write(x+"\n");}
 
 function test(svgdoc){
+  svgl.selectDocument(svgdoc);
   var i=0,start=Timer.getTimeStamp(),dt=0;
   while((dt=(Timer.getTimeStamp()-start))<2000000) {
     gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-    svgl.display(svgdoc);
+    svgl.display();
     Video.swapBuffers();
     ++i;
   }
   debug("fps: "+i*1000000/dt+" dt:"+dt);
 }
-test(svgdoc);
 
 addResources();
-
 svgdoc=new svgl.SVGDocument(EGachine.getResource("lion.svg").decode());
 test(svgdoc);
 

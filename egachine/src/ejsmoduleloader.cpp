@@ -168,7 +168,10 @@ extern "C" {
 	std::string error=module->getError();
 	delete module;
 	module=NULL;
-	EJS_THROW_ERROR(cx,obj,error.c_str());
+
+	if (!JS_IsExceptionPending(cx))
+	  EJS_THROW_ERROR(cx,obj,error.c_str());
+	return JS_FALSE;
       }
       (*modules)[name]=module;
     }else{

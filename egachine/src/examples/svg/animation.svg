@@ -26,13 +26,6 @@
 	begin="0s"
 	dur="1s"
 	repeatCount="10"/>
-      <animateTransform
-	attributeName="fill"
-	from="#000000"
-	to="#ffffff"
-	begin="0s"
-	dur="1s"
-	repeatCount="10"/>
       <rect style="fill:black;stroke:none" transform="translate(-50 -50)" x="0" y="0" width="100" height="100" />
     </g>
   </g>

@@ -1,0 +1,3 @@
+for a in $(find share/doc/egachine/examples/client -name "*.js"); do b=$(basename ${a%.js}.bat); echo $a $b; echo '@ECHO OFF' > $b; echo 'PATH=$PATH:bin' >> $b;echo "bin\ejs bin\egachine $a" >> $b ; unix2dos $b; done
+for a in $(find share/doc/egachine/examples/server -name "*.js"); do b=$(basename ${a%.js}.bat); echo $a $b; echo '@ECHO OFF' > $b; echo 'PATH=$PATH:bin' >> $b;echo "bin\ejs bin\egaserver $a" >> $b ; unix2dos $b; done
+echo 'Documentation is in share/doc/egachine' > README.txt; unix2dos README.txt

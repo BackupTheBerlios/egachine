@@ -25,7 +25,7 @@ extern "C" {
     try {
       ++connectAttempts;
       outgoing=new NetStreamBuf(InternetAddress(ctype,port));
-      if (!outgoing) return ECMA_THROW_ERROR("Failed to create native object");
+      if (!outgoing) ECMA_THROW_ERROR("Failed to create native object");
       if (!JSNetwork::newStreamObject(outgoing,rval)) return JS_FALSE;
     }catch(const SocketError &e){
       ECMA_THROW_ERROR(e.what());
@@ -34,8 +34,8 @@ extern "C" {
   }
 
   // todo: dangerous cast - this could compromise security 
-#define GET_STREAM_OBJ do{NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);\
-if (!stream) ECMA_THROW_ERROR("Function must be called on stream object");}while(0)
+#define GET_STREAM_OBJ NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);\
+if (!stream) ECMA_THROW_ERROR("Function must be called on stream object")
 
   ECMA_BEGIN_METHOD(stream_send) 
   {
@@ -95,7 +95,7 @@ if (!stream) ECMA_THROW_ERROR("Function must be called on stream object");}while
     *rval=BOOLEAN_TO_JSVAL(r);
     return JS_TRUE;
   }
-#undefine GET_STREAM_OBJ
+#undef GET_STREAM_OBJ
 }
 
 #define JSFUNC(prefix, name, args) { #name,prefix##name,args,0,0}

@@ -46,6 +46,7 @@ SUBDIRS = \
 	$(MAYBE_AUDIO) \
 	$(MAYBE_SVGL) \
 	util \
-	graphviz
+	graphviz \
+	jsolait
 
 include_HEADERS=ejsmodule.h

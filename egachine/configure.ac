@@ -342,6 +342,7 @@ AC_CONFIG_FILES([
 	src/modules/svgl/Makefile
 	src/modules/util/Makefile
 	src/modules/graphviz/Makefile
+	src/modules/jsolait/Makefile
 ])
 
 AC_OUTPUT

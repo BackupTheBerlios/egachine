@@ -1,0 +1,16 @@
+#!/bin/bash
+../src/ejs <<EOF
+ejs.ModuleLoader.load("jsolait");
+var lang=jsolait.importModule("lang");
+var x={a:#1={h:"hello"},b:#1#};
+var s=lang.objToJson(x);
+function p(x){
+//stdout.write(x+"\n");
+}
+// note: json does not preserve sharp variables
+p("s:"+s);
+var y=lang.jsonToObj(s);
+p("y:"+y.toSource());
+if ((y.a.h!=x.a.h) || (y.b.h!=x.b.h))
+    throw Error("failed");
+EOF

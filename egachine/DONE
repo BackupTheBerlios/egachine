@@ -29,6 +29,7 @@ yes after testing with JSVAL_IS_OBJECT
 --------------------------------------------------------------------------------
 put boost into toplevel or src dir or remove it completely?
 for now it is inluced in the toplevel dir
+update: moved to video module (since it is the only one still using boost)
 --------------------------------------------------------------------------------
 hash function for objects (serializer):
 okay got patch from brendan

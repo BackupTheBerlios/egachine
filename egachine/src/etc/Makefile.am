@@ -26,6 +26,8 @@ editbuild = sed \
 	"@abs_top_srcdir@/src/modules/svgl"\,\
 	"@abs_top_srcdir@/src/modules/util"\,\
 	"@abs_top_srcdir@/src/modules/graphviz"\,\
+	"@abs_top_srcdir@/src/modules/jsolait"\,\
+	"@abs_top_srcdir@/src/modules"\,\
 	,g' \
 	-e 's,@libraryPath\@,\
 	"@abs_top_builddir@/src/modules/example"\,\

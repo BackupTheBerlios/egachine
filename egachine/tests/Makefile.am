@@ -40,7 +40,8 @@ tests = \
 	monitorable \
 	egares \
 	scope \
-	smbug240577
+	smbug240577 \
+	jsolait
 
 check_SCRIPTS = \
 	$(tests) \

@@ -1,0 +1,14 @@
+This is a modified version of jsolait <http://jsolait.net>,
+modified to work with ejs.
+Please do not bother the original author for bugs I introduced.
+
+For now it does not fit well into ejs's framework.
+(It introduces another module handling framework - a nice one btw.
+perhaps I will modify ejs into a similar direction - though it might
+be too restrictive)
+
+I included it because of its JSON handling.
+(It comes with a JSON parser and does not use eval => should be safe
+if receiving JSON from untrusted sources).
+EGachine will use JSON for secure client to server communication in
+the future. (server->client will still use my own serializer)

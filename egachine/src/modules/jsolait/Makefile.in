@@ -13,13 +13,14 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ../..
+top_builddir = ../../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -35,8 +36,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/etc
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+subdir = src/modules/jsolait
+DIST_COMMON = $(dist_jsolait_DATA) $(dist_pkgdata_DATA) \
+	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -45,6 +47,16 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+am__installdirs = "$(DESTDIR)$(jsolaitdir)" "$(DESTDIR)$(pkgdatadir)"
+dist_jsolaitDATA_INSTALL = $(INSTALL_DATA)
+dist_pkgdataDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(dist_jsolait_DATA) $(dist_pkgdata_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -190,57 +202,18 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-EXTRA_DIST = onstartup.js.in
+dist_pkgdata_DATA = \
+	jsolait.js
 
-# create script at compile time
-# the autoconf manual suggests this
-
-# Note: we in fact create one at compile time and at install time
-# to allow running ejs from within the build directory without
-# make install
-editbuild = sed \
-	-e 's,@scriptPath\@,\
-	"@abs_top_srcdir@/src/modules/example"\,\
-	"@abs_top_srcdir@/src/modules/zlib"\,\
-	"@abs_top_srcdir@/src/modules/monitorable"\,\
-	"@abs_top_srcdir@/src/modules/stream"\,\
-	"@abs_top_srcdir@/src/modules/file"\,\
-	"@abs_top_srcdir@/src/modules/network"\,\
-	"@abs_top_srcdir@/src/modules/bytearray"\,\
-	"@abs_top_srcdir@/src/modules/egachine"\,\
-	"@abs_top_srcdir@/src/modules/base64"\,\
-	"@abs_top_srcdir@/src/modules/timer"\,\
-	"@abs_top_srcdir@/src/modules/gl"\,\
-	"@abs_top_srcdir@/src/modules/video"\,\
-	"@abs_top_srcdir@/src/modules/input"\,\
-	"@abs_top_srcdir@/src/modules/audio"\,\
-	"@abs_top_srcdir@/src/modules/svgl"\,\
-	"@abs_top_srcdir@/src/modules/util"\,\
-	"@abs_top_srcdir@/src/modules/graphviz"\,\
-	"@abs_top_srcdir@/src/modules/jsolait"\,\
-	"@abs_top_srcdir@/src/modules"\,\
-	,g' \
-	-e 's,@libraryPath\@,\
-	"@abs_top_builddir@/src/modules/example"\,\
-	"@abs_top_builddir@/src/modules/zlib"\,\
-	"@abs_top_builddir@/src/modules/monitorable"\,\
-	"@abs_top_builddir@/src/modules/stream"\,\
-	"@abs_top_builddir@/src/modules/file"\,\
-	"@abs_top_builddir@/src/modules/network"\,\
-	"@abs_top_builddir@/src/modules/bytearray"\,\
-	"@abs_top_builddir@/src/modules/egachine"\,\
-	"@abs_top_builddir@/src/modules/timer"\,\
-	"@abs_top_builddir@/src/modules/gl"\,\
-	"@abs_top_builddir@/src/modules/video"\,\
-	"@abs_top_builddir@/src/modules/input"\,\
-	"@abs_top_builddir@/src/modules/audio"\,\
-	"@abs_top_builddir@/src/modules/svgl"\,\
-	"@abs_top_builddir@/src/modules/util"\,\
-	,g'
-
-editinst = sed \
-	-e 's,@scriptPath\@,"$(pkgdatadir)",g' \
-	-e 's,@libraryPath\@,"$(pkglibdir)",g'
+jsolaitdir = $(pkgdatadir)/jsolait
+dist_jsolait_DATA = \
+	codecs.js \
+	jsonrpc.js \
+	urllib.js \
+	xmlrpc.js \
+	crypto.js \
+	lang.js \
+	xml.js
 
 all: all-am
 
@@ -254,9 +227,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/etc/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/modules/jsolait/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/etc/Makefile
+	  $(AUTOMAKE) --foreign  src/modules/jsolait/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -284,6 +257,40 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+install-dist_jsolaitDATA: $(dist_jsolait_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(jsolaitdir)" || $(mkdir_p) "$(DESTDIR)$(jsolaitdir)"
+	@list='$(dist_jsolait_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(dist_jsolaitDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(jsolaitdir)/$$f'"; \
+	  $(dist_jsolaitDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(jsolaitdir)/$$f"; \
+	done
+
+uninstall-dist_jsolaitDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_jsolait_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(jsolaitdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(jsolaitdir)/$$f"; \
+	done
+install-dist_pkgdataDATA: $(dist_pkgdata_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(pkgdatadir)" || $(mkdir_p) "$(DESTDIR)$(pkgdatadir)"
+	@list='$(dist_pkgdata_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(dist_pkgdataDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgdatadir)/$$f'"; \
+	  $(dist_pkgdataDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgdatadir)/$$f"; \
+	done
+
+uninstall-dist_pkgdataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_pkgdata_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(pkgdatadir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(pkgdatadir)/$$f"; \
+	done
 tags: TAGS
 TAGS:
 
@@ -320,8 +327,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile all-local
+all-am: Makefile $(DATA)
 installdirs:
+	for dir in "$(DESTDIR)$(jsolaitdir)" "$(DESTDIR)$(pkgdatadir)"; do \
+	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -348,7 +358,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-local mostlyclean-am
+clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -364,7 +374,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-data-local
+install-data-am: install-dist_jsolaitDATA install-dist_pkgdataDATA
 
 install-exec-am:
 
@@ -390,43 +400,21 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-local
+uninstall-am: uninstall-dist_jsolaitDATA uninstall-dist_pkgdataDATA \
+	uninstall-info-am
 
-.PHONY: all all-am all-local check check-am clean clean-generic \
-	clean-libtool clean-local distclean distclean-generic \
-	distclean-libtool distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am \
-	install-data-local install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+.PHONY: all all-am check check-am clean clean-generic clean-libtool \
+	distclean distclean-generic distclean-libtool distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dist_jsolaitDATA \
+	install-dist_pkgdataDATA install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-info-am uninstall-local
+	uninstall-dist_jsolaitDATA uninstall-dist_pkgdataDATA \
+	uninstall-info-am
 
-
-onstartup.build: Makefile $(srcdir)/onstartup.js.in
-	rm -f onstartup.build
-	$(editbuild) $(srcdir)/onstartup.js.in >onstartup.build
-
-onstartup.install: Makefile $(srcdir)/onstartup.js.in
-	rm -f onstartup.install
-	$(editinst) $(srcdir)/onstartup.js.in >onstartup.install
-
-onstartup.js: onstartup.build onstartup.install
-	rm -f onstartup.js
-	cp onstartup.build onstartup.js
-
-install-data-local: onstartup.js
-	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)/$(PACKAGE)
-	$(INSTALL_DATA) onstartup.install $(DESTDIR)$(sysconfdir)/$(PACKAGE)/onstartup.js
-
-uninstall-local:
-	rm -f $(DESTDIR)$(sysconfdir)/$(PACKAGE)/onstartup.js
-
-all-local: onstartup.js
-
-clean-local:
-	rm -f onstartup.js onstartup.build onstartup.install
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

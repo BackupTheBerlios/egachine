@@ -21634,7 +21634,7 @@ LDFLAGS="$LDFLAGS -thread-safe -pthread"
 MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.sym"
 
 
-                                                                                                                                                                                                                                                          ac_config_files="$ac_config_files Makefile tests/Makefile debian/Makefile src/Makefile src/etc/Makefile src/examples/Makefile src/modules/Makefile src/modules/example/Makefile src/modules/zlib/Makefile src/modules/monitorable/Makefile src/modules/stream/Makefile src/modules/file/Makefile src/modules/network/Makefile src/modules/bytearray/Makefile src/modules/egachine/Makefile src/modules/base64/Makefile src/modules/timer/Makefile src/modules/gl/Makefile src/modules/video/Makefile src/modules/video/boost/Makefile src/modules/input/Makefile src/modules/audio/Makefile src/modules/svgl/Makefile src/modules/util/Makefile src/modules/graphviz/Makefile"
+                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile tests/Makefile debian/Makefile src/Makefile src/etc/Makefile src/examples/Makefile src/modules/Makefile src/modules/example/Makefile src/modules/zlib/Makefile src/modules/monitorable/Makefile src/modules/stream/Makefile src/modules/file/Makefile src/modules/network/Makefile src/modules/bytearray/Makefile src/modules/egachine/Makefile src/modules/base64/Makefile src/modules/timer/Makefile src/modules/gl/Makefile src/modules/video/Makefile src/modules/video/boost/Makefile src/modules/input/Makefile src/modules/audio/Makefile src/modules/svgl/Makefile src/modules/util/Makefile src/modules/graphviz/Makefile src/modules/jsolait/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -22314,6 +22314,7 @@ do
   "src/modules/svgl/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/svgl/Makefile" ;;
   "src/modules/util/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/util/Makefile" ;;
   "src/modules/graphviz/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/graphviz/Makefile" ;;
+  "src/modules/jsolait/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/jsolait/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

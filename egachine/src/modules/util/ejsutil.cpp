@@ -66,6 +66,14 @@
 #include <ejsmodule.h>
 #include <cassert>
 
+#define HAVE_RLIMIT 1
+
+#ifdef HAVE_RLIMIT
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -254,6 +262,22 @@ extern "C" {
     *rval = STRING_TO_JSVAL(s);
     return JS_TRUE;
   }
+
+#ifdef HAVE_RLIMIT
+  //! set memory usage limit
+  static JSBool
+  setMemoryLimit(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    EJS_CHECK_TRUSTED(cx,obj);
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    jsdouble nlimit;
+    if (!JS_ValueToNumber(cx,argv[0],&nlimit)) return JS_FALSE;
+    rlimit limit;
+    limit.rlim_cur=limit.rlim_max=nlimit;
+    *rval=BOOLEAN_TO_JSVAL((setrlimit(RLIMIT_AS,&limit)==0));
+    return JS_TRUE;
+  }
+#endif
   
 #define FUNC(name, args) { #name,name,args,0,0}
 
@@ -266,6 +290,9 @@ extern "C" {
     FUNC(cloneFunction,1),
     FUNC(clearScope,1),
     {"JSVersion",       ejs_JSVersion,  0, 0, 0},
+#ifdef HAVE_RLIMIT
+    FUNC(setMemoryLimit,1),
+#endif
     EJS_END_FUNCTIONSPEC
   };
 

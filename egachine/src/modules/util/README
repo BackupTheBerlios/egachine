@@ -30,6 +30,12 @@ clearScope(object)
 //! get or set version (when setting the old version is returned)
 [String] JSVersion([String])
 
+//! set memory usage limit
+/*!
+	\return true on success
+	\note this function is not available on all platforms
+*/
+Boolean setMemoryLimit(Number)
 
 JavaScript functions are in utils.js, and documented there.
 

@@ -1,0 +1,12 @@
+In fact this object allows the implementation/implements some kind
+of a MOP. Operations on this object are interceptable in JavaScript 
+itself by using and forwarding interception mechanisms present in 
+the SpiderMonkey Interpreter.
+
+The motivitation to do this was to allow an easy implementation
+of object distribution (modifications in the object graph on one
+host (the server) are distributed to the clients and the existent
+JavaScript functionality (getter, setter, watch) is not enough
+to do this.
+
+

@@ -375,6 +375,47 @@ extern "C" {
     return JS_TRUE;
   }
   
+  static JSBool GetMinmax(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,4,argc);
+    GLenum target;
+    GLboolean reset;
+    GLenum format,types;
+
+    if (!to_GLenum(cx,obj,argv[0],target)) return JS_FALSE;
+    if (!to_GLboolean(cx,obj,argv[1],reset)) return JS_FALSE;
+    if (!to_GLenum(cx,obj,argv[2],format)) return JS_FALSE;
+    if (!to_GLenum(cx,obj,argv[3],types)) return JS_FALSE;
+
+    unsigned c;
+    switch (format) {
+    case GL_RED:
+    case GL_GREEN:
+    case GL_BLUE:
+    case GL_ALPHA:
+    case GL_LUMINANCE:
+    case GL_LUMINANCE_ALPHA:
+      c=2;
+      break;
+    case GL_RGB:
+    case GL_BGR:
+      c=6;
+      break;
+    case GL_RGBA:
+    case GL_BGRA:
+      c=8;
+      break;
+    default:
+      EJS_THROW_ERROR(cx, obj, "sorry unsupported format");      
+    };
+
+    if (types != GL_UNSIGNED_BYTE) EJS_THROW_ERROR(cx, obj, "sorry at the moment only GL_UNSIGNED_BYTE type supported");
+
+    GLubyte values[c];
+    glGetMinmax(target, reset, format, types, values);
+    return from_number_vec(cx, obj, values, c, rval);
+  }
+  
 
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
@@ -386,7 +427,8 @@ extern "C" {
     FUNC (GetDoublev, 1),
     FUNC (GetFloatv, 1),
     FUNC (GetIntegerv, 1),
-    FUNC (Map1f, 1),
+    FUNC (Map1f, 4),
+    FUNC (GetMinmax, 4),
     EJS_END_FUNCTIONSPEC
   };
 

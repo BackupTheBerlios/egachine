@@ -243,10 +243,8 @@ i used a different SDL_mixer version (see below audio:)
 => compiled statically
 i used a different spidermonkey version
 (there is none in testing?)
-=> compiled statically
-perhaps i should compile then dynamically anyway and place them in
-/usr/lib/egachine
-this would require LD_LIBRARY_PATH and a shell wrapper around the programs
+
+egachine perhaps should not be classified as game
 --------------------------------------------------------------------------------
 write DOCU!
 perhaps use jsdoc
@@ -439,3 +437,27 @@ the players may program all clients via the server
 
 a game about software patents
 choose side: patent lobby, patent opponent, politician
+--------------------------------------------------------------------------------
+distributed scenegraph:
+at the moment only changes to simple properties are distributed
+at least missing:
+distribute changes to arrays (see watcharray.js in limbo/js)
+allow addition of objects to arrays/objects
+(this is difficult to get right since the server must remember which objects
+where already distributed to the client to keep object relationships
+correct - in case objects are shared.
+example:
+a={x:...}
+root={r:a}
+distribute(root);
+root.b=a; <---
+
+this means we must remember the hash value of all distributed objects and the
+remote name (now we get back to the more complex serialization algorithms)
+
+another aproach would be to drop the distributed scenegraph and to use a
+"distributed eval" / function to evaluate code on server and clients
+of course this would not hide the network stuff verry well and would require
+the user to serialize objects as needed => user is forced to think about local
+and remote objects
+--------------------------------------------------------------------------------

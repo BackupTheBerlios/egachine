@@ -277,7 +277,7 @@ namespace ECMAScript
     bool gotsysconf=false;
 #ifdef SYSCONFDIR
     {
-      std::string c(JGACHINE_XSTR(SYSCONFDIR)"/");
+      std::string c(JGACHINE_XSTR(SYSCONFDIR)"/egachine/");
       c+=config;
       std::ifstream sysin(c.c_str());
       if (sysin.good()) {

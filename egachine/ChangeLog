@@ -2,6 +2,8 @@
 
 	* release 0.0.7
 
+	* search configfile in correct directory (if SYSCONFDIR is set)
+
 	* added 2 more examples
 
 	* improved error handling

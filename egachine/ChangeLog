@@ -1,3 +1,10 @@
+2004-08-30  Jens Thiele  <karme@berlios.de>
+
+	* build and ship spidermonkey javascript shell
+
+	* src/common.js: scenegraph API change (probably will be changed again)
+	paint now optionally gets a time parameter (step is deprecated)
+
 2004-07-03  Jens Thiele  <karme@berlios.de>
 
 	* src/network/jsnetwork.cpp: improved error handling

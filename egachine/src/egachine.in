@@ -25,7 +25,10 @@
 ejs.ModuleLoader.load("EGachine");
 ejs.config.Video.getResource=function(resname){return EGachine.getResource(resname);};
 ejs.ModuleLoader.load("Video");
-ejs.config.Input={toggleFullscreen:function(){Video.toggleFullscreen();}};
+ejs.config.Input={
+  toggleFullscreen:function(){Video.toggleFullscreen();},
+  exit:function(res){EGachine.exit(res);}
+};
 ejs.ModuleLoader.load("Input");
 ejs.config.Audio.getResource=ejs.config.Video.getResource;
 ejs.ModuleLoader.load("Audio");
@@ -38,13 +41,20 @@ ejs.ModuleLoader.load("Timer");
 ejs.ModuleLoader.load("Base64");
 var useSVG=true;
 
+EGachine.onExit=[];
 EGachine.version=new EGachine.Version("@PACKAGE_VERSION@");
 EGachine.client=true;
+
+EGachine.exit=function(res){
+  for (i=0;i<EGachine.onExit.length;++i)
+    EGachine.onExit[i](res);
+  ejs.exit(res);
+};
 
 EGachine.connectDialog=function(host,port){
   if (!host) host="localhost";
   if (!port) port=ejs.config.EGachine.port;
-
+  
   // input field
   function InputField(text,maxlen)
   {
@@ -255,7 +265,7 @@ EGachine.step=function(f,stepSize) {
       last=now;
       ++frames;
       // output statistics suitable for gnuplot
-      //      Stream.stderr.write(""+(now-start)/1000000+" "+frames+"\n");
+      //      Stream.stdout.write(""+(now-start)/1000000+" "+frames+"\n");
     }
     avg=(last-start)/frames;
 
@@ -276,7 +286,7 @@ EGachine.step=function(f,stepSize) {
 	fdt+=dt;
       }
     }
-    info("min: "+mindt+" max: "+maxdt);
+    //    info("min: "+mindt+" max: "+maxdt);
     ret=1000000/(fdt/frames);
     if (typeof ret != "number") throw Error("Failed to detect refresh rate");
     return ret;
@@ -293,9 +303,9 @@ EGachine.step=function(f,stepSize) {
   (function(){
     var error;
 
-    info("GL Vendor: "+gl.GetString(GL_VENDOR));
-    info("GL Renderer: "+gl.GetString(GL_RENDERER));
-    info("GL Version: "+gl.GetString(GL_VERSION));
+    info("GL Vendor:     "+gl.GetString(GL_VENDOR));
+    info("GL Renderer:   "+gl.GetString(GL_RENDERER));
+    info("GL Version:    "+gl.GetString(GL_VERSION));
     info("GL Extensions: "+gl.GetString(GL_EXTENSIONS));
 
     function glinfo(opts) {
@@ -316,8 +326,56 @@ EGachine.step=function(f,stepSize) {
     EGachine._refreshRate=refreshRate=detectRefreshRate();
     info("Detected page flip rate: "+refreshRate+"Hz");
     if (refreshRate>120)
-      warning("it seems your graphics card/driver/os/hardware combination currently doesn't synchronize OpenGL buffer swaps to the screen refresh rate. You should fix this. Perhaps you have to change driver settings or update your driver. (nvidia linux: set the __GL_SYNC_TO_VBLANK environment variable)");
+      warning("it seems your graphics card/driver/os/hardware combination currently doesn't synchronize OpenGL buffer swaps to the screen refresh rate. You should fix this. Perhaps you have to change driver settings or update your driver.");
   })();
+
+  //! optional main loop (used when function regsitered via EGachine.step)
+  /*!
+    \todo improve it (especially handle buggy driver(s/settings) not syncing to vblank)
+  */
+  function mainLoop() {
+    // todo: improve it
+
+    var start,last,now,dt;
+    var frames=0,totalSkipped=0,skipped=0;
+    var tpf=Math.round(1/refreshRate*1000000);
+    
+    last=start=Timer.getTimeStamp();
+    
+    EGachine.onExit.push(function(res){
+			   info(totalSkipped+" frames lost out of "
+				+(totalSkipped+frames)
+				+" ("+(totalSkipped/(frames+totalSkipped)*100)+"%)");
+			 });
+    while (true) {
+      now=Timer.getTimeStamp();
+      dt=(now-last)/1000000.0;
+      last=now;
+      
+      // output suitable for gnuplot: plot "filename"
+      // Stream.stdout.write(""+(now-start)/1000000+" "+frames+"\n");
+      
+      ++frames;
+      
+      skipped=Math.round(dt/(1/refreshRate)-1);
+      if (skipped>0) totalSkipped+=skipped;
+      
+      // get input events
+      Input.poll();
+      
+      // clear screen
+      if (EGachine.sceneGraph)
+	Video.clear();
+      
+      EGachine._step(dt);
+      
+      // paint scenegraph
+      if (EGachine.sceneGraph) {
+	EGachine.sceneGraph.paint(now-start);
+	Video.swapBuffers();
+      };
+    };
+  };
 
   if ((argv.length<2)||(argv[1]=="-c")) {
     if (useSVG) {
@@ -329,79 +387,22 @@ EGachine.step=function(f,stepSize) {
       };
     };
     EGachine.connectDialog(argv[2],argv[3]);
-    ejs.exit(true);
+    EGachine.exit(true);
   }else if ((argv[1]!="-h")&&(argv[1]!="--help")) {
     if (argv[1]=="-r")
       ejs.loadUntrusted(argv[2]);
-    else
+    else{
       ejs.load(argv[1]);
+    }
     if (EGachine._step) {
       // application without its own main loop
       // => we provide the main loop
-      // todo: improve it
-      var start,last,now,frames=0,totalSkipped=0,skipped=0,tpf=Math.round(1/refreshRate*1000000),err=0;
-      last=start=Timer.getTimeStamp();
-
-      while (true) {
-	now=Timer.getTimeStamp();
-	dt=(now-last)/1000000.0;
-	last=now;
-	frames++;
-	skipped=Math.round(dt/(1/refreshRate)-1);
-	if (skipped>0) {
-	  totalSkipped+=skipped;
-	  /*	  Stream.stderr.write("Skipped:"+skipped+
-			      "\t Frames: "+frames+
-			      "\t total Skipped: "+totalSkipped+
-			      " ("+100/(frames+totalSkipped)*totalSkipped+"%) "+
-			      "\t FPS:"+(frames/((now-start)/1000000))+
-			      "\t err:"+err+"\n");*/
-	}
-	err+=(tpf/1000000*(skipped+1))-dt;
-	dt=tpf/1000000*(skipped+1);
-	
-	//	if (!(frames%(85*2))) dt*=2;
-
-	// get input events
-	Input.poll();
-
-	// clear screen
-	if (EGachine.sceneGraph)
-	  Video.clear();
-
-	EGachine._step(dt);
-
-	// paint scenegraph
-	if (EGachine.sceneGraph) {
-	  if (Timer.getTimeStamp()-last>tpf) continue;
-
-	  EGachine.sceneGraph.paint(now-start);
-
-	  /*
-	  (function(){
-	    var w,h,vp;
-	    vp=Video.getViewport();
-	    w=vp[2];h=vp[3];
-	    gl.Enable(GL_MINMAX);
-	    gl.Minmax(GL_MINMAX,GL_RGB,GL_FALSE);
-	    gl.ResetMinmax(GL_MINMAX);
-	    gl.CopyPixels(w-10,h-10,10,10,GL_COLOR);
-	    //	    gl.CopyPixels(0,0,w,h,GL_COLOR);
-	    //	    gl.CopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, 64, 64, 0);
-	    Stream.stderr.write(gl.GetMinmax(GL_MINMAX, GL_TRUE, GL_RED, GL_UNSIGNED_BYTE).toSource()+"\n");
-	    if ( (error=gl.GetError()) != GL_NO_ERROR) throw new Error("OpenGL error: "+error);
-	    gl.Disable(GL_MINMAX);
-	    })();*/
-
-	  if (Timer.getTimeStamp()-last>tpf) continue;
-	  Video.swapBuffers();
-	};
-      };
+      mainLoop();
     };
-    ejs.exit(true);
+    EGachine.exit(true);
   }else{
     Stream.stderr.write("Usage: egachine [-h|--help|[[-r] FILE]|[-c host port]] [OPTION]...\n");
-    ejs.exit(true);
+    EGachine.exit(true);
   };
 
   function addResources(){

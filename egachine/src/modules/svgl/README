@@ -1,2 +1,17 @@
-Experimental module using svgl to display SVG
+svgl module
 
+Description:
+
+Experimental SVG module  using SVGL <http://svgl.sf.net> for  hardware
+accelerated rendering via OpenGL.  At the  moment this module provides
+a small subset of the W3C DOM level 0 and DOM level 2 mouse events.
+
+Module dependencies:
+svgl -> Video
+svgl -> Input
+svgl -> Stream
+svgl -> File
+svgl -> gl
+
+Library dependencies:
+svgl -> libsvgl

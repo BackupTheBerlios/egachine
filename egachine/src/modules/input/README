@@ -1,3 +1,19 @@
-input layer wrapping sdl events
+Input module
 
-in input.js the old input layer now is implemented in javascript
+Description:
+
+Module for handling keyboard, mouse and joystick / gamepad input. This
+is a quite direct  mapping of the SDL event  handling.  SDL events are
+converted to JavaScript objects.  For simplicity abstract gamepad like
+devices  are  provided that are  either  real gamepads, joysticks used
+like gamepads or   gamepads emulated by  keyboard.   To  use them  you
+register   a    callback   via  the   Input.addDevListener   function.
+Additionally you can get mouse events  similar to the  W3C DOM level 2
+mouse events by  registering a callback via the Input.addEventListener
+function.
+
+Module dependencies:
+Input -> Video
+
+Library dependencies:
+Input -> libSDL

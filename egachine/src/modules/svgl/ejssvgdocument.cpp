@@ -101,7 +101,7 @@ extern "C" {
 
     dom::Element* element=nthis->createElement(tag);
     assert(element);
-    EJS_INFO(tag << " " << element);
+    //    EJS_INFO(tag << " " << element);
 
     // TODO: perhaps create specialized wrapper object
     JSObject* njsobj=ejs_NewElement(cx,obj,element);

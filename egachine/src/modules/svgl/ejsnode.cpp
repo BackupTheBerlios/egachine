@@ -69,7 +69,7 @@ ejs_Node_appendChild
   assert(child);
 
   // todo: exceptions
-  EJS_INFO(child);
+  //  EJS_INFO(child);
   nthis->appendChild(child);
 
   *rval=argv[0];

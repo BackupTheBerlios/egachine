@@ -21,8 +21,8 @@
     return ArrayContains(fail,elem);
   };
 
-  function modulFailed(module) {
-    throw new Error("Module: "+module+" introduces new global properties. Global properties: "+props);
+  function moduleFailed(module,added) {
+    throw new Error("Module: "+module+" introduces new global properties: "+added);
   }
 
   function diff(a,b) {
@@ -40,10 +40,9 @@
     return s;
   }
   var expect=globalProps();
-  var modules=["Doesnotexist",
-	       "sg","Audio","Base64","Stream","Input","Timer","Zlib","File","graphviz",
+  var modules=["sg","Audio","Base64","Stream","Timer","Zlib","File","graphviz",
 	       "jsolait","Monitorable","Net","sg","Stream","util",
-	       "gl","Video","EGachine"];
+	       "gl","Video","Input","EGachine"];
 
   var stderr=ejs.ModuleLoader.get("Stream").stderr;
   var i,j,props;
@@ -56,7 +55,9 @@
   for (i=0;i<modules.length;++i) {
     try{
 	ejs.ModuleLoader.get(modules[i]);
-    }catch(e){}
+    }catch(e){
+      warning("Could not get module: "+modules[i]);
+    }
     if ((added=diff(expect,(props=globalProps()))).length) {
       if (expectFail(modules[i]))
 	// todo:: issue warning

@@ -29,3 +29,7 @@ it seems to work but i still should take a look at the details
 (i think this will lead to trouble at some time)
 hmm valgrind leakcheck doesn't work when loading svgl module
 --------------------------------------------------------------------------------
+hmm should there be a 1:1 mapping between native and wrapper (DOM) objects?
+(at the moment we can have different js object representing the same native
+object
+--------------------------------------------------------------------------------

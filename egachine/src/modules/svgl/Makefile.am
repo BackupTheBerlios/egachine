@@ -6,6 +6,8 @@ ejssvgl_la_SOURCES = \
 	ejssvgl.cpp \
 	ejssvgdocument.h \
 	ejssvgdocument.cpp \
+	nodefdefs.h \
+	nodefuncs.h \
 	ejsnode.h \
 	ejsnode.cpp \
 	ejsnodelist.h \
@@ -14,8 +16,8 @@ ejssvgl_la_SOURCES = \
 	ejselement.cpp \
 	ejstext.h \
 	ejstext.cpp \
-	nodefuncs.h \
-	ejsallelements.h
+	ejsallelements.h \
+	strutils.h
 
 ejssvgl_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SVGL_LIBS@
 

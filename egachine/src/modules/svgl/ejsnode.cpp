@@ -23,7 +23,72 @@
 
 #include <w3c/dom/Node.hpp>
 #include "ejsallelements.h"
+#include "strutils.h"
 #include <cassert>
+
+JSBool
+ejs_Node_appendChild
+(JSContext* cx, JSObject* jsthis, dom::Node* nthis, uintN argc, jsval* argv, jsval* rval)
+{
+  EJS_CHECK_NUM_ARGS(cx,jsthis,1,argc);
+  JSObject* jschild=NULL;
+  if ((!JSVAL_IS_OBJECT(argv[0]))||(!(jschild=JSVAL_TO_OBJECT(argv[0]))))
+    EJS_THROW_ERROR(cx,jsthis,"object as arg 0 required");
+  
+  // todo: it seems we should return the jschild object
+  *rval=OBJECT_TO_JSVAL(jsthis);
+
+  // todo: exceptions
+
+  // cast jschild's native object to dom::Node *
+
+  dom::Element* element=NULL;
+  if (ejselement_class(cx, jschild)&&ejselement_GetNative(cx,jschild,element)) {
+    nthis->appendChild(element);
+    return JS_TRUE;
+  }
+  dom::Text* text=NULL;
+  if (ejstext_class(cx, jschild)&&ejstext_GetNative(cx,jschild,text)) {
+    nthis->appendChild(text);
+    return JS_TRUE;
+  }
+  dom::Node* node=NULL;
+  if (ejsnode_class(cx, jschild)&&ejsnode_GetNative(cx,jschild,node)) {
+    nthis->appendChild(node);
+    return JS_TRUE;
+  }
+  EJS_THROW_ERROR(cx,jsthis,"not yet supported");
+}
+
+JSBool
+ejs_Node_setNodeValue
+(JSContext* cx, JSObject* jsthis, dom::Node* nthis, uintN argc, jsval* argv, jsval* rval)
+{
+  EJS_CHECK_NUM_ARGS(cx,jsthis,1,argc);
+
+  dom::String* value=NULL;
+  if (!jsToDomString(cx,argv[0],value)) return JS_FALSE;
+
+  try{
+    nthis->setNodeValue(value);
+  }catch(const dom::DOMException &e){
+    EJS_THROW_ERROR(cx, jsthis, e.what());
+  }
+  return JS_TRUE;
+}
+
+JSBool
+ejs_Node_normalize
+(JSContext* cx, JSObject* jsthis, dom::Node* nthis, uintN argc, jsval*, jsval*)
+{
+  EJS_CHECK_NUM_ARGS(cx,jsthis,0,argc);
+  try{
+    nthis->normalize();
+  }catch(const dom::DOMException &e){
+    EJS_THROW_ERROR(cx, jsthis, e.what());
+  }
+  return JS_TRUE;
+}
 
 extern "C" {
 
@@ -40,20 +105,18 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-#define GET_NTHIS dom::Node* nthis=NULL;			\
+#define GET_NTHIS(cx,obj) dom::Node* nthis=NULL;		\
     if (!ejsnode_GetNative(cx,obj,nthis)) return JS_FALSE
 
 #define EJS_FUNC(x) node_##x
-#include "nodefuncs.h"
+#include "nodefdefs.h"
 #undef EJS_FUNC
-  
 #undef GET_NTHIS
 
-#define FUNC(name, args) { #name,node_##name,args,0,0}
+#define FUNC(name, args) { #name,node_##name,args,0,0},
 
   static JSFunctionSpec node_methods[] = {
-    FUNC(setNodeValue,1),
-    FUNC(appendChild,1),
+#include "nodefuncs.h"
     EJS_END_FUNCTIONSPEC
   };
 

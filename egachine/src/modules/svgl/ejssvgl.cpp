@@ -48,7 +48,7 @@ extern "C" {
 
   static
   JSBool
-  display(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  display(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     svg::SVGDocument* svgdoc=NULL;

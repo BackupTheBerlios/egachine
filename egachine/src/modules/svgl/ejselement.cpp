@@ -24,6 +24,7 @@
 #include <w3c/svg/Element.hpp>
 #include <w3c/svg/SVGElement.hpp>
 #include "ejsallelements.h"
+#include "strutils.h"
 #include <cassert>
 
 extern "C" {
@@ -32,7 +33,7 @@ extern "C" {
   void
   element_finalize(JSContext *cx, JSObject *obj);
 
-#define GET_NTHIS dom::Element* nthis=NULL;		\
+#define GET_NTHIS(cx,obj) dom::Element* nthis=NULL;		\
     if (!ejselement_GetNative(cx,obj,nthis)) return JS_FALSE
 
   enum element_propid {
@@ -59,7 +60,7 @@ extern "C" {
   static JSBool
   element_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   {
-    EJS_INFO(JS_GetStringBytes(JS_ValueToString(cx,id)));
+    //    EJS_INFO(JS_GetStringBytes(JS_ValueToString(cx,id)));
 
     EJS_CHECK_CLASS(cx, obj, element_class);
     dom::Element* nthis=(dom::Element *)JS_GetPrivate(cx,obj);
@@ -88,7 +89,7 @@ extern "C" {
 
   // functions inherited from dom::Node
 #define EJS_FUNC(x) element_##x
-#include "nodefuncs.h"
+#include "nodefdefs.h"
 #undef EJS_FUNC
   
   static
@@ -96,16 +97,16 @@ extern "C" {
   element_setAttribute(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
-    GET_NTHIS;
-    // todo: root string!
-    JSString *strtype=JS_ValueToString(cx, argv[0]);
-    if (!strtype) return JS_FALSE;
-    unicode::String* name=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
-
-    strtype=JS_ValueToString(cx, argv[1]);
-    if (!strtype) return JS_FALSE;
-    unicode::String* value=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
-
+    GET_NTHIS(cx,obj);
+    dom::String* name=NULL;
+    if (!jsToDomString(cx,argv[0],name)) return JS_FALSE;
+    dom::String* value=NULL;
+    if (!jsToDomString(cx,argv[1],value)) return JS_FALSE;
+    /*
+    std::cerr << "Set Attribute: '"
+	      << *name << "' ("<<name->getLength()<<")" 
+	      << " to '" << *value <<"' ("<<value->getLength()<<")\n";
+    */
     // todo: catch exceptions
     nthis->setAttribute(name,value);
 
@@ -116,15 +117,29 @@ extern "C" {
     return JS_TRUE;
   }
 
+  static
+  JSBool
+  element_getAttribute(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    GET_NTHIS(cx,obj);
+
+    dom::String* name=NULL;
+    if (!jsToDomString(cx,argv[0],name)) return JS_FALSE;
+
+    // todo: catch exceptions
+    unicode::String* value=nthis->getAttribute(name);
+    return DomStringToJsval(cx,value,rval);
+  }
 
 #undef GET_NTHIS
 
-#define FUNC(name, args) { #name,element_##name,args,0,0}
+#define FUNC(name, args) { #name,element_##name,args,0,0},
 
   static JSFunctionSpec element_methods[] = {
-    FUNC(setNodeValue,1),
-    FUNC(appendChild,1),
-    FUNC(setAttribute,2),
+#include "nodefuncs.h"
+    FUNC(setAttribute,2)
+    FUNC(getAttribute,1)
     EJS_END_FUNCTIONSPEC
   };
 

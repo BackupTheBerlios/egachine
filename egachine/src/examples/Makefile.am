@@ -11,6 +11,7 @@ examples = \
 	client/horror.js \
 	client/audio.js \
 	server/netpong.js \
-	server/netorigpong.js
+	server/netorigpong.js \
+	svg/svgviewer.js
 
 nobase_dist_example_DATA = $(examples)

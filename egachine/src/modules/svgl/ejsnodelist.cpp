@@ -40,7 +40,7 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-#define GET_NTHIS dom::NodeList* nthis=NULL;				\
+#define GET_NTHIS(cx,obj) dom::NodeList* nthis=NULL;		\
     if (!ejsnodelist_GetNative(cx,obj,nthis)) return JS_FALSE
 
   static
@@ -48,13 +48,25 @@ extern "C" {
   nodelist_item(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_NTHIS;
+    GET_NTHIS(cx,obj);
     uint32 item;
     if (!JS_ValueToECMAUint32(cx,argv[0],&item)) return JS_FALSE;
     dom::Node* node=nthis->item(item);
-    JSObject* ret=ejs_NewNode(cx,obj,node);
-    if (!ret) return JS_FALSE;
-    *rval=OBJECT_TO_JSVAL(ret);
+    if (!node) {
+      *rval=OBJECT_TO_JSVAL(node);
+      return JS_TRUE;
+    }
+    if (node->getNodeType()==dom::Node::ELEMENT_NODE) {
+      dom::Element *element = dynamic_cast<dom::Element *>(nthis);
+      EJS_CHECK(element);
+      JSObject* ret=ejs_NewElement(cx,obj,element);
+      if (!ret) return JS_FALSE;
+      *rval=OBJECT_TO_JSVAL(ret);
+    }else{
+      JSObject* ret=ejs_NewNode(cx,obj,node);
+      if (!ret) return JS_FALSE;
+      *rval=OBJECT_TO_JSVAL(ret);
+    }
     return JS_TRUE;
   }
   
@@ -108,6 +120,8 @@ ejs_NewNodeList(JSContext *cx, JSObject *obj, const dom::NodeList* nodelist)
   assert(nodelist);
   // todo: should we set parent?
   // this object is not rooted !!
+  // todo: should we try to downcast?
+
   JSObject *res=JS_NewObject(cx,&nodelist_class, NULL,NULL);
   if (!res) return NULL;
   if (!JS_SetPrivate(cx,res,(void *)nodelist)) return NULL;

@@ -39,21 +39,20 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-#define GET_NTHIS dom::Text* nthis=NULL;			\
+#define GET_NTHIS(cx,obj) dom::Text* nthis=NULL;		\
     if (!ejstext_GetNative(cx,obj,nthis)) return JS_FALSE
 
   // functions inherited from dom::Node
 #define EJS_FUNC(x) text_##x
-#include "nodefuncs.h"
+#include "nodefdefs.h"
 #undef EJS_FUNC
 
 #undef GET_NTHIS
 
-#define FUNC(name, args) { #name,text_##name,args,0,0}
+#define FUNC(name, args) { #name,text_##name,args,0,0},
 
   static JSFunctionSpec text_methods[] = {
-    FUNC(setNodeValue,1),
-    FUNC(appendChild,1),
+#include "nodefuncs.h"
     EJS_END_FUNCTIONSPEC
   };
 

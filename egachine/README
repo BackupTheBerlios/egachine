@@ -1,4 +1,4 @@
-EGachine <http://egachine.berlios.de>
+		EGachine <http://egachine.berlios.de>
 
 is an open source  (GPL)  ECMAScript (JavaScript) game  machine/engine
 using mozilla's JavaScript engine,  Spidermonkey.  Though the focus is
@@ -80,10 +80,8 @@ USAGE: egachine script
 FEATURES/GOALS:
 
 - not limited to games - could also be used as:
-  presentation tool,
-  "movie" player similar to flash,
-  special purpose terminal,
-  tool to teach/learn OpenGL
+  presentation tool, "movie" player similar to flash, special purpose
+  terminal, tool to teach/learn OpenGL
 
 - beginner friendly:
   Get  beginners started with  game  programing. For  now  there is no
@@ -123,7 +121,7 @@ FEATURES/GOALS:
 
 ROADMAP:
 
-1.0.0 (May 2004):
+1.0.0 (July 2004):
 	- feature complete stable API with documentation
 	- not yet suitable for running untrusted code
 

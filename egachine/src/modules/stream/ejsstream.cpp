@@ -73,7 +73,7 @@ extern "C" {
     // todo: we loose unicode information here
     char* ctype=JS_GetStringBytes(strtype);
     if (!ctype) return JS_FALSE;
-    int w=stream->sputn(ctype,strlen(ctype));
+    int w=stream->sputn(ctype,JS_GetStringLength(strtype));
     return JS_NewNumberValue(cx,w,rval);
   }
 

@@ -40,7 +40,7 @@
 #include "ejsallelements.h"
 #include "ejstimer.h"
 
-// TODO: this is probably not portable
+// TODO: this is not portable
 #include "GL/gl.h"
 #include "GL/glu.h"
 
@@ -79,7 +79,7 @@ extern "C" {
     csvgdoc=NULL;
     if (!JSVAL_IS_OBJECT(argv[0]))
       EJS_THROW_ERROR(cx,obj,"object required as first argument");
-    if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),csvgdoc))
+    if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),argv, csvgdoc))
       return JS_FALSE;
     EJS_CHECK(csvgdoc);
 
@@ -175,10 +175,7 @@ extern "C" {
       if (!JS_SetElement(cx, atop, i, &v)) return JS_FALSE;
       svgl::PickManager::HitIterator::value_type onehit = *p.first;
       for(unsigned j=0; onehit.first!=onehit.second; ++onehit.first,++j) {
-	//todo: get existing wrapper if possible
-	EJS_INFO((*onehit.first));
-	JSObject* njsobj=ejs_NewElement(cx,obj,(*onehit.first));
-	EJS_INFO(njsobj);
+	JSObject* njsobj=ejs_WrapElement(cx,obj,(*onehit.first));
 	if (!njsobj) return JS_FALSE;
 	jsval val=OBJECT_TO_JSVAL(njsobj);
 	if (!JS_SetElement(cx, asub, j, &val)) return JS_FALSE;
@@ -247,11 +244,10 @@ extern "C" {
     }
 
     // register DOM wrappers
-    if (!ejssvgdocument_onLoad(cx,module)) return JS_FALSE;
     if (!ejsnode_onLoad(cx,module))        return JS_FALSE;
+    if (!ejssvgdocument_onLoad(cx,module)) return JS_FALSE;
     if (!ejsnodelist_onLoad(cx,module))    return JS_FALSE;
     if (!ejselement_onLoad(cx,module))     return JS_FALSE;
-    if (!ejstext_onLoad(cx,module))        return JS_FALSE;
     return JS_TRUE;
   }
   

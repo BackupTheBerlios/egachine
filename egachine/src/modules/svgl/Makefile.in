@@ -59,7 +59,7 @@ pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 ejssvgl_la_LIBADD =
 am_ejssvgl_la_OBJECTS = ejssvgl.lo ejssvgdocument.lo ejsnode.lo \
-	ejsnodelist.lo ejselement.lo ejstext.lo ejstimer.lo
+	ejsnodelist.lo ejselement.lo ejstimer.lo
 ejssvgl_la_OBJECTS = $(am_ejssvgl_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
@@ -237,7 +237,6 @@ ejssvgl_la_SOURCES = \
 	ejssvgl.cpp \
 	ejssvgdocument.h \
 	ejssvgdocument.cpp \
-	nodefdefs.h \
 	nodefuncs.h \
 	ejsnode.h \
 	ejsnode.cpp \
@@ -245,8 +244,6 @@ ejssvgl_la_SOURCES = \
 	ejsnodelist.cpp \
 	ejselement.h \
 	ejselement.cpp \
-	ejstext.h \
-	ejstext.cpp \
 	ejsallelements.h \
 	strutils.h \
 	ejstimer.h \
@@ -329,7 +326,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejsnodelist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejssvgdocument.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejssvgl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejstext.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejstimer.Plo@am__quote@
 
 .cpp.o:

@@ -1,6 +1,9 @@
 #ifndef EJS_STRUTILS_H
 #define EJS_STRUTILS_H
 
+#include <w3c/dom/Node.hpp>
+#include <ejsmodule.h>
+
 inline
 JSBool
 jsToDomString(JSContext* cx, jsval strIn, dom::String* &strOut)

@@ -7,9 +7,28 @@
   if (!fname) throw new Error("Could not find module: 'ejssvgl.la'");
   ejs.ModuleLoader.loadNative.call(svgl,"ejssvgl",fname.substring(0,fname.lastIndexOf(".")));
 
-  svgl.SVGDocument.prototype.addEventListener=function(type, listener, useCapture) {
-    Input.addEventListener(type, listener, useCapture);
+  svgl.Node.prototype.addEventListener=function(type, listener, useCapture) {
+    if (!this._target) this._target=new Input.EventTarget();
+    this._target.addEventListener(type,listener,useCapture);
   };
+
+  svgl.Node.prototype.dispatchEvent=function(evt) {
+    if (!this._target) return;
+    return this._target.dispatchEvent(evt);
+  };
+
+  svgl.Node.prototype.ELEMENT_NODE = 1;
+  svgl.Node.prototype.ATTRIBUTE_NODE = 2;
+  svgl.Node.prototype.TEXT_NODE = 3;
+  svgl.Node.prototype.CDATA_SECTION_NODE = 4;
+  svgl.Node.prototype.ENTITY_REFERENCE_NODE = 5;
+  svgl.Node.prototype.ENTITY_NODE = 6;
+  svgl.Node.prototype.PROCESSING_INSTRUCTION_NODE = 7;
+  svgl.Node.prototype.COMMENT_NODE = 8;
+  svgl.Node.prototype.DOCUMENT_NODE = 9;
+  svgl.Node.prototype.DOCUMENT_TYPE_NODE = 10;
+  svgl.Node.prototype.DOCUMENT_FRAGMENT_NODE = 11;
+  svgl.Node.prototype.NOTATION_NODE = 12;
 
   //! simple SVG viewer
   svgl.viewFile=function(fileName) {
@@ -22,32 +41,109 @@
     var timeOut;
 
     Video.showMouseCursor(1);
-    
-    function mousemove(e) {
-      // todo: panning / zooming
-    };
-    
-    function mousedown(e) {
-      var elem,i,j,picked;
-      switch(e.button) {
-      case 0:
-	// picking
-	picked=svgl.pick(e.screenX,e.screenY);
-	stderr.write("pick: "+e.toSource()+":"+(picked ? "" : "nothing")+"\n");
-	for (i=0;i<picked.length;++i) {
-	  elem=picked[i];
-	  for (j=0;j<elem.length;++j) {
-	    stderr.write(elem[j].getNodeName()+" ");
-	  }
-	  stderr.write("\n");
+
+    var oldTarget;
+
+    function assert(f){if (!f()) throw Error("Assertion: "+f.toSource()+" failed\n");};
+
+    function setNewTarget(e,newTarget) {
+      assert(function(){return e && newTarget;});
+
+      var subevt;
+      if (newTarget!=oldTarget) {
+	// emit mouseover and mouseout
+	
+	// mouseout
+	if (oldTarget) {
+	  subevt=e.clone();
+	  subevt.type="mouseout";
+	  subevt.target=oldTarget;
+	  subevt.relatedTarget=newTarget;
+	  //	  stderr.write("setNewTarget (mouseout): "+subevt.toSource()+"\n");
+	  Input.dispatchEvent(subevt);
 	}
-	break;
+
+	// mouseover
+	subevt=e.clone();
+	subevt.type="mouseover";
+	oldTarget=e.target=subevt.target=newTarget;
+	//	stderr.write("setNewTarget (mouseover): "+subevt.toSource()+"\n");
+	Input.dispatchEvent(subevt);
+      }
+      e.target=newTarget;
+    };
+
+    function setEventTarget(e) {
+      assert(function(){return !e.target;});
+      var picked,path=[document],p2,p3;
+      picked=svgl.pick(e.screenX,e.screenY);
+      //      stderr.write("setEventTarget: "+picked.toSource()+"\n");
+      if ((!picked)||(!picked.length)) {
+	// nothing picked
+	e._path=path;
+	setNewTarget(e,document);
+	assert(function(){return e.target;});
+	return e;
+      }
+      p2=picked[picked.length-1];
+      if ((!p2)||(!p2.length)) throw Error("hmm: "+p2.toSource()+"\n");
+      path=path.concat(p2);
+      p3=p2[p2.length-1];
+      e._path=path;
+      assert(function(){return p3;});
+      setNewTarget(e,p3);
+      assert(function(){return e.target;});
+      return e;
+    };
+
+    function dispatch(evt) {
+      //      stderr.write("dispatch: "+evt.toSource());
+      // capturing
+      evt.eventPhase=Input.Event.CAPTURING_PHASE;
+      // 1. calculate path
+      var path=evt._path;
+      delete evt._path;
+      var i;
+      for (i=0;i<path.length-1;++i) {
+	path[i].dispatchEvent(evt);
+	if (evt._stopPropagation) break;
       };
+
+      // bubbling
+      evt.eventPhase=Input.Event.BUBBLING_PHASE;
+      var i;
+      for (i=path.length-1;i>=0;--i) {
+	path[i].dispatchEvent(evt);
+	if (evt._stopPropagation) break;
+      };
+      
+      // restore path
+      evt._path=path;
     };
     
-    Input.addEventListener("mousemove",mousemove);
-    //  Input.addEventListener("mouseup",mouseup);
-    Input.addEventListener("mousedown",mousedown);
+    function mouse(evt) {
+      //      stderr.write("mouse: "+evt.toSource()+"\n");
+
+      if (!evt.target)
+	setEventTarget(evt);
+      assert(function(){return evt.target;});
+      dispatch(evt);
+      if (evt.type=="mouseup") {
+	// todo: perhaps the evt was modified!! clone mouseup before dispatch
+	evt.type="click";
+	dispatch(evt);
+      }
+    };
+    
+    function addMouseListener(type) {
+      Input.addEventListener(type,function(evt){return mouse(evt);},false);
+    };
+
+    addMouseListener("mousemove");
+    addMouseListener("mousedown");
+    addMouseListener("mouseup");
+    addMouseListener("mouseover");
+    addMouseListener("mouseout");
     
     if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
       stderr.write("Warning no stencil buffer => output will be corrupt (perhaps you have to switch your color depth)\n");

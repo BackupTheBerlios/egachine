@@ -49,33 +49,15 @@ struct ElementFilter : public dom::DOMVisitor
 
 extern "C" {
 
-  static
-  void
-  svgdocument_finalize(JSContext *cx, JSObject *obj);
-
-  static
-  JSClass svgdocument_class = {
-    "SVGDocument",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
-    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  JS_FinalizeStub, // svgdocument_finalize,
-    JSCLASS_NO_OPTIONAL_MEMBERS
-  };
-
-#define GET_NTHIS(cx,obj) svg::SVGDocument* nthis=NULL;	\
-    ejssvgdocument_GetNative(cx,obj,nthis)
-
-  // functions inherited from dom::Node
-#define EJS_FUNC(x) svgdocument_##x
-#include "nodefdefs.h"
-#undef EJS_FUNC
+#define GET_NTHIS(cx,obj,argv) svg::SVGDocument* nthis=NULL;	\
+    ejssvgdocument_GetNative(cx,obj,argv,nthis)
 
   static
   JSBool
   svgdocument_createTextNode(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
 
     dom::String* value=NULL;
     if (!jsToDomString(cx,argv[0],value)) return JS_FALSE;
@@ -83,7 +65,7 @@ extern "C" {
     dom::Text* text=nthis->createTextNode(value);
     assert(text);
 
-    JSObject* jstext=ejs_NewText(cx,obj,text);
+    JSObject* jstext=ejs_WrapNode(cx,obj,text);
     if (!jstext) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(jstext);
     return JS_TRUE;
@@ -94,7 +76,7 @@ extern "C" {
   svgdocument_createElement(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
 
     dom::String* tag;
     if (!jsToDomString(cx, argv[0], tag)) return JS_FALSE;
@@ -104,7 +86,7 @@ extern "C" {
     //    EJS_INFO(tag << " " << element);
 
     // TODO: perhaps create specialized wrapper object
-    JSObject* njsobj=ejs_NewElement(cx,obj,element);
+    JSObject* njsobj=ejs_WrapElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);
     return JS_TRUE;
@@ -115,7 +97,7 @@ extern "C" {
   svgdocument_createElementNS(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
 
     dom::String* nsstr=NULL;
     if (!jsToDomString(cx,argv[0],nsstr)) return JS_FALSE;
@@ -125,9 +107,7 @@ extern "C" {
     dom::Element* element=nthis->createElementNS(nsstr,tag);
     assert(element);
 
-    
-    // TODO: perhaps create specialized wrapper object
-    JSObject* njsobj=ejs_NewElement(cx,obj,element);
+    JSObject* njsobj=ejs_WrapElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);
     return JS_TRUE;
@@ -139,7 +119,7 @@ extern "C" {
   (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
 
     dom::String* value=NULL;
     if (!jsToDomString(cx,argv[0],value)) return JS_FALSE;
@@ -147,8 +127,7 @@ extern "C" {
     // handle error !!
     EJS_CHECK(element);
 
-    // TODO: perhaps create specialized wrapper object
-    JSObject* njsobj=ejs_NewElement(cx,obj,element);
+    JSObject* njsobj=ejs_WrapElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);
     return JS_TRUE;
@@ -157,15 +136,14 @@ extern "C" {
   static
   JSBool
   svgdocument_getDocumentElement
-  (JSContext* cx, JSObject* obj, uintN argc, jsval*, jsval* rval)
+  (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
     dom::Element* element=nthis->getDocumentElement();
     assert(element);
 
-    // TODO: perhaps create specialized wrapper object
-    JSObject* njsobj=ejs_NewElement(cx,obj,element);
+    JSObject* njsobj=ejs_WrapElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);
     return JS_TRUE;
@@ -177,7 +155,7 @@ extern "C" {
   (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
 
     // handle script tags
     // todo: why do we do this with native code at all?
@@ -231,7 +209,6 @@ extern "C" {
 #define FUNC(name, args) { #name,svgdocument_##name,args,0,0},
 
   static JSFunctionSpec svgdocument_methods[] = {
-#include "nodefuncs.h"
     FUNC(createTextNode,1)
     FUNC(createElement,1)
     FUNC(createElementNS,2)
@@ -285,21 +262,15 @@ extern "C" {
   void
   svgdocument_finalize(JSContext *cx, JSObject *obj)
   {
-    EJS_CHECK(JS_GET_CLASS(cx, obj) == &svgdocument_class);
-    svg::SVGDocument* nthis=(svg::SVGDocument *)JS_GetPrivate(cx,obj);
-    if (!nthis) return;
-    //    delete nthis;
   }
 
   JSBool
   ejssvgdocument_onLoad(JSContext *cx, JSObject *module)
   {
-    JSObject *svgdocument = JS_InitClass(cx, module,
-					 NULL,
-					 &svgdocument_class,
-					 svgdocument_cons, 0,
-					 NULL, svgdocument_methods,
-					 NULL, NULL);
+    JSObject *svgdocument = ejs_InitNodeSubClass(cx, module,
+						 typeid(svg::SVGDocument),
+						 "SVGDocument",svgdocument_cons, 0,
+						 NULL, svgdocument_methods);
     if (!svgdocument) return JS_FALSE;
     return JS_TRUE;
   }
@@ -307,11 +278,11 @@ extern "C" {
 
 JSBool
 ejssvgdocument_GetNative
-(JSContext* cx, JSObject * obj, svg::SVGDocument* &native)
+(JSContext* cx, JSObject * obj, jsval* argv, svg::SVGDocument* &native)
 {
-  EJS_CHECK_CLASS(cx, obj, svgdocument_class);
-  native=(svg::SVGDocument *)JS_GetPrivate(cx,obj);
-  if (!native)
-    EJS_THROW_ERROR(cx,obj,"no valid svgdocument object");
+  dom::Node* node=NULL;
+  if (!ejsnode_GetNative(cx, obj, argv, node)) return JS_FALSE;
+  if (!(native=dynamic_cast<svg::SVGDocument*>(node)))
+    EJS_THROW_ERROR(cx,obj,"no valid dom::SVGDocument object");
   return JS_TRUE;
 }

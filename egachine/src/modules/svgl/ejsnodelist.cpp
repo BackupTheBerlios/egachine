@@ -58,17 +58,9 @@ extern "C" {
       *rval=OBJECT_TO_JSVAL(node);
       return JS_TRUE;
     }
-    if (node->getNodeType()==dom::Node::ELEMENT_NODE) {
-      dom::Element *element = dynamic_cast<dom::Element *>(nthis);
-      EJS_CHECK(element);
-      JSObject* ret=ejs_NewElement(cx,obj,element);
-      if (!ret) return JS_FALSE;
-      *rval=OBJECT_TO_JSVAL(ret);
-    }else{
-      JSObject* ret=ejs_NewNode(cx,obj,node);
-      if (!ret) return JS_FALSE;
-      *rval=OBJECT_TO_JSVAL(ret);
-    }
+    JSObject* ret=ejs_WrapNode(cx,obj,node);
+    if (!ret) return JS_FALSE;
+    *rval=OBJECT_TO_JSVAL(ret);
     return JS_TRUE;
   }
   

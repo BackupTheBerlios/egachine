@@ -7,11 +7,11 @@
 extern "C" {
 
 JSBool
-ejssvgdocument_onLoad(JSContext *cx, JSObject *global);
+ejssvgdocument_onLoad(JSContext* cx, JSObject* global);
   
 }
 
 JSBool
-ejssvgdocument_GetNative(JSContext* cx, JSObject * obj, svg::SVGDocument* &native);
+ejssvgdocument_GetNative(JSContext* cx, JSObject*  obj, jsval* argv, svg::SVGDocument* &native);
 
 #endif

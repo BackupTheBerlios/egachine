@@ -29,77 +29,20 @@
 
 static JSObject *elementProto = NULL;
 
+JSBool
+ejselement_GetNative(JSContext* cx, JSObject * obj, jsval* argv, dom::Element* &native);
+
 extern "C" {
 
-  static
-  void
-  element_finalize(JSContext *cx, JSObject *obj);
+#define GET_NTHIS(cx,obj,argv) dom::Element* nthis=NULL;		\
+    if (!ejselement_GetNative(cx,obj,argv,nthis)) return JS_FALSE
 
-#define GET_NTHIS(cx,obj) dom::Element* nthis=NULL;		\
-    if (!ejselement_GetNative(cx,obj,nthis)) return JS_FALSE
-
-  enum element_propid {
-    CHILD_NODES
-  };
-
-  static JSPropertySpec element_props[] = {
-    {"childNodes", CHILD_NODES, JSPROP_READONLY},
-    {0}
-  };
-
-  static JSBool
-  element_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
-
-  static
-  JSClass element_class = {
-    "Element",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,  JS_PropertyStub, element_getProperty, JS_PropertyStub,
-    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  element_finalize,
-    JSCLASS_NO_OPTIONAL_MEMBERS
-  };
-
-  static JSBool
-  element_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-  {
-    //    EJS_INFO(JS_GetStringBytes(JS_ValueToString(cx,id)));
-
-    EJS_CHECK_CLASS(cx, obj, element_class);
-    dom::Element* nthis=(dom::Element *)JS_GetPrivate(cx,obj);
-    if (!nthis)
-      // perhaps still constructing
-      return JS_TRUE;
-
-    if (!JSVAL_IS_INT(id)) return JS_TRUE;
-    jsint slot=JSVAL_TO_INT(id);
-    switch (slot) {
-    case CHILD_NODES:
-      {
-	// create and return NodeList wrapper object
-	const dom::NodeList* nl=nthis->getChildNodes();
-	JSObject* r=ejs_NewNodeList(cx, obj, nl);
-	if (!r) return JS_FALSE; // <- todo: right thing to report error in property hook?
-	*vp=OBJECT_TO_JSVAL(r);
-	break;
-      }
-    default:
-      break;
-    }
-    return JS_TRUE;
-  }
-
-
-  // functions inherited from dom::Node
-#define EJS_FUNC(x) element_##x
-#include "nodefdefs.h"
-#undef EJS_FUNC
-  
   static
   JSBool
   element_setAttribute(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
     dom::String* name=NULL;
     if (!jsToDomString(cx,argv[0],name)) return JS_FALSE;
     dom::String* value=NULL;
@@ -125,7 +68,7 @@ extern "C" {
   element_getAttribute(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
 
     dom::String* name=NULL;
     if (!jsToDomString(cx,argv[0],name)) return JS_FALSE;
@@ -140,7 +83,6 @@ extern "C" {
 #define FUNC(name, args) { #name,element_##name,args,0,0},
 
   static JSFunctionSpec element_methods[] = {
-#include "nodefuncs.h"
     FUNC(setAttribute,2)
     FUNC(getAttribute,1)
     EJS_END_FUNCTIONSPEC
@@ -148,65 +90,38 @@ extern "C" {
 
 #undef FUNC
 
-
   static
   JSBool
   element_cons
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
-    EJS_INFO("called");
     return JS_TRUE;
   }
-
-  static
-  void
-  element_finalize(JSContext *cx, JSObject *obj)
-  {
-    EJS_CHECK(JS_GET_CLASS(cx, obj) == &element_class);
-    dom::Element* element=(dom::Element *)JS_GetPrivate(cx,obj);
-    if (!element) return;
-    //    delete element;
-  }
-
+  
   JSBool
   ejselement_onLoad(JSContext *cx, JSObject *module)
   {
-    elementProto = JS_InitClass(cx, module,
-				NULL,
-				&element_class,
-				element_cons, 0,
-				element_props, element_methods,
-				NULL, NULL);
+    elementProto = ejs_InitNodeSubClass(cx, module, 
+					typeid(dom::Element),
+					"Element", element_cons, 0,
+					NULL, element_methods);
     if (!elementProto) return JS_FALSE;
     return JS_TRUE;
   }
 }
 
-JSObject*
-ejs_NewElement(JSContext *cx, JSObject *obj, dom::Element* element)
-{
-  assert(element);
-  assert(elementProto);
-  // todo: should we set parent?
-  // this object is not rooted !!
-  JSObject *res=JS_NewObject(cx,&element_class, elementProto, NULL);
-  if (!res) return NULL;
-  if (!JS_SetPrivate(cx,res,(void *)element)) return NULL;
-  return res;
-}
-
 JSBool
-ejselement_class(JSContext* cx, JSObject *obj)
+ejselement_GetNative(JSContext* cx, JSObject * obj, jsval* argv, dom::Element* &native)
 {
-  return JS_GET_CLASS(cx, obj) == &element_class;
-}
-
-JSBool
-ejselement_GetNative(JSContext* cx, JSObject * obj, dom::Element* &native)
-{
-  EJS_CHECK_CLASS(cx, obj, element_class);
-  native=(dom::Element *)JS_GetPrivate(cx,obj);
-  if (!native)
+  dom::Node* node=NULL;
+  if (!ejsnode_GetNative(cx, obj, argv, node)) return JS_FALSE;
+  if (!(native=dynamic_cast<dom::Element*>(node)))
     EJS_THROW_ERROR(cx,obj,"no valid dom::Element object");
   return JS_TRUE;
+}
+
+JSObject*
+ejs_WrapElement(JSContext *cx, JSObject *obj, dom::Element* element)
+{
+  return ejs_WrapNode(cx, obj, element, elementProto);
 }

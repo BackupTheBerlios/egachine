@@ -1,34 +1,8 @@
 --------------------------------------------------------------------------------
-now we have lots of similar code
-=> time to clean up / improve
-
-we should use only one [[class]]
-use c++ rtti for safe casts
-use prototypes (=> no need to duplicate wrappers for virtual methods)
-first try the concept (see cppclass)
-
-nodefuncs.h:appendChild:
-ich muss von einem JSObject das native object nach dom::Node* casten
-und zwar sicher
-kann ich nicht einfach sowas wie
-(dom::Node *)JS_GetPrivate(cx,obj) für alle machen ?
-sprich nur schauen ob die klasse ein wrapper für ne klasse ist,
-die in irgendeiner form von dom::Node abgeleitet ist
-
-also ist die eigentliche frage ob folgendes sicher ist
-(Base*)((void*)new Sub())->baseFunc();
-also ob upcasts den pointer immer gleich lassen?
-
-hmm multiple inheritance?
---------------------------------------------------------------------------------
 svgl uses libgc garbage collector
 it seems to work but i still should take a look at the details
 (i think this will lead to trouble at some time)
 hmm valgrind leakcheck doesn't work when loading svgl module
---------------------------------------------------------------------------------
-there should be a 1:1 mapping between native and wrapper (DOM) objects!
-(at the moment we can have different js object representing the same native
-object)
 --------------------------------------------------------------------------------
 must dom object constructors be in global scope?
 --------------------------------------------------------------------------------

@@ -6,7 +6,6 @@ ejssvgl_la_SOURCES = \
 	ejssvgl.cpp \
 	ejssvgdocument.h \
 	ejssvgdocument.cpp \
-	nodefdefs.h \
 	nodefuncs.h \
 	ejsnode.h \
 	ejsnode.cpp \
@@ -14,8 +13,6 @@ ejssvgl_la_SOURCES = \
 	ejsnodelist.cpp \
 	ejselement.h \
 	ejselement.cpp \
-	ejstext.h \
-	ejstext.cpp \
 	ejsallelements.h \
 	strutils.h \
 	ejstimer.h \

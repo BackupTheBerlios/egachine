@@ -64,7 +64,7 @@ function isFromProto(o,prop) {
 */
 function forall(obj,func,idfunc){
   var m={};
-  if (!idfunc) idfunc=function(x){return EGachine.hashObject(x).toString();};
+  if (!idfunc) idfunc=function(x){return util.getObjectID(x).toString();};
   if (!func) throw new Error("need function");
   function _forall(x) {
     if (typeof x != 'object') {

@@ -241,6 +241,18 @@ they should not use it - otherwise the destinction would be stupid
 i think it would be a good idea to have an explicit subset
 of course this must be documented
 are the scenegraph objects allowed to call gl functions? yes
+
+end users now have the choice to use the scene-graph+video functions and no
+gl functions (and optionally might use gl functions)
+
+in the video module currently remain three gl related functions:
+    FUNC(createTexture,1),
+    FUNC(drawTexture,1),
+    FUNC(drawText,3),
+this is because image handling and text handling currently is in the video
+module
+it would be nicer to have a image module and a text/font module
+(note: svgl module uses svgl's glft for font rendering)
 --------------------------------------------------------------------------------
 I just found the sdl mingw developer package again
 should try if opengl works with it => no need for hacked SDL version?
@@ -254,7 +266,11 @@ perhaps preprocess the examples
 because the have quite some code in common
 => annoying if this code needs an update
 --------------------------------------------------------------------------------
-native base64 encode/decode
+base64:
+perhaps native base64 encode/decode
+
+we now have two base64 modules:
+jsolait also provides base64 encoding/decoding
 --------------------------------------------------------------------------------
 Attention:
 JS_ValueToNumber does not fail if value==undefined
@@ -271,7 +287,8 @@ charset:
 	spidermonkey has a "seperate" unicode api? yes (UC functions)
 	now do we really want the script files utf16 encoded? no
 	utf8 maybe
-	how are unicode strings represented internally by spidermonkey? (2byte)
+	how are unicode strings represented internally by spidermonkey?
+	(2bytes utf16)
 	first take a closer look at how this all is meant to work
 
 strings/messages:
@@ -640,6 +657,7 @@ burstlib
 Another problem is to generate docu for the wrapped native code
 
 => perhaps the best solution is to write the docu manually
+(how does jsolait generate docu?)
 --------------------------------------------------------------------------------
 currently loading a (native) module twice is a error / throws an exception
 this is probably a bad idea
@@ -974,6 +992,9 @@ netorigpong.js:
   (many input events)
 - timeshift (via keyboard) does not work anymore
 
+--------------------------------------------------------------------------------
+perhaps write a JSON c++ bridge a la dope or JSON c++ sigc++
+and use it for easy (but slow!) wrapping ?
 ================================================================================
 
 

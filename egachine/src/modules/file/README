@@ -1,0 +1,22 @@
+Description:
+Module allowing to read and write to files.
+
+Security:
+Not allowed in untrusted mode
+
+Module dependencies:
+File -> Stream
+
+Library dependencies:
+File -> libstdc++
+
+Functions:
+
+//! opens file according to mode and returns Stream object
+open(filename,mode)
+
+//! opens file for reading and returns Stream object
+read(filename)
+
+//! opens file for writing and returns Stream object
+write(filename)

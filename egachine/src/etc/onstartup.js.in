@@ -19,6 +19,7 @@ ejs.ModuleLoader.findFile=function(path,fname) {
 };
 
 ejs.ModuleLoader.load=function(module) {
+  //  if (ejs.getGlobal()[module]) return;
   var lmodule=module.toLowerCase();
   var fname=ejs.ModuleLoader.findFile(ejs.config.modules.scriptPath,lmodule+".js");
   if (fname) return ejs.ModuleLoader.loadScript.call(ejs.getGlobal(),fname);
@@ -39,6 +40,19 @@ ejs.loadUntrusted=function(file) {
   if (!ejs.ModuleLoader.fileIsReadable(file))
     throw new Error("Could not open file: '"+file+"'");
   return ejs.ModuleLoader.loadUntrusted.call(ejs.getGlobal(),file);
+}
+
+ejs.resolve=function(name,flags) {
+  return false;
+  /* doesn't work yet
+  var ret=true;
+  try{
+    ejs.ModuleLoader.load.call(ejs.getGlobal(),name);
+    ret=ejs.getGlobal()[name];
+  }catch(x){
+  }
+  if (!ret) throw name;
+  */
 }
 
 //load=ejs.load;

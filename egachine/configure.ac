@@ -39,27 +39,32 @@ case "$host" in
 		;;
 	*)
 		AC_MSG_WARN([Unknown host type: $host assuming unix for spidermonkey])
+		CPPFLAGS="$CPPFLAGS -DXP_UNIX"
 		;;
 esac
-dnl todo:
-dnl how to detect if the installed spidermonkey library was compiled with JS_THREADSAFE?
-dnl probably if it uses libnspr
-dnl why do we have to know? because jsapi.h has some "#ifdef JS_THREADSAFE" ...
-dnl for example JS_GET_CLASS
-dnl if we detect this the wrong way this will result in stack corruption
-CPPFLAGS="$CPPFLAGS -DJS_THREADSAFE"
 
 AC_CHECK_HEADER([jsapi.h], [], [
 		AC_MSG_ERROR([Could not find required header 'jsapi.h'
 			Perhaps you have to add some -I/path/tojsapiheader to your CPPFLAGS])
 ])
 
-AC_SEARCH_LIBS(JS_InitStandardClasses, [js smjs mozjs], , [
-	AC_MSG_ERROR([Could not find required spidermonkey Javascript library])
+EJS_CFLAGS="-I\$(top_srcdir)/src/modules"
+
+dnl check for spidermonkey library
+
+AC_CHECK_LIB(js, JS_InitStandardClasses, SMJS="js", [
+	AC_CHECK_LIB(smjs, JS_InitStandardClasses, SMJS="smjs", [
+		AC_CHECK_LIB(mozjs, JS_InitStandardClasses, SMJS="mozjs", [
+			AC_MSG_ERROR([Could not find required SpiderMonkey library])
+		])
+	])
 ])
 
-
-AC_SUBST(EJS_CFLAGS, ["-I\$(top_srcdir)/src/modules"])
+dnl check wether spidermonkey library was compiled with JS_THREADSAFE
+dnl if so we must add -DJS_THREADSAFE to our CFLAGS, too
+AC_CHECK_LIB($SMJS, JS_BeginRequest, EJS_CFLAGS="$EJS_CFLAGS -DJS_THREADSAFE")
+AC_SUBST(EJS_CFLAGS)
+LIBS="-l$SMJS $LIBS"
 
 dnl optional modules
 

@@ -1,7 +1,7 @@
 SUBDIRS = etc modules examples
 
 CXXFLAGS = -DSYSCONFDIR=\"$(sysconfdir)\" @CXXFLAGS@
-INCLUDES = @LTDLINCL@
+INCLUDES = @LTDLINCL@ @EJS_CFLAGS@
 
 bin_PROGRAMS = ejs
 

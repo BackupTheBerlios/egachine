@@ -1,3 +1,5 @@
+INCLUDES = @EJS_CFLAGS@
+
 pkglib_LTLIBRARIES = ejsexample.la
 
 ejsexample_la_SOURCES = example.cpp

@@ -1,7 +1,7 @@
 (function(Input) {
   // module configuration options
-  var exit=ejs.config.Input.exit || ejs.exit;
-  var toggleFullscreen=ejs.config.Input.toggleFullscreen;
+  var exit=(ejs.config.Input && ejs.config.Input.exit) || ejs.exit;
+  var toggleFullscreen=(ejs.config.Input && ejs.config.Input.toggleFullscreen);
 
   // load native library
   if (this.Input) return;

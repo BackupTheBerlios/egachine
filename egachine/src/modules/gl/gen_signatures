@@ -1,0 +1,45 @@
+#!/usr/bin/perl
+
+# perl script extracting opengl function signatures
+# this script is called by jsgl_gen !!
+
+my $ifdefstarted=0;
+
+while (<STDIN>) {
+  if (/^\/\* ([0-9])\.([0-9]) functions \*\//) {
+    # comment marking opengl version since these functions are defined
+#    print "#endif\n" if $ifdefstarted;
+#    print "#ifdef GL_VERSION_$1_$2\n";
+    $ifdefstarted=1;
+  }elsif (/^GLAPI (.*)GLAPIENTRY (.*) \((.*)\)/) {
+    $ret=$1;
+    $x=$/;
+    $/=" ";
+    chomp $ret;
+    $/=$x;
+    $fname=$2;
+    $params=$3;
+    my @p=split /, /,$params;
+    $nump=$#p+1;
+    # handle special case of "one " ( void ) argument => no arguments
+    $nump=0 if (($nump == 1)&&(@p[0] eq "void"));
+    
+    if ($nump) {
+      for (my $i=0; $i<$nump;++$i) {
+	die unless ($p[$i]=~/(.*) (.*)/);
+	my @q = ($1,$2);
+	$p[$i]=\@q;
+      }
+    }
+    
+    print "$ret $nump";
+    if ($nump) {
+      for ($i=0; $i<$nump;++$i) {
+	$t=$p[$i][0];
+	print " $t";
+      }
+    }
+    print "\n";
+  }
+}
+#print "#endif\n" if $ifdefstarted;

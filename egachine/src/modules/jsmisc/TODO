@@ -1,0 +1,2 @@
+sg module:
+either allow cyclic scene graph or prevent creation of cyclic sg via add

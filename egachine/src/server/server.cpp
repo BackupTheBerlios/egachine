@@ -231,10 +231,14 @@ handleNewConnection(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf> s
   assert(streamPtr.get());
   JGACHINE_INFO("New connection ("<<id<<")");
   jsval args[2];
+  // todo
   JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0])==JS_TRUE);
   JGACHINE_CHECK(JSNetwork::newStreamObject(streamPtr.get(),&args[1])==JS_TRUE);
 
-  ECMAScript::callFunction("Net","handleNewConnection",2,args);
+  if (!ECMAScript::callFunction("Net","handleNewConnection",2,args)) {
+    // todo
+    ECMAScript::handleExceptions();
+  }
 }
 
 void
@@ -244,9 +248,13 @@ handleDataAvailable(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf> s
   jsval rval;
   jsval args[1];
 
+  // todo
   JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0]));
 
-  ECMAScript::callFunction("Net","handleDataAvailable",1,args);
+  if (!ECMAScript::callFunction("Net","handleDataAvailable",1,args)) {
+    // todo
+    ECMAScript::handleExceptions();
+  }
 }
 
 void
@@ -257,9 +265,13 @@ handleConnectionClosed(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf
   jsval rval;
   jsval args[1];
 
+  // todo
   JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0]));
 
-  ECMAScript::callFunction("Net","handleConnectionClosed", 1, args);
+  if (!ECMAScript::callFunction("Net","handleConnectionClosed", 1, args)) {
+    // todo
+    ECMAScript::handleExceptions();
+  }
 }
 
 

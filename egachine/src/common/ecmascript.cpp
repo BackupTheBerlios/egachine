@@ -164,7 +164,7 @@ namespace ECMAScript
     return res;
   }
 
-  bool
+  JSBool
   callFunction(jsval &rval, const char *objname, const char* fname, jsuint argc, jsval* argv)
   {
     JGACHINE_CHECK(objname);
@@ -172,27 +172,19 @@ namespace ECMAScript
     if (argc>0) JGACHINE_CHECK(argv);
     
     jsval oval;
-    if (!JS_GetProperty(ECMAScript::cx, ECMAScript::glob,objname,&oval)) {
-      JGACHINE_ERROR("object: \""<<objname<<"\" does not exist");
-      return false;
-    }
-    if (!JSVAL_IS_OBJECT(oval)) {
-      JGACHINE_ERROR("\""<<objname<<"\" is not an object");
-      return false;
-    }
+    if (!JS_GetProperty(ECMAScript::cx, ECMAScript::glob,objname,&oval))
+      ECMA_ERROR("object does not exist");
+    if (!JSVAL_IS_OBJECT(oval))
+      ECMA_THROW_ERROR("not an object");
 
-    JSObject *obj;
-    JGACHINE_CHECK((obj=JSVAL_TO_OBJECT(oval)));
-
-    if (!JS_CallFunctionName(ECMAScript::cx, obj, fname, argc, argv, &rval)) {
-      JGACHINE_WARN("error while calling function \""<<objname<<"."<<fname<<"\"");
-      handleExceptions();
-      return false;
-    }
-    return true;
+    JSObject *obj=JSVAL_TO_OBJECT(oval);
+    if (obj==NULL) ECMA_THROW_ERROR("null pointer");
+    if (!JS_CallFunctionName(ECMAScript::cx, obj, fname, argc, argv, &rval))
+      ECMA_ERROR("error while calling function");
+    return JS_TRUE;
   }
 
-  bool
+  JSBool
   callFunction(const char* objname, const char* fname, jsuint argc, jsval* argv)
   {
     jsval rval;

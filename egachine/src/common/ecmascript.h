@@ -64,11 +64,11 @@ namespace ECMAScript
   evalInt32(const char* expression);
 
   //! call a member function/property by name
-  bool
+  JSBool
   callFunction(jsval &rval, const char *objname, const char* fname, jsuint argc=0, jsval* argv=NULL);
   
   //! call a member function/property by name
-  bool
+  JSBool
   callFunction(const char* objname, const char* fname, jsuint argc=0, jsval* argv=NULL);
 
   void

@@ -27,7 +27,16 @@
 #include "ecmascript.h"
 
 extern "C" {
-  ECMA_VOID_FUNC_VOID(Input,poll);
+  ECMA_BEGIN_STATIC_VOID_FUNC_VOID(poll) 
+  {
+    try{
+      Input::poll();
+    }catch(const Input::CallbackError &error){
+      // todo: perhaps use the error
+      return JS_FALSE;
+    }
+    return JS_TRUE;
+  }
 
   ECMA_BEGIN_VOID_FUNC(charMode) 
   {

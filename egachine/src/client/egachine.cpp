@@ -121,14 +121,16 @@ Input::charHandler(Unicode uc)
   jschar s[1];
   s[0]=uc;
   JSString* js=JS_NewUCStringCopyN(ECMAScript::cx, s, 1);
-  JGACHINE_CHECK(js);
+  if (!js) throw Input::CallbackError("js error");
+  // todo
   JGACHINE_CHECK(JS_AddRoot(ECMAScript::cx,js));
   jsval args[1];
   args[0]=STRING_TO_JSVAL(js);
-
-  ECMAScript::callFunction("Input","handleChar",1,args);
-
+  JSBool res=ECMAScript::callFunction("Input","handleChar",1,args);
+  // todo
   JGACHINE_CHECK(JS_RemoveRoot(ECMAScript::cx,js));
+  if (!res)
+    throw Input::CallbackError("js error");
 }
 
 void
@@ -136,9 +138,13 @@ Input::devStateHandler(const Input::DevState& d)
 {
   std::ostringstream o;
   o << "Input.handleInput(new DevState("<<int(d.devno)<<","<<int(d.x)<<","<<int(d.y)<<","<<int(d.buttons)<<"));\n";
-  std::istringstream i(o.str());
   // todo: i think we should use JS_CallFunction
-  if (!ECMAScript::eval(i,JGACHINE_FUNCTIONNAME)) JGACHINE_WARN("error while calling Input.handleInput()");
+  // note: we do not use ECMAScript::eval since this clears pending exceptions
+  jsval rval;
+  if (!JS_EvaluateScript(ECMAScript::cx, ECMAScript::glob,
+			 o.str().c_str(), o.str().length(),
+			 JGACHINE_FUNCTIONNAME,1,&rval))
+    throw Input::CallbackError("js error");
 }
 
 #ifndef main

@@ -22,6 +22,11 @@
    \author Jens Thiele
 */
 
+#ifndef JGACHINE_INPUT_H
+#define JGACHINE_INPUT_H
+
+#include <stdexcept>
+
 namespace Input
 {
   struct DevState
@@ -43,7 +48,7 @@ namespace Input
   
   typedef short int Unicode;
 
-  // callbacks
+  // callbacks - callbacks are allowed to throw an CallbackError exception
   void quitHandler();
   void toggleFullscreenHandler();
   void iconifyHandler();
@@ -56,6 +61,15 @@ namespace Input
   void init();
   void charInput(bool active);
   unsigned attachedDevices();
+  //! poll for input events
   void poll();
   void deinit();
+
+  struct CallbackError : public std::runtime_error
+  {
+    CallbackError(const std::string &s) : std::runtime_error(s)
+    {}
+  };
+  
 }
+#endif

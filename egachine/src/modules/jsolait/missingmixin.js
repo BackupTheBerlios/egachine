@@ -79,35 +79,6 @@ if(Array.prototype.push == null){
     }
 }
 
-if(Array.prototype.shift == null){
-    Array.prototype.shift = function(){
-        var e = this[0];
-        for(var i=1;i<this.length;i++){
-            this[i-1] = this[i];
-        }
-        this.length -= 1;
-        return e;
-    }
-}
-
-if(Array.prototype.unshift == null){
-    Array.prototype.unshift = function(){
-        var a=[]
-        for(var i=0;i<arguments.length;i++){
-            a[i] = arguments[i];
-        }
-        for(var i=0;i<this.length;i++){
-            a[a.length] = this[i];
-        }
-        this.length=a.length;
-        for(var i=0;i<a.length;i++){
-            this[i] = a[i];
-        }
-        return this.length;
-    }
-}
-
-
 /**
     Number functions.
     

@@ -151,6 +151,7 @@ Module = function(name, version, moduleScope){
             this.name = this.constructor.className;
             this.message = msg;
             this.trace = trace;
+	    this.stack = util.getStack();
         }
         
         publ.toString=function(){
@@ -232,56 +233,7 @@ Module("jsolait", "0.1.0", function(mod){
                                       xmlrpc:"%(libURL)s/xmlrpc.js"};
    
     mod.init=function(){
-        //make jsolait work with WScript
-        var ws = null;
-        try{//see if WScript is available
-            ws = WScript;
-        }catch(e){
-        }
-        if(ws != null){
-            initWS();
-        }
     }
-    
-    ///initializes jsolait for using it with WScript
-    var initWS = function(){
-        print=function(msg){
-            WScript.echo(msg);
-        }
-        alert=function(msg){
-            print(msg);
-        }
-        var args = WScript.arguments;
-        try{
-            //get script to execute
-            var url = args(0);
-            url = url.replace(/\\/g, "/");
-            url = url.split("/");
-            url = url.slice(0, url.length-1);
-            //set base for user module loading
-            mod.baseURL = url.join("/");
-        }catch(e){
-            throw new mod.Exception("Missing script filename to be run.", e);
-        }
-        
-        //location of jsolait/init.js
-        url = WScript.ScriptFullName;
-        
-        if(args(0).replace("file://","").toLowerCase() == url.toLowerCase()){
-            WScript.stderr.write("Can't run myself! exiting ... \n");
-            return;
-        }
-        url = url.replace(/\\/g, "/");
-        url = url.split("/");
-        url = url.slice(0, url.length-1);
-        mod.libURL = "file://" + url.join("/");
-        try{
-            mod.loadScript(args(0));
-        }catch(e){
-            WScript.stdErr.write("%s(1,1) jsolait runtime error:\n%s\n".format(args(0).replace("file://",""), e.toTraceString()));
-        }
-    }
-    
     
     /**
        Imports a module given its name(someModule.someSubModule).
@@ -449,31 +401,6 @@ Module("jsolait", "0.1.0", function(mod){
         ///The url the module was expected to be found at.
         publ.url;
     })
-    
-    /**
-        Displays an exception and it's trace.
-        This works better than alert(e) because traces are taken into account.
-        @param exception  The exception to display.
-    */
-    mod.reportException=function(exception){
-        if(exception.toTraceString){
-            var s= exception.toTraceString();
-        }else{
-            var s = exception.toString();
-        }
-        var ws = null;
-        try{//see if WScript is available
-            ws = WScript;
-        }catch(e){
-        }
-        if(ws != null){
-            WScript.stderr.write(s);
-        }else{
-            alert(s);
-        }
-    }    
-    ///The global exception report method;
-    reportException = mod.reportException;
 })
 
 //stringmod
@@ -722,6 +649,6 @@ Module("stringformat", "0.1.0", function(mod){
 })
 
 //let jsolait do some startup initialization
-jsolait.init();
-if (typeof stderr == "undefined") ejs.ModuleLoader.load("Stream");
 if (typeof File == "undefined") ejs.ModuleLoader.load("File");
+if (typeof util == "undefined") ejs.ModuleLoader.load("util");
+jsolait.init();

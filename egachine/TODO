@@ -47,9 +47,10 @@ client must always be interruptable
 => how to interrupt the interpreter from time to time?
 does spidermonkey support this? similar to the GC
 (or perhaps use threads)
+yes there is some hook
 --------------------------------------------------------------------------------
-client.js: see TODO / BUG
-jsnetwork.cpp: see todo
+egachine.in: see TODO / BUG
+ejsnet.cpp: see todo
 --------------------------------------------------------------------------------
 are the wrapped libraries secure?
 how buggy/safe/secure/trustworthy are opengl/mesa implementations?
@@ -60,12 +61,6 @@ SDL_image?
 
 OTHER:
 --------------------------------------------------------------------------------
-Could someone write a small GUI in Javascript?
-(Menu, checkboxes, themable, suitable for games)
---------------------------------------------------------------------------------
-Perhaps a game generator frontend which produces suitable output for
-egaserver/egachine ?
---------------------------------------------------------------------------------
 error reporting from native code:
 be careful with c++ exceptions
 c++ exceptions can't be thrown through c-code
@@ -73,12 +68,13 @@ c++ exceptions can't be thrown through c-code
 anyway we can't throw exceptions in native code called by the interpreter 
 since he will not like it
 
-now there are two macros for handling errors ECMA_ERROR and ECMA_THROW_ERROR
-ECMA_ERROR perhaps should use the argument to supply additional information
-for now it is simply ignored
-(in fact ECMA_ERROR simply returns JS_FALSE)
-perhaps there should be a third one ECMA_FATAL_ERROR which causes
-the interpreter to exit on error (no exception is thrown => not catchable)
+now there is a macro for handling errors EJS_THROW_ERROR
+all spidermonkey functions returning JS_FALSE already did set the error
+=> simply return JS_FALSE
+if you want to generate an error use EJS_THROW_ERROR
+
+at the moment always the same error exception is thrown and the only way
+to differentiate between them is the message => really bad
 --------------------------------------------------------------------------------
 complete scenegraph (color, ...)
 wrap remaining video/input functions
@@ -87,6 +83,8 @@ perhaps redesign the scene-graph and take advantage of ecmascript features
 the current scenegraph is mainly taken from jgachine
 --------------------------------------------------------------------------------
 watchall does not handle circles?!
+i think it does
+but it does not handle addition and removal of properties!
 --------------------------------------------------------------------------------
 somehow remove dontwatch hack
 --------------------------------------------------------------------------------
@@ -99,6 +97,7 @@ probably use glew
 perhaps i should split the opengl wrapper stuff completely out of egachine
 there might be some interest in this
 on the other side there is already monkeyglobs which seems dead?
+now we use ejs and the gl module is seperated enough
 --------------------------------------------------------------------------------
 FONT STUFF:
 
@@ -218,34 +217,6 @@ major: script wants 2.2.3 (=> 3.2.3 not okay and 1.2.3 not okay)
 we make no guarantee that this scheme is established until version 1!!
 expose spidermonkey/javascript version
 --------------------------------------------------------------------------------
-fix client.js
-this will be the general client
-implement a menu/input field where connect to
-nearly done
---------------------------------------------------------------------------------
-use autoutils again? (autoconf/make..)
-for now i like the simple shell scripts
-i recommend to use ccache/compilercache
---------------------------------------------------------------------------------
-debian package:
-
-should i use autoconf/make again before i make a deb?
-i did now make a deb without autoconf/make
-
-check linitian error messages
-man pages are missing
-source package should not include CVS
-
-perhaps split into platform dep/indep
-register mime type (application/egachine ?)
-
-i used a different SDL_mixer version (see below audio:)
-=> compiled statically
-i used a different spidermonkey version
-(there is none in testing?)
-
-egachine perhaps should not be classified as game
---------------------------------------------------------------------------------
 write DOCU!
 perhaps use jsdoc
 --------------------------------------------------------------------------------
@@ -343,61 +314,6 @@ strings/messages:
 	javascript has no special features for translating messages?
 	come up with some framework
 --------------------------------------------------------------------------------
-byte arrays: (and string handling)
-
-currently I use strings to represent byte arrays (binary data)
-the way I do it I use twice as much memory as needed since js strings are
-16bit unicode
-
-I have to take a deep look at this (see also the I18N point)
-a related thread on n.p.m.jseng:
-http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=9dabmi%24os01%40secnews.netscape.com
-
-also do:
-grep -r JS_realloc
-grep -r JS_NewString
-why?
-are JS strings with \0 allowed?
-or must JS strings be \0 terminated?
-
-
-something about the string stuff:
-
-http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3C45FD50.4050806%40meer.net:
-History: JS_GetStringBytes predates Unicode support in the engine, and 
-it used to give access to the JSString's underlying char buffer, which 
-would live as long as the string did (you couldn't write -- look, don't 
-touch!).  With the switch to Unicode, API compatibility had to be 
-preserved, but the string's buffer was not a char buffer any longer. 
- Hence the deflated_string_cache (see jsstr.c).  
-
-
-http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3CD8E4C1.9080007%40meer.net:
->So what does JS_GetStringBytes() return for multibyte characters?  Suppose we had a UCS2 char 0xXXYY, does it just return XX or YY?  Or does it return a sequence of chars for a particular encoding?
->
-How would it know what encoding to use?
-
-It clearly just chops (decimates, as I wrote below) from jschar to char, 
-so \uXXYY becomes \xYY.
-
-
-http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3CD79F24.6020903%40meer.net:
->Hi there,
->
->When would one want to use JSVAL_TO_STRING macro vs. JS_ValueToString
->function?
->
-The macro untags a jsval into a pointer, so JSVAL_IS_STRING(v) had 
-better be true before you call JSVAL_TO_STRING(v).
-
-JS_ValueToString pretty clearly *converts* any value into a string.
-
-I'm not sure why you're having troubles, but I have to ask: why are you 
-using JS_GetStringBytes?  It's lossy and deprecated.
-
-/be
-
-
 --------------------------------------------------------------------------------
 write a spidermonkey embeding "best practice" document"
 --------------------------------------------------------------------------------
@@ -465,3 +381,537 @@ SVG support (direct or indirect via transformation)
 --------------------------------------------------------------------------------
 update project description to reflect new focus
 --------------------------------------------------------------------------------
+kooperation mit den anderen spidermonkey usern wäre auch nicht schlecht
+damit nicht alle die selben wrapper schreiben muessen
+evtl. simple "plugins" (shared lib mit 1/2 init/deinit funktionen)
+--------------------------------------------------------------------------------
+meine watch geschichte
+also ich mache jetzt ne eigene "klasse" dafür
+momentan teste ich das in test
+ich werde aufgerufen für add set get und delete => super
+jetzt muß ich nur noch irgendwie den/die callback(s) registrierbar machen
+watch überladen scheint mir nicht die beste lösung
+nur beim constructor übergeben auch nicht (aber es sollte möglich sein)
+wie soll so ein callback aussehen? mehrere funktionen oder eine mit einem
+entsprechenden parameter?
+einer oder mehrere callbacks?
+mehrere sollten möglich sein => mehrere
+vielleicht so:
+o=Test(); 
+brauche noch nen namen:
+WatchedObject
+ProxyObject - nee
+MonitoredObject
+WatchableObject
+Watchable
+Monitorable
+MonitorableObject
+
+
+o.onAdd=function(p,v)
+o.onDel=function(p)
+o.onGet=function(p,v)
+o.onSet=function(p,o,n)
+
+oder
+o.watch({onAdd:func....,onSet:func....});
+evtl.
+o.watchAll({onAdd:func....,onSet:func....});
+o.monitor={onAdd:func....,onSet:func....};
+
+
+okay
+wo war ich
+
+ich mach grad ewig rum wegen der exception kacke
+wollte eine exception "ableiten" von error
+aber das ist alles irgendwie kacke
+und alles nur weil onAdd auch das Hinzufügen von
+properties verhindern können soll
+:-((
+
+wie mache ich weiter?
+evtl. erstmal buch beschaffen?
+ecma-262 ausdrucken?
+dann nochmal in ruhe .constructor .__parent__
+.__proto__
+usw. anschauen
+???
+alles kacke
+
+js2 ist auch scheiße da xpcom
+ngs-js ist tot?
+--------------------------------------------------------------------------------
+ich war gerade dabei einen javascript objekt-graphen visualisierer zu schreiben
+welches visualisierungstool?
+tulip?
+springgraph? ist anscheinend ungeeignet (benutzt .dot von graphviz)
+vielleicht svg? nee zuviel act
+
+benutze jetzt graphviz (dot) funktioniert soweit ganz gut
+muß ich nur noch in brauchbare form bringen
+beispiele evtl. eine html seite dazu
+funktioniert nicht mit smjs
+=> brauche eine eigene shell (wegen hashObject)
+
+--------------------------------------------------------------------------------
+Eine Shell:
+
+jetzt habe ich schon egaserver egachine egares
+ansich wäre eine shell mit einem befehl zum plugin nachladen und einem befehl
+zum Ausführen von Script Dateien am Besten
+aber es muß sicher sein => befehl der den plugin ladebefehl sicher abschaltet
+befehl um js skripte auszuführen
+befehl der noch genau ein js skript ausführt
+
+plugin interface überlegen (C/C++ und JS)
+
+JS:
+dlopen(libname)
+EvaluateScript()
+
+// ab da geht dlopen und EvaluateScript nicht mehr - danach ist der context
+// aber auch untrusted => evtl. problem beim deinitialisieren
+EvaluateUntrustedScript() 
+
+was ist import in JS?
+was kann die smjs shell?
+
+=> gescheiten C++ streambuf wrapper schreiben
+
+C/C++:
+lib initialisieren
+javascript objekte registrieren (entfernen?)
+lib deinitialieren (reihenfolge?)
+
+was benutzen?
+libtldl - wahrscheinlich schon - schön klein
+glib? eher nein
+
+evtl. noch schauen wie es die anderen machen (möglichst programme die es
+auf vielen plattformen gibt)
+--------------------------------------------------------------------------------
+war gerade dabei plugin geschichte zu implementieren (example plugin)
+
+was fehlt ist schlecht?
+JS:
+PluginLoader.xxx macht noch nix
+plugins und LD_LIBRARY_PATH bzw. pfade allgemein
+für win32 testen
+mit abhängigkeiten testen
+ansonsten abhängigkeiten evtl. in JS regeln
+
+das geht jetzt:
+echo "PluginLoader.load('example');if (example()) PluginLoader.load('example');"|./ejs
+
+
+problem: plugins unloaden
+das kann ich nicht wirklich machen
+geht erst nach spidermonkey shutdown => keine JS functionen dafür
+--------------------------------------------------------------------------------
+wollte testen ob die libtool geschichte auch mit win geht
+problem: libtool will autoconf?
+mal sehen
+libtool kann man auch ohne autoconf benutzen
+
+--------------------------------------------------------------------------------
+kann momentan nicht gegen cross compilierte spidermonkey lib linken?
+(zumindest smjs.exe nicht)
+nur wenn DEBUG=1 ! todo: warum?
+--------------------------------------------------------------------------------
+
+große scheiße win DLL's dürfen anscheinend keine undefined symbols
+haben - aber anscheinend gibt es abhilfe:
+http://www.belgeler.org/autobook/autobook-DLLs-with-Libtool.html: 
+
+"All of the symbols required by a dll at runtime, must be resolved at
+ link time. With some creative use of import libraries, it is usually
+ possible to work around this shortcoming, but it is easy to forget
+ this limitation if you are developing on a modern system which has
+ lazy symbol resolution. Be sure to keep it at the back of your mind
+ if you intend to have your package portable to Windows."
+
+vielleicht ist es am einfachsten wenn ich unter win zwar auch libtool verwende
+aber das so mache, daß wohl die libs gleich gelinkt werden
+
+oder ich mach die libs eben self contained!
+
+alles kacke haut irgendwie nicht so recht hin
+=> ich muß erstmal einen kleinen test machen
+--------------------------------------------------------------------------------
+We don't use libtool we only use libltdl with "native" libs (non-libtool libs)
+
+todo bei make und crossmake: libltdl bauen und benutzen
+
+zlib modul ist nicht self-contained
+überall plugin in modul umbenennen? ja
+bei python bsp.: paket python-gtk2: contains modules that allow you to use...
+
+--------------------------------------------------------------------------------
+MERKE: libtool+mingw+dll+ltdl suckt momentan => nur mingw+ltdl
+TODO: was ist der bug in libtool? - evtl. in neuerer vers. behoben?
+
+MERKE: libltdl macht den prefix nur bei libtoll libs (.la)
+--------------------------------------------------------------------------------
+ich wollte modul geschichte evtl. anders machen
+vielleicht nur eine function via dlsym holen
+in der function eine struct füllen
+(vielleicht problematisch mit dll-geschichten, da könnten die addressen nicht
+stimmen
+
+jedes modul soll außerdem ein script haben können
+(optional)
+evtl. auch module die nur aus einem script bestehen
+--------------------------------------------------------------------------------
+okay soweit
+jetzt muß ich noch testen ob es unter win auch geht!
+jop geht
+ABER:
+hmm cross compiling the modules results in large dlls
+probably because libstdc++ is linked in statically
+=> compile mingw with shared libstdc++
+--------------------------------------------------------------------------------
+the zlib wrapper module should not be called zlib.dll
+at least jszlib.dll or perhaps ejszlib.dll
+--------------------------------------------------------------------------------
+convert all wrappers to modules
+treat the module loader as module itself (as far as possible ;-)
+--------------------------------------------------------------------------------
+nochmal die context geschichten anschauen
+vielleicht kann ich das ja doch gebrauchen
+--------------------------------------------------------------------------------
+PLAN:
+
+also ModuleLoader soll ja scripte laden können
+=> 1. Scripte laden von C++
+
+was ist das problem?
+in Javascript will ich machen:
+ModuleLoader.load("Zlib")
+evtl. mit lazy resolver:
+Zlib.compress lädt automatisch das Zlib module
+
+so ein Modul besteht:
+- aus einem .js (und zwar name.lowercase also bsp. zlib.js)
+oder
+- aus einem.js und einer lib (.so/.dll) (und zwar "ejs"+name.lowercase)
+oder
+- aus einer lib
+
+"Problem" js files finden bzw. wo suchen?
+bei den libs macht das die libltdl für mich
+
+am besten mache ich vielleicht fs funktionalität von js aus verfügbar
+und den ModuleLoader in js
+warum?
+ich wollte es so machen daß die .js module vor und nach dem laden der lib
+was machen können
+
+möglichst wenig native code
+
+
+also neuer Plan:
+1. Scripte laden von C++
+2. Scripte laden von JS, da ModuleLoader das dann braucht und zum großen Teil
+in JS geschrieben wird?
+
+
+zum thema eval
+seither habe ich das ganze script geladen und dann ausgeführt
+bzw. dann wurde es nach ucs2 konvvertiert und dann ausgeführt?
+ziemlich bescheuert
+jetzt mache ich das mal richtig
+--------------------------------------------------------------------------------
+also
+spidermonkey kann auch aus nem FILE* lesen
+sollte weniger speicher verbrauchen
+(es wird nicht das ganze file in den speicher gelesen und dann erst ausgeführt
+und die Konvertierung nach unicode findet erst statt wenn nötig)
+jsscan.c:343: ubuf[i] = (jschar) (unsigned char) cbuf[j];
+--------------------------------------------------------------------------------
+we should use one eval from file and do character conversion if neccessary
+--------------------------------------------------------------------------------
+
+also
+grad ist mein problem ich rufe Evaluate auf mit NULL als obj
+interessant ist auch der jsapi.h Kommentar dazu
+wenn der denn noch aktuell ist?
+
+
+toLower und den "ejs" kram kann ich jetzt aus dem native code entfernen!
+kann ich ja jetzt in js machen
+
+
+Aktuelles Problem:
+moduleloader.js muß gefunden werden
+
+1. nicht installiert
+=> ist in ejsshell/
+2. installiert
+=> $DATADIR/ejs
+
+Beste Lösung man muß install machen!
+--------------------------------------------------------------------------------
+build funktionierte gerade nicht wegen VERBOSE / SILENT drecks bash kram
+
+
+
+nochmal libtool:
+evtl. muss ich nur -no-undefined hinzufuegen!
+
+ja fuck dann geht es !!!
+=> doch wieder libtool benutzen !!
+
+dann am besten auch gleich autoconf/automake
+
+bin dabei wieder automake zu benutzen
+--------------------------------------------------------------------------------
+autoconf/libtool:
+i only want pic objects if they are only used for modules
+--------------------------------------------------------------------------------
+also
+autoconf suckt
+
+suche mal ersatz
+
+cons (perl basiert):
+- keine parallelen builds?
+- tot?
+
+cook
+
+jam
+
+scons (python):
++ anscheinend verbesserung von cons
+- langsam?
+- cross compile?
++ ansich ganz nett
+ 
+ant (java basiert):
+hmm
+
+--------------------------------------------------------------------------------
+problem mit automake war das jsautocfg.h nicht rechtzeitig generiert wird
+
+--------------------------------------------------------------------------------
+sash anschauen
+print modul
+spidermonkey configure check
+--------------------------------------------------------------------------------
+test javascript modules
+--------------------------------------------------------------------------------
+ich sollte mir die nomenklatur anschauen - die scheint bei JS etwas
+"verworren"
+--------------------------------------------------------------------------------
+cross compile
+--------------------------------------------------------------------------------
+automatic loading of modules? (resolve hook)
+--------------------------------------------------------------------------------
+debian package
+--------------------------------------------------------------------------------
+merke: debian spidermonkey benutzt nspr
+--------------------------------------------------------------------------------
+derive special exception objects
+--------------------------------------------------------------------------------
+Hmmm now we have:
+"untrusted mode" / runUntrusted / ModuleLoader.disable
+at the moment runUntrusted only disables the ModuleLoader which is not
+what the name suggests - we probably need some kind of security manager
+and perhaps want to use JS API stuff for this
+--------------------------------------------------------------------------------
+byte arrays: (and string handling)
+
+currently I use strings to represent byte arrays (binary data)
+the way I do it I use twice as much memory as needed as js strings are
+16bit unicode
+
+I have to take a deep look at this (see also the I18N point)
+a related thread on n.p.m.jseng:
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=9dabmi%24os01%40secnews.netscape.com
+
+also do:
+grep -r JS_realloc
+grep -r JS_NewString
+why?
+are JS strings with \0 allowed? yes
+or must JS strings be \0 terminated? no?
+
+
+something about the string stuff:
+
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3C45FD50.4050806%40meer.net:
+History: JS_GetStringBytes predates Unicode support in the engine, and 
+it used to give access to the JSString's underlying char buffer, which 
+would live as long as the string did (you couldn't write -- look, don't 
+touch!).  With the switch to Unicode, API compatibility had to be 
+preserved, but the string's buffer was not a char buffer any longer. 
+ Hence the deflated_string_cache (see jsstr.c).  
+
+
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3CD8E4C1.9080007%40meer.net:
+>So what does JS_GetStringBytes() return for multibyte characters?  Suppose we had a UCS2 char 0xXXYY, does it just return XX or YY?  Or does it return a sequence of chars for a particular encoding?
+>
+How would it know what encoding to use?
+
+It clearly just chops (decimates, as I wrote below) from jschar to char, 
+so \uXXYY becomes \xYY.
+
+
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3CD79F24.6020903%40meer.net:
+>Hi there,
+>
+>When would one want to use JSVAL_TO_STRING macro vs. JS_ValueToString
+>function?
+>
+The macro untags a jsval into a pointer, so JSVAL_IS_STRING(v) had 
+better be true before you call JSVAL_TO_STRING(v).
+
+JS_ValueToString pretty clearly *converts* any value into a string.
+
+I'm not sure why you're having troubles, but I have to ask: why are you 
+using JS_GetStringBytes?  It's lossy and deprecated.
+
+/be
+
+Another byte array thread:
+http://groups.google.de/groups?th=35ba422a08cd0319
+
+
+use the byte array in the zlib modul
+--------------------------------------------------------------------------------
+monitorable functioniert nicht
+garbage collector crashed
+
+noch mal InitClass Beispiel suchen :-((
+--------------------------------------------------------------------------------
+habe jetzt std::streambuf gewrapped (allerdings wie immer string dreck...)
+brauche endlich byte array ;-)
+
+jetzt wollte ich den socket stream richtig machen
+die frage ist ob das std c++ interface dafür überhaupt taugt, da ich
+ja non-blobking io machen wollte
+anscheind soll man über showmanyc gehen 
+
+aber am besten wäre wohl doch ein select...
+aber den stream wrapper kann ich ja trotzdem benutzen ...
+--------------------------------------------------------------------------------
+private data:
+there is a API function JS_GetInstancePrivate
+unfortunately it does not differentiate between private is null and
+class is wrong
+
+i use JS_GET_CLASS to do this
+--------------------------------------------------------------------------------
+clean up network modul - it is really ugly
+--------------------------------------------------------------------------------
+use streams whenever possible (don't convert to string ...)
+f.e. the Base64 encode decode could use a stream
+
+create a native class (derived from std::streambuf) which uses a javascript
+object to implement it
+--------------------------------------------------------------------------------
+new network stream stuff:
+how to detect errors?
+at the moment we use blocking i/o => when read does return an empty string
+we are at eof/eos
+
+clean up new egaserver
+perhaps this should only be a module => no executable script?
+btw. how will i do this on win32?
+--------------------------------------------------------------------------------
+improve opengl wrapper
+see src/modules/gl/README
+--------------------------------------------------------------------------------
+dlopen und nvidia opengl wird trouble machen?
+etl. gegen pthread linken (oder LD_PRELOAD) oder....
+s.h.: /usr/share/doc/nvidia-glx/README.gz
+hmm anscheinend gehts
+--------------------------------------------------------------------------------
+i should reduce namespace polution and clutter
+
+namens kacke
+stdin,stdout,... sind in Stream :-(((
+nicht sehr schön
+--------------------------------------------------------------------------------
+don't link everything against libz
+--------------------------------------------------------------------------------
+problem: input layer depends on video layer and must be able to exit
+why?
+input layer gets:
+- keys which should always toggle fullscreen
+- quit event
+- resize event
+
+perhaps this could be done in javascript and with object sealing
+=> how does object sealing work? is it possible to use it for security relevant
+stuff?
+--------------------------------------------------------------------------------
+bin am überlegen wegen JS_SealObject und so
+evtl. auch meherere contexte / globale objekte oder gar runtimes
+ich sollte einen js bereich haben der sicher ist
+nur wie integriere ich das in die shell?
+--------------------------------------------------------------------------------
+video resize wird ganz schwierig
+untrusted code soll das nicht koennen
+aber trotzdem muß es funktionieren wenn untrusted code läuft!
+--------------------------------------------------------------------------------
+libmcrypt kann ich von lernen
+libtool+threads und optional compilierte module !
+hmm anscheinend doch nicht was threads angeht
+error functionen werden abgeschalten und die anderen weitergereicht
+aber optional module bauen sollte da schön sein
+und alternativ statisch linken auch
+--------------------------------------------------------------------------------
+thread-safety
+at the moment we do not use threads directly but:
+SDL_mixer does
+opengl might
+
+libltdl isn't thread safe
+
+take a look at libesmpt?
+perhaps we should use glib or nspr now?
+--------------------------------------------------------------------------------
+OpenGL ES:
+http://www.khronos.org/opengles/
+http://www.khronos.org/opengles/spec.html
+--------------------------------------------------------------------------------
+debian package!
+
+check linitian error messages
+man pages are missing
+
+perhaps split into platform dep/indep
+register mime type (application/egachine ?)
+perhaps use an extra package for ejs
+and perhaps seperate packages for some module
+(especially the modules which depend on SDL => lots of deps)
+
+we need:
+different SDL_mixer version (see below audio:)
+=> compiled statically
+different spidermonkey version
+(the one in testing has bug 240577)
+--------------------------------------------------------------------------------
+build stuff:
+
+--disable-module does not work yet
+--------------------------------------------------------------------------------
+Makefile.am's:
+we probably should use la_LIBADD instead of la_LDFLAGS when adding libs?
+--------------------------------------------------------------------------------
+okay
+modules can now be linked statically
+the version with static modules is: 959K
+the version with dynamic modules is: 1,3M
+
+libtool dependency tracking is shit since it always links against all libs
+(which isn't required on linux)
+why is this shit?
+for example you link against SDL (which depends on many other libs)
+now you could replace this SDL with another one (with minimalistic dependencies)
+=> your program should now have minimalistic dependencies, too
+but no - libtool linked against every lib ....
+--------------------------------------------------------------------------------
+take a look at <http://g3d-cpp.sourceforge.net/>

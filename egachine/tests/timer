@@ -1,0 +1,28 @@
+#!/bin/bash
+../src/ejs <<EOF
+// we use the Date object to test if our timer works
+ejs.ModuleLoader.load("Timer");
+ejs.ModuleLoader.load("Stream");
+stampStart=Timer.getTimeStamp();
+dateStart=new Date();
+// sleep about 2 seconds
+Timer.uSleep(2000000);
+stampStop=Timer.getTimeStamp();
+dateStop=new Date();
+
+function println(x){
+    stdout.write(x);
+    stdout.write("\n");
+    stdout.sync();
+}
+
+diff=Math.abs(stampStop-stampStart-2000000);
+if (diff>100000)
+    throw new Error("probably fail(1): "+diff);
+diff2=Math.abs(dateStop.getTime()-dateStart.getTime()-2000)*1000;
+if (diff2>100000)
+    throw new Error("probably fail(2): "+diff2);
+diff3=Math.abs(diff-diff2);
+if (diff3>100000)
+    throw new Error("probably fail(3): "+diff3);
+EOF

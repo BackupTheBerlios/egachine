@@ -3,7 +3,7 @@ and which could be somehow important to remember but does not fit elsewhere.
 
 --------------------------------------------------------------------------------
 pass command line arguments to client
-DONE: egachine and egaserver pass command line arguments via argv vector
+DONE: argv array
 --------------------------------------------------------------------------------
 cross compile linux->win with mingw
 works
@@ -23,8 +23,9 @@ is not correctly deinitialized
 this was a namespace problem because i called deinit in a different namespace
 i wanted to call it!
 --------------------------------------------------------------------------------
-is JSVAL_TO_OBJECT the right thing to do if you want a JSObject* ????
-i think so as JS_ValueToObject also is allowed for ints ...
+is JSVAL_TO_OBJECT the right thing to do if you want a JSObject* ?
+yes after testing with JSVAL_IS_OBJECT
+(i think so as JS_ValueToObject also is allowed for ints ...)
 --------------------------------------------------------------------------------
 put boost into toplevel or src dir or remove it completely?
 for now it is inluced in the toplevel dir
@@ -242,4 +243,72 @@ http://cvs.sourceforge.net/viewcvs.py/boost/boost/boost/langbinding/\
 ?only_with_tag=langbinding
 Boost::python
 
+--------------------------------------------------------------------------------
+Remember:
+the spidermonkey API (library entry points)
+differs whenever compiled with JS_THREADSAFE or not !!
+(never use the lib compiled with JS_THREADSAFE if you do not compile with
+JS_THREADSAFE - and vica versa)
+--------------------------------------------------------------------------------
+
+Why don't we use more of the mozilla project?
+Because egachine is intended to be small and it should be possible to port it
+to embedded systems. NSPR is 200k and XMPCOM is ~1M
+
+I once more thought about using XPCOM especially when I redesigned egachine
+around a single extensible shell but decided not to use XPCOM for now.
+See also:
+http://groups.google.de/groups?th=efce69c54cf2f08d
+
+XPCOM:
+http://www.mozilla.org/projects/xpcom/
+http://www.mozilla.org/scriptable/roadmap.html
+xpcom standalone:
+http://www.mozilla.org/projects/xpcom/xpcom-standalone.html
+http://www.mozilla.org/projects/xpcom/xpcom-inside/index.htm
+
+xpcom minimal:
+    * NSPR : mozilla/nsprpub
+    * Registry : mozilla/modules/libreg
+    * XPCOM : mozilla/xpcom
+
+
+./configure --enable-standalone-modules=xpcom --prefix=/tmp/usr
+--------------------------------------------------------------------------------
+Libtool hack:
+
+--- /usr/share/libtool/ltmain.sh        2004-07-06 19:48:00.000000000 +0200
++++ /home/jens/develop/Diplomarbeit/egachine/config/ltmain.sh   2004-09-23 18:08:40.000000000 +0200
+@@ -43,7 +43,7 @@
+ 
+ PROGRAM=ltmain.sh
+ PACKAGE=libtool
+-VERSION=1.5.6
++VERSION=1.5.6-karme
+ TIMESTAMP=" (1.1220.2.95 2004/04/11 05:50:42) Debian$Rev: 215 $"
+ 
+ 
+@@ -4314,7 +4314,13 @@
+            $show "extracting global C symbols from \`$arg'"
+            name=`$echo "$arg" | ${SED} -e 's%^.*/%%'`
+            $run eval '$echo ": $name " >> "$nlist"'
+-           $run eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
++
++           # hack by karme $EGREP -e \"$export_symbols_regex\"
++           if test -n "$export_symbols_regex"; then
++             $run eval "$NM $arg | $global_symbol_pipe | $EGREP -e \"$export_symbols_regex\"  >> '$nlist'"
++           else
++             $run eval "$NM $arg | $global_symbol_pipe   >> '$nlist'"
++           fi
+          done
+ 
+          if test -z "$run"; then
+@@ -4326,6 +4332,7 @@
+              $mv "$nlist"T "$nlist"
+            fi
+ 
++
+            # Try sorting and uniquifying the output.
+            if grep -v "^: " < "$nlist" |
+                if sort -k 3 </dev/null >/dev/null 2>&1; then
 --------------------------------------------------------------------------------

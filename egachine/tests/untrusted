@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "ejs.loadUntrusted('$srcdir/untrusted.js')"|../src/ejs - untrusted.js
+
+
+
+

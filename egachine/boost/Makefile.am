@@ -1,16 +1,40 @@
 noinst_HEADERS = \
-	config.hpp type_traits.hpp utility.hpp smart_ptr.hpp \
-	type_traits/alignment_traits.hpp \
-	type_traits/arithmetic_traits.hpp \
-	type_traits/composite_traits.hpp \
-	type_traits/conversion_traits.hpp \
-	type_traits/cv_traits.hpp \
-	type_traits/function_traits.hpp \
-	type_traits/fwd.hpp \
-	type_traits/ice.hpp \
-	type_traits/object_traits.hpp \
-	type_traits/same_traits.hpp \
-	type_traits/transform_traits.hpp \
-	type_traits/transform_traits_spec.hpp \
-	type_traits/type_traits_test.hpp
-
+config/compiler/gcc.hpp \
+config/posix_features.hpp \
+config/select_compiler_config.hpp \
+config/select_platform_config.hpp \
+config/select_stdlib_config.hpp \
+config/suffix.hpp \
+config/user.hpp \
+config/platform/linux.hpp \
+config/platform/win32.hpp \
+config/stdlib/libstdcpp3.hpp \
+assert.hpp \
+checked_delete.hpp \
+config.hpp \
+scoped_array.hpp \
+scoped_ptr.hpp \
+shared_array.hpp \
+shared_ptr.hpp \
+smart_ptr.hpp \
+throw_exception.hpp \
+type_traits.hpp \
+utility.hpp \
+detail/lightweight_mutex.hpp \
+detail/lwm_nop.hpp \
+detail/lwm_pthreads.hpp \
+detail/lwm_win32.hpp \
+detail/shared_count.hpp \
+detail/workaround.hpp \
+type_traits/alignment_traits.hpp \
+type_traits/arithmetic_traits.hpp \
+type_traits/composite_traits.hpp \
+type_traits/conversion_traits.hpp \
+type_traits/cv_traits.hpp \
+type_traits/function_traits.hpp \
+type_traits/ice.hpp \
+type_traits/object_traits.hpp \
+type_traits/same_traits.hpp \
+type_traits/transform_traits.hpp \
+type_traits/transform_traits_spec.hpp \
+type_traits/type_traits_test.hpp

@@ -1,0 +1,17 @@
+#!/bin/sh
+echo '
+success=false;
+ejs.ModuleLoader.load("Monitorable");
+t=new Monitorable();
+t.monitor={
+  onAdd:function(obj,prop,val){
+    success=true;
+    return val;
+  },
+  onDelete:function(obj,prop){return val;},
+  onGet:function(obj,prop,val){return val;},
+  onSet:function(obj,prop,val){return val;}
+};
+t.a=10;
+if ((!success)||(t.a!=10)) throw new Error("failed");
+'|../src/ejs

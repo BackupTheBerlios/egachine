@@ -1,0 +1,17 @@
+exampledir = $(datadir)/doc/egachine/examples
+
+examples = \
+	client/opengl/morse-scooter.js \
+	client/opengl/elevator.js \
+	client/opengl/glxgears.js \
+	client/opengl/nehe-l05.js \
+	client/opengl/nehe-l08.js \
+	client/pong.js \
+	client/pong3.js \
+	client/horror.js \
+	client/audio.js \
+	server/netpong.js \
+	server/netorigpong2.js \
+	server/netorigpong.js
+
+nobase_dist_example_DATA = $(examples)

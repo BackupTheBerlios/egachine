@@ -1,0 +1,60 @@
+#!/bin/bash
+set -e
+
+function runtest () {
+    script="$1"
+    echo $script|../src/ejs
+
+# todo: valgrind check does not work with this one
+#     if which valgrind >/dev/null; then
+# 	error=$(echo $script|valgrind -q --leak-check=yes --log-fd=1 ../src/ejs)
+# 	if [ "x$error" != "x" ]; then
+# 	    echo Memory leak: "$error"
+# 	    exit 1
+# 	fi
+#     else
+# 	echo 'valgrind not found => skipping leak check'
+#     fi
+}
+
+runtest 'ejs.ModuleLoader.load("Audio");'
+
+
+runtest '
+ejs.ModuleLoader.load("Audio");
+ejs.ModuleLoader.load("Timer");
+samples={};
+wavheader="\x52\x49\x46\x46\x24\x02\x00\x00\x57\x41\x56\x45\x66\x6d\x74\x20\x10\x00\x00\x00\x01\x00\x01\x00\x44\xac\x00\x00\x44\xac\x00\x00\x01\x00\x08\x00\x64\x61\x74\x61\x00\x02\x00\x00";
+
+music="c c c aaaa aaaa aaaa c c c     ";
+
+function createSample(name,freq,volume) {
+  var wav=wavheader;
+  m=Math.floor(4*freq/(44100/512));
+  for (i=0;i<512;++i)
+    wav+=String.fromCharCode(Math.sin(m*Math.PI*i/512)*127*volume+127);
+  samples[name]=Audio.loadSample(wav);
+}
+
+function playSample(name,sec) {
+  rep=Math.floor(sec*44100/512);
+  Audio.playSample(samples[name],rep);
+}
+
+volume=0.5;
+createSample("a",440,volume);
+createSample("c",264,volume);
+
+var note=0;
+while (true) {
+  var pton=music.charAt((note-1)>=0 ? (note-1) : (music.length-1));
+  var ton=music.charAt(note);
+  if ((ton!=" ")&&(ton!=pton)) {
+    var c=1,nnote=note;
+    while(music.charAt((nnote=(nnote+1<music.length ? nnote+1 : 0)))==ton) ++c;
+    playSample(ton,0.1*c);
+  };
+  Timer.uSleep(100000);
+  if (++note>=music.length) break;
+};
+'

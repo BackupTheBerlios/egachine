@@ -1,0 +1,193 @@
+#!@bindir@/ejs
+/*
+ * Copyright (C) 2004 Jens Thiele <karme@berlios.de>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+/*!
+  \brief egachine server
+  \author Jens Thiele
+*/
+
+ejs.ModuleLoader.load("EGachine");
+ejs.ModuleLoader.load("File");
+ejs.ModuleLoader.load("Net");
+
+// todo fetch from config file
+listenPort=47000;
+
+
+EGachine.version={string:"@PACKAGE_VERSION@"};
+(function(){
+  var x=EGachine.version.string.split(".");
+  EGachine.version.major=x[0];
+  EGachine.version.minor=x[1];
+  EGachine.version.micro=x[2];
+ })();
+
+EGachine.server=true;
+
+// todo remove those?
+Video={};
+Input={};
+
+// extend network object
+Net.server=new Net.Server(listenPort);
+Net.server.connections={};
+Net.server.queue="";
+Net.server.dist={};
+
+// watch all properties and distribute changes to clients
+Net.server.genericwatch=function(fqprop) {
+  return function(p,o,n){if ((n!=o)&&(!dontwatch)) Net.server.enqueue(fqprop+'='+n+';');return n;};
+}
+
+Net.server.distribute=function(obj,oid){
+  this.dist[oid]=obj;
+  watchall(obj,oid,Net.server.genericwatch);
+  this.broadcastObject(obj,oid);
+}
+
+Net.server.handleNewConnection=function(id,stream) {
+  println("New connection: "+id);
+  this.connections[id]=stream;
+  if (this.connections[id]!=stream) throw new Error("should not happen");
+  var obj;
+  for (obj in this.dist)
+    this.sendObjectTo(id,this.dist[obj],obj);
+  handleNewConnection(id,stream);
+}
+
+Net.server.handleDataAvailable=function(id) {
+  if (!this.connections[id]) return;
+  var h=this.connections[id].read(6);
+  var len=Number("0x"+h);
+  if ((h.length==0)||(len==0)) {
+    println("Close connection: "+id);
+    // todo:
+    //    this.connections[id].close();
+    delete this.connections[id];
+    return;
+  }
+  var msg=this.connections[id].read(len);
+  // todo security hole - clients should not be allowed to execute code on server
+  var i=deserialize(msg);
+  Input.handleInput(i);
+}
+
+Net.server.sendTo=function(id,msg) {
+  var h=msg.length.convertTo(16,6);
+  this.connections[id].write(h);
+  this.connections[id].write(msg);
+  this.connections[id].sync();
+}
+
+Net.server.sendObjectTo=function(cid,obj,oid) {
+  var msg=oid+"="+serialize(obj)+";delp("+oid+");";
+  this.sendTo(cid,msg);
+}
+
+Net.server.broadcast=function(msg) {
+  var c;
+  for (c in this.connections) {
+    this.sendTo(c,msg);
+  }
+}
+
+Net.server.broadcastObject=function(obj,oid) {
+  var msg=oid+"="+serialize(obj)+";delp("+oid+");";
+  this.broadcast(msg);
+}
+
+Net.server.enqueue=function(msg) {
+  this.queue+=msg;
+}
+
+Net.server.update=function() {
+  // broadcast changes to clients
+  if (this.queue.length>0) this.broadcast(this.queue);
+  this.queue="";
+}
+
+Net.server.distribute(EGachine.r,"EGachine.r");
+
+
+//! watch all properties in the object graph 
+/*
+  on change of a property call a generated function 
+  \param gf function which generates the watch function
+  if gf is not passed genericwatch is used
+  
+  \note properties coming from a prototype aren't watched
+  this is because this caused trouble with serialization
+  TODO: inspect this situation and understand what happens
+  if you set a watch on property which comes from a prototype
+*/
+function watchall(cobj,cname,gf){
+
+  // return function which can act as watch callback and simply
+  // print some debug info
+  function genericwatch(y) {
+    return function(p,o,n){print(y+'='+n+';');return n;};
+  };
+
+  function _watchall(pobj,cobj,cname,scope,gf){
+    //  print(scope);
+    if (!gf) throw new Error("need generic function");
+    if (typeof cobj != 'object') {
+      var f=gf(scope);
+      //    print(f.toSource());
+      pobj.watch(cname,f);
+      return;
+    }
+    if (cobj instanceof Array) {
+      var k;
+      for (var k in cobj) {
+	_watchall(cobj, cobj[k], k, scope+"["+k+"]", gf);
+      }
+    }else{
+      var k;
+      for (var k in cobj) {
+	if ((k[0]!='_')&&(!isFromProto(cobj,k)))
+	  _watchall(cobj, cobj[k], k, scope+"."+k,     gf);
+      }
+    }
+  }
+
+  if (!gf) gf=genericwatch;
+  _watchall(undefined,cobj,cname,cname,gf);
+}
+
+// backwards compatibility to 0.0.8 (todo: probably remove this)
+Net.sendTo=function(id,msg){
+  Net.server.sendTo(id,msg);
+};
+Net.distribute=function(obj,oid){
+  Net.server.distribute(obj,oid);
+};
+Net.poll=function(){
+  Net.server.poll();
+};
+Net.update=function(){
+  Net.server.update();
+}
+
+if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
+  stderr.write("Usage: egaserver [-h|--help] FILE [OPTION]...\n");
+}else{
+  ejs.loadUntrusted(argv[1]);
+};
+

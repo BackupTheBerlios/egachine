@@ -1,0 +1,67 @@
+#!/bin/bash
+../src/ejs <<EOF
+ejs.ModuleLoader.load("Stream");
+s=new Stream();
+success=true;
+try{
+	s.write("huhu");
+	success=false;
+}catch(e){}
+try{
+	x={};
+	x.write=s.write;
+	x.write("huhu");
+	success=false;
+}catch(e){
+	// todo - better way to identify this exception
+	if (e.message.indexOf("incompatible")<0)
+		throw new Error("wrong exception");
+}
+try{
+	x=s.write;
+	x("huhu");
+	success=false;
+}catch(e){}
+if (!success) throw new Error("failed");
+if (!stdin) throw new Error("failed: stdin");
+if (!stdout) throw new Error("failed: stdout");
+if (!stderr) throw new Error("failed: stderr");
+EOF
+
+echo 'Hello World!'|../src/ejs <(echo '
+ejs.ModuleLoader.load("Stream");
+if ((s=stdin.read(11))!="Hello World") throw s;
+')
+
+O=$(echo '
+ejs.ModuleLoader.load("Stream");
+print=function(x){
+    stdout.write(x);
+}
+println=function(x){print(x+"\n");}
+println("Hello World");
+'|../src/ejs)
+E="Hello World"
+if [ "x$O" != "x$E" ]; then
+    echo failed: "$O != $E"
+    exit 1
+fi
+
+O=$(echo '
+ejs.ModuleLoader.load("Stream");
+stderr.write("Hello World");
+'|../src/ejs 2>&1)
+
+if [ "x$O" != "xHello World" ]; then
+    echo failed
+fi
+
+O=$(echo '
+ejs.ModuleLoader.load("Stream");
+x=100;
+stdout.write(x);
+'|../src/ejs)
+
+if [ "x$O" != "x100" ]; then
+    echo failed
+fi

@@ -1,0 +1,2 @@
+#!/bin/sh
+echo 'ejs.ModuleLoader.load("Zlib");s="hello world!";l=s.length;c=Zlib.compress(s);if (Zlib.uncompress(c,l)!=s) throw new Error("failed");'|../src/ejs

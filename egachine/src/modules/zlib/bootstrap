@@ -1,0 +1,8 @@
+#!/bin/bash
+SOURCES=$(echo *.h *.cpp|sed 's/\*\.\w* \?//g')
+cat >Makefile.am <<-EOF
+	INCLUDES = @LTDLINCL@ @EJS_CFLAGS@
+	pkglib_LTLIBRARIES = ejszlib.la
+	ejszlib_la_SOURCES = $SOURCES
+	ejszlib_la_LDFLAGS = -module -avoid-version -no-undefined @ZLIB@ @SM_LIBS@
+EOF

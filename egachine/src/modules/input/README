@@ -1,0 +1,6 @@
+the input layer of the jgachine
+
+available input:
+- gamepad like devices (left, right, up, down, buttons)
+- quit
+- text input (must be switched on and off)

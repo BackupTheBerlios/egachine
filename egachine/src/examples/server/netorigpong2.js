@@ -99,8 +99,8 @@ function run(){if (!EGachine.checkVersion(0,0,7)) \
 Input.handleInput=function(i){\
   var msg=serialize(i); \
   var h=msg.length.convertTo(16,6); \
-  stream.send(h); \
-  stream.send(msg); \
+  stream.write(h); \
+  stream.write(msg); \
   stream.sync(); \
 }; \
 Video.setViewportCoords({left:0,right:"+sx+",bottom:0,top:"+sy+"});\
@@ -109,7 +109,7 @@ while (true) { \
   now=Timer.getTimeStamp()/1000000; \
   root.paint(now); \
   Input.poll(); \
-  if (stream.select(0)) readMsg(); \
+  if (stream.inAvailable()>0) readMsg(); \
   Video.swapBuffers(); \
 }\
 };\

@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "ejs.load('$srcdir/load.js');"|../src/ejs
+
+

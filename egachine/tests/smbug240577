@@ -1,0 +1,15 @@
+#!/bin/bash
+# test for http://bugzilla.mozilla.org/show_bug.cgi?id=240577
+../src/ejs <<EOF
+global="x";
+var w=function(text){
+return function(id,o,n){global=text;return n;};
+}("Hello");
+w();
+if (global!="Hello") throw new Error("bug in test");
+global="x";
+foo={x:1};
+foo.watch("x",w);
+foo.x=10;
+if (global!="Hello") throw new Error("Spidermonkey bug #240577");
+EOF

@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+if test ! -f ./src/ejs.cpp; then
+    echo "You must type ./bootstrap in the top level directory"
+    exit 1
+fi
+
+if test -e ./configure; then
+    echo "configure already exists"
+    exit 1
+fi
+
+echo Autoreconf
+mkdir config
+# othwerise autoreconf will complain about missing ltdl directory
+# libtoolize -c -f --ltdl
+autoreconf -i -f

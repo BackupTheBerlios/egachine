@@ -1,0 +1,55 @@
+#!@bindir@/ejs
+/*
+ * Copyright (C) 2004 Jens Thiele <karme@berlios.de>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+/*!
+  \brief resource utility hack
+  \author Jens Thiele
+*/
+
+ejs.ModuleLoader.load("EGachine");
+ejs.ModuleLoader.load("File");
+
+if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
+  stderr.write("Usage: egares [-h|--help|RESNAME] [FILE|-] [OPTION]...\n");
+}else{
+  var resname=argv[1];
+  var resource;
+  var stream;
+  if ((argv.length<3)||(argv[2]=="-"))
+    stream=stdin;
+  else
+    stream=File.read(argv[2]);
+
+  // copy resource from stream
+  var s;
+  while ((s=stream.read(1024))!="") {
+    resource+=s;
+  }
+
+  var res=new Resource(resname,resource);
+  var towrite="EGachine.addResource(\n";
+
+  towrite+=res+");\n";
+  eval(towrite);
+  var dec=EGachine.getResource(resname).decode();
+  if (dec!=resource)
+    throw new Error("egares is buggy and something went wrong");
+  // puh ;-) good luck
+  stdout.write(towrite);
+};

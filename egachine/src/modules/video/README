@@ -1,0 +1,8 @@
+Video subsystem interface implementation using SDL and OpenGL/Mesa
+
+Most of the code is taken from adic and dope
+(http://adic.berlios.de, http://dope.berlios.de)
+
+Note:
+Needs major clean up.
+

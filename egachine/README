@@ -166,9 +166,50 @@ Similar projects:
 
 Sphere <http://sphere.sourceforge.net/>:
   License: GPL
-  Description: Ever had that perfect  plot idea for  an RPG but didn't
+  Description: "Ever had that perfect plot idea for  an RPG but didn't
   have the programming knowledge to create it? Enter Sphere. Sphere is
-  a  console-style RPG  engine  that  allows  others to  create an RPG
-  similar  to Final Fantasy, Dragon Quest, or Phantasy Star.
+  a   console-style RPG engine  that allows   others  to create an RPG
+  similar to Final Fantasy, Dragon Quest, or Phantasy Star."
+
+JiggleScript <http://www.jigglescript.com/>:
+  License: ?
+  Description: "JiggleScript is a development enviroment that combines
+  the well-known web programming  language JavaScript with OpenGL, the
+  standard graphics API used in  modern 3D games. The target  audience
+  are those that may be familar  with JavaScript already from building
+  web pages and  would like to try  their hand at something that might
+  be a little more  fun  without needing to  learn C  or C++ or  other
+  "bigger" languages."
 
 ----------------------------------------------------------------------
+Extensible Javascript shell.
+
+This is a minimalistic extensible non-interactive Javascript shell.
+
+minimalistic:
+	keep it small and simple
+
+extensible:
+	modules (Javascript or native code) can be loaded at runtime
+
+non-interactive:
+	it is not intended to be a command line interpreter with
+	history and advanced editing functions (although it should be
+	possible to write a module which provides that functionality)
+
+Javascript:
+	it uses mozilla's Javascript interpreter spidermonkey
+
+
+Dependencies:
+spidermonkey (jsapi.h header and library)
+
+
+Debugging / leak checking (f.e. with valgrind):
+
+export GLIBCPP_FORCE_NEW=1
+export CXXFLAGS="-Wall -W -g -O0"
+export LDFLAGS="-g"
+
+valgrind is a great tool
+--tool=massif is interesting, too

@@ -1,3 +1,32 @@
+2004-09-23  Jens Thiele  <karme@berlios.de>
+
+	* release 0.1.0
+
+	* modules may be compiled statically into ejs with --disable-shared
+	(modified libtool/ltmain.sh)
+
+	* examples now work again
+
+	* egachine, egaserver and egares now are simple Javascript scripts
+
+	* support unix style executable scripts (#!/...)
+
+	* modules for ejs: Stream, Net, File, Audio, Video, Input, gl, Timer
+
+	* use autotools again (autoconf, automake, libtool, libltdl)
+
+	* complete new design: everything is now based upon a minimalistic
+	extensible non-interactive Javascript shell - short: ejs.
+	minimalistic: keep it small and simple
+	extensible: modules (Javascript and/or native code) can be loaded at runtime
+	non-interactive: it is not intended to be a command line interpreter with
+	history and advanced editing functions (although it should be possible to 
+	write a module which provides that functionality)
+
+2004-08-31  Jens Thiele  <karme@berlios.de>
+
+	* src/network/jsnetwork.cpp (GET_STREAM_OBJ): security fix
+
 2004-08-30  Jens Thiele  <karme@berlios.de>
 
 	* build and ship spidermonkey javascript shell

@@ -1,0 +1,8 @@
+#!/bin/bash
+../src/ejs <<EOF
+function bind(x){return function(){return x;};};
+f=bind(10);
+if (f()!=10) throw new Error("failed");
+abc=function(x){return function(y){return function(z){return x+y+z;}("c")}("b")}("a");
+if (abc!="abc") throw new Error("failed: "+abc);
+EOF

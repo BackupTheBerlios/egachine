@@ -1,36 +1,16 @@
 graphviz={};
-try{
-  ejs.ModuleLoader.load('util');
-}catch(){}
 
-// graphviz.getObjectID
-if (!util.getObjectID) {
-  // we don't have the native hashObject function
-  // => provide a (slow/ugly) ECMAScript version
-  graphviz.getObjectID=function(obj) {
-    var i;
-    if (!graphviz.getObjectID.hashed) graphviz.getObjectID.hashed=[];
-    for (i=0;i<graphviz.getObjectID.hashed.length;++i) {
-      if (graphviz.getObjectID.hashed[i] === obj) return i;
-    };
-    graphviz.getObjectID.hashed.push(obj);
-    return graphviz.getObjectID.hashed.length-1;
-  };
-}else{
-  graphviz.getObjectID=util.getObjectID;
+if (typeof ejs == 'object') {
+  // we are executed by a ejs shell
+  try{
+    // load required module (stdout.write)
+    ejs.ModuleLoader.load('Stream');
+    // not required but helpful (util.getObjectID)
+    ejs.ModuleLoader.load('util');
+  }catch(e){};
 };
 
-// graphviz.println
-if (this.println) {
-  graphviz.println=this.println;
-}elseif (this.print) {
-  // assume we are using spidermonkey shell where print already adds \n
-  graphviz.println=this.print;
-}elsif (ejs.ModuleLoader.load) {
-  ejs.ModuleLoader.load('Stream');
-  graphviz.println=function(x){stdout.write(x+"\n");}
-}
-
+//! default style used by graphviz.dot
 graphviz.defaultStyle={
   reverse:#1=(new Boolean(true)),
   // style of edges to properties that are own properties and enumerated
@@ -48,23 +28,60 @@ graphviz.defaultStyle={
   hiddenProps:["__proto__","constructor","prototype"]
 };
 
+/*!
+  visualize object graph starting with object obj (labeled by label)
+  using optional style
+*/
 graphviz.dot=function(obj,label,style)
 {
+  // println function
+  var println;
+  // getObjectID function
+  var getObjectID;
+  // objects already visited
   var m={};
+  var i;
+  var from;
+  var to;
+  var tmp;
 
+  // println
+  if (typeof print == 'function') {
+    // assume we are using a shell where print already adds \n
+    println=print;
+  }else if (typeof ejs == 'object') {
+    println=function(x){stdout.write(x+"\n");}
+  }else throw new Error("Could not find print function");
+
+  // getObjectID
+  if ((typeof util != 'object') || (typeof util.getObjectID != 'function')) {
+    // we don't have the native GetObjectID function
+    // => provide a (slow/ugly) ECMAScript version
+    getObjectID=function(obj) {
+      var i;
+      if (!getObjectID.hashed) getObjectID.hashed=[];
+      for (i=0;i<getObjectID.hashed.length;++i) {
+	if (getObjectID.hashed[i] === obj) return i;
+      };
+      getObjectID.hashed.push(obj);
+      return getObjectID.hashed.length-1;
+    };
+  }else{
+    getObjectID=util.getObjectID;
+  };
+  
   if (style && (!(typeof style == "object")))
     throw new Error("Object required as third argument");
   if (!style) {
     style=graphviz.defaultStyle;
   }else{
-    var i;
     for (i in graphviz.defaultStyle) {
       if (style[i] == undefined) style[i] = graphviz.defaultStyle[i];
     }
   }
 
   function getNodeName(obj) {
-    return graphviz.getObjectID(obj).toString();
+    return getObjectID(obj).toString();
   };
 
   function ignore(obj) {
@@ -83,18 +100,27 @@ graphviz.dot=function(obj,label,style)
   }
 
   function _dot(obj) {
-    if (!obj instanceof Object) return;
-    var nodeName=getNodeName(obj);
-    if (m[nodeName]) return;
-    m[nodeName]=true;
+    var nodeName;
     var i;
     var j;
-    var label=((obj instanceof Array) ? "Array" : typeof(obj) );
+    var label;
+    var src;
+    var tmp;
+    // maximum string length for function body
+    var maxlen=50;
+    var objType;
+    var children;
+    var from;
+    var to;
+
+    if (!obj instanceof Object) return;
+    nodeName=getNodeName(obj);
+    if (m[nodeName]) return;
+    m[nodeName]=true;
+    label=((obj instanceof Array) ? "Array" : typeof(obj) );
     if (typeof(obj) == 'function') {
       label="";
-      var src=obj.toSource();
-      var tmp;
-      var maxlen=50;
+      src=obj.toSource();
       if (src.length>maxlen) {
 	tmp=src.substring(0,maxlen/2-3)+" ... "
 	  +src.substring(src.length-maxlen/2-2,src.length);
@@ -106,7 +132,7 @@ graphviz.dot=function(obj,label,style)
     for (i in obj) {
       // only use simple properties in the label
       // and don't show inherited ones
-      var objType=typeof(obj[i]);
+      objType=typeof(obj[i]);
       if (obj.hasOwnProperty(i)&&(objType!='function')
 	  &&(objType!='object')) {
 	if (objType=='string') 
@@ -116,10 +142,10 @@ graphviz.dot=function(obj,label,style)
       }
     }
 
-    graphviz.println(nodeName+" [label=\""+label+"\"]");
+    println(nodeName+" [label=\""+label+"\"]");
 
     // calculate child nodes to visit
-    var children=[];
+    children=[];
     for (i in obj)
       if (obj[i] instanceof Object && (!ignore(obj[i])))
 	children.push(i);
@@ -132,10 +158,10 @@ graphviz.dot=function(obj,label,style)
     // visit children
     for (j in children) {
       i=children[j];
-      var from=nodeName;
-      var to=getNodeName(obj[i]);
+      from=nodeName;
+      to=getNodeName(obj[i]);
       if (style.reverse == true) {var tmp=from;from=to;to=tmp;};
-      graphviz.println(from+" -> "+ to +" [label=\""+i+ "\""
+      println(from+" -> "+ to +" [label=\""+i+ "\""
 	      + (obj.hasOwnProperty(i) ? style.owner : style.inherit)
 	      + (myPropertyIsEnumerable(obj,i) ? "" : style.hidden)
 	      + style.edge 
@@ -144,13 +170,13 @@ graphviz.dot=function(obj,label,style)
     }
   }
 
-  graphviz.println("digraph jsgraph {");
-  graphviz.println("node [shape=box]");
-  graphviz.println("start [label=\"\",style=invis]");
-  var from="start";
-  var to=getNodeName(obj);
-  if (style.reverse == true) {var tmp=from;from=to;to=tmp;};
-  graphviz.println(from+" -> " + to + " [label=\""+label+"\"" + style.edge + "]");
+  println("digraph jsgraph {");
+  println("node [shape=box]");
+  println("start [label=\"\",style=invis]");
+  from="start";
+  to=getNodeName(obj);
+  if (style.reverse == true) {tmp=from;from=to;to=tmp;};
+  println(from+" -> " + to + " [label=\""+label+"\"" + style.edge + "]");
   _dot(obj);
-  graphviz.println("}");
+  println("}");
 };

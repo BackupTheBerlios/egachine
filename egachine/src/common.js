@@ -65,7 +65,7 @@ function forall(obj,func,idfunc){
   if (!idfunc) idfunc=function(x){return hashObject(x).toString();};
   if (!func) throw new Error("need function");
   function _forall(x) {
-    if (typeof(x) != 'object') {
+    if (typeof x != 'object') {
       func(x,false);
       return;
     };
@@ -85,7 +85,7 @@ function forall(obj,func,idfunc){
 
 function delp(x){
   forall(x,(function(x,depthFirst,debug){
-    if (typeof(x) != 'object') return;
+    if (typeof x != 'object') return;
     if (!depthFirst) {
       if (x._p) x.__proto__=x._p;
     }else{
@@ -101,7 +101,7 @@ function delp(x){
 */
 function serialize(x) {
   forall(x,(function(x,depthFirst){
-    if (typeof(x) != 'object') return;
+    if (typeof x != 'object') return;
     if ((depthFirst)||(isEmptyProto(x.__proto__))) return;
     if ((x._p)&&(!isFromProto(x,"_p")))
       throw new Error("TODO: property _p not allowed");

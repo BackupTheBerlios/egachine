@@ -142,7 +142,7 @@ Video.drawQuad=function(w,h)
 
 Video.setViewportCoords=function(obj)
 {
-  if (typeof(obj)!="object") throw new Error("object required as argument");
+  if (typeof obj !="object") throw new Error("object required as argument");
   if (obj.near==undefined) obj.near=-100;
   if (obj.far==undefined) obj.far=100;
   gl.MatrixMode(GL_PROJECTION);		

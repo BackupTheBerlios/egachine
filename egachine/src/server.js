@@ -105,7 +105,7 @@ function watchall(cobj,cname,gf){
   function _watchall(pobj,cobj,cname,scope,gf){
     //  print(scope);
     if (!gf) throw new Error("need generic function");
-    if (typeof(cobj) != 'object') {
+    if (typeof cobj != 'object') {
       var f=gf(scope);
       //    print(f.toSource());
       pobj.watch(cname,f);

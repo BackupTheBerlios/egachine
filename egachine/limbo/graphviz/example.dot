@@ -1,0 +1,11 @@
+digraph test123 {
+	a -> b -> c;
+        a -> {x y};
+        b [shape=box];
+        c [label="hello"];
+        a -> z [label="hi", weight=100];
+        x -> z [label="foo"];
+        edge [style=dashed,color=red];
+        b -> x;
+        {rank=same; b x}
+}

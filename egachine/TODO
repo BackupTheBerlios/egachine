@@ -933,3 +933,6 @@ DOM:
 hmm riesig
 brauchbares subset auswählen
 --------------------------------------------------------------------------------
+hmm svgldom test produces warning:
+unknown SVG element rect SVGDocument.cpp:117
+--------------------------------------------------------------------------------

@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+SMJS="egaserver"
+DOTFILE=$(tempfile) || exit 1
+MYTMPFILES="$DOTFILE"
+#trap "echo rm -v \$MYTMPFILES" EXIT
+PNGFILE=$(tempfile -s ".png") || exit 1
+MYTMPFILES="$MYTMPFILES $PNGFILE"
+$SMJS graphviz.js >$DOTFILE && dot -Tgif $DOTFILE|gif2png -f -O >$PNGFILE && see $PNGFILE
+
+

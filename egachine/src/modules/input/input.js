@@ -5,6 +5,8 @@
   if (!fname) throw new Error("Could not find module: 'ejsinput.la'");
   ejs.ModuleLoader.loadNative.call(Input,"ejsinput",fname.substring(0,fname.lastIndexOf(".")));
 
+  var Video=ejs.ModuleLoader.get("Video");
+
   Input.NOEVENT=0;
   Input.ACTIVEEVENT=1;
   Input.KEYDOWN=2;

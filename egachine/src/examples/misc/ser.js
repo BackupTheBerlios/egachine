@@ -63,8 +63,7 @@ function circleTest(fser,fdser) {
   \param func(x,depthFirst) the function to call 
          (for objects it is called twice - once before going into the depth,
 	 and once after - depthFirst is set to reflect this)
-  \param deptFirst call function on object after/before call on properties
-  \param idfunc function returning a id for an object
+  \param idfunc function returning a ID for an object
 
   \note this works recursively and handles cycles in the graph
   if you pass in a correct idfunc
@@ -110,6 +109,7 @@ function delp(x){
 //! serialize object
 /*!
   \bug properties named _p are not allowed
+  \note temporarily adds property _p as copy of __proto__
 */
 function ser(x) {
   forall(x,(function(x,depthFirst){

@@ -23,8 +23,7 @@ function handleNewConnection(id,stream){
   Net.sendTo(id,"\
 if (!EGachine.checkVersion(0,0,4)) throw 'at least version 0.0.4 required';\
 handleInput=function(i){\
-  var ser=new Serializer(); \
-  var msg=ser.serialize(i,'i'); \
+  var msg=serialize(i); \
   var h=msg.length.convertTo(16,6); \
   stream.send(h); \
   stream.send(msg); \

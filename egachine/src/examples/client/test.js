@@ -208,10 +208,9 @@ for (var x=-200;x<=200;x+=100)
 run(root);
 
 // serialize
-s=new Serializer();
 start=Timer.getTimeStamp();
 //print(root.toSource());
-var x=s.serialize(root,'rr');
+var x=serialize(root);
 //print(root.toSource());
 print("time to serialize:"+(Timer.getTimeStamp()-start));
 
@@ -219,10 +218,10 @@ print("time to serialize:"+(Timer.getTimeStamp()-start));
 
 // deserialize
 start=Timer.getTimeStamp();
-eval(x);
+rr=deserialize(x);
 print("time to deserialize:"+(Timer.getTimeStamp()-start));
-
-rr.children[1].pos.x=1024/2;
+//print(rr.toSource());
+rr.children[1].pos.x=10;
 run(rr);
 
 /*

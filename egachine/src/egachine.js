@@ -298,25 +298,25 @@ Color.prototype.paint=function(dt){
 // a first object serializer hack
 // based on code from Daniel Fournier  ( thanks!)
 
-// todo: hashfunc is called not only for objects
-// perhaps improve hashObject to work with functions, and similar "objects"
-function hashfunc(obj) {
-  if (typeof(obj)=='object') return hashObject(obj).toString();
-  return obj.toSource();
-}
-
 // is the passed object an empty prototype? (empty object)
-function emptyproto(p) {
+function isEmptyProto(p) {
   for (a in p) return false;
   return true;
 }
 
-function Serializer() {};
+/*
+// todo: hashfunc is called not only for objects
+// perhaps improve hashObject to work with functions, and similar "objects"
+function hashfunc(obj) {
+if (typeof(obj)=='object') return hashObject(obj).toString();
+return obj.toSource();
+}
+
 
 // enter new scope
 Serializer.prototype._push=function(v){
-  this.scope.push(v);
-  this.fqscope+=v;
+this.scope.push(v);
+this.fqscope+=v;
 }
 // leave scope
 Serializer.prototype._pop=function(){
@@ -336,15 +336,15 @@ Serializer.prototype._serialized=function(obj){
   slot.push({o:obj,s:this.fqscope});
 }
 
-/*
+/ *
   Serializer.prototype._serializedObj=function(obj){
   obj._serialized=this.fqscope;
   }
-*/
+* /
 
 // is this object already serialized?
 Serializer.prototype._getSerialized=function(obj){
-  /*
+  / *
 
   // we use two methods to detect if an object was already
   // serialized
@@ -354,7 +354,7 @@ Serializer.prototype._getSerialized=function(obj){
 
   var ot=typeof(obj);
   if ((ot!='object')||(obj instanceof Array)) {
-  */
+  * /
   var key=hashfunc(obj);
   var slot=this._hash[key];
   if (!slot) return false;
@@ -364,16 +364,16 @@ Serializer.prototype._getSerialized=function(obj){
     }
   }
   return false;
-  /*
+  / *
     }
     var s=obj._serialized;
     if (!s) return false;
     if ((obj.__proto__)&&(obj.__proto__._serialized == obj._serialized)) return false;
-    return s;*/
+    return s; * /
 }
 
 Serializer.prototype.serialize=function(object, id){
-  if (!object) throw "object required";
+if (!object) throw "object required";
   if (!id) throw "id required";
   this.scope=[];
   this.fqscope='';
@@ -387,7 +387,7 @@ Serializer.prototype.serialize=function(object, id){
   //  this._deleteSerialized(object);
 
   // debug hashfunc
-  /*
+  / *
     var key,slot,c,ctotal=0;
     for (key in this._hash) {
     c=-1;
@@ -396,11 +396,11 @@ Serializer.prototype.serialize=function(object, id){
     print ("key: "+key+" collisions:"+c);
     }
     print ("total collisions:"+ctotal);
-  */
+  * /
   return res;
 }
 
-/*
+/ *
   does not work with circles
   perhaps somehow use 2 stages?
   Serializer.prototype._deleteSerialized=function(object){
@@ -416,10 +416,10 @@ Serializer.prototype.serialize=function(object, id){
   else
   this._deleteSerialized(object[k]);
   }
-  if ((object.__proto__)&&(!emptyproto(object.__proto__)))
+  if ((object.__proto__)&&(!isEmptyProto(object.__proto__)))
   this._deleteSerialized(object.__proto__);
   }
-*/
+* /
 
 Serializer.prototype._serialize=function(object){
   var ot=typeof(object);
@@ -487,7 +487,7 @@ Serializer.prototype._serialize=function(object){
       }
     }
     // serialize prototype
-    if ((object.__proto__)&&(!emptyproto(object.__proto__))) {
+    if ((object.__proto__)&&(!isEmptyProto(object.__proto__))) {
       if ((stored=this._getSerialized(object.__proto__)))
 	this.append+=this.fqscope+".__proto__="+stored+";\n";
       else{
@@ -501,6 +501,79 @@ Serializer.prototype._serialize=function(object){
   objectString += closeSymbol;
   this._pop();
   return objectString;
+}
+*/
+
+//! call function for all properties of an object (and the object itself)
+/*!
+  \param obj the object
+  \param func(x,depthFirst) the function to call 
+  (for objects it is called twice - once before going into the depth,
+  and once after - depthFirst is set to reflect this)
+  \param idfunc function returning a ID for an object
+  
+  \note this works recursively and handles cycles in the graph
+  if you pass in a correct idfunc
+*/
+function forall(obj,func,idfunc){
+  var m={};
+  if (!idfunc) idfunc=function(x){return hashObject(x).toString();};
+  if (!func) throw "need function";
+  function _forall(x) {
+    if (typeof(x) != 'object') {
+      func(x,false);
+      return;
+    };
+    var hash=idfunc(x);
+    if (m[hash]) return;
+    m[hash]=true;
+    func(x,false);
+    for (var k in x) {
+      _forall(x[k]);
+    };
+    func(x,true);
+    return;
+  };
+  _forall(obj);
+}
+
+function delp(x){
+  forall(x,(function(x,depthFirst,debug){
+    if (typeof(x) != 'object') return;
+    if (!depthFirst) {
+      if (x._p) x.__proto__=x._p;
+    }else{
+      if (x._p) delete x._p;
+    }
+  }));
+}
+
+//! serialize object
+/*!
+  \bug properties named _p are not allowed
+  \note temporarily adds property _p as copy of __proto__
+*/
+function serialize(x) {
+  forall(x,(function(x,depthFirst){
+    if (typeof(x) != 'object') return;
+    if (depthFirst||isEmptyProto(x.__proto__)) return;
+    if (x._p) throw "TODO: property _p not allowed";
+    x._p=x.__proto__;
+  }));
+  var r=x.toSource();
+  delp(x);
+  //  print("ser: "+r);
+  return r;
+}
+
+//! deserialize object
+/*
+  \note This calls eval - which depending on your usage may be a security hole
+*/
+function deserialize(str) {
+  var x=eval(str);
+  delp(x);
+  return x;
 }
 
 

@@ -35,9 +35,8 @@ Net.handleDataAvailable=function(id) {
     return;
   }
   var msg=this.connections[id].recv(len);
-  var i;
   // todo security hole - clients should not be allowed to execute code on server
-  eval(msg);
+  var i=deserialize(msg);
   handleInput(i);
 }
 
@@ -49,8 +48,8 @@ Net.sendTo=function(id,msg) {
 }
 
 Net.sendObjectTo=function(cid,obj,oid) {
-  var ser=new Serializer();
-  this.sendTo(cid,ser.serialize(obj,oid));
+  var msg=oid+"="+serialize(obj)+";delp("+oid+");";
+  this.sendTo(cid,msg);
 }
 
 Net.broadcast=function(msg) {
@@ -61,9 +60,8 @@ Net.broadcast=function(msg) {
 }
 
 Net.broadcastObject=function(obj,oid) {
-  var ser=new Serializer();
-  var s=ser.serialize(obj,oid);
-  this.broadcast(s);
+  var msg=oid+"="+serialize(obj)+";delp("+oid+");";
+  this.broadcast(msg);
 }
 
 Net.enqueue=function(msg) {

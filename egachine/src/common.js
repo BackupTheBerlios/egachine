@@ -566,8 +566,3 @@ Quad.prototype.paint=function(){
   Node.prototype.paint.call(this);
   Video.popMatrix();
 }
-
-function jsthrow(msg)
-{
-  throw new Error(msg);
-}

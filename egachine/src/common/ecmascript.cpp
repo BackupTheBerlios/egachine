@@ -354,7 +354,7 @@ namespace ECMAScript
     jsval param[1];
     param[0]=STRING_TO_JSVAL(s);
     jsval rval;
-    return JS_CallFunctionName(cx, ECMAScript::glob, "jsthrow", 1, param, &rval);
+    return JS_CallFunctionName(cx, ECMAScript::glob, "Error", 1, param, &rval);
   }
 }
 

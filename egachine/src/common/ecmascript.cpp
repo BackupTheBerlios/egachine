@@ -46,10 +46,18 @@ extern "C" {
   void printError(JSContext *cx, const char *message, JSErrorReport *report) {
     std::cerr << "JSERROR: "<< (report->filename ? report->filename : "NULL") << ":" << report->lineno << ":\n"
 	      << "    " << message << "\n";
-    if (report->linebuf)
-      std::cerr << report->linebuf << std::endl;
-    if (report->tokenptr)
-      std::cerr << report->tokenptr << std::endl;
+    if (report->linebuf) {
+      std::string line(report->linebuf);
+      if (line[line.length()-1]=='\n') line=line.substr(0,line.length()-1);
+      std::cerr << "    \"" << line << "\"\n";
+      if (report->tokenptr) {
+	int where=report->tokenptr - report->linebuf;
+	if ((where>=0)&&(where<80)) {
+	  std::string ws(where+4,' ');
+	  std::cerr << ws << "^\n";
+	}
+      }
+    }
     std::cerr << "    Flags:";
     if (JSREPORT_IS_WARNING(report->flags)) std::cerr << " WARNING";
     if (JSREPORT_IS_EXCEPTION(report->flags)) std::cerr << " EXCEPTION";

@@ -1,0 +1,6 @@
+it seems dom::Node::apendChild should return the child according to the spec
+this is unfortunate since this prohibits usage like this:
+svgdoc
+    .appendChild(svg
+	.appendChild(rect)
+	.appendChild(text));

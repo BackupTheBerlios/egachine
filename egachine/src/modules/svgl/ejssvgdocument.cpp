@@ -45,21 +45,20 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-  // todo: clean up
-
-  // todo: is this class check good enough to make this dangerous cast safe?
-  // Remember: if (JS_GET_CLASS(cx, obj) != &svgdocument_class) did not work
-  // because JS_THREADSAFE was not defined correctly (defined or undefined)
-
-#define GET_SVGDOCUMENT_OBJ svg::SVGDocument* nthis=NULL;	\
+#define GET_NTHIS svg::SVGDocument* nthis=NULL;	\
     ejssvgdocument_GetNative(cx,obj,nthis)
+
+  // functions inherited from dom::Node
+#define EJS_FUNC(x) svgdocument_##x
+#include "nodefuncs.h"
+#undef EJS_FUNC
 
   static
   JSBool
   svgdocument_createTextNode(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_SVGDOCUMENT_OBJ;
+    GET_NTHIS;
     // todo: root string!
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -78,7 +77,7 @@ extern "C" {
   svgdocument_createElement(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_SVGDOCUMENT_OBJ;
+    GET_NTHIS;
 
     // todo: root string!
     JSString *strtype=JS_ValueToString(cx, argv[0]);
@@ -110,23 +109,13 @@ extern "C" {
     return JS_TRUE;
   }
 
-#define EJSFUNC(FUNC) static \
-  JSBool svgdocument_##FUNC \
-  (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)	\
-  {									\
-    GET_SVGDOCUMENT_OBJ;						\
-    
-
-#include "nodefuncs.h"
-
-#undef EJSFUNC
   
   static
   JSBool
-  svgdocument_addSample(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  svgdocument_addSample(JSContext* cx, JSObject* obj, uintN argc, jsval*, jsval*) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
-    GET_SVGDOCUMENT_OBJ;
+    GET_NTHIS;
 
     svg::SVGSVGElement * thesvgelt = new svg::SVGSVGElement(nthis);
     thesvgelt->setWidth(450);
@@ -137,8 +126,6 @@ extern "C" {
     svg::SVGRectElement * rect = new svg::SVGRectElement(nthis);
 
     double w=100,h=100;
-    double x = 100;
-    double y = 100;
 
     rect->setX(w/2);
     rect->setY(h/2);
@@ -156,10 +143,11 @@ extern "C" {
 
   static
   JSBool
-  svgdocument_getElementById(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  svgdocument_getElementById
+  (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_SVGDOCUMENT_OBJ;
+    GET_NTHIS;
 
     // todo: root string!
     JSString *strtype=JS_ValueToString(cx, argv[0]);
@@ -176,14 +164,15 @@ extern "C" {
     return JS_TRUE;
   }
   
-#undef GET_SVGDOCUMENT_OBJ
+#undef GET_NTHIS
 
 #define FUNC(name, args) { #name,svgdocument_##name,args,0,0}
 
   static JSFunctionSpec svgdocument_methods[] = {
+    FUNC(setNodeValue,1),
+    FUNC(appendChild,1),
     FUNC(createTextNode,1),
     FUNC(createElement,1),
-    FUNC(appendChild,1),
     FUNC(addSample,0),
     FUNC(getElementById,1),
     EJS_END_FUNCTIONSPEC
@@ -258,7 +247,8 @@ extern "C" {
 }
 
 JSBool
-ejssvgdocument_GetNative(JSContext* cx, JSObject * obj, svg::SVGDocument* &native)
+ejssvgdocument_GetNative
+(JSContext* cx, JSObject * obj, svg::SVGDocument* &native)
 {
   EJS_CHECK_CLASS(cx, obj, svgdocument_class);
   native=(svg::SVGDocument *)JS_GetPrivate(cx,obj);

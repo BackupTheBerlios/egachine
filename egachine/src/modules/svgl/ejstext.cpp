@@ -22,6 +22,7 @@
 */
 
 #include "ejstext.h"
+#include "ejselement.h"
 #include <cassert>
 
 extern "C" {
@@ -39,20 +40,25 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-#define GET_TEXT_OBJ dom::Text* text=NULL;			\
-    if (!ejstext_GetNative(cx,obj,text)) return JS_FALSE
-  
-#undef GET_TEXT_OBJ
+#define GET_NTHIS dom::Text* nthis=NULL;			\
+    if (!ejstext_GetNative(cx,obj,nthis)) return JS_FALSE
+
+  // functions inherited from dom::Node
+#define EJS_FUNC(x) text_##x
+#include "nodefuncs.h"
+#undef EJS_FUNC
+
+#undef GET_NTHIS
 
 #define FUNC(name, args) { #name,text_##name,args,0,0}
 
   static JSFunctionSpec text_methods[] = {
+    FUNC(setNodeValue,1),
+    FUNC(appendChild,1),
     EJS_END_FUNCTIONSPEC
   };
 
 #undef FUNC
-
-
 
   static
   JSBool
@@ -105,7 +111,8 @@ ejstext_class(JSContext* cx, JSObject *obj)
 }
 
 JSBool
-ejstext_GetNative(JSContext* cx, JSObject * obj, dom::Text* &native)
+ejstext_GetNative
+(JSContext* cx, JSObject * obj, dom::Text* &native)
 {
   EJS_CHECK_CLASS(cx, obj, text_class);
   native=(dom::Text *)JS_GetPrivate(cx,obj);

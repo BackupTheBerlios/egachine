@@ -42,39 +42,20 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-  // todo: clean up
-
-  // todo: is this class check good enough to make this dangerous cast safe?
-  // Remember: if (JS_GET_CLASS(cx, obj) != &element_class) did not work
-  // because JS_THREADSAFE was not defined correctly (defined or undefined)
-
-#define GET_ELEMENT_OBJ dom::Element* nthis=NULL;		\
+#define GET_NTHIS dom::Element* nthis=NULL;		\
     if (!ejselement_GetNative(cx,obj,nthis)) return JS_FALSE
 
-  // todo: this is a method of Node (Node->Element)
-  static
-  JSBool
-  element_setNodeValue(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
-  {
-    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_ELEMENT_OBJ;
-    JSString *strtype=JS_ValueToString(cx, argv[0]);
-    if (!strtype) return JS_FALSE;
-    unicode::String* value=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
-    try{
-      nthis->setNodeValue(value);
-    }catch(const dom::DOMException &e){
-      EJS_THROW_ERROR(cx, obj, e.what());
-    }
-    return JS_TRUE;
-  }
+  // functions inherited from dom::Node
+#define EJS_FUNC(x) element_##x
+#include "nodefuncs.h"
+#undef EJS_FUNC
   
   static
   JSBool
   element_setAttribute(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
-    GET_ELEMENT_OBJ;
+    GET_NTHIS;
     // todo: root string!
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -94,25 +75,15 @@ extern "C" {
     return JS_TRUE;
   }
 
-#define EJSFUNC(FUNC) static \
-  JSBool element_##FUNC \
-  (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)	\
-  {									\
-    GET_ELEMENT_OBJ;						\
-    
 
-#include "nodefuncs.h"
-
-#undef EJSFUNC
-
-#undef GET_ELEMENT_OBJ
+#undef GET_NTHIS
 
 #define FUNC(name, args) { #name,element_##name,args,0,0}
 
   static JSFunctionSpec element_methods[] = {
     FUNC(setNodeValue,1),
-    FUNC(setAttribute,2),
     FUNC(appendChild,1),
+    FUNC(setAttribute,2),
     EJS_END_FUNCTIONSPEC
   };
 

@@ -57,6 +57,7 @@
 
 #define EJS_END_CLASS_SPEC 0,0,0,0,0,0,0,0
 
+#define EJS_THROW_MESSED_ERROR(cx,obj) EJS_THROW_ERROR(cx,obj,"you have messed with the ejs object")
 
 //! not part of the public api
 inline
@@ -130,11 +131,6 @@ inline int ejs_fatal(const char *file,int line,const char *func, const char *msg
   return 0;
 }
 
-
-#define EJS_CHECK_TRUSTED(cx,obj) do{			\
-    if (!ejs_check_trusted(cx,obj)) return JS_FALSE;	\
-  }while(0)
-
 inline
 JSBool ejs_get_ejs_object(JSContext* cx, JSObject* obj, JSObject* &ejsout)
 {
@@ -153,43 +149,57 @@ JSBool ejs_get_ejs_object(JSContext* cx, JSObject* obj, JSObject* &ejsout)
   if (!JS_GetProperty(cx, global, "ejs", &ejsval)) return JS_FALSE;
   JSObject* ejs=NULL;
   JSClass* oclass=NULL;
-  jsval untrusted;
   if ((!JSVAL_IS_OBJECT(ejsval))
       || (!(ejs=JSVAL_TO_OBJECT(ejsval)))
       || (!(oclass=JS_GET_CLASS(cx,ejs)))
       || (!(JSCLASS_RESERVED_SLOTS(oclass)))
-      || (std::string("ejs")!=oclass->name)
-      || (!JS_GetReservedSlot(cx,ejs,0,&untrusted))
-      || (!(JSVAL_IS_BOOLEAN(untrusted))))
-    EJS_THROW_ERROR(cx,obj,"you have messed with the ejs object");
+      || (strcmp("ejs",oclass->name))) // especially ugly
+    EJS_THROW_MESSED_ERROR(cx,obj);
   ejsout=ejs;
+  return JS_TRUE;
+}
+
+//! check that we are in trusted mode
+#define EJS_CHECK_TRUSTED(cx,obj) do{			\
+    if (!ejs_check_trusted(cx,obj)) return JS_FALSE;	\
+  }while(0)
+
+//! enter untrusted mode: if we are already in untrusted mode this is an error
+#define EJS_ENTER_UNTRUSTED(cx,obj) do{			\
+    EJS_CHECK_TRUSTED(cx,obj);				\
+    if (!ejs_set_untrusted(cx,obj,JSVAL_TRUE)) return JS_FALSE;	\
+  }while(0)
+
+//! set hidden untrusted field
+inline
+JSBool
+ejs_set_untrusted(JSContext *cx, JSObject *obj,jsval untrusted)
+{
+  JSObject *ejs;
+  EJS_CHECK(JSVAL_IS_BOOLEAN(untrusted));
+  if (!ejs_get_ejs_object(cx,obj,ejs)) return JS_FALSE;
+  return JS_SetReservedSlot(cx,ejs,0,untrusted);
+}
+
+//! get hidden untrusted field
+inline
+JSBool
+ejs_get_untrusted(JSContext *cx, JSObject *obj,jsval &untrusted)
+{
+  JSObject *ejs;
+  if (!ejs_get_ejs_object(cx,obj,ejs)) return JS_FALSE;
+  if (!JS_GetReservedSlot(cx,ejs,0,&untrusted)) return JS_FALSE;
+  if (!JSVAL_IS_BOOLEAN(untrusted)) EJS_THROW_MESSED_ERROR(cx,obj);
   return JS_TRUE;
 }
 
 inline
 JSBool ejs_check_trusted(JSContext* cx, JSObject* obj)
 {
-  JSObject *ejs;
-  if (!ejs_get_ejs_object(cx,obj,ejs)) return JS_FALSE;
   jsval untrusted;
-  if (!JS_GetReservedSlot(cx,ejs,0,&untrusted)) return JS_FALSE;
+  if (!ejs_get_untrusted(cx,obj,untrusted)) return JS_FALSE;
   if (untrusted==JSVAL_TRUE) EJS_THROW_ERROR(cx,obj,"Security exception");
   return JS_TRUE;
-}
-
-#define EJS_ENTER_UNTRUSTED(cx,obj) do{			\
-    EJS_CHECK_TRUSTED(cx,obj);				\
-    if (!ejs_enter_untrusted(cx,obj)) return JS_FALSE;	\
-  }while(0)
-
-//! set hidden untrusted field
-inline
-JSBool
-ejs_enter_untrusted(JSContext *cx, JSObject *obj)
-{
-  JSObject *ejs;
-  if (!ejs_get_ejs_object(cx,obj,ejs)) return JS_FALSE;
-  return JS_SetReservedSlot(cx,ejs,0,JSVAL_TRUE);
 }
 
 #endif

@@ -178,30 +178,15 @@ extern "C" {
   JSBool
   ejs_isUntrusted(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
-    EJS_CHECK(JS_GET_CLASS(cx,obj) == &ejs_class);
-    jsval untrusted;
-    EJS_CHECK(JS_GetReservedSlot(cx,obj,0,&untrusted));
-    EJS_CHECK(JSVAL_IS_BOOLEAN(untrusted));
-    *rval=untrusted;
-    return JS_TRUE;
-  }
-
-  //! set hidden untrusted field
-  static
-  JSBool
-  ejs_setUntrusted(JSContext *cx, JSObject *obj, jsval untrusted)
-  {
-    EJS_CHECK(JS_GET_CLASS(cx,obj) == &ejs_class);
-    EJS_CHECK(JSVAL_IS_BOOLEAN(untrusted));
-    return JS_SetReservedSlot(cx,obj,0,untrusted);
+    return ejs_get_untrusted(cx,obj,*rval);
   }
 
   static
   JSBool
   ejs_enterUntrusted(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
-    EJS_CHECK_TRUSTED(cx,obj);
-    return ejs_setUntrusted(cx,obj,JSVAL_TRUE);
+    EJS_ENTER_UNTRUSTED(cx,obj);
+    return JS_TRUE;
   }
 
   
@@ -209,8 +194,8 @@ extern "C" {
 
   static JSFunctionSpec static_methods[] = {
     JSFUNC(exit,1),
-    JSFUNC(enterUntrusted,0),
     JSFUNC(isUntrusted,0),
+    JSFUNC(enterUntrusted,0),
     EJS_END_FUNCTIONSPEC
   };
 
@@ -261,7 +246,7 @@ struct EJSShell
     if (!(ejs = JS_DefineObject(cx, glob, "ejs", &ejs_class, NULL, JSPROP_ENUMERATE)))
       //    if (!(ejs = JS_NewObject(cx, &ejs_class, "ejs", NULL, NULL, JSPROP_ENUMERATE)))
       INIT_ERROR("could not define ejs scope object");
-    if (!ejs_setUntrusted(cx,ejs,JSVAL_FALSE))
+    if (!ejs_set_untrusted(cx,ejs,JSVAL_FALSE))
       INIT_ERROR("could not set untrusted");
 
     if (!JS_DefineFunctions(cx, ejs, static_methods))

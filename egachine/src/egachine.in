@@ -27,6 +27,7 @@ ejs.config.Video.getResource=function(resname){return EGachine.getResource(resna
 ejs.ModuleLoader.load("Video");
 ejs.config.Input={toggleFullscreen:function(){Video.toggleFullscreen();}};
 ejs.ModuleLoader.load("Input");
+ejs.config.Audio.getResource=ejs.config.Video.getResource;
 ejs.ModuleLoader.load("Audio");
 ejs.ModuleLoader.load("Stream");
 ejs.ModuleLoader.load("Net");
@@ -151,9 +152,9 @@ EGachine.connectDialog=function(host,port){
 	Video.pushMatrix();
 	Video.translate(0,0.5);
 	Video.pushColor();
-	Video.drawQuad(inputField.text.length+2+0.1,1+0.1);
+	Video.drawRectangle(inputField.text.length+2+0.1,1+0.1);
 	Video.setColor(0.3,0.3,0.3);
-	Video.drawQuad(inputField.text.length+2,1);
+	Video.drawRectangle(inputField.text.length+2,1);
 	Video.popColor();
 	Video.popMatrix();
 	
@@ -224,36 +225,9 @@ EGachine.step=function(f,stepSize) {
   EGachine._step=f;
 };
 
-Audio._playMusic=Audio.playMusic;
-Audio.playMusic=function(resname) {
-  var res=EGachine.getResource(resname);
-  var dec=res.decode();
-  Audio._playMusic(dec);
-};
-
-Audio.samples={};
-
-Audio._loadSample=Audio.loadSample;
-Audio._playSample=Audio.playSample;
-
-Audio.loadSample=function(resname) {
-  var res=EGachine.getResource(resname);
-  var dec=res.decode();
-  var sid=Audio._loadSample(dec);
-  Audio.samples[resname]=sid;
-  return sid;
-};
-
-Audio.playSample=function(resname,repeat) {
-  var sid=Audio.samples[resname];
-  if (sid==undefined)
-    sid=Audio.loadSample(resname);
-  if (repeat==undefined)
-    repeat=0;
-  return Audio._playSample(sid,repeat);
-};
-
 (function(){
+  var refreshRate;
+
   addResources();
   //Audio.playMusic("...");
 
@@ -264,35 +238,34 @@ Audio.playSample=function(resname,repeat) {
   */
   function detectRefreshRate()
   {
-    var start,last,now,frames=0,dt,avg;
-    start=last=Timer.getTimeStamp();
-    while (last-start<500000) {
-      Video.clear();
-      gl.Flush();
-      gl.Finish();
+    var start,last,now,frames=0,dt,avg,ret,fdt,mindt,maxdt;
+
+    function swap() {
       Video.clear();
       gl.Flush();
       gl.Finish();
       Video.swapBuffers();
+    }
+
+    start=last=Timer.getTimeStamp();
+    while (last-start<1000000) {
+      swap();
       now=Timer.getTimeStamp();
       dt=now-last;
       last=now;
       ++frames;
+      // output statistics suitable for gnuplot
+      //      Stream.stderr.write(""+(now-start)/1000000+" "+frames+"\n");
     }
     avg=(last-start)/frames;
 
     frames=0;
-    var fdt=0;
-    var mindt=1000000,maxdt=0;
+    fdt=0;
+    mindt=1000000;
+    maxdt=0;
     start=last=Timer.getTimeStamp();
-    while (last-start<500000) {
-      Video.clear();
-      gl.Flush();
-      gl.Finish();
-      Video.clear();
-      gl.Flush();
-      gl.Finish();
-      Video.swapBuffers();
+    while (last-start<1000000) {
+      swap();
       now=Timer.getTimeStamp();
       dt=now-last;
       mindt=Math.min(mindt,dt);
@@ -304,7 +277,9 @@ Audio.playSample=function(resname,repeat) {
       }
     }
     info("min: "+mindt+" max: "+maxdt);
-    return 1000000/(fdt/frames);
+    ret=1000000/(fdt/frames);
+    if (typeof ret != "number") throw Error("Failed to detect refresh rate");
+    return ret;
   };
 
   function info(x){
@@ -323,10 +298,22 @@ Audio.playSample=function(resname,repeat) {
     info("GL Version: "+gl.GetString(GL_VERSION));
     info("GL Extensions: "+gl.GetString(GL_EXTENSIONS));
 
+    function glinfo(opts) {
+      var i,s="",v;
+      for (i=0;i<opts.length;++i) {
+	v=gl.GetFloatv(this[opts[i]]);
+	if (v.length==1) v=v[0];
+	s+=(i? " " : "")+opts[i]+":"+v;
+      }
+      info(s);
+    }	
+
+    glinfo(["GL_RED_BITS","GL_GREEN_BITS","GL_BLUE_BITS","GL_ALPHA_BITS","GL_DEPTH_BITS","GL_STENCIL_BITS"]);
+
     if ( (error=gl.GetError()) != GL_NO_ERROR)
       throw new Error("OpenGL error: "+error);
 
-    var refreshRate=detectRefreshRate();
+    EGachine._refreshRate=refreshRate=detectRefreshRate();
     info("Detected page flip rate: "+refreshRate+"Hz");
     if (refreshRate>120)
       warning("it seems your graphics card/driver/os/hardware combination currently doesn't synchronize OpenGL buffer swaps to the screen refresh rate. You should fix this. Perhaps you have to change driver settings or update your driver. (nvidia linux: set the __GL_SYNC_TO_VBLANK environment variable)");
@@ -352,12 +339,28 @@ Audio.playSample=function(resname,repeat) {
       // application without its own main loop
       // => we provide the main loop
       // todo: improve it
-      var start,last,now;
+      var start,last,now,frames=0,totalSkipped=0,skipped=0,tpf=Math.round(1/refreshRate*1000000),err=0;
       last=start=Timer.getTimeStamp();
+
       while (true) {
 	now=Timer.getTimeStamp();
 	dt=(now-last)/1000000.0;
 	last=now;
+	frames++;
+	skipped=Math.round(dt/(1/refreshRate)-1);
+	if (skipped>0) {
+	  totalSkipped+=skipped;
+	  /*	  Stream.stderr.write("Skipped:"+skipped+
+			      "\t Frames: "+frames+
+			      "\t total Skipped: "+totalSkipped+
+			      " ("+100/(frames+totalSkipped)*totalSkipped+"%) "+
+			      "\t FPS:"+(frames/((now-start)/1000000))+
+			      "\t err:"+err+"\n");*/
+	}
+	err+=(tpf/1000000*(skipped+1))-dt;
+	dt=tpf/1000000*(skipped+1);
+	
+	//	if (!(frames%(85*2))) dt*=2;
 
 	// get input events
 	Input.poll();
@@ -370,7 +373,27 @@ Audio.playSample=function(resname,repeat) {
 
 	// paint scenegraph
 	if (EGachine.sceneGraph) {
+	  if (Timer.getTimeStamp()-last>tpf) continue;
+
 	  EGachine.sceneGraph.paint(now-start);
+
+	  /*
+	  (function(){
+	    var w,h,vp;
+	    vp=Video.getViewport();
+	    w=vp[2];h=vp[3];
+	    gl.Enable(GL_MINMAX);
+	    gl.Minmax(GL_MINMAX,GL_RGB,GL_FALSE);
+	    gl.ResetMinmax(GL_MINMAX);
+	    gl.CopyPixels(w-10,h-10,10,10,GL_COLOR);
+	    //	    gl.CopyPixels(0,0,w,h,GL_COLOR);
+	    //	    gl.CopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, 64, 64, 0);
+	    Stream.stderr.write(gl.GetMinmax(GL_MINMAX, GL_TRUE, GL_RED, GL_UNSIGNED_BYTE).toSource()+"\n");
+	    if ( (error=gl.GetError()) != GL_NO_ERROR) throw new Error("OpenGL error: "+error);
+	    gl.Disable(GL_MINMAX);
+	    })();*/
+
+	  if (Timer.getTimeStamp()-last>tpf) continue;
 	  Video.swapBuffers();
 	};
       };

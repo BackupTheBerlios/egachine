@@ -27,18 +27,18 @@
 #include "ecmascript.h"
 
 extern "C" {
-   ECMA_VOID_FUNC_VOID(Input,poll);
+  ECMA_VOID_FUNC_VOID(Input,poll);
+
   ECMA_BEGIN_VOID_FUNC(charMode) 
   {
     ECMA_CHECK_NUM_ARGS(1);
     JSBool b;
-    if (!JS_ValueToBoolean(ECMAScript::cx, argv[0],&b)) ECMA_ERROR("argument 0 must be a boolean");
+    if (!JS_ValueToBoolean(ECMAScript::cx, argv[0],&b))
+      ECMA_ERROR("argument 0 must be a boolean");
     Input::charInput(b==JS_TRUE);
     return JS_TRUE;
   }
 }
-
-using namespace ECMAScript;
 
 static JSFunctionSpec static_methods[] = {
   ECMA_FUNCSPEC(poll,0),
@@ -46,20 +46,14 @@ static JSFunctionSpec static_methods[] = {
   ECMA_END_FUNCSPECS
 };
 
-static JSClass input_class = {
-  "Input",0,
-  JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
-  JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
-  ECMA_END_CLASS_SPEC
-};
-
 bool
 JSInput::init()
 {
-  JSObject *obj = JS_DefineObject(cx, glob, "Input", &input_class, NULL,
+  JSObject *obj = JS_DefineObject(ECMAScript::cx, ECMAScript::glob,
+				  "Input", NULL, NULL,
 				  JSPROP_ENUMERATE);
   if (!obj) return JS_FALSE;
-  return JS_DefineFunctions(cx, obj, static_methods);
+  return JS_DefineFunctions(ECMAScript::cx, obj, static_methods);
 }
 
 bool

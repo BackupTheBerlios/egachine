@@ -50,18 +50,6 @@
     #error Unknown window manager for default desktop resolution handling
 #endif
 
-
-#if defined(WIN32)
-#ifdef near
-#undef near
-#endif
-#ifdef far
-#undef far
-#endif
-#endif // WIN32
-
-static bool m_lineSmooth=true;
-
 typedef std::map<int, JGACHINE_SMARTPTR<Texture> > Textures;
 // we do not use complex static data structures => pointer
 static Textures* textures=NULL;
@@ -214,33 +202,19 @@ createWindow(int width, int height, bool fullscreen)
   glLoadIdentity();
   glOrtho(0.0f,video->w,0.0f,video->h,-100.0f,100.0f);
 
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
   glColor3f(1.0,1.0,1.0);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glDisable(GL_NORMALIZE);
   glDisable(GL_LIGHTING);
   glDisable(GL_CULL_FACE);
-  GL_ERRORS();
-  float range[2];
-  glGetFloatv(GL_LINE_WIDTH_RANGE,range);
-  GL_ERRORS();
-  //  std::cerr << range[0] << "<LINE_WIDTH<"<<range[1]<<"\n";
-  if (!m_lineSmooth) {
-    glDisable(GL_LINE_SMOOTH);
-    GL_ERRORS();
-  }else{
-    glEnable(GL_LINE_SMOOTH);
-    GL_ERRORS();
-  }
   glShadeModel(GL_FLAT);
   GL_ERRORS();
-
-  //  if (getGUIConfig().quality<=1) {glDisable(GL_DITHER);GL_ERRORS();}
 }
 
 void Video::init(int width, int height,bool fullscreen)
@@ -309,11 +283,6 @@ void Video::deinit()
   SDL_QuitSubSystem(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK);
   SDL_Quit();
 }
-
-
-
-
-
 
 void 
 Video::swapBuffers()

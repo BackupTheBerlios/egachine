@@ -22,6 +22,3 @@ printGLErrors()
   }
   return res;
 }
-
-
-

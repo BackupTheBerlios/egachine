@@ -23,7 +23,6 @@
    \note should be called GLTexture
 */
 
-
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
@@ -36,7 +35,6 @@ class Texture
 public:
   //! create empty texture
   Texture(int size);
-  
   //! create texture from image
   Texture(unsigned dsize, const char* data, const char *extension=NULL, const char *mimeType=NULL);
   ~Texture();
@@ -47,7 +45,6 @@ public:
   GLuint getTextureID() const {return textureID;}
   //! copy screen to texture
   void copyFromScreen(int swidth, int sheight);
-
   float texcoord[4];
 protected:
   GLuint textureID;

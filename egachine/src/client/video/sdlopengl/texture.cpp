@@ -24,9 +24,9 @@
   \author Jens Thiele
 */
 
-//#include "typedefs.h"
-#include "texture.h"
 #include <SDL_image.h>
+
+#include "texture.h"
 #include "error.h"
 
 Texture::Texture(int size)
@@ -54,19 +54,16 @@ Texture::Texture(int size)
   GL_ERRORS();
 }
 
-
 inline 
 int 
 power_of_two(int input)
 {
   int value = 1;
-
   while ( value < input ) {
     value <<= 1;
   }
   return value;
 }
-
 
 static
 SDL_Surface*
@@ -75,7 +72,7 @@ fitToPow2(SDL_Surface* surface)
   JGACHINE_CHECK(surface);
   JGACHINE_CHECK(surface->format);
 
-  /* Use the surface width and height expanded to powers of 2 */
+  // Use the surface width and height expanded to powers of 2
   int w = power_of_two(surface->w);
   int h = power_of_two(surface->h);
   if ((w==surface->w)&&(h==surface->h)) return NULL;
@@ -90,14 +87,14 @@ fitToPow2(SDL_Surface* surface)
 					    );
   JGACHINE_CHECK(image);
   
-  /* Save the alpha blending attributes */
+  // Save the alpha blending attributes
   Uint32 saved_flags = surface->flags&(SDL_SRCALPHA|SDL_RLEACCELOK);
   Uint8 saved_alpha = surface->format->alpha;
   if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
     SDL_SetAlpha(surface, 0, 0);
   }
   
-  /* Copy the surface into the GL texture image */
+  // Copy the surface into the GL texture image
   SDL_Rect area;
   area.x = 0;
   area.y = 0;
@@ -105,7 +102,7 @@ fitToPow2(SDL_Surface* surface)
   area.h = surface->h;
   SDL_BlitSurface(surface, &area, image, &area);
   
-  /* Restore the alpha blending attributes */
+  // Restore the alpha blending attributes
   if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
     SDL_SetAlpha(surface, saved_flags, saved_alpha);
   }
@@ -184,8 +181,8 @@ Texture::Texture(unsigned dsize, const char* data, const char *extension, const 
 
   SDL_Surface* fit=fitToPow2(image);
   if (fit) {
-    texcoord[2] = (GLfloat)image->w / fit->w;	/* Max X */
-    texcoord[3] = (GLfloat)image->h / fit->h;	/* Max Y */
+    texcoord[2] = (GLfloat)image->w / fit->w;
+    texcoord[3] = (GLfloat)image->h / fit->h;
     SDL_FreeSurface(image);
     image=fit;
     fit=NULL;
@@ -214,7 +211,7 @@ Texture::Texture(unsigned dsize, const char* data, const char *extension, const 
 Texture::~Texture()
 {
   glDeleteTextures(1,&textureID);
-  JGACHINE_MSG("Info:","freed texture: "<<textureID);
+  //  JGACHINE_MSG("Info:","freed texture: "<<textureID);
 }
 
 SDL_Surface*
@@ -222,6 +219,7 @@ Texture::loadImage(unsigned dsize, const char* data, const char *extension, cons
 {
   SDL_RWops* rw = SDL_RWFromMem((void *)data,dsize);
   SDL_Surface* s=IMG_Load_RW(rw,true);
+  // todo: should not be fatal
   if (!s) JGACHINE_FATAL("Could not load image");
   //  JGACHINE_MSG("Info:","got image s->w:"<<s->w<<" s->h:"<<s->h);
   return s;
@@ -234,5 +232,3 @@ Texture::copyFromScreen(int swidth, int sheight)
   glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, swidth, sheight);
   GL_ERRORS();
 }
-
-

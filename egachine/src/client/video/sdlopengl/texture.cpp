@@ -161,13 +161,11 @@ Texture::Texture(unsigned dsize, const char* data, const char *extension, const 
   SDL_PixelFormat* pixelformat;
   if (image->format->Amask) {
     // We have got a alpha channel !
-    //    JGACHINE_MSG("Info:","image has alpha channel");
     internalformat=GL_RGBA8;
     format=GL_RGBA;
     haveAlphaChannel=true;
     pixelformat=&RGBA_PixelFormat;
   }else{
-    //    JGACHINE_MSG("Info:","image does not have an alpha channel");
     // as fallback convert to rgb
     internalformat=GL_RGB8;
     format=GL_RGB;
@@ -186,7 +184,6 @@ Texture::Texture(unsigned dsize, const char* data, const char *extension, const 
     SDL_FreeSurface(image);
     image=fit;
     fit=NULL;
-    //    JGACHINE_MSG("Info:","Image was not power of 2 => fit it to power of 2 sized image");
   }
 
   width=image->w;
@@ -194,8 +191,6 @@ Texture::Texture(unsigned dsize, const char* data, const char *extension, const 
   
   glGenTextures(1,&textureID);
   GL_ERRORS();
-
-  //  JGACHINE_MSG("Info:", "Texture ID: "<<textureID);
 
   glBindTexture(GL_TEXTURE_2D,textureID);
   int q=(2>1) ? GL_LINEAR : GL_NEAREST;
@@ -211,7 +206,6 @@ Texture::Texture(unsigned dsize, const char* data, const char *extension, const 
 Texture::~Texture()
 {
   glDeleteTextures(1,&textureID);
-  //  JGACHINE_MSG("Info:","freed texture: "<<textureID);
 }
 
 SDL_Surface*
@@ -221,7 +215,6 @@ Texture::loadImage(unsigned dsize, const char* data, const char *extension, cons
   SDL_Surface* s=IMG_Load_RW(rw,true);
   // todo: should not be fatal
   if (!s) JGACHINE_FATAL("Could not load image");
-  //  JGACHINE_MSG("Info:","got image s->w:"<<s->w<<" s->h:"<<s->h);
   return s;
 };
 

@@ -114,7 +114,7 @@ namespace ECMAScript
     if (JS_IsExceptionPending(ECMAScript::cx)) {
       jsval error;
       if (!JS_GetPendingException(ECMAScript::cx, &error)) {
-	JGACHINE_MSG("Error:", "Could not get exception");
+	JGACHINE_ERROR("Could not get exception");
       }else{
 	// todo: print stack trace
       }

@@ -340,3 +340,6 @@ because the have quite some code in common
 --------------------------------------------------------------------------------
 native base64 encode/decode
 --------------------------------------------------------------------------------
+perhaps replace ECMA_ERROR with return JS_FALSE in a lot of places
+this will reduce egachine by nearly 20k
+--------------------------------------------------------------------------------

@@ -129,7 +129,7 @@ AudioSDLMixer::step(R dt)
 {
   int playing=Mix_PlayingMusic();
   if ((!playing)&&(oldPlaying)) {
-    JGACHINE_MSG("info","reached");
+    JGACHINE_INFO("reached");
   }
 }
   

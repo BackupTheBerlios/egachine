@@ -10,7 +10,7 @@ printGLErrors()
   int res=0;
   int e;
   while ((e=glGetError())) {
-    JGACHINE_MSG("GL Error: ", e);
+    JGACHINE_WARN("GL Error: "<< e);
     std::ios::fmtflags old=std::cerr.flags();
     std::cerr << "GL Error: " << e << "=0x" << std::hex << e << std::endl;
     std::cerr.flags(old);

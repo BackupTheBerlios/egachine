@@ -298,7 +298,6 @@ Video::createTexture(unsigned dsize, const char* data, const char *extension, co
 {
   JGACHINE_SMARTPTR<Texture> t(new Texture(dsize,data,extension,mimeType));
   int id=t->getTextureID();
-  //  JGACHINE_MSG("Info:", "Texture ID: "<<id);
   (*textures)[id]=t;
   return id;
 }

@@ -41,13 +41,13 @@
 */
 #define JGACHINE_XSTR(s) JGACHINE_STR(s)
 
-#define JGACHINE_ERRORSTR "errno="<<errno<<":"<<strerror(errno)
+#define JGACHINE_ERRORSTR "errno="<<jg_errno<<":"<<strerror(jg_errno)
 #define JGACHINE_FUNCTIONNAME __PRETTY_FUNCTION__
 #define JGACHINE_HERE __FILE__ ":" << __LINE__ << ":" << JGACHINE_FUNCTIONNAME
-#define JGACHINE_MSG(jgachineLevelP, jgachineMsgP) do{std::cerr << jgachineLevelP << JGACHINE_HERE << ":\n    " << jgachineMsgP << "\n    (" << JGACHINE_ERRORSTR << ")\n";}while(0)
-#define JGACHINE_WARN(msg) JGACHINE_MSG("WARNING: ",msg)
-#define JGACHINE_INFO(msg) JGACHINE_MSG("INFO: ",msg)
-#define JGACHINE_ERROR(msg) JGACHINE_MSG("ERROR: ",msg)
+#define JGACHINE_MSG(jgachineLevelP, jgachineMsgP, printerrno) do{int jg_errno=errno;errno=0;std::cerr << jgachineLevelP << JGACHINE_HERE << ":\n    " << jgachineMsgP << "\n";if(printerrno&&jg_errno) std::cerr << "    (" << JGACHINE_ERRORSTR << ")\n";}while(0)
+#define JGACHINE_WARN(msg) JGACHINE_MSG("WARNING: ",msg, 1)
+#define JGACHINE_INFO(msg) JGACHINE_MSG("INFO: ",msg, 0)
+#define JGACHINE_ERROR(msg) JGACHINE_MSG("ERROR: ",msg, 1)
 
 
 /*
@@ -66,6 +66,8 @@
 
 inline int jgachine_fatal(const char *file,int line,const char *func, const char *msg) 
 {
+  int jg_errno=errno;
+  errno=0;
   std::cerr << "FATAL: " << file << ":" << line << ":" << func << ": " << msg << "(" << JGACHINE_ERRORSTR <<")\n";
   std::terminate();
   return 0;

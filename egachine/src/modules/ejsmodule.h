@@ -56,6 +56,10 @@
     }									\
   }while(0)
 
+#define EJS_CHECK_CLASS4(cx,obj,class,argv) do{				\
+    if (!JS_InstanceOf(cx,obj,&class,argv)) return JS_FALSE;		\
+  }while(0)
+
 #define EJS_END_FUNCTIONSPEC {0,0,0,0,0}
 
 #define EJS_END_CLASS_SPEC 0,0,0,0,0,0,0,0

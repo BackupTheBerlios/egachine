@@ -41,25 +41,16 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-  static
-  JSBool
-  ejsjoystick_GetNative(JSContext* cx, JSObject * obj, SDL_Joystick* &native)
-  {
-    EJS_CHECK_CLASS(cx, obj, joystick_class);
-    native=(SDL_Joystick *)JS_GetPrivate(cx,obj);
-    if (!native)
-      EJS_THROW_ERROR(cx,obj,"no valid Joystick object");
-    return JS_TRUE;
-  }
-
-#define GET_NTHIS(cx,obj) SDL_Joystick* nthis=NULL;		\
-    if (!ejsjoystick_GetNative(cx,obj,nthis)) return JS_FALSE
+#define GET_NTHIS(cx,obj,argv) SDL_Joystick* nthis=NULL;		\
+    EJS_CHECK_CLASS4(cx,obj,joystick_class,argv);			\
+    nthis=(SDL_Joystick *)JS_GetPrivate(cx,obj);			\
+    assert(nthis)
 
   static
   JSBool
-  joystick_numAxes(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
+  joystick_numAxes(JSContext *cx, JSObject *obj, uintN, jsval *argv, jsval *rval)
   {
-    GET_NTHIS(cx,obj);
+    GET_NTHIS(cx,obj,argv);
     *rval=INT_TO_JSVAL(SDL_JoystickNumAxes(nthis));
     return JS_TRUE;
   }

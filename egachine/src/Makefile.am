@@ -32,7 +32,22 @@ ejs_LDADD = @LIBLTDL@ \
 # do print some stack-trace)
 ejs_LDFLAGS = -export-dynamic -export-symbols-regex ejs.*_LTX_.*Load
 
-ejs_DEPENDENCIES = @LIBLTDL@ 
+ejs_DEPENDENCIES = @LIBLTDL@ \
+	modules/example/ejsexample.la\
+	modules/zlib/ejszlib.la\
+	modules/monitorable/ejsmonitorable.la\
+	modules/stream/ejsstream.la\
+	modules/file/ejsfile.la\
+	modules/network/ejsnet.la\
+	modules/bytearray/ejsbytearray.la\
+	modules/egachine/ejsegachine.la\
+	modules/timer/ejstimer.la\
+	modules/gl/ejsgl.la\
+	modules/video/ejsvideo.la\
+	modules/input/ejsinput.la\
+	modules/audio/ejsaudio.la\
+	modules/svgl/ejssvgl.la\
+	modules/util/ejsutil.la
 
 EXTRA_DIST = egares.in egaserver.in egachine.in
 

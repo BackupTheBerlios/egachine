@@ -16,18 +16,17 @@ xterm and other terminal emulation programs.
 
 ----------------------------------------------------------------------
 
-WARNING:
+			       WARNING:
 
-THIS SOFTWARE COMES WITHOUT ANY WARRANTY
-PERHAPS IT DESTROYS YOUR COMPUTER
+  THIS SOFTWARE COMES WITHOUT ANY WARRANTY PERHAPS IT DESTROYS YOUR
+			       COMPUTER
 
-FOR DETAILS SEE COPYING
+		       FOR DETAILS SEE COPYING
 
-THIS IS WORK IN PROGRESS (ALPHA)
-THE SERVER AND CLIENT ARE INSECURE !
-(see also TODO)
+THIS IS WORK IN PROGRESS (ALPHA) THE SERVER AND CLIENT ARE INSECURE !
+			   (see also TODO)
 
-For now you should treat scripts like binaries and take care!
+    For now you should treat scripts like binaries and take care!
 
 ----------------------------------------------------------------------
 

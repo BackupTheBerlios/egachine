@@ -38,6 +38,16 @@ StringStream.prototype.clear=function(){
   this.buffer="";
 };
 
+//! write objects to stream (similar to java ObjectOutputStream?)
+/*!
+  \todo:
+  - sparse arrays aren't serialized correctly
+    could be done like this: (#1=([]),#1#[10]=1,#1#)
+  - the "simple" objects shouldn't be treated specially
+    at the moment there properties are possibly lost
+    (example: new String("kjhkjh").foo=10;)
+  - RegExp objects don't work (caused by typeof new RegExp() == 'function' ?)
+*/
 ObjectWriter=function(stream)
 {
   // remember already serialized objects
@@ -56,16 +66,15 @@ ObjectWriter.prototype.sync=function()
 //! write object
 ObjectWriter.prototype.write=function(x,getObjectID)
 {
-  if (!getObjectID) {
-    if (!util) throw new Error("getObjectID function required");
-    getObjectID=util.getObjectID;
-  }
+  if ((!getObjectID)&&(((!util)||(!(getObjectID=util.getObjectID)))))
+    throw new Error("getObjectID function required");
   var oo=this;
   // sharp variables within object graph
   var sharp={};
   var sharps=0;
   var root="this.o["+this.written+"]";
   var stream=new StringStream();
+
   function myPropertyIsEnumerable(obj,p) {
     // why this function?
     // since the for in loop and the propertyIsEnumerable method 
@@ -89,7 +98,8 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	     || ( x instanceof Error   )
 	     || ( x instanceof Date    ) );
   }
-  
+
+  // walk through the object graph and call callback functions stored in cbs
   function walk(px, x, fqname, name, cnum, cbs) {
     var tx=typeof x;
     var p;
@@ -158,8 +168,12 @@ ObjectWriter.prototype.write=function(x,getObjectID)
   walk(undefined, x, root, root, 0,
        {visited:{}, inFunction:false, ignore:function(px,obj){
 	   var key=getObjectID(obj);
+	   if ((obj=={}.constructor)
+	       || (obj==Object.prototype)
+	       || (obj==Function)        
+	       || (obj==Function.prototype)) return 2;
 	   if (this.visited[key]) {
-	     sharp[key]=sharps++;
+	     sharp[key]=++sharps;
 	     return true;
 	   }
 	   this.visited[key]=true;
@@ -235,7 +249,7 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	     // why do we have to do this?
 	     // since we serialize functions like this:
 	     // ((#12=function (){}).prototype=#1#,#12#)
-	     sharp[key]=sharps++;
+	     sharp[key]=++sharps;
 	     this.visited[key]=1;
 	   }
 	   this.name(px, x, name, cnum);
@@ -251,6 +265,11 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	   stream.write("[");
 	 },
 	   endArray:function(px, x, fqname, name, cnum) {
+	   if (x[x.length-1]===undefined){
+	     // special case since [,] means [undefined]
+	     // and not [undefined,undefined]
+	     stream.write(",");
+	   }
 	   stream.write("]");
 	 },
 	   startObject:function(px, x, fqname, name, cnum) {

@@ -56,6 +56,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_SVGL_FALSE = @BUILD_SVGL_FALSE@
+BUILD_SVGL_TRUE = @BUILD_SVGL_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -166,6 +168,8 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
+svgl = svgl svgldom
+@BUILD_SVGL_TRUE@MAYBE_SVGL = $(svgl)
 tests = \
 	audio \
 	ejsexit \
@@ -182,14 +186,22 @@ tests = \
 	timer \
 	scope \
 	smbug240577 \
-	opengl \
-	svgl \
-	svgldom
+	opengl
 
-TESTS = $(tests)
+check_SCRIPTS = \
+	$(tests) \
+	$(MAYBE_SVGL)
+
+TESTS = $(check_SCRIPTS)
 
 # TESTS_ENVIRONMENT = abs_top_srcdir="@abs_top_srcdir@"
-EXTRA_DIST = $(tests) load.js untrusted.js common
+EXTRA_DIST = \
+	load.js \
+	untrusted.js \
+	common \
+	$(tests) \
+	$(svgl)
+
 all: all-am
 
 .SUFFIXES:
@@ -340,6 +352,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_SCRIPTS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile

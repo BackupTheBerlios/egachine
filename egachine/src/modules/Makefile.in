@@ -64,7 +64,8 @@ includeHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(include_HEADERS)
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = example zlib monitorable stream file network bytearray \
+	egachine base64 timer gl video input audio svgl
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -76,6 +77,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_SVGL_FALSE = @BUILD_SVGL_FALSE@
+BUILD_SVGL_TRUE = @BUILD_SVGL_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -186,7 +189,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-include_HEADERS = ejsmodule.h
+@BUILD_SVGL_TRUE@MAYBE_SVGL = svgl
 SUBDIRS = \
 	example \
 	zlib \
@@ -202,8 +205,9 @@ SUBDIRS = \
 	video \
 	input \
 	audio \
-	svgl
+	$(MAYBE_SVGL)
 
+include_HEADERS = ejsmodule.h
 all: all-recursive
 
 .SUFFIXES:

@@ -211,8 +211,8 @@ fi
 dnl the svgl module
 AC_ARG_ENABLE([svgl],
 	AS_HELP_STRING([--enable-svgl],
-	[Build svgl module [[default=yes]]]),
-	[], enable_svgl=yes)
+	[Build svgl module [[default=no]]]),
+	[], enable_svgl=no)
 if test x$enable_svgl = xyes; then
 	dnl TODO: shouldn't svgl do this already?
 	PKG_CHECK_MODULES(GLFT, glft)
@@ -220,6 +220,7 @@ if test x$enable_svgl = xyes; then
 	SVGL_CFLAGS="$GLFT_CFLAGS $SVGL_CFLAGS"
 	dnl TODO: svgl module depends upon video module
 fi
+AM_CONDITIONAL([BUILD_SVGL], [test x$enable_svgl = xyes])
 
 dnl todo: thread-safety
 LDFLAGS="$LDFLAGS -thread-safe -pthread"
@@ -227,7 +228,7 @@ MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.s
 AC_SUBST(MODULE_LDFLAGS)
 
 dnl output files
-AC_OUTPUT([
+AC_CONFIG_FILES([
 	Makefile
 	tests/Makefile
 	src/Makefile
@@ -252,3 +253,4 @@ AC_OUTPUT([
 	src/modules/svgl/Makefile
 ])
 
+AC_OUTPUT

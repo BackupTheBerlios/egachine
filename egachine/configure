@@ -465,7 +465,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE LTDLINCL LIBLTDL build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL EJS_CFLAGS SIGC_CONFIG SIGC_CFLAGS SIGC_LIBS SIGC_MACROS GL_LIBS SDL_CONFIG SDL_CFLAGS SDL_LIBS SDLMIXER_LIBS PKG_CONFIG GLFT_CFLAGS GLFT_LIBS SVGL_CFLAGS SVGL_LIBS MODULE_LDFLAGS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE LTDLINCL LIBLTDL build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL EJS_CFLAGS SIGC_CONFIG SIGC_CFLAGS SIGC_LIBS SIGC_MACROS GL_LIBS SDL_CONFIG SDL_CFLAGS SDL_LIBS SDLMIXER_LIBS PKG_CONFIG GLFT_CFLAGS GLFT_LIBS SVGL_CFLAGS SVGL_LIBS BUILD_SVGL_TRUE BUILD_SVGL_FALSE MODULE_LDFLAGS LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1047,7 +1047,7 @@ Optional Features:
   --disable-sdltest       Do not try to compile and run a test SDL program
   --enable-input          Build input module [default=yes]
   --enable-audio          Build audio module [default=yes]
-  --enable-svgl           Build svgl module [default=yes]
+  --enable-svgl           Build svgl module [default=no]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -20966,7 +20966,7 @@ if test "${enable_svgl+set}" = set; then
   enableval="$enable_svgl"
 
 else
-  enable_svgl=yes
+  enable_svgl=no
 fi;
 if test x$enable_svgl = xyes; then
 
@@ -21168,11 +21168,23 @@ echo "$as_me: error: Library requirements (svgl) not met; consider adjusting the
 	SVGL_CFLAGS="$GLFT_CFLAGS $SVGL_CFLAGS"
 	fi
 
+
+if test x$enable_svgl = xyes; then
+  BUILD_SVGL_TRUE=
+  BUILD_SVGL_FALSE='#'
+else
+  BUILD_SVGL_TRUE='#'
+  BUILD_SVGL_FALSE=
+fi
+
+
 LDFLAGS="$LDFLAGS -thread-safe -pthread"
 MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.sym"
 
 
                                                                                                                                                                                                                             ac_config_files="$ac_config_files Makefile tests/Makefile src/Makefile src/etc/Makefile src/examples/Makefile src/modules/Makefile src/modules/example/Makefile src/modules/zlib/Makefile src/modules/monitorable/Makefile src/modules/stream/Makefile src/modules/file/Makefile src/modules/network/Makefile src/modules/bytearray/Makefile src/modules/egachine/Makefile src/modules/base64/Makefile src/modules/timer/Makefile src/modules/gl/Makefile src/modules/video/Makefile src/modules/video/boost/Makefile src/modules/input/Makefile src/modules/audio/Makefile src/modules/svgl/Makefile"
+
+
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -21313,6 +21325,13 @@ if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"am__fastdepCC\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${BUILD_SVGL_TRUE}" && test -z "${BUILD_SVGL_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"BUILD_SVGL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"BUILD_SVGL\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -21950,6 +21969,8 @@ s,@GLFT_CFLAGS@,$GLFT_CFLAGS,;t t
 s,@GLFT_LIBS@,$GLFT_LIBS,;t t
 s,@SVGL_CFLAGS@,$SVGL_CFLAGS,;t t
 s,@SVGL_LIBS@,$SVGL_LIBS,;t t
+s,@BUILD_SVGL_TRUE@,$BUILD_SVGL_TRUE,;t t
+s,@BUILD_SVGL_FALSE@,$BUILD_SVGL_FALSE,;t t
 s,@MODULE_LDFLAGS@,$MODULE_LDFLAGS,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
@@ -22423,5 +22444,4 @@ if test "$no_create" != yes; then
   # would make configure fail if this is the last instruction.
   $ac_cs_success || { (exit 1); exit 1; }
 fi
-
 

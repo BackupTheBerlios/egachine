@@ -1,4 +1,6 @@
-include_HEADERS=ejsmodule.h
+if BUILD_SVGL
+MAYBE_SVGL = svgl
+endif
 
 SUBDIRS = \
 	example \
@@ -15,4 +17,6 @@ SUBDIRS = \
 	video \
 	input \
 	audio \
-	svgl
+	$(MAYBE_SVGL)
+
+include_HEADERS=ejsmodule.h

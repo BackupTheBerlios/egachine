@@ -1,0 +1,13 @@
+NOTE:
+
+Perhaps  not all  EGachine  implementations will  use/support  OpenGL.
+First  I did not want  to wrap OpenGL  because  EGachine should have a
+simple API and should be simple to implement. On the other hand OpenGL
+is available on many platforms  and has a  nice API (now there is also
+OpenGLES for for the embedded space).
+
+EGachine users have now the choice to use:
+- the Video module (providing basic 2D-functionality)
+- the sg module (depends on the Video module)
+- the gl module directly
+- the svgl module

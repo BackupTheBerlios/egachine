@@ -28,7 +28,8 @@
 #include "ejsnode.h"
 #include "ejsnodelist.h"
 
-#include <w3c/dom/Text.hpp>
+#include <w3c/svg/SVGDocument.hpp>
+#include <w3c/dom/Element.hpp>
 
 // todo: gc? js and libgc
 static JSObject* nodeProto = NULL;
@@ -189,7 +190,7 @@ extern "C" {
 
   JSBool
   node_normalize
-  (JSContext* cx, JSObject* jsthis, uintN argc, jsval* argv, jsval*)
+  (JSContext* cx, JSObject* jsthis, uintN, jsval* argv, jsval*)
   {
     GET_NTHIS;
     try{
@@ -272,6 +273,7 @@ extern "C" {
       {
 	// create and return NodeList wrapper object
 	const dom::NodeList* nl=nthis->getChildNodes();
+	assert(nl);
 	JSObject* r=ejs_NewNodeList(cx, obj, nl);
 	if (!r) return JS_FALSE; // <- todo: right thing to report error in property hook?
 	*vp=OBJECT_TO_JSVAL(r);
@@ -316,6 +318,39 @@ extern "C" {
   }
 }
 
+JSObject*
+ejs_getPrototype(const std::type_info &t)
+{
+  Prototypes::iterator it=prototypes.find(t.name());
+  if (it!=prototypes.end()) return it->second;
+  return NULL;
+}
+
+JSObject*
+ejs_getPrototype(dom::Node* node)
+{
+  JSObject* proto=ejs_getPrototype(typeid(*node));
+  if (proto) return proto;
+  
+  // TODO: shit
+  // http://www-h.eng.cam.ac.uk/help/tpl/languages/C++/Thinking_in_C++/tic0295.html ?
+
+  // we could also use node->getNodeType()
+
+  if (dynamic_cast<svg::SVGDocument*>(node))
+    return ejs_getPrototype(typeid(svg::SVGDocument));
+
+  if (dynamic_cast<dom::Element*>(node))
+    return ejs_getPrototype(typeid(dom::Element));
+  
+  proto=ejs_getPrototype(typeid(dom::Node));
+  if (!proto) {
+    EJS_ERROR("did not find prototype: "<<typeid(dom::Node).name()<<" "<< typeid(*node).name());
+    EJS_FATAL("see above");
+  }
+  return proto;
+}
+
 //! wrap any node
 JSObject*
 ejs_WrapNode(JSContext* cx, JSObject* obj, dom::Node* node, JSObject* proto)
@@ -327,7 +362,11 @@ ejs_WrapNode(JSContext* cx, JSObject* obj, dom::Node* node, JSObject* proto)
   // todo: should we set parent?
   // this object is not rooted !!
 
-  JSObject* res=JS_NewObject(cx, &node_class, proto ? proto : ejs_getPrototype(typeid(*node)), obj);
+  if (!proto) proto=ejs_getPrototype(node);
+  assert(proto);
+  
+  JSObject* res=JS_NewObject(cx, &node_class, proto, obj);
+
   // todo: report error
   EJS_CHECK(res);
   if (!JS_SetPrivate(cx,res,(void* )node)) return NULL;
@@ -366,19 +405,6 @@ JSClass&
 ejs_getNodeClass()
 {
   return node_class;
-}
-
-JSObject*
-ejs_getPrototype(const std::type_info &t)
-{
-  Prototypes::iterator it=prototypes.find(t.name());
-  if (it!=prototypes.end()) return it->second;
-  // TODO: shit
-  // http://www-h.eng.cam.ac.uk/help/tpl/languages/C++/Thinking_in_C++/tic0295.html ?
-  if (t==typeid(dom::Text)) it=prototypes.find(typeid(dom::Node).name());
-  if (it!=prototypes.end()) return it->second;
-  EJS_FATAL(t.name());
-  return NULL;
 }
 
 JSBool

@@ -27,9 +27,6 @@ ejs_InitNodeSubClass(JSContext *cx, JSObject *obj,
 JSObject*
 ejs_WrapNode(JSContext *cx, JSObject *obj, dom::Node* node, JSObject* proto=NULL);
 
-JSObject*
-ejs_getPrototype(const std::type_info &t);
-
 JSClass&
 ejs_getNodeClass();
 

@@ -197,7 +197,7 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign dist-bzip2 dist-zip
-SUBDIRS = libltdl src tests
+SUBDIRS = libltdl debian src tests
 EXTRA_DIRST = bootstrap
 all: all-recursive
 

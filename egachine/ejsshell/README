@@ -1,0 +1,31 @@
+Extensible Javascript shell.
+
+This is a minimalistic extensible non-interactive Javascript shell.
+
+minimalistic:
+	keep it small and simple
+
+extensible:
+	modules (Javascript or native code) can be loaded at runtime
+
+non-interactive:
+	it is not intended to be a command line interpreter with
+	history and advanced editing functions (although it should be
+	possible to write a module which provides that functionality)
+
+Javascript:
+	it uses mozilla's Javascript interpreter spidermonkey
+
+
+Dependencies:
+spidermonkey (jsapi.h header and library)
+
+
+Debugging / leak checking (f.e. with valgrind):
+
+export GLIBCPP_FORCE_NEW=1
+export CXXFLAGS="-Wall -W -g -O0"
+export LDFLAGS="-g"
+
+valgrind is a great tool
+--tool=massif is interesting, too

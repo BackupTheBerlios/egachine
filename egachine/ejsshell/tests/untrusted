@@ -1,0 +1,11 @@
+#!/bin/sh
+# we need the absolute path of srcdir
+TMP=$(pwd)
+cd $srcdir
+abssrcdir=$(pwd)
+cd $TMP
+cd ..
+echo "ejs.loadUntrusted('$abssrcdir/untrusted.js')"|src/ejs - $abssrcdir/untrusted.js
+
+
+

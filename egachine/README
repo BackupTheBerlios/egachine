@@ -75,6 +75,11 @@ client.bat (this starts the client)
 Linux users:
 USAGE: egachine script
 
+
+----------------------------------------------------------------------
+
+For compilation instructions / installation procedure see INSTALL
+
 ----------------------------------------------------------------------
 
 FEATURES/GOALS:
@@ -149,91 +154,6 @@ egaserver/egachine ?
 As you probably noticed I am  no native English  speaker and for me it
 is quite  difficult to write texts and  documentation. Perhaps you are
 a good writer?
-
-----------------------------------------------------------------------
-
-Compilation from source:
-currently no Makefile, no autoutils (no autoconf/make)
-only a bash script (someone wants to make it a sh-script?)
-I recommend to use ccache or compilercache.
-
-Dependencies:
-SDL
-SDL_image
-SDL_mixer
-OpenGL/Mesa
-c++ (f.e. gcc - probably version >=3)
-
-For regenerating OpenGL wrappers (normally not needed):
-perl,sed,grep,indent,bash,?
-
-take a look at ./make - perhaps you have to edit something?
-
-If you checked out from CVS you also need spidermonkey which is not in
-CVS but in the source tarball.
-
-----------------------------------------------------------------------
-
-Spidermonkey/JavaScript/xxx wrapping:
-
-There are (at least) three different approaches to wrapping native
-code.
-Related news posts/threads on netscape.public.mozilla.jseng:
-<brt6ur$le31@ripley.netscape.com>
-<00rr3c.vo1.ln@karme.myfqdn.de>
-<mailman.1065540724.990.clpa-moderators@python.org> (python wrapper)
-
-1) Only use some macros (currently we use this)
-Advantages:
-+ simple 
-+ someone new to the code should be able to understand it quickly
-+ low compiler requirements
-+ fast compilation
-+ works with plain C
-+ minimalistic (runtime/code) overhead
-Disadvantages:
-- needs quite some hand-crafted code (time consuming)
-- error phrone
-- not very stylish / ugly code / perhaps hard to debug
-- changes can't be made at a central point
-  (code duplication)
-
-Projects using this aproach:
-JSDB <http://www.jsdb.org>
-
-2) Use a code generator
-Advantages:
-+ generated code should still be simple to understand
-+ works with plain C
-+ less error phrone
-+ changes can be made at a central point
-Disadvantages:
-- code generator parsers are often not perfect
-- another step in the build process
-
-Related projects:
-* jsgen <http://www.cs.unm.edu/~cello/jsgen/>
-* swig <http://swig.sourceforge.net/>
-  (spidermonkey support not yet ready?)
-
-3) Use C++ template magic to automate the wrapping
-
-Advantages:
-+ less error phrone
-+ no additional step in the build process
-+ probably nicer code
-+ changes can be made at a central point
-Disadvantages:
-- slow compilation
-- high compiler requirements
-- steeper learning curve
-- probably overhead (code size/runtime)
-
-Clipp <http://clipp.sourceforge.net>
-http://195.137.84.121/Warrick/Geek/SpiderMonkey/index.htm
-http://cvs.sourceforge.net/viewcvs.py/boost/boost/boost/langbinding/\
-?only_with_tag=langbinding
-Boost::python
 
 ----------------------------------------------------------------------
 

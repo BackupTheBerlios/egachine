@@ -1,3 +1,13 @@
+2004-06-21  Jens Thiele  <karme@berlios.de>
+
+	* fixed build dependencies: libsigc++-1.2 was missing
+
+	* added INSTALL file
+
+2004-06-20  Jens Thiele  <karme@berlios.de>
+
+	* updated spidermonkey
+
 2004-04-26  Jens Thiele  <karme@berlios.de>
 
 	* release 0.0.7

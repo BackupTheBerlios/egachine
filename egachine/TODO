@@ -426,3 +426,9 @@ using JS_GetStringBytes?  It's lossy and deprecated.
 --------------------------------------------------------------------------------
 write a spidermonkey embeding "best practice" document"
 --------------------------------------------------------------------------------
+solve SDL_mixer problem - since we currently depend on a CVS version?
+perhaps conditionally just duplicate the missing function?
+Mix_LoadMUS_RW(SDL_RWops *rw) is not available in 1.2.5
+--------------------------------------------------------------------------------
+lsb linux binaries
+--------------------------------------------------------------------------------

@@ -1,0 +1,78 @@
+Installing EGachine
+
+======================================================================
+
+Installing a binary package:
+
+----------------------------------------------------------------------
+
+win32:
+download the zip archive extract it and read the README file
+
+----------------------------------------------------------------------
+
+debian/gnu linux: 
+
+add following 2 lines to /etc/apt/sources.list:
+
+deb http://egachine.berlios.de/debian testing main
+deb-src http://egachine.berlios.de/debian testing main
+
+Then as root:
+
+$apt-get update && apt-get install egachine
+
+After  installation  there are  epong and morse-scooter  in the arcade
+game menu.
+
+======================================================================
+
+Building EGachine
+
+----------------------------------------------------------------------
+
+Debian users should read:
+http://www.debian.org/doc/manuals/apt-howto/ch-sourcehandling.en.html
+
+for example:
+$apt-get source egachine
+$cd egachine-0.0.?
+$dpkg-buildpackage -rfakeroot -b -uc
+
+----------------------------------------------------------------------
+
+Currently there is no Makefile,  and we currently don't use  autoutils
+(no autoconf/make). There are only some bash scripts (someone wants to
+make   them   sh-scripts?)   Usage  of    ccache  or compilercache  is
+recommended.
+
+Build Dependencies: 
+
+(All these should be avaiable as -dev packages for your favorite linux
+distribution)
+
+- SDL <http://www.libsdl.org>
+- SDL_image <http://www.libsdl.org/projects/SDL_image/>
+- SDL_mixer <http://www.libsdl.org/projects/SDL_mixer/>
+	ATTENTION: you currently need the CVS version - hopefully will
+	be released as 1.2.6 soon?
+- libsigc++-1.2
+- OpenGL/Mesa
+- c++ compiler (f.e. g++ - probably version >=3)
+
+If you checked out from CVS you also need:
+- spidermonkey which is not in CVS but in the source tarball.
+
+For regenerating OpenGL wrappers (normally not needed):
+perl,sed,grep,indent,bash,?
+
+take a look at ./make - perhaps you have to edit something?
+
+supported environment variables (see also common.sh):
+CC, CXX, CXXFLAGS, PREFIX, BINDIR, DATADIR, DOCDIR, SYSCONFDIR
+
+run ./make
+
+you don't have to install but can do so with ./install
+
+----------------------------------------------------------------------

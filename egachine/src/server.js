@@ -44,7 +44,6 @@ Net.handleDataAvailable=function(id) {
 }
 
 Net.handleConnectionClosed=function(id) {
-  println("Connection "+id+" closed");
 }
 
 Net.sendTo=function(id,msg) {

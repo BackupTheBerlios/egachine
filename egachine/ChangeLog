@@ -1,3 +1,19 @@
+2004-12-22  Jens Thiele  <karme@berlios.de>
+
+	* improved experimental svgl module
+
+2004-12-20  Jens Thiele  <karme@berlios.de>
+
+	* improved error reporting (stack was completely wrong
+	for exceptions thrown by native code via EJS_THROW_ERROR)
+
+2004-12-19  Jens Thiele  <karme@berlios.de>
+
+	* svgl module: SVGDocument now can be created from a string
+
+	* new distributed scene graph based on Monitorable object
+	and ObjectWriter
+
 2004-12-07  Jens Thiele  <karme@berlios.de>
 
 	* replace isFromProto(o,p) with o.hasOwnProperty(p)

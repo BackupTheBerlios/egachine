@@ -119,6 +119,11 @@ EGachine.connectDialog=function(host,port){
       }
 
       if (useSVG) {
+	// todo: this is shit since it assumes whitespace \u0020 is
+	// half as wide as "_"
+	// is there no inverse white space ("blackspace") in unicode?
+	// i tried many alternatives somewhere around \u2000 (2001 and 2003?)
+	// it seems the common fonts don't support those characters?
 	textelem.setNodeValue(inputField.text+ (blink ? "_" : "  "));
 	gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 	svgl.display(svgdoc);

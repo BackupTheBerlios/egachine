@@ -190,10 +190,10 @@ Resource.prototype.toString=function(){
 //! EGachine object
 EGachine={};
 EGachine.r={};
-EGachine.addResource=function(name,res){
-  var resource=name;
-  resource.__proto__=Resource.prototype;
-  EGachine.r[resource.name]=resource;
+EGachine.addResource=function(res){
+  res.constructor=Resource.prototype.constructor;
+  res.__proto__=Resource.prototype;
+  EGachine.r[res.name]=res;
 };
 EGachine.getResource=function(name){
   if (!EGachine.r[name]) throw new Error("Resource '"+name+"' not found");
@@ -387,9 +387,9 @@ function DevState(dev,x,y,buttons){
 Node=constructor(function() {});
 Node.prototype.paint=function(time){
   var i;
-  if (!this.children) return;
-  for (i=0;i<this.children;++i)
-    this[i].paint(time);
+  if (this.children)
+    for (i=0;i<this.children;++i)
+      this[i].paint(time);
 };
 // deprecated
 Node.prototype.step=function(dt){

@@ -1,4 +1,4 @@
-// networked pong clone
+// networked pong clone (deprecated example)
 if (!EGachine.server) 
   throw new Error("This file must be run by egaserver");
 if (!EGachine.checkVersion(0,0,7)) 

@@ -22,13 +22,30 @@
   \author Jens Thiele
 */
 
+ejs.ModuleLoader.load("Monitorable");
+
+function constructor(func){
+  return function(){
+    // required to get [[class]] right
+    var ret=new Monitorable();
+    // repair
+    ret.__proto__=this.__proto__;
+    if (!(ret instanceof Monitorable)) {
+      if (!ret.__proto__.__proto__ === Object.prototype) throw new Error("bug");
+      ret.__proto__.__proto__=Monitorable.prototype;
+    }
+
+    func.apply(ret,arguments);
+    return ret;
+  }
+};
+
 ejs.ModuleLoader.load("EGachine");
 ejs.ModuleLoader.load("File");
 ejs.ModuleLoader.load("Net");
 
 // todo fetch from config file
 listenPort=47000;
-
 
 EGachine.version={string:"@PACKAGE_VERSION@"};
 (function(){
@@ -47,29 +64,50 @@ Input={};
 // extend network object
 Net.server=new Net.Server(listenPort);
 Net.server.connections={};
-Net.server.queue="";
-Net.server.dist={};
+Net.server._movie="";
+Net.server._buffer=new StringStream();
+Net.server.objWriter=new ObjectWriter(Net.server._buffer);
 
-// watch all properties and distribute changes to clients
-Net.server.genericwatch=function(fqprop) {
-  return function(p,o,n){if ((n!=o)&&(!dontwatch)) Net.server.enqueue(fqprop+'='+n+';');return n;};
-}
+// todo: remove this hack
+dontwatch=false;
 
-Net.server.distribute=function(obj,oid){
-  this.dist[oid]=obj;
-  watchall(obj,oid,Net.server.genericwatch);
-  this.broadcastObject(obj,oid);
-}
+Monitorable.prototype.monitor={
+  onSet:function(obj,prop,val){
+    if ((!dontwatch)
+	&&(prop!="monitor")
+	&&(Net.server.objWriter.written(obj))) {
+      if (typeof profile === typeof undefined)
+	Net.server.objWriter.updateProperty(obj,prop,val);
+      else
+	profile(function(){Net.server.objWriter.updateProperty(obj,prop,val);},stepSize/4);
+    }
+    return val;
+  }
+};
+EGachine.r=new Monitorable();
+
+Net.server.distribute=function(obj,remoteName){
+  var ret;
+  //  obj.monitor=this.monitor;
+  var t=this;
+  if (typeof profile === typeof undefined)
+    ret=t.objWriter.write(obj);
+  else
+    ret=profile(function(){return t.objWriter.write(obj)},stepSize/4);
+  this.objWriter._remoteEval(remoteName+"="+ret);
+  return ret;
+};
 
 Net.server.handleNewConnection=function(id,stream) {
+  var i;
+  var objWriter;
+  var r;
   println("New connection: "+id);
   this.connections[id]=stream;
-  if (this.connections[id]!=stream) throw new Error("should not happen");
-  var obj;
-  for (obj in this.dist)
-    this.sendObjectTo(id,this.dist[obj],obj);
-  handleNewConnection(id,stream);
-}
+  handleNewConnection(id);
+  stream.write(this._movie);
+  stream.sync();
+};
 
 Net.server.handleDataAvailable=function(id) {
   if (!this.connections[id]) return;
@@ -86,104 +124,30 @@ Net.server.handleDataAvailable=function(id) {
   // todo security hole - clients should not be allowed to execute code on server
   var i=deserialize(msg);
   Input.handleInput(i);
-}
+};
 
-Net.server.sendTo=function(id,msg) {
+Net.server.remoteEval=function(id,msg) {
   var h=msg.length.convertTo(16,6);
   this.connections[id].write(h);
   this.connections[id].write(msg);
   this.connections[id].sync();
-}
+};
 
-Net.server.sendObjectTo=function(cid,obj,oid) {
-  var msg=oid+"="+serialize(obj)+";delp("+oid+");";
-  this.sendTo(cid,msg);
-}
-
-Net.server.broadcast=function(msg) {
-  var c;
-  for (c in this.connections) {
-    this.sendTo(c,msg);
-  }
-}
-
-Net.server.broadcastObject=function(obj,oid) {
-  var msg=oid+"="+serialize(obj)+";delp("+oid+");";
-  this.broadcast(msg);
-}
-
-Net.server.enqueue=function(msg) {
-  this.queue+=msg;
-}
-
+//! broadcast changes to clients
 Net.server.update=function() {
-  // broadcast changes to clients
-  if (this.queue.length>0) this.broadcast(this.queue);
-  this.queue="";
-}
+  var c;
+  if (!this._buffer.str().length) return false;
+
+  for (c in this.connections) {
+    this.connections[c].write(this._buffer.str());
+    this.connections[c].sync();
+  }
+  this._movie+=this._buffer.str();
+  this._buffer.clear();
+  return true;
+};
 
 Net.server.distribute(EGachine.r,"EGachine.r");
-
-
-//! watch all properties in the object graph 
-/*
-  on change of a property call a generated function 
-  \param gf function which generates the watch function
-  if gf is not passed genericwatch is used
-  
-  \note properties coming from a prototype aren't watched
-  this is because this caused trouble with serialization
-  TODO: inspect this situation and understand what happens
-  if you set a watch on property which comes from a prototype
-*/
-function watchall(cobj,cname,gf){
-
-  // return function which can act as watch callback and simply
-  // print some debug info
-  function genericwatch(y) {
-    return function(p,o,n){print(y+'='+n+';');return n;};
-  };
-
-  function _watchall(pobj,cobj,cname,scope,gf){
-    //  print(scope);
-    if (!gf) throw new Error("need generic function");
-    if (typeof cobj != 'object') {
-      var f=gf(scope);
-      //    print(f.toSource());
-      pobj.watch(cname,f);
-      return;
-    }
-    if (cobj instanceof Array) {
-      var k;
-      for (var k in cobj) {
-	_watchall(cobj, cobj[k], k, scope+"["+k+"]", gf);
-      }
-    }else{
-      var k;
-      for (var k in cobj) {
-	if ((k[0]!='_')&&(cobj.hasOwnProperty(k)))
-	  _watchall(cobj, cobj[k], k, scope+"."+k,     gf);
-      }
-    }
-  }
-
-  if (!gf) gf=genericwatch;
-  _watchall(undefined,cobj,cname,cname,gf);
-}
-
-// backwards compatibility to 0.0.8 (todo: probably remove this)
-Net.sendTo=function(id,msg){
-  Net.server.sendTo(id,msg);
-};
-Net.distribute=function(obj,oid){
-  Net.server.distribute(obj,oid);
-};
-Net.poll=function(){
-  Net.server.poll();
-};
-Net.update=function(){
-  Net.server.update();
-}
 
 if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
   stderr.write("Usage: egaserver [-h|--help] FILE [OPTION]...\n");

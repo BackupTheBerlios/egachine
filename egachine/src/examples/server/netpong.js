@@ -1,4 +1,9 @@
 // networked pong clone
+// simple example (conversion of pong.js to networked version)
+// Note: this example uses lots of bandwith
+// all modifications to the scene-graph are distributed to the clients
+// => not the recommended way for this kind of game
+
 if (!EGachine.server) 
   throw new Error("This file must be run by egaserver");
 if (!EGachine.checkVersion(0,0,7)) 
@@ -10,6 +15,7 @@ println("ATTENTION: at the moment the server is insecure.");
 // our game uses an aspect ratio of 1.333:1
 sx=1+1/3;
 sy=1;
+input=[0,0];
 rackets=[];
 points=[];
 spriteSize=new V2D(0.1,0.1);
@@ -20,35 +26,37 @@ addResources();
 // handle input events (from network)
 Input.handleInput=function(i){
   if ((i.dev!=undefined)&&(i.dev>=0)&&(i.dev<2))
-    rackets[i.dev].speed.y=i.y*1/3;
+    input[i.dev]=i.y*1/3;
 };
 
 // handle new client connection
 function handleNewConnection(id,stream){
   // code we send to the client - which executes it
   // this is quite generic and should work for any similar networked game
-  Net.sendTo(id,"\
-if (!EGachine.checkVersion(0,0,7)) \
-  throw new Error('at least version 0.0.7 required');\
-Input.handleInput=function(i){\
-  var msg=serialize(i); \
-  var h=msg.length.convertTo(16,6); \
-  stream.write(h); \
-  stream.write(msg); \
-  stream.sync(); \
-}; \
-Video.setViewportCoords({left:0,right:"+sx+",bottom:0,top:"+sy+"});\
-last=Timer.getTimeStamp();\
-while (true) { \
-  Video.clear(); \
-  now=Timer.getTimeStamp(); \
-  dt=(now-last)/1000000; \
-  last=now; \
-  root.step(dt); \
-  root.paint(dt); \
-  Input.poll(); \
-  if (stream.inAvailable()>0) readMsg(); \
-  Video.swapBuffers(); \
+  Net.server.remoteEval(id,"\
+if (!EGachine.checkVersion(0,1,1))					\
+  throw new Error('at least version 0.1.1 required');			\
+objReader=new ObjectReader(stream);					\
+Input.handleInput=function(i){						\
+  var msg=serialize(i);							\
+  var h=msg.length.convertTo(16,6);					\
+  stream.write(h);							\
+  stream.write(msg);							\
+  stream.sync();							\
+};									\
+Video.setViewportCoords({left:0,right:"+sx+",bottom:0,top:"+sy+"});	\
+last=Timer.getTimeStamp();						\
+while (true) {								\
+  Video.clear();							\
+  now=Timer.getTimeStamp();						\
+  dt=(now-last)/1000000;						\
+  last=now;								\
+  if (typeof root != 'undefined') {					\
+  root.paint(dt);							\
+  };									\
+  Input.poll();								\
+  while (stream.inAvailable()>0) objReader.read();			\
+  Video.swapBuffers();							\
 }");
 
 }
@@ -62,12 +70,12 @@ function clip(min,max,value)
 };
 
 // our Ball object
-function Ball() {
-  this.speed=new V2D(-1/4,-1/4);
-  this.rotspeed=new Degrees(300);
-  this.degrees=new Degrees(0);
-  this.pos=new V2D(sx/2,sy/2);
-};
+Ball=constructor(function() {
+		   this.speed=new V2D(-1/4,-1/4);
+		   this.rotspeed=new Degrees(300);
+		   this.degrees=new Degrees(0);
+		   this.pos=new V2D(sx/2,sy/2);
+		 });
 
 Ball.prototype.restart=function(){
   this.pos.x=sx/2;
@@ -75,6 +83,12 @@ Ball.prototype.restart=function(){
 };
 
 Ball.prototype.step=function(dt){
+  this.pos.x+=this.speed.x*dt;
+  this.pos.y+=this.speed.y*dt;
+  this.degrees.value+=this.rotspeed.value*dt;
+  while (this.degrees.value>360) this.degrees.value-=360;
+  while (this.degrees.value<0) this.degrees.value+=360;
+
   // collission with walls
   if (this.pos.y<0) {
     this.pos.y=0;
@@ -85,8 +99,8 @@ Ball.prototype.step=function(dt){
   }
   // collision with rackets
   for (var i=0;i<2;i++) {
-    var dx=this.pos.x-rackets[i].children[0].pos.x;
-    var dy=this.pos.y-rackets[i].children[0].pos.y;
+    var dx=this.pos.x-rackets[i].pos.x;
+    var dy=this.pos.y-rackets[i].pos.y;
     if (((Math.abs(dx)<spriteSize.x/2)&&(Math.abs(dy)<spriteSize.y))
 	&&
 	(((this.pos.x<sx/2)&&(this.speed.x<0))
@@ -103,27 +117,24 @@ Ball.prototype.step=function(dt){
     this.restart();
     ++(points[1].text);
   }
-}
+};
 
-  ball=new Ball();
+ball=new Ball();
 
 // build our scenegraph
 root=new Node()
 // racket of player one (right, green)
   .add(new Color(0,1,0,1)
-       .add(rackets[0]=new Mover(new V2D(0,0))
-	    .add(new Sprite("racket",
-			    spriteSize,
-			    new V2D(sx-spriteSize.x/2,sy/2)))))
+       .add(rackets[0]=new Sprite("racket",
+				  spriteSize,
+				  new V2D(sx-spriteSize.x/2,sy/2))))
 // racket of player two (left, red)
   .add(new Color(1,0,0,1)
-       .add(rackets[1]=new Mover(new V2D(0,0))
-	    .add(new Sprite("racket",
-			    spriteSize,
-			    new V2D(spriteSize.x/2,sy/2)))))
+       .add(rackets[1]=new Sprite("racket",
+				  spriteSize,
+				  new V2D(spriteSize.x/2,sy/2))))
 // the ball
-  .add(new Mover(ball.speed,ball.rotspeed)
-       .add(new Sprite("ball",spriteSize,ball.pos,ball.degrees)))
+  .add(new Sprite("ball",spriteSize,ball.pos,ball.degrees))
 // display points for player one
   .add(new Color(0,1,0,1)
        .add(new Translate(new V2D(0.92*sx,0.9*sy))
@@ -138,7 +149,7 @@ root=new Node()
 // distribute scenegraph to all clients
 // NOTE: changes to the scenegraph are automatically distributed
 // to the clients
-Net.distribute(root,"root");
+Net.server.distribute(root,"root");
 
 // main game loop
 start=Timer.getTimeStamp();
@@ -150,21 +161,26 @@ while(true) {
   last=now;
 
   // get input events
-  Net.poll();
+  Net.server.poll();
+
   // update scenegraph
-  root.step(dt);
+
+  // move rackets
+  for (i=0;i<2;++i)
+    rackets[i].pos.y+=input[i]*dt;
+
   // move ball
   ball.step(dt);
   // send updates to clients
-  Net.update(dt);
-  // sleep a bit
-  if (dt<15000) Timer.uSleep(15000-dt);
+  Net.server.update();
+  // sleep a bit (danger: we could flood clients)
+  if (dt<40000) Timer.uSleep(40000-dt);
  }
 
 function addResources(){
   // resources are generated by the egares utility
   EGachine.addResource(
-		       ({name:"racket", size:1762, data:"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVA\
+({name:"racket", size:1762, data:"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVA\
 AAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxEAAAsRAX9kX5EAAAAHdElNRQfTCwEUEBTcJV/VAAAGc0lE\
 QVR4nLXZ+2sc1xUH8M+89qVdydrIVuIouIGUFJpSSkOghYRC6T/eXwqF0jR9pC55FtmyYlu1tZJ2V7M\
 z0x/m7kpyHHKdTq+Y0e7M3XO+97zPvcnE949ZMmnaT281fTQSmfZRgkSqVqtlSKycO0oiCCOPmbRm/8\
@@ -195,7 +211,7 @@ HQHY9Zpc6sBnhp6pVSbmEqnSytK5vi1HSrsO3YsjGw/g0qXGsakDhx55zdjQhZVcoXLhzFM0csehXF9\
 4U5UgA9/5+8NOF0oWFcrM50QJan5H0tDmj7R5GLroEcOf9D+aVWrlh3TbkV+OqUV13h/e7BLBa5KEDx\
 Gbt149x1ztG65GGM8aOADwdPjBSKTfxvSfRmFtJN3tEjbZITeR4vBdD+RUOr/8/478XGh8nni82swAA\
 AABJRU5ErkJggg=="}));EGachine.addResource(
-					  ({name:"ball", size:6778, data:"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAA\
+({name:"ball", size:6778, data:"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAA\
 ABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsQAAALEAGtI711AAAAB3RJTUUH1AQBEDk21V+ObwAAGg\
 dJREFUeNrtm2usZtdZ33/Ps9bae7/Xc5tz5pyZ8cx4xuP7LSEJiZ0EO02gIBIglIiGSrSRKlSFokCgL\
 VI/tKoqFBWSAsEt5RJVQUoFJKIQoJRg7nWCY2d8HXvGGY/HM8dzzsyc+/u+e+9164d3PrbETmISJD/f\

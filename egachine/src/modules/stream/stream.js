@@ -36,6 +36,7 @@ StringStream.prototype.str=function(){
 
 StringStream.prototype.clear=function(){
   this.buffer="";
+  this.pos=0;
 };
 
 //! write objects to stream (similar to java ObjectOutputStream?)
@@ -50,12 +51,23 @@ StringStream.prototype.clear=function(){
 */
 ObjectWriter=function(stream)
 {
+  var i;
+  var toignore=[{}.constructor, Object.prototype, Function, Function.prototype];
+  if (typeof Monitorable != typeof undefined)
+    toignore.push(Monitorable.prototype);
+
   // remember already serialized objects
   this._serialized={};
   // how often write was called
-  this.written=0;
+  this._written=0;
   // underlying stream object
   this.stream=stream;
+  // objects to ignore completely (todo: shit)
+  this._ignore={};
+  for (i in toignore) this._ignore[util.getObjectID(toignore[i])]=true;
+  // "hidden" properties to use
+  // (properties we are interested in which aren't enumarated)
+  this._hiddenProps=["__proto__","constructor"];
 };
 
 // todo: put this somewhere suitable
@@ -72,27 +84,32 @@ ObjectWriter.prototype.sync=function()
   this.stream.sync();
 };
 
-ObjectWriter.prototype.remoteEval=function(x)
+ObjectWriter.prototype._remoteEval=function(x)
 {
   this.stream.write(""+ObjectWriter.toHex(x.length+1)+"e"+x);
-}
+};
 
-//! write object
-ObjectWriter.prototype.write=function(x,getObjectID)
+//! object already written?
+ObjectWriter.prototype.written=function(obj)
 {
-  if ((!getObjectID)&&(((!util)||(!(getObjectID=util.getObjectID)))))
-    throw new Error("getObjectID function required");
+  return this._serialized[util.getObjectID(obj)] != undefined;
+};
+
+//! write object/value
+ObjectWriter.prototype.write=function(x)
+{
   var oo=this;
   // sharp variables within object graph
   var sharp={};
   var sharps=0;
-  var root="this.o["+ (this.written++) +"]";
+  var root="this.o["+ (this._written++) +"]";
   var stream=new StringStream();
 
   function myPropertyIsEnumerable(obj,p) {
     // why this function?
     // since the for in loop and the propertyIsEnumerable method 
     // don't agree s.a.: sm source jsobj.c:obj_propertyIsEnumerable
+    //    if ((obj.hasOwnProperty(p))&&(obj.propertyIsEnumerable(p))) return true;
     var i;
     for (i in obj) if (i==p) return true;
     return false;
@@ -125,84 +142,74 @@ ObjectWriter.prototype.write=function(x,getObjectID)
     var q;
     var c;
     var i;
+
     if ((tx != 'object')&&(tx!='function')) {
       // primitives
-      if (cbs.primitive) cbs.primitive(px, x, fqname, name, cnum);
-    }else{
-      if (x === null) {
-	if (cbs.nullObject) cbs.nullObject(px, fqname, name, cnum);
-	return true;
+      cbs.primitive && cbs.primitive(px, x, fqname, name, cnum);
+      return true;
+    }
+
+    if (x === null) {
+      // null
+      cbs.nullObject && cbs.nullObject(px, fqname, name, cnum);
+      return true;
+    }
+
+    // some non-primitive type
+
+    if (!cbs.ignore) throw Error("cbs.ignore required");
+    if ((c=cbs.ignore(px, x, fqname, name, cnum))) return (c==1);
+
+    if (tx == 'function') {
+      cbs.startFunction && cbs.startFunction(px, x, fqname, name, cnum);
+      x.prototype       && walk(x, x.prototype, fqname+'["prototype"]', "prototype", 0, cbs);
+      cbs.endFunction   && cbs.endFunction(px, x, fqname, name, cnum);
+      return true;
+    }
+
+    // objects
+
+    if (x instanceof Array) {
+      // arrays
+      cbs.startArray && cbs.startArray(px, x, fqname, name, cnum);
+      for (p=0;p<x.length;++p) {
+	walk(x,x[p],fqname+"["+p+"]",p,p,cbs);
       }
-      if (!cbs.ignore) throw Error("cbs.ignore required");
-      if ((c=cbs.ignore(px, x, fqname, name, cnum))) return (c==1);
-      if (tx == 'function') {
-	if (cbs.startFunction)
-	  cbs.startFunction(px, x, fqname, name, cnum);
-	if (x.prototype) {
-	  walk(x, x.prototype, fqname+'["prototype"]', "prototype", 0, cbs);
-	}
-	if (cbs.endFunction)
-	  cbs.endFunction(px, x, fqname, name, cnum);
-      }else{
-	// tx == 'object'
-	if (x instanceof Array) {
-	  if (cbs.startArray)
-	    cbs.startArray(px, x, fqname, name, cnum);
-	  for (p=0;p<x.length;++p) {
-	    walk(x,x[p],fqname+"["+p+"]",p,p,cbs);
-	  }
-	  if (cbs.endArray)
-	    cbs.endArray(px, x, fqname, name, cnum);
-	}else{
-	  if (cbs.startObject)
-	    cbs.startObject(px, x, fqname, name, cnum);
+      cbs.endArray && cbs.endArray(px, x, fqname, name, cnum);
+      return true;
+    }
 
-	  if (!simpleObject(x)) {
-	    q=["__proto__","constructor"];
-	    c=[];
-	    for (p in q)
-	      if (!myPropertyIsEnumerable(x,q[p]))
-		c.push(q[p]);
-	    for (p in x)
-	      c.push(p);
-
-	    q=0;
-	    for (i in c) {
-	      p=c[i];
-	      if ((x.hasOwnProperty(p))&&(!ignoreProperty(p)))
-		if (walk(x,x[p],fqname+"['"+p+"']",p,q,cbs))
-		  ++q;
-	    }
-	  }
-
-	  if (cbs.endObject)
-	    cbs.endObject(px, x, fqname, name, cnum);
-	}
+    cbs.startObject && cbs.startObject(px, x, fqname, name, cnum);
+    if (!simpleObject(x)) {
+      // "normal" objects
+      c=[];
+      for (p in oo._hiddenProps)
+	if (!myPropertyIsEnumerable(x,oo._hiddenProps[p])) c.push(oo._hiddenProps[p]);
+      for (p in x)
+	c.push(p);
+      
+      q=0;
+      for (i in c) {
+	p=c[i];
+	if ((x.hasOwnProperty(p))&&(!ignoreProperty(p)))
+	  if (walk(x,x[p],fqname+"['"+p+"']",p,q,cbs))
+	    ++q;
       }
     }
+    cbs.endObject && cbs.endObject(px, x, fqname, name, cnum);
     return true;
   };
 
-  // todo: this is shit
-  function completelyIgnore(obj) {
-    return ((obj=={}.constructor)
-	    || (obj==Object.prototype)
-	    || (obj==Function)        
-	    || (obj==Function.prototype)
-	    || ((this.Monitorable)
-		&&(obj==this.Monitorable.prototype)));
-  }
-
   // find aliases (calculate sharp variables) within this object graph
   walk(undefined, x, root, root, 0,
-       {visited:{}, inFunction:false, ignore:function(px,obj){
-	   var key;
-	   if (completelyIgnore(obj)) return 2;
-	   key=getObjectID(obj);
+       {visited:{}, ignore:function(px,obj){
+	   var key=util.getObjectID(obj);
+	   if (oo._ignore[key]) return 2;
 	   if (this.visited[key]) {
 	     sharp[key]=++sharps;
 	     return true;
 	   }
+	   if (oo._serialized[key]) return true;
 	   this.visited[key]=true;
 	   return false;
 	 }});
@@ -211,10 +218,9 @@ ObjectWriter.prototype.write=function(x,getObjectID)
   walk(undefined, x, root, root, 0,
        {visited:{},
 	   ignore:function(px, obj, fqname, name, cnum){
-	   var key;
 	   var ser;
-	   if (completelyIgnore(obj)) return 2;
-	   key=getObjectID(obj);
+	   var key=util.getObjectID(obj);
+	   if (oo._ignore[key]) return 2;
 	   if (this.visited[key]) {
 	     this.visited[key]++;
 	     this.name(px,obj,name,cnum);
@@ -232,18 +238,15 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	   oo._serialized[key]={n:fqname, o:obj};
 	   return false;
 	 },name:function(px, x, name, cnum) {
-	   if (typeof px == 'function')
-	     return;
+	   if (typeof px === 'function') return;
 	   if (typeof px == 'object') {
 	     if (cnum>0)
 	       stream.write(",");
-	     if (px instanceof Array) {
-	     }else{
+	     if (!(px instanceof Array))
 	       stream.write(name+":");
-	     }
 	   }
 	   if (((typeof x == 'object')&&(x!=null))||(typeof x == 'function')) {
-	     var key=getObjectID(x);
+	     var key=util.getObjectID(x);
 	     if (sharp[key]&&(this.visited[key]<2)){
 	       if (typeof x == 'function')
 		 stream.write("((");
@@ -261,7 +264,7 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	   this.primitive(px, null ,fqname ,name, cnum);
 	 },
 	   startFunction:function(px, x, fqname, name, cnum) {
-	   var key=getObjectID(x);
+	   var key=util.getObjectID(x);
 	   var s=x.toSource()
 	     .replace(/^\(/,"")
 	     .replace(/\)$/,"")
@@ -281,7 +284,7 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	   this.inFunction=true;
 	 },
 	   endFunction:function(px, x, fqname, name, cnum) {
-	   stream.write(",#"+sharp[getObjectID(x)]+"#)");
+	   stream.write(",#"+sharp[util.getObjectID(x)]+"#)");
 	   this.inFunction=false;
 	 },
 	   startArray:function(px, x, fqname, name, cnum) {
@@ -308,11 +311,41 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	   if (!simpleObject(x))
 	     stream.write("}");
 	   //	   if (!px) stream.write(")");
-	 },
+	 }
        });
 
   oo.stream.write(""+ObjectWriter.toHex(stream.str().length+1)+"o"+stream.str());
   return root;
+};
+
+//! update property of already written object
+ObjectWriter.prototype.updateProperty=function(obj,pname,pval)
+{
+  var valt;
+  var objo;
+  var valo;
+  var fqpname;
+  var rpval;
+
+  if (!(objo=this._serialized[util.getObjectID(obj)]))
+    throw new Error("not yet serialized");
+  fqpname=objo.n+"['"+pname+"']";
+  valt=typeof pval;
+  if ((valt != 'object')&&(valt!='function')) {
+    // update primitive property
+    this._remoteEval(fqpname+"="+uneval(pval));
+  }else{
+    // complex property
+    if ((valo=this._serialized[util.getObjectID(pval)])) {
+      // set to already serialized property
+      rpval=valo.n;
+    }else{
+      // new complex property
+      rpval=this.write(pval);
+    }
+    if (!rpval) throw Error(rpval);
+    this._remoteEval(fqpname+"="+rpval);
+  }
 };
 
 ObjectReader=function(stream)
@@ -328,15 +361,30 @@ ObjectReader=function(stream)
 //! read object
 ObjectReader.prototype.read=function()
 {
+  function debug(x){
+    //    stderr.write(x+"\n");
+  }
+
   var h="0x"+this.stream.read(6);
+  //  debug("h:"+h);
   var msg=this.stream.read(Number(h));
   var msgtype=msg[0];
+  debug("msgtype:"+msgtype);
   var ret;
   if (msgtype=="o") {
-    ret=eval("this.o["+this._read+"]="+msg.slice(1));
+    try{
+      ret=eval("this.o["+this._read+"]="+msg.slice(1));
+      debug("got this.o["+this._read+"]");
+    }catch(e){
+      debug("error reading this.o["+this._read+"]: "+e);
+      debug("this.o: "+uneval(this.o));
+      debug("msg:\n"+msg.slice(1));
+      throw new Error("abort");
+    }
     this._read++;
   }else if (msgtype=="e"){
     ret=eval(msg.slice(1));
+    debug("evaluated:"+msg.slice(1)+" to:"+uneval(ret));
   }else
     throw new Error("received unknown message type: '"+msgtype+"'");
   return ret;

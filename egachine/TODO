@@ -970,3 +970,189 @@ were loaded => would have nearly duplicate code
 but we must be careful since module loading should only be allowed in trusted
 mode
 --------------------------------------------------------------------------------
+fix netorigpong2 using Monitorable
+
+puh
+also was ist los
+da muesste ich einiges machen und auf jeden fall müssten dann alles monitorable
+objects sein - maximal könnte ich es mit dem alten kombinieren wo nur änderungen
+existierender properties verschickt werden können
+(arrays fallen flach)
+
+probleme waren bei monitorable2.js monitorable3.js aufgetaucht
+wegen dem serialisieren mal wieder
+sieht so aus als ob ich das doch von hand machen muesste
+(sonst werden objekte dupliziert)
+die idee war dann einfach das erstellen von monitorable objects abzufangen
+und bei dieser gelegenheit mir das zu merken
+und dann normal modifikationen an denen zu verschicken
+dann muß ich aber immernoch die anderen objekte (nicht monitorable)
+serialisieren und die können ja zusammengesetzt sein
+=> zurück beim serialisierungsproblem
+
+da ist dann auch das problem ob die selbe id zweimal vvergeben werden kann
+und das kann sie wenn ein objekt gc'ed wird
+und wie soll ich das mitbekommen?
+irgendwie ist das alles pfusch
+beim Monitorable object könnte ich nen hook machen
+
+das ganze ist im prinzip ein distributed shared memory system
+
+write summary of javascript deffects/pitfalls:
+uneval/toSource and prototype, constructor, __proto__
+typeof / instanceof
+for in vs. propertyIsEnumerable
+local variable arguments in function (strange object)
+check wether variable is defined (global object)
+byte arrays
+some typical c/c++ pitfalls also apply to javascript (-10<x<10) - might be a
+problem for beginners not familar with c/c++
+--------------------------------------------------------------------------------
+hab rumgemacht wegen dem constructor hack
+suche noch nach einem schönen weg
+s.h. dist.js egachine.js 
+was ist das problem?
+eigentlich, daß function.name read only ist?
+
+function serialization has got a major problem:
+unbound variables
+global ones are obvious / and this problem is solved by the
+assumption that global unbound variables are the same on server/client
+or absichtlich nicht
+aber solche sachen sind ein problem:
+function bind2nd(f,x){return function(a){return f(a,x);}}
+
+i did not understand the __parent__ stuff at all yet
+__parent__ is read-only
+__parent__ could be used in native code to chain lookups
+
+the only thing i know of changing parent (at the moment is something like:
+js> (function b(){return __parent__;})().toSource()
+({b:(function b() {return __parent__;})})
+
+js> (function a(){var i=10;return function b(){__parent__.i=20;return i;}})().__parent__
+[object Object]
+js> (function a(){var i=10;return function b(){__parent__.i=20;return i;}})().__parent__.__parent__
+[object global]
+js> (function a(){var i=10;return function b(){__parent__.i=20;return i;}})().__parent__.__parent__.__parent__
+[object Object]
+js> (function a(){var i=10;return function b(){__parent__.i=20;return i;}})().__parent__.__parent__.__parent__.__parent__
+[object global]
+js> (function a(){var i=10;return function b(){__parent__.i=20;return i;}})().__parent__.__parent__.__parent__.__parent__.__parent__
+null
+
+mal graphviz mit __parent__ machen
+--------------------------------------------------------------------------------
+bin dabei server neu zu machen
+jetzt mit objectwriter
+wie mache ich da jetzt die broadcast geschichte?
+oder anders wie das ganze?
+1. neuer client connected
+2. muss dem neuen client alle objekte senden (die bereits gesendet wurden),
+   d.h. ich muss den aktuellen zustand herstellen damit ich nachher wieder
+   broadcasten kann
+3. danach sollte 
+
+
+monitor geht grad net - vermutlich wegen children array
+
+also geht jetzt mal so wieder
+hacks entfernen (dontwatch)
+unnötige reste entfernen
+step entfernen aus szenengraph
+
+1. beispiel manipuliert szenengraph direkt
+2. beispiel benutzt animations-nodes und paint mit zeit
+--------------------------------------------------------------------------------
+also das mit meinen zwei ObjectWriter streams funktioniert momentan nicht
+das this.o[] array ist unterschiedlich
+=> sachen werden falsch referenziert
+
+könnte ich evtl. den ObjectWriter oder Reader selbst serialisieren?
+ich muß ja auf client seite einen Reader herstellen der im passenden zustand
+für den allgemeinen writer auf serer seite ist
+warum eigentlich das ganze?
+wegen broadcast
+wobei ich ja eh keinen echten broadcast mache
+außerdem ist es ja eigentlich ein spezialfall, daß man den kompletten
+szenengraphen broadcastet
+
+also bin immer noch an netorigpong2.js
+habe performance probleme (sogar auf server seite):
+dt:50119
+collision
+(function () {advanceTo(simTime += stepSize);}): 61281
+dt:62367
+dt:47528
+dt:49988
+dt:50055
+dt:49949
+point
+(function () {advanceTo(simTime += stepSize);}): 76641
+dt:77548
+dt:52636
+...
+dt:50035
+New connection: 6
+(function () {Net.server.poll(stepSize - dt);}): 1238543
+dt:1244831
+dt:136670
+collision
+(function () {advanceTo(simTime += stepSize);}): 61990
+dt:74330
+dt:54171
+
+dt:49618
+New connection: 6
+send(6, "00046afunction run(){if (!EGachi"..., 1136, 0) = 1136
+send(6, "000003o{}000015eEGachine.r=this."..., 1500, 0) = 1500
+send(6, " (!(ret instanceof Monitorable))"..., 1500, 0) = 1500
+send(6, "r((function (i) {return m[i].sta"..., 1500, 0) = 1500
+send(6, "o__.__proto__ === Object.prototy"..., 1500, 0) = 1500
+send(6, "dren:1,0:#45#}},3:{__proto__:#11"..., 1500, 0) = 1500
+send(6, "#,size:{__proto__:#100#,x:0.025,"..., 1500, 0) = 1500
+send(6, "1100111\", \"111001011001111\", \"10"..., 1500, 0) = 1500
+send(6, "#}},12:{__proto__:#117#,c:[1,1,1"..., 249, 0) = 249
+(function () {Net.server.poll(stepSize - dt);}): 1040425
+
+=> 
+1) new connection ist sack lahm
+(er muss halt ein paar k an den client senden
+vermutlich blockiert er da auch)
+2) point ist lahm
+3) collision ist lahm
+
+zu 1)
+evtl. doch multi-threading für sockets?
+zu 2,3)
+collision
+(function () {rpval = me.write(pval);}): 53915
+(function () {Net.server.objWriter.updateProperty(obj, prop, val);}): 55475
+(function () {t[t.length] = v;}): 56935
+(function () {advanceTo(simTime += stepSize);}): 68466
+dt:69816
+...
+point
+(function () {rpval = me.write(pval);}): 46239
+(function () {Net.server.objWriter.updateProperty(obj, prop, val);}): 47717
+(function () {t[t.length] = v;}): 48764
+(function () {ball.appendMove(time, new LinMover(ballStartPos, ballSpeed));}): 52188
+
+=> ObjectWriter.prototype.write ist das problem
+
+beim ersten walk war der ignore nicht gut
+ist jetzt besser => wesentlich schneller
+aber halt immernoch etwas lahm
+vielleicht sollte ich das nochmal neu schreiben ? ;-)
+--------------------------------------------------------------------------------
+a profiler would be nice
+a debugger   "   "   "
+--------------------------------------------------------------------------------
+zuletzt habe ich gemacht:
+
+src/egaserver ../egachine/limbo/js/serprofile.js 2>/tmp/log && cmp -s /tmp/log /tmp/log.old || (echo Shit; cat /tmp/log)
+
+=> object serialisierung wollte ich performanter machen
+
+--------------------------------------------------------------------------------
+auf client seite ist paint das problem

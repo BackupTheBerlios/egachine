@@ -165,7 +165,7 @@
 	// process timeout
 	if ((timeOut.remain-=dt)<0) {
 	  tmp=timeOut;
-	  timeout=false;
+	  timeOut=false;
 	  tmp.func();
 	}
       }
@@ -205,7 +205,7 @@
 
     var stream=File.read(fileName);
     if (stream.inAvailable()<=0)
-      throw Error("Could not open file: "+argv[1]);
+      throw Error("Could not open file: "+fileName);
     
     // todo: hmm global
     document=new svgl.SVGDocument(stream.readAll());

@@ -12,6 +12,7 @@ examples = \
 	client/slideshow-pages.txt \
 	client/slideshow-back.svg \
 	client/slideshow.js \
+	client/simple.js \
 	server/netpong.js \
 	server/netorigpong.js \
 	svg/svgviewer.js \

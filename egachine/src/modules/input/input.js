@@ -307,6 +307,10 @@
   Input.BUTTON_WHEELUP=4;
   Input.BUTTON_WHEELDOWN=5;
 
+  //! state
+  Input.PRESSED = 1;
+  Input.RELEASED = 0;
+
   //! register function to be called if gamepad state changes
   Input.addDevListener=function(f) {
     if (typeof Input.devListeners == "undefined") Input.devListeners=[];
@@ -519,19 +523,36 @@
     return new Input.DevState(this.dev,this.x,this.y,this.buttons);
   };
 
+  function assert(f) {
+    if (!f()) throw Error("assertion "+f.toSource()+" failed\n");
+  };
+
+  function debug(msg) {
+    ejs.ModuleLoader.get("Stream").stderr.write(msg+"\n");
+  };
+
+  function info(msg) {
+    ejs.ModuleLoader.get("Stream").stderr.write("INFO: "+msg+"\n");
+  };
+
   (function(){
     // check for usable joysticks
     var numj,i,joy,dnum;
     numj=Input.numJoysticks();
     for (i=0;i<numj;++i) {
-      try{
+      //      try{
 	joy=new Input.Joystick(i);
-	if (joy.numAxes()>=2)
+	if (joy.numAxes()>=2) {
 	  dnum=Input.joyDevMap[i]=Input.devState.length;
-	Input.devState.push(new Input.DevState(dnum));
-      }catch(e){
-      }
+	  Input.devState.push(new Input.DevState(dnum));
+	  // otherwise it is close again
+	  Input.joySticks.push(joy);
+	}
+	//      }catch(e){
+	//      }
     }
+    info("found "+numj+" joystick(s). "+Input.devState.length+" useable as game pad (>=2 axes)");
+
     // add keyboard devices
     for (i=0;i<Input.keys.length;++i) {
       dnum=Input.keyDevMap[i]=Input.devState.length;
@@ -541,14 +562,6 @@
 
   Input.poll=function(){
     var events,i,event;
-
-    function assert(f) {
-      if (!f()) throw Error("assertion "+f.toSource()+" failed\n");
-    }
-
-    function debug(msg) {
-      stderr.write(msg+"\n"+"stack: "+util.getStack());
-    }
 
     function handleDevKey(e, keyDev)
     {
@@ -633,6 +646,58 @@
       Input.handleChar(String.fromCharCode(e.unicode));
       return true;
     }
+
+    function joyScale(v) 
+    {
+      var clearance=20000;
+      if (v>clearance) return 1;
+      if (v<-clearance) return -1;
+      return 0;
+    }
+
+    function handleJoyMotion(event)
+    {
+      var joy=event.which;
+      if ((joy<0)||(joy>=joyDevMap.length)) return;
+  
+      var dev=joyDevMap[joy];
+      if ((dev<0)||(dev>=devState.length)) return;
+  
+      var m_state=devState[dev];
+      var old=m_state.clone();
+
+      switch (event.axis) {
+      case 0: 
+	m_state.x=joyScale(event.value);
+	break;
+      case 1:
+	m_state.y=joyScale(-event.value);
+	break;
+      }
+
+      if ((m_state.x!=old.x)||(m_state.y!=old.y))
+	Input.handleInput(m_state.clone());
+    };
+
+    function handleJoyButton(e)
+    {
+      var joy=event.which;
+      if ((joy<0)||(joy>=joyDevMap.length)) return;
+  
+      var dev=joyDevMap[joy];
+      if ((dev<0)||(dev>=devState.length)) return;
+
+      var m_state=devState[dev];
+      var old=m_state.clone();
+
+      if (e.state==Input.PRESSED)
+	m_state.buttons|=1<<e.button;
+      else
+	m_state.buttons&=~(1<<e.button);
+
+      if (m_state.buttons!=old.buttons)
+	Input.handleInput(m_state.clone());
+    };
 
     events=Input.getEvents();
     for (i=0;i<events.length;++i) {

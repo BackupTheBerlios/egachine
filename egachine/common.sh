@@ -1,3 +1,9 @@
+# this file is sourced by: (all build scripts)
+# ./make
+# ./crossmake
+# ./install
+# ./clean
+
 function run() {
     if [ "x$VERBOSE" != "x" ]; then echo "$1"; fi
     $1

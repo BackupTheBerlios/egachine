@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# script which does what normally "make clean && make" does
+# usage of ccache or compilercache is recommended
+# supported environment variables (see also common.sh):
+# CC, CXX, CXXFLAGS, PREFIX, BINDIR, DATADIR, DOCDIR, SYSCONFDIR
+
 set -e
 
 if test ! -f $(pwd)/src/egachine.js; then
@@ -14,16 +20,14 @@ if [ "x$DEBUG" = "x" ]; then
 else
     SM_BUILDDIR="Linux_All_DBG.OBJ"
 fi
-LDFLAGS="$LDFLAGS -g -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
+LDFLAGS="$LDFLAGS -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
 COMMONFLAGS="-I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_UNIX $(sigc-config --cflags) -DSYSCONFDIR=$SYSCONFDIR -DDATADIR=$DATADIR"
-SERVERFLAGS=""
 CLIENTFLAGS="$(sdl-config --cflags)"
 SDLMIXERLIBS="-lSDL_mixer -lvorbisfile -lvorbis -logg -lsmpeg"
 JSLIB="-lsmjs"
 
 # build spidermonkey
 cd $SPIDERMONKEY_SRCDIR
-
 make -f Makefile.ref clean
 rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
@@ -35,10 +39,10 @@ rm -vf $(find -name "*.o" -o -name "*.so" -o -name "*.lo" -o -name "*.a") egachi
 
 for a in $(find . -name "*.cpp"); do 
     echo Compile $a
-    if (echo $a|grep server >/dev/null); then
-	FLAGS="$COMMONFLAGS $SERVERFLAGS $CXXFLAGS"
-    else
+    if (echo $a|grep client >/dev/null); then
 	FLAGS="$COMMONFLAGS $CLIENTFLAGS $CXXFLAGS"
+    else
+	FLAGS="$COMMONFLAGS $CXXFLAGS"
     fi
     run "$CXX -o ${a%*.cpp}.o $FLAGS -c $a"
 done

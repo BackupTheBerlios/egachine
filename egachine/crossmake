@@ -1,7 +1,10 @@
 #!/bin/bash
 
-set -e
+# script to cross compile for win32
+# NOTE: you will have to modify it
+# especially the section marked settings very specific to my setup
 
+set -e
 
 # setup environment for cross compilation
 export CC=i586-mingw32msvc-gcc
@@ -17,15 +20,15 @@ export AS=i586-mingw32msvc-as
 export NM=i586-mingw32msvc-nm
 export OBJDUMP=i586-mingw32msvc-objdump
 export STRIP=i586-mingw32msvc-strip
-
+export EXE=".exe"
 export EGACHINE_CROSS=1
 source ./common.sh
 
 #settings very specific to my setup
 export PATH="$HOME/bin:/usr/local/i586-mingw32msvc/bin:$PATH"
-export EXE=".exe"
 LDFLAGS="$LDFLAGS -L/usr/local/i586-mingw32msvc/lib"
 CXXFLAGS="$CXXFLAGS -I/usr/local/i586-mingw32msvc/include"
+#end settings very specific to my setup
 
 if [ "x$DEBUG" = "x" ]; then
     SM_BUILDDIR="mingwcross_OPT.OBJ"
@@ -42,11 +45,9 @@ JSLIB="-ljs32"
 
 # build spidermonkey
 cd $SPIDERMONKEY_SRCDIR
-
 make -f Makefile.ref clean
 rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
-
 
 # build egachine
 cd $SRCDIR
@@ -68,7 +69,6 @@ run "$CXX -o egachine$EXE $LDFLAGS $(find -name *.o|grep -v server|grep -v tools
 # link server
 echo Link egaserver
 run "$CXX -o egaserver$EXE $LDFLAGS $(find -name *.o|grep -v client|grep -v tools) $JSLIB $(sigc-config --libs) -lwsock32 -lwinmm -lz"
-
 # link egares
 echo Link egares
 run "$CXX -o egares$EXE $LDFLAGS $(find -name *.o|grep -v client|grep -v server|grep -v network) -lwinmm $JSLIB -lz"
@@ -159,7 +159,6 @@ cp /usr/local/i586-mingw32msvc/lib/libSDL_image.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/libjpeg.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/libz.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/libpng.dll $DESTDIR
-
 
 # permissions
 chmod -x $DESTDIR/*.dll

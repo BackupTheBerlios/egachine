@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# script which does what normally "make install" does
+# NOTES:
+# - you have to do ./make yourself (unlike make install)
+# - crossmake does install the files itself
+
 set -e
 
 if test ! -f $(pwd)/src/egachine.js; then

@@ -327,12 +327,10 @@ todo: allow files passed on startup to be .gz
 --------------------------------------------------------------------------------
 do not install all examples
 especially misc
-somehow tag the examples which should not get shipped with binaries
+(removed misc completely)
 
+somehow tag the examples which should not get shipped with binaries
 the tag is DONTINSTALL in the first line
 (done: but only install does use this
 todo: crossmake (win32) should use this, too
-or perhaps completely remove this misc dir
-and put stuff like this into limbo
-)
 --------------------------------------------------------------------------------

@@ -90,6 +90,9 @@ extern "C" {
   static JSBool
   node_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
 
+  static JSBool
+  node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+
   // keep enum, node_props and node_getProperty in sync!
   enum node_propid {
     CHILD_NODES,
@@ -101,7 +104,7 @@ extern "C" {
   static JSPropertySpec node_props[] = {
     {"childNodes", CHILD_NODES, JSPROP_READONLY|JSPROP_SHARED},
     {"nodeName",   NODE_NAME,   JSPROP_READONLY},
-    {"nodeValue",  NODE_VALUE,  JSPROP_READONLY},
+    {"nodeValue",  NODE_VALUE,  JSPROP_SHARED},
     {"nodeType",   NODE_TYPE,   JSPROP_READONLY},
     {0}
   };
@@ -110,8 +113,8 @@ extern "C" {
   JSClass node_class = {
     "Node",
     JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub, JS_PropertyStub, node_getProperty , JS_PropertyStub,
-    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  node_finalize,
+    JS_PropertyStub,  JS_PropertyStub, node_getProperty, node_setProperty,
+    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,   node_finalize,
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
@@ -295,6 +298,35 @@ extern "C" {
       {
 	dom::Node::NodeType t=nthis->getNodeType();
 	*vp=INT_TO_JSVAL(t);
+	break;
+      }
+    default:
+      break;
+    }
+    return JS_TRUE;
+  }
+
+  static JSBool
+  node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+  {
+    EJS_CHECK_CLASS(cx, obj, node_class);
+    
+    if (!JSVAL_IS_INT(id)) return JS_TRUE;
+    jsint slot=JSVAL_TO_INT(id);
+
+    dom::Node* nthis=(dom::Node *)JS_GetPrivate(cx,obj);
+    if (!nthis) return JS_TRUE;
+    
+    switch (slot) {
+    case NODE_VALUE:
+      {
+	dom::String* value=NULL;
+	if (!jsToDomString(cx,*vp,value)) return JS_FALSE;
+	try{
+	  nthis->setNodeValue(value);
+	}catch(const dom::DOMException &e){
+	  EJS_THROW_ERROR(cx, obj, e.what());
+	}
 	break;
       }
     default:

@@ -125,7 +125,7 @@ EGachine.connectDialog=function(host,port){
 	// i tried many alternatives somewhere around \u2000 (2001 and 2003?)
 	// it seems the common fonts don't support those characters?
 	// update: now "fixed" by not using text-anchor:middle
-	textelem.setNodeValue(inputField.text+ (blink ? "_" : "  "));
+	textelem.nodeValue=inputField.text+ (blink ? "_" : "  ");
 	/*
 	rot+=dt/5;
 	for (cn=0;cn<4;++cn)

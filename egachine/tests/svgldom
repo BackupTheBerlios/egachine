@@ -7,7 +7,7 @@ var gl=ejs.ModuleLoader.get("gl");
 var Input=ejs.ModuleLoader.get("Input");
 var Video=ejs.ModuleLoader.get("Video");
 if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
-	stderr.write("Warning no stencil buffer\n");
+	Stream.stderr.write("Warning no stencil buffer\n");
 // end of not really needed for this test
 
 var svgl=ejs.ModuleLoader.get("svgl");

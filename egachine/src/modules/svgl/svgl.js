@@ -235,14 +235,17 @@
 	      // or normal bubbling?
 	      // hmm
 	      debug("ADDED:"+types[i]+":"+s);
-	      e.addEventListener(types[i],(function(t,s){return function(evt){
-					       if (evt.target === t) {
-						 debug("call "+types[i]+": "+s+" ");
-						 eval(s);
-					       }else{
-						 debug("wrong target");
-					       }
-					     })(e,s),false);
+	      e.addEventListener(types[i],
+				 (function(t,s){
+				   return function(evt){
+				     if (evt.target === t) {
+				       debug("call "+types[i]+": "+s+" ");
+				       eval(s);
+				     }else{
+				       debug("wrong target");
+				     }
+				   };})(e,s),
+				 false);
 	    }
 	  }
 	}

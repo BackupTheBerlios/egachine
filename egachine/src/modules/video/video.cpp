@@ -141,6 +141,8 @@ void resize(int width, int height, int m_flags)
     EJS_WARN(SDL_GetError()<< " width: "<<width<<" height: "<<height);
     throw Video::FatalError((std::string("Couldn't set video mode: ")+SDL_GetError()).c_str());
   }
+  if (!(video->flags&SDL_OPENGL))
+    EJS_WARN("could not get OpenGL context");
 }
 
 
@@ -156,7 +158,9 @@ static
 void
 createWindow(int width, int height, bool fullscreen) 
 {
+  // todo: perhaps get config as parameters
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 1 );
 
   // todo check for available screen sizes
   // let user decide which one to use
@@ -166,7 +170,13 @@ createWindow(int width, int height, bool fullscreen)
   sdlflags|=SDL_RESIZABLE;
 #endif
   if (fullscreen) sdlflags|=SDL_FULLSCREEN;
-  ::resize(width,height,sdlflags);
+  try{
+    ::resize(width,height,sdlflags);
+  }catch(...){
+    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
+    ::resize(width,height,sdlflags);
+    EJS_WARN("no stencil buffer");
+  };
 
   SDL_Surface* video=SDL_GetVideoSurface();
   // todo

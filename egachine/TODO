@@ -49,6 +49,7 @@ does spidermonkey support this? similar to the GC
 (or perhaps use threads)
 --------------------------------------------------------------------------------
 client.js: see TODO / BUG
+jsnetwork.cpp: see todo
 --------------------------------------------------------------------------------
 are the wrapped libraries secure?
 how buggy/safe/secure/trustworthy are opengl/mesa implementations?
@@ -429,3 +430,12 @@ there is another mod playing library used optionally by xmms
 --------------------------------------------------------------------------------
 lsb linux binaries
 --------------------------------------------------------------------------------
+Game ideas:
+
+use "insecure" server to make a programming game
+the server executes all client commands
+the client has a javascript "shell" which allows execution of arbitrary commands
+the players may program all clients via the server
+
+a game about software patents
+choose side: patent lobby, patent opponent, politician

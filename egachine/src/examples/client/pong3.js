@@ -1,3 +1,4 @@
+DONTINSTALL
 TODO: this does not work in the moment
 
 /*

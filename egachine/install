@@ -33,7 +33,9 @@ install -dv $EXDIR/misc
 
 cd $SRCDIR/examples
 for a in $(find -name "*.js"); do
-    $INSTDATA $a $EXDIR/$a
+    if head -1 $a |grep -v DONTINSTALL; then
+	$INSTDATA $a $EXDIR/$a;
+    fi
 done
 
 EBINDIR="$DESTDIR/$BINDIR"

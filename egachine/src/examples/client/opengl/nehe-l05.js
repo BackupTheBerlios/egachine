@@ -140,7 +140,6 @@ function drawGLScene()
   if (t - t0 >= 1000000.0) {
     seconds = (t - t0) / 1000000.0;
     fps = Frames / seconds;
-    print("hallo");
     print(Frames+" frames in "+seconds+" seconds = "+fps+" FPS");
     t0 = t;
     Frames = 0;

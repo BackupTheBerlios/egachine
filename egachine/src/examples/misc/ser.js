@@ -1,3 +1,5 @@
+// DONTINSTALL
+
 // prototype relationship test
 function Base(){
 }

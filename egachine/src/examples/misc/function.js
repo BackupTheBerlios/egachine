@@ -1,3 +1,5 @@
+// DONTINSTALL
+
 // binding member function to function
 
 // first a simple function variable example

@@ -1,3 +1,4 @@
+// DONTINSTALL
 x=new Object();
 y=new Object();
 a=hashObject(x);

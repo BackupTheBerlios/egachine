@@ -1,4 +1,6 @@
-/* scheme:
+/* DONTINSTALL
+
+   scheme:
    guile> (define x ((lambda(text) (lambda() text)) "hello"))
    guile> (source x)
    (lambda () text)

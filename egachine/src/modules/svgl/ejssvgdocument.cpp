@@ -295,9 +295,7 @@ extern "C" {
 	if (!jsToDomStringLat1(cx,argv[0],value)) return JS_FALSE;
 
 	svgl::Parser parser;
-	if ((doc=parser.parseFromString(value)))
-	  // todo: remove?
-	  doc->updateStyle();
+	doc=parser.parseFromString(value);
       }else{
 	// create new empty document
 	doc=new svg::SVGDocument();
@@ -312,6 +310,7 @@ extern "C" {
     }
     if (!doc) EJS_THROW_ERROR(cx,obj,"failed to create document");
     if (!JS_SetPrivate(cx,obj,(void *)doc)) return JS_FALSE;
+
     return JS_TRUE;
   }
 

@@ -1,11 +1,3 @@
-it seems dom::Node::apendChild should return the child according to the spec
-this is unfortunate since this prohibits usage like this:
-svgdoc
-    .appendChild(svg
-	.appendChild(rect)
-	.appendChild(text));
---------------------------------------------------------------------------------
-still crashing if GLFT_FONTDIR is not set
 --------------------------------------------------------------------------------
 now we have lots of similar code
 => time to clean up / improve
@@ -36,4 +28,9 @@ object
 must dom object constructors be in global scope?
 --------------------------------------------------------------------------------
 remove empty native constructors and finalizers if possible
+--------------------------------------------------------------------------------
+scripting and declarative animation?
+--------------------------------------------------------------------------------
+we dont support external script files:
+<script xlink:href="foo.js" /> will not work
 --------------------------------------------------------------------------------

@@ -63,38 +63,52 @@ protected:
   JSObject* obj;
 };
 
-extern "C" {
+//! selected document
+svg::SVGDocument * csvgdoc=NULL;
+//! root svg element of c selected document
+svg::SVGSVGElement* csvgelt=NULL;
 
+extern "C" {
 
   static
   JSBool
-  display(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
+  selectDocument(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    svg::SVGDocument* svgdoc=NULL;
+    csvgdoc=NULL;
     if (!JSVAL_IS_OBJECT(argv[0]))
       EJS_THROW_ERROR(cx,obj,"object required as first argument");
-    if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),svgdoc))
+    if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),csvgdoc))
       return JS_FALSE;
 
-    // get svg size - todo: should not be done on each display call
-    svg::SVGSVGElement * thesvgelt = svgdoc->GET_SIMPLE_VAL(RootElement);
-    if (thesvgelt) {
-      svg::SVGLength widthl = thesvgelt->GETVAL(Width);
-      svg::SVGLength heightl = thesvgelt->GETVAL(Height);
-      const svg::SVGRect& viewbox = thesvgelt->GETVAL(ViewBox);
+    csvgdoc->updateStyle();
+
+    EJS_CHECK(initHelper && initHelper->context);
+    svgl::Context * svglContext=initHelper->context;
+    // todo: get a name / and this should probably be done on document creation
+    svglContext->externalEntityManager->register_(csvgdoc,unicode::String::createString(""));
+
+    initHelper->animinfo->animationManager->stop();
+    initHelper->animinfo->animationManager->unsubscribe_all();
+
+    csvgelt = csvgdoc->GET_SIMPLE_VAL(RootElement);
+    if (csvgelt) {
+      csvgelt->animationTraverse(initHelper->animinfo);
+
+      svg::SVGLength widthl = csvgelt->GETVAL(Width);
+      svg::SVGLength heightl = csvgelt->GETVAL(Height);
+      const svg::SVGRect& viewbox = csvgelt->GETVAL(ViewBox);
       float width, height;
-      svgl::Context * svglContext=initHelper->context;
       width = widthl.computeValue(svglContext->dpi, viewbox.getWidth(), svglContext->fontSize, svglContext->fontXHeight);
       height = heightl.computeValue(svglContext->dpi, viewbox.getHeight(), svglContext->fontSize, svglContext->fontXHeight);
       // todo: why do we do this?
       svglContext->setViewportWidthHeight(width, height);
-      svglContext->svgOwner = thesvgelt;
-      svglContext->externalEntityManager->register_(svgdoc,unicode::String::createString(""));
+      svglContext->svgOwner = csvgelt;
 
       // get window size
       float winWidth=initHelper->glinfo->winWidth;
       float winHeight=initHelper->glinfo->winHeight;
+
       // set zoom and pan to fit (centered and keeping aspect ratio)
       float zoomw=winWidth/width;
       float zoomh=winHeight/height;
@@ -106,7 +120,14 @@ extern "C" {
 	initHelper->glinfo->ypan=-(winHeight/zoomw-height)/2;
       }
     }
-    displayManager->display(svgdoc);
+  }
+
+  static
+  JSBool
+  display(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
+  {
+    if (csvgdoc&&csvgelt&&displayManager)
+      displayManager->display(csvgdoc);
     return JS_TRUE;
   }
 
@@ -114,18 +135,7 @@ extern "C" {
   JSBool
   startAnimation(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
   {
-    EJS_CHECK(initHelper);
-    EJS_INFO("called");
-
-    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    svg::SVGDocument* svgdoc=NULL;
-    if (!JSVAL_IS_OBJECT(argv[0]))
-      EJS_THROW_ERROR(cx,obj,"object required as first argument");
-    if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),svgdoc))
-      return JS_FALSE;
-
-    svg::SVGSVGElement * thesvgelt = svgdoc->GET_SIMPLE_VAL(RootElement);
-    thesvgelt->animationTraverse(initHelper->animinfo);
+    EJS_CHECK(initHelper && initHelper->animinfo && initHelper->animinfo->animationManager);
     initHelper->animinfo->animationManager->start();
     return JS_TRUE;
   }
@@ -134,7 +144,6 @@ extern "C" {
   JSBool
   stopAnimation(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
   {
-    EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
     EJS_CHECK(initHelper);
     initHelper->animinfo->animationManager->stop();
     return JS_TRUE;
@@ -144,8 +153,9 @@ extern "C" {
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
   static JSFunctionSpec svgl_static_methods[] = {
-    FUNC (display, 1),
-    FUNC (startAnimation, 1),
+    FUNC (selectDocument, 1),
+    FUNC (display, 0),
+    FUNC (startAnimation, 0),
     FUNC (stopAnimation, 0),
     EJS_END_FUNCTIONSPEC
   };

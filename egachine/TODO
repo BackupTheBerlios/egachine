@@ -942,3 +942,6 @@ perhaps i should use JS_ConstructObject where i am using JS_NewObject ?!
 splitted binary packages
 perhaps i should split the source, too? not now
 --------------------------------------------------------------------------------
+configure.ac:
+ejs itself should not be linked against libz and libsigc++
+--------------------------------------------------------------------------------

@@ -340,5 +340,10 @@ AC_LIBLTDL_INSTALLABLE also needs libltdl (to build it if neccessary)
 --------------------------------------------------------------------------------
 build debian package again
 split it into ejs, ejs-multimedia, egachine-base, egachine
-(this might look like overkill but it is not)
+This might look like overkill but it is not:
+ejs is useful without egachine
+ejs-multimedia is useful without egachine
+egachine-base: includes the server which only depends on ejs
+               (not ejs-multimedia) => server could be installed on a typical
+	       server machine (no X, no OpenGL, no SDL, ...)
 --------------------------------------------------------------------------------

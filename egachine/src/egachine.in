@@ -85,6 +85,7 @@ EGachine.connectDialog=function(host,port){
       //      Stream.stderr.write("avail: "+svgstream.inAvailable());
       //      svgstream.readAll();
       var svgdoc=new svgl.SVGDocument(EGachine.getResource("egachine.svg").decode());
+      svgl.selectDocument(svgdoc);
       var textelem=svgdoc.getElementById("textinput").childNodes.item(0);
       /*
       var groupelem=svgdoc.getElementById("starGroup1");
@@ -257,13 +258,16 @@ Audio.playSample=function(resname,repeat) {
   //! try to detect refresh rate of graphics card/display
   /*!
     \todo: currently assumes swapBuffers is synchronized
-    in fact i use this to detect this
+    in fact this function is used to detect this
   */
   function detectRefreshRate()
   {
-    var start,last,now,frames=0,dt,avghz;
+    var start,last,now,frames=0,dt,avg;
     start=last=Timer.getTimeStamp();
     while (last-start<500000) {
+      Video.clear();
+      gl.Flush();
+      gl.Finish();
       Video.clear();
       gl.Flush();
       gl.Finish();
@@ -273,8 +277,32 @@ Audio.playSample=function(resname,repeat) {
       last=now;
       ++frames;
     }
-    avghz=1000000/((last-start)/frames);
-    return avghz;
+    avg=(last-start)/frames;
+
+    frames=0;
+    var fdt=0;
+    var mindt=1000000,maxdt=0;
+    start=last=Timer.getTimeStamp();
+    while (last-start<500000) {
+      Video.clear();
+      gl.Flush();
+      gl.Finish();
+      Video.clear();
+      gl.Flush();
+      gl.Finish();
+      Video.swapBuffers();
+      now=Timer.getTimeStamp();
+      dt=now-last;
+      mindt=Math.min(mindt,dt);
+      maxdt=Math.max(maxdt,dt);
+      last=now;
+      if ((dt>avg*0.75)&&(dt<avg*1.25)) {
+	++frames;
+	fdt+=dt;
+      }
+    }
+    info("min: "+mindt+" max: "+maxdt);
+    return 1000000/(fdt/frames);
   };
 
   function info(x){
@@ -353,7 +381,7 @@ Audio.playSample=function(resname,repeat) {
 
   function addResources(){
 EGachine.addResource(
-({name:"egachine.svg", size:5368, z:true, data:"\
+({name:"egachine.svg", size:5367, z:true, data:"\
 eJy9WF1vG7cSfc+v2Lt+aR/E5fCbiuUC18kNCqT3Fm3a4j4qWsraVt4VpLUd99f3DFdSJMt2G7RwgCC\
 rITmcOTNnZpjzbz5dL4vbtN40XTspSciySO2sq5v2alL+9OE/o1AWm37a1tNl16ZJ2XblNxevzv/15n\
 +XH/7//dtic3tVfP/Tv99/e1mUo6r6RV9W1ZsPb4off35XKClJRmmq6u1/y1flou9X46q6u7sTd1p06\
@@ -373,20 +401,20 @@ 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\
-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\
+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\
 "}));
   };
 })();

@@ -83,13 +83,11 @@ done
 
 cp $SRCDIR/*.js $DESTDIR
 
-mkdir $DESTDIR/etc
+install -dv $DESTDIR/etc
 install $SRCDIR/etc/*.js $DESTDIR/etc
 
-mkdir $DESTDIR/examples
-mkdir $DESTDIR/examples/client
-mkdir $DESTDIR/examples/client/opengl
-mkdir $DESTDIR/examples/server
+install -dv $DESTDIR/examples/client/opengl
+install -dv $DESTDIR/examples/server
 
 for a in $(find examples -name "*.js"); do
     install $a $DESTDIR/$a

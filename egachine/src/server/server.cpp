@@ -44,8 +44,17 @@
 
 #include "common/jszlib.h"
 
+#if defined(__WIN32__) || defined(WIN32)
+#define WINDOOF
+#endif
+
 #ifndef WINDOOF
 #include <signal.h>
+
+void sigPipeHandler(int x){
+  JGACHINE_WARN("Ignore SIGPIPE signal");
+}
+
 #endif
 
 class NetStreamBufServer {
@@ -215,10 +224,6 @@ bool NetStreamBufServer::select(const Timer::TimeStamp *timeout){
 	  }
       }
   return ret;
-}
-
-void sigPipeHandler(int x){
-  JGACHINE_WARN("Ignore SIGPIPE signal");
 }
 
 JSObject*

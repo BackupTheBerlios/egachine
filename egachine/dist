@@ -23,11 +23,11 @@ tar xf $TMPFILE
 find -name "*~" -exec rm -v \{\} \;
 rm -vf egachine-*.tar.gz
 find -name CVS -exec rm -rfv \{\} \; 2>/dev/null || true
-find -name .cvsignore -exec rm -vf \{\} \;
+find -name ".cvsignore*" -exec rm -vf \{\} \;
 rm -rf limbo
 
 cd $TOPSRCDIR/_dist
-tar czf ../$EGANAME.tar.gz $EGANAME
+tar cf - $EGANAME|gzip --best >../$EGANAME.tar.gz
 
 cd $TOPSRCDIR
 rm -rf _dist

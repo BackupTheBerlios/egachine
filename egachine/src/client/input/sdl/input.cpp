@@ -30,27 +30,6 @@
 #include "../input.h"
 #include "error.h"
 
-// #define NEED_RESIZE_HACK 
-
-#ifdef NEED_RESIZE_HACK
-
-#include <list>
-
-typedef std::list<SDL_Event> EventQueue;
-EventQueue* eventQueue=NULL;
-
-static SDL_ResizeEvent expected;
-static bool expectResize=false;
-
-static
-std::ostream &operator<<(std::ostream& o, const SDL_ResizeEvent &e)
-{
-  o << e.w << "/" << e.h;
-  return o;
-}
-
-#endif
-
 // all input devices
 static std::vector<Input::DevState> *devState=NULL;
 // map joystick number to input device number
@@ -76,11 +55,6 @@ static bool charMode=false;
 void
 Input::init()
 {
-#ifdef NEED_RESIZE_HACK
-  assert(!eventQueue);
-  eventQueue=new EventQueue();
-#endif
-
   assert(!devState);
   devState=new std::vector<Input::DevState>();
   assert(!joyDevMap);
@@ -353,80 +327,26 @@ handleEvent(const SDL_Event &event)
       handleJoyButton(event.jbutton);
       return true;
     case SDL_VIDEORESIZE:
-#ifndef NEED_RESIZE_HACK
       handleResize(event.resize);
       return true;
-#else
-      std::cerr << "got resize: "<<event.resize<<" and ";
-      if (expectResize) {
-	// we assume if we get the right size - this is the event we (unfortunately) produced
-	if ((expected.w==event.resize.w)&&(expected.h==event.resize.h)) {
-	  std::cerr << "this was the expected resize event\n";
-	  expectResize=false;
-	  return true;
-	}else{
-	  std::cerr << "this was NOT the expected resize event\n";      
-	  if (eventQueue->size()>2) {
-	    std::cerr << "since there are many events pending i stop waiting for this event - i assume it was lost\n";
-	    expectResize=false;
-	    return true;
-	  }
-	  return false;
-	}
-      }else{
-	std::cerr << "we do not expect a resize event\n";
-	handleResize(event.resize);
-	expectResize=true;
-	expected=event.resize;
-	return true;
-      }
-#endif
     default:
       JGACHINE_INFO("Got unknown event => we drop it ("<<unsigned(event.type)<<")");
       return true;
     }
 }
 
-
-void 
+void
 Input::poll()
 {
   SDL_Event event;
-
-#ifdef NEED_RESIZE_HACK
-  assert(eventQueue);
-  EventQueue::iterator it(eventQueue->begin());
-  while (it!=eventQueue->end()) {
-    if (handleEvent(*it))
-      it=eventQueue->erase(it);
-    else
-      ++it;
-  }
-  while ( SDL_PollEvent(&event) ) {
-    if (!handleEvent(event)) {
-      eventQueue->push_back(event);
-    }
-  }
-
-#else
-  
   while ( SDL_PollEvent(&event) ) {
     handleEvent(event);
   }
-#endif
-
 }
 
 void
 Input::deinit()
 {
-#ifdef NEED_RESIZE_HACK
-  if (eventQueue){
-    delete eventQueue;
-    eventQueue=NULL;
-  }
-#endif
-
   if (devState) {
     delete devState;
     devState=NULL;

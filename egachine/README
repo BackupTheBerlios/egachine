@@ -79,6 +79,8 @@ USAGE: egachine script
 
 FEATURES/GOALS:
 
+- open source / free software (GPL)
+
 - not limited to games - could also be used as:
   presentation tool, "movie" player similar to flash, special purpose
   terminal, tool to teach/learn OpenGL

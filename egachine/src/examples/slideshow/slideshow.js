@@ -82,6 +82,7 @@ function readline(istream){
 function loadSVG(fname) {
   document=new svgl.SVGDocument(loadFile(fname));
   document.documentElement=document.getDocumentElement();
+  svgl.selectDocument(document);
   document._handleScripts(this);
 };
 

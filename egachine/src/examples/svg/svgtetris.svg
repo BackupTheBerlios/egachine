@@ -188,7 +188,7 @@ Grid.prototype = {
     try{
        this.getCell(coord).setAttribute("style", cellStyle+color);
     }catch(e){
-       stderr.write("Warning: "+e+" coord:"+coord);
+//       Stream.stderr.write("Warning: "+e+" coord:"+coord);
     }
   },
   clearCell : function(coord) {
@@ -448,7 +448,7 @@ function init() {
         move(currentShape, board, 1, 0);
       break;
       default:
-      stderr.write("unhandled char: '"+c+"'\n");
+//      Stream.stderr.write("unhandled char: '"+c+"'\n");
     }
   }
 

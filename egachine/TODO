@@ -5,6 +5,8 @@ SECURITY RELATED BUGS:
 --------------------------------------------------------------------------------
 jsolait does use eval at some points
 make sure this doesn't allow clients to execute code on server
+the jsonclass (transformObj) feature seems to be a problem, too
+=> server still executes client code
 --------------------------------------------------------------------------------
 spidermonkey bug: assertion in jsarena.c:274 fails
 this only happens with the debug build

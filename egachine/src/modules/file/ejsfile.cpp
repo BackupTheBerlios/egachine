@@ -115,7 +115,7 @@ extern "C" {
 
 #define FUNC(name, args) { #name,ejsfile_##name,args,0,0}
 
-  static JSFunctionSpec net_static_methods[] = {
+  static JSFunctionSpec file_static_methods[] = {
     FUNC(open,2),
     EJS_END_FUNCTIONSPEC
   };
@@ -128,7 +128,7 @@ extern "C" {
     JSObject *obj = JS_DefineObject(cx, global,
 				    "File", NULL, NULL, JSPROP_ENUMERATE);
     if (!obj) return JS_FALSE;
-    if (!JS_DefineFunctions(cx, obj, net_static_methods)) return JS_FALSE;
+    if (!JS_DefineFunctions(cx, obj, file_static_methods)) return JS_FALSE;
     return JS_TRUE;
   }
 

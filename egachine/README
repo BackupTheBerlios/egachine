@@ -22,6 +22,7 @@ QUICK-START
 Input:
 if you have a joystick, it acts like a gamepad
 no joystick/gamepad => keyboard acts like a gamepad
+
 Keyboard Controls:
 
 Key			Function		Comments
@@ -32,9 +33,11 @@ Ctrl+Z			iconify window		(not supported on win32?)
 
 Keypad 1:
 cursor keys _on the number block_
+buttons: 0 and .
 
 Keypad 2:
 w,a,s,d
+buttons: 1 and 2
 
 For best results make sure your video driver synchronizes page flips to
 the vertical retrace.

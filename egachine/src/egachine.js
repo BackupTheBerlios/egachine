@@ -46,11 +46,11 @@ if (this.Audio) {
     Audio.samples[resname]=sid;
     return sid;
   };
-  Audio.playSample=function(resname) {
+  Audio.playSample=function(resname,repeat) {
     var sid=Audio.samples[resname];
     if (sid==undefined)
       sid=Audio.loadSample(resname);
-    return Audio._playSample(sid);
+    return Audio._playSample(sid,repeat);
   }
 }
 
@@ -113,6 +113,14 @@ Video.scale=function(x,y)
 Video.clear=function()
 {
   gl.Clear(GL_COLOR_BUFFER_BIT);
+}
+
+Video.setClearColor=function(r,g,b,a)
+{
+  if (r.length)
+    gl.ClearColor(r[0],r[1],r[2],r[3]);
+  else
+    gl.ClearColor(r,g,b,a);
 }
 
 Video.drawLine=function(x1,y1,x2,y2)

@@ -10,8 +10,6 @@ fi
 
 . common.sh
 
-./clean
-
 EGANAME="egachine-$PACKAGE_MAJOR_VERSION.$PACKAGE_MINOR_VERSION.$PACKAGE_MICRO_VERSION"
 
 TMPFILE=$(tempfile)
@@ -21,6 +19,7 @@ cd _dist
 mkdir $EGANAME
 cd $EGANAME
 tar xf $TMPFILE
+./clean
 find -name "*~" -exec rm -v \{\} \;
 rm -vf egachine-*.tar.gz
 find -name CVS -exec rm -rfv \{\} \; 2>/dev/null || true

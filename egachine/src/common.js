@@ -525,7 +525,10 @@ Mover.prototype.step=function(dt){
 
 // derived object Color
 function Color(r,g,b,a) {
-  this.c=[r,g,b,a];
+  if (r.length)
+    this.c=r;
+  else
+    this.c=[r,g,b,a];
 }
 Color.prototype=new Node();
 Color.prototype.paint=function(){
@@ -545,4 +548,26 @@ Text.prototype=new Node();
 Text.prototype.paint=function(){
   Video.drawText(this.text,this.hcenter,this.vcenter);
   Node.prototype.paint.call(this);
+}
+
+// derived object Quad
+function Quad(size,pos,degrees) {
+  this.size=size;
+  this.pos=pos;
+  this.degrees=degrees;
+}
+
+Quad.prototype=new Node();
+Quad.prototype.paint=function(){
+  Video.pushMatrix();
+  Video.translate(this.pos.x,this.pos.y);
+  if (this.degrees) Video.rotate(this.degrees.value);
+  Video.drawQuad(this.size.x,this.size.y);
+  Node.prototype.paint.call(this);
+  Video.popMatrix();
+}
+
+function jsthrow(msg)
+{
+  throw new Error(msg);
 }

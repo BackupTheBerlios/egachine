@@ -24,6 +24,10 @@
 #include <ejsmodule.h>
 #include <cassert>
 
+
+static
+JSString* monitorStr=NULL;
+
 //! get monitor if available
 /*!
   \return monitor object or NULL
@@ -110,16 +114,9 @@ extern "C" {
   JSBool
   getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   {
-    // hmm trouble here because we to get the callback we get a property
-    // => the callback to get a property is called again
-    // => endless loop => crash
-    // => we must treat the monitor property specially
-    // todo: improve this
     JSString* s=NULL;
-    char* cstr=NULL;
-    if ((s=JS_ValueToString(cx, id))
-	&&(cstr=JS_GetStringBytes(s))
-	&&(!strcmp("monitor",cstr))) return JS_TRUE;
+    // to get the monitor property we must not use the monitor property
+    if ((s=JS_ValueToString(cx, id))&&(s==monitorStr)) return JS_TRUE;
     return callback(cx,obj,id,vp,"onGet");
   }
 
@@ -156,6 +153,8 @@ extern "C" {
   JSBool
   ejsmonitorable_LTX_onLoad(JSContext *cx, JSObject *module)
   {
+    if (!(monitorStr=JS_InternString(cx,"monitor")))
+      return JS_FALSE;
     if (!JS_InitClass(cx, module,
 		      NULL,
 		      &monitorable_class,

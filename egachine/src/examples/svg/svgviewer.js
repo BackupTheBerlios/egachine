@@ -11,7 +11,7 @@
   if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
     stderr.write("Warning no stencil buffer\n");
 
-  function reschedule(sec){
+  reschedule=function(sec){
     if (sec<0) throw sec;
     var start=Timer.getTimeStamp();
     var dt;
@@ -22,7 +22,7 @@
     return dt;
   }
 
-  function redisplay()
+  redisplay=function()
   {
     gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
     svgl.display(document);

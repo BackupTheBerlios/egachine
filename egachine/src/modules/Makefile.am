@@ -1,3 +1,5 @@
+# keep this in sync with src/Makefile.am and configure.ac
+
 if BUILD_SVGL
 MAYBE_SVGL = svgl
 endif

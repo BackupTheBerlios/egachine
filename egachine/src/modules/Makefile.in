@@ -14,6 +14,8 @@
 
 @SET_MAKE@
 
+# keep this in sync with src/Makefile.am and configure.ac
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@

@@ -52,6 +52,16 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_ejs_OBJECTS = ejs.$(OBJEXT) ejsmoduleloader.$(OBJEXT)
 ejs_OBJECTS = $(am_ejs_OBJECTS)
+@BUILD_ZLIB_TRUE@am__DEPENDENCIES_1 = modules/zlib/ejszlib.la
+@BUILD_STREAM_TRUE@am__DEPENDENCIES_2 = modules/stream/ejsstream.la
+@BUILD_FILE_TRUE@am__DEPENDENCIES_3 = modules/file/ejsfile.la
+@BUILD_NET_TRUE@am__DEPENDENCIES_4 = modules/network/ejsnet.la
+@BUILD_TIMER_TRUE@am__DEPENDENCIES_5 = modules/timer/ejstimer.la
+@BUILD_GL_TRUE@am__DEPENDENCIES_6 = modules/gl/ejsgl.la
+@BUILD_VIDEO_TRUE@am__DEPENDENCIES_7 = modules/video/ejsvideo.la
+@BUILD_INPUT_TRUE@am__DEPENDENCIES_8 = modules/input/ejsinput.la
+@BUILD_AUDIO_TRUE@am__DEPENDENCIES_9 = modules/audio/ejsaudio.la
+@BUILD_SVGL_TRUE@am__DEPENDENCIES_10 = modules/svgl/ejssvgl.la
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -229,23 +239,43 @@ SUBDIRS = etc modules examples
 INCLUDES = @LTDLINCL@ @EJS_CFLAGS@
 ejs_SOURCES = ejsmoduleloader.h ejs.cpp ejsmoduleloader.cpp
 
-#todo should be in sync with modules/Makefile.am
+# keep this in sync with src/modules/Makefile.am and configure.ac
+@BUILD_SVGL_TRUE@DLOPEN_MAYBE_SVGL = -dlopen modules/svgl/ejssvgl.la
+@BUILD_SVGL_TRUE@DEP_MAYBE_SVGL = modules/svgl/ejssvgl.la
+@BUILD_ZLIB_TRUE@DLOPEN_MAYBE_ZLIB = -dlopen modules/zlib/ejszlib.la
+@BUILD_ZLIB_TRUE@DEP_MAYBE_ZLIB = modules/zlib/ejszlib.la
+@BUILD_STREAM_TRUE@DLOPEN_MAYBE_STREAM = -dlopen modules/stream/ejsstream.la
+@BUILD_STREAM_TRUE@DEP_MAYBE_STREAM = modules/stream/ejsstream.la
+@BUILD_FILE_TRUE@DLOPEN_MAYBE_FILE = -dlopen modules/file/ejsfile.la
+@BUILD_FILE_TRUE@DEP_MAYBE_FILE = modules/file/ejsfile.la
+@BUILD_NET_TRUE@DLOPEN_MAYBE_NET = -dlopen modules/network/ejsnet.la
+@BUILD_NET_TRUE@DEP_MAYBE_NET = modules/network/ejsnet.la
+@BUILD_TIMER_TRUE@DLOPEN_MAYBE_TIMER = -dlopen modules/timer/ejstimer.la
+@BUILD_TIMER_TRUE@DEP_MAYBE_TIMER = modules/timer/ejstimer.la
+@BUILD_GL_TRUE@DLOPEN_MAYBE_GL = -dlopen modules/gl/ejsgl.la
+@BUILD_GL_TRUE@DEP_MAYBE_GL = modules/gl/ejsgl.la
+@BUILD_VIDEO_TRUE@DLOPEN_MAYBE_VIDEO = -dlopen modules/video/ejsvideo.la
+@BUILD_VIDEO_TRUE@DEP_MAYBE_VIDEO = modules/video/ejsvideo.la
+@BUILD_INPUT_TRUE@DLOPEN_MAYBE_INPUT = -dlopen modules/input/ejsinput.la
+@BUILD_INPUT_TRUE@DEP_MAYBE_INPUT = modules/input/ejsinput.la
+@BUILD_AUDIO_TRUE@DLOPEN_MAYBE_AUDIO = -dlopen modules/audio/ejsaudio.la
+@BUILD_AUDIO_TRUE@DEP_MAYBE_AUDIO = modules/audio/ejsaudio.la
 ejs_LDADD = @LIBLTDL@ \
 	-dlopen modules/example/ejsexample.la\
-	-dlopen modules/zlib/ejszlib.la\
 	-dlopen modules/monitorable/ejsmonitorable.la\
-	-dlopen modules/stream/ejsstream.la\
-	-dlopen modules/file/ejsfile.la\
-	-dlopen modules/network/ejsnet.la\
 	-dlopen modules/bytearray/ejsbytearray.la\
 	-dlopen modules/egachine/ejsegachine.la\
-	-dlopen modules/timer/ejstimer.la\
-	-dlopen modules/gl/ejsgl.la\
-	-dlopen modules/video/ejsvideo.la\
-	-dlopen modules/input/ejsinput.la\
-	-dlopen modules/audio/ejsaudio.la\
-	-dlopen modules/svgl/ejssvgl.la\
-	-dlopen modules/util/ejsutil.la
+	-dlopen modules/util/ejsutil.la \
+	$(DLOPEN_MAYBE_ZLIB) \
+	$(DLOPEN_MAYBE_STREAM) \
+	$(DLOPEN_MAYBE_FILE) \
+	$(DLOPEN_MAYBE_NET) \
+	$(DLOPEN_MAYBE_TIMER) \
+	$(DLOPEN_MAYBE_GL) \
+	$(DLOPEN_MAYBE_VIDEO) \
+	$(DLOPEN_MAYBE_INPUT) \
+	$(DLOPEN_MAYBE_AUDIO) \
+	$(DLOPEN_MAYBE_SVGL) 
 
 
 # note -export-symbols-regex only works since we use a hacked libtool
@@ -255,20 +285,20 @@ ejs_LDADD = @LIBLTDL@ \
 ejs_LDFLAGS = -export-dynamic -export-symbols-regex ejs.*_LTX_.*Load
 ejs_DEPENDENCIES = @LIBLTDL@ \
 	modules/example/ejsexample.la\
-	modules/zlib/ejszlib.la\
 	modules/monitorable/ejsmonitorable.la\
-	modules/stream/ejsstream.la\
-	modules/file/ejsfile.la\
-	modules/network/ejsnet.la\
 	modules/bytearray/ejsbytearray.la\
 	modules/egachine/ejsegachine.la\
-	modules/timer/ejstimer.la\
-	modules/gl/ejsgl.la\
-	modules/video/ejsvideo.la\
-	modules/input/ejsinput.la\
-	modules/audio/ejsaudio.la\
-	modules/svgl/ejssvgl.la\
-	modules/util/ejsutil.la
+	modules/util/ejsutil.la \
+	$(DEP_MAYBE_ZLIB) \
+	$(DEP_MAYBE_STREAM) \
+	$(DEP_MAYBE_FILE) \
+	$(DEP_MAYBE_NET) \
+	$(DEP_MAYBE_TIMER) \
+	$(DEP_MAYBE_GL) \
+	$(DEP_MAYBE_VIDEO) \
+	$(DEP_MAYBE_INPUT) \
+	$(DEP_MAYBE_AUDIO) \
+	$(DEP_MAYBE_SVGL) 
 
 EXTRA_DIST = egares.in egaserver.in egachine.in
 editbuild = sed \

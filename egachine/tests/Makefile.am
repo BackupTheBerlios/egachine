@@ -22,4 +22,4 @@ TESTS = $(tests)
 
 # TESTS_ENVIRONMENT = abs_top_srcdir="@abs_top_srcdir@"
 
-EXTRA_DIST = $(tests) load.js untrusted.js
+EXTRA_DIST = $(tests) load.js untrusted.js common

@@ -1,0 +1,14 @@
+function runtest () {
+    script="$1"
+    echo $script|../src/ejs
+
+    if which valgrind >/dev/null; then
+	error=$(echo $script|valgrind -q --leak-check=yes --log-fd=1 ../src/ejs|grep -i 'lost\|error'||true)
+	if [ "x$error" != "x" ]; then
+	    echo Memory leak: "$error"
+	    exit 1
+	fi
+    else
+	echo 'valgrind not found => skipping leak check'
+    fi
+}

@@ -1,19 +1,6 @@
 #!/bin/bash
 set -e
 
-function runtest () {
-    script="$1"
-    echo $script|../src/ejs
-
-    if which valgrind >/dev/null; then
-	error=$(echo $script|valgrind -q --leak-check=yes --log-fd=1 ../src/ejs)
-	if [ "x$error" != "x" ]; then
-	    echo Memory leak: "$error"
-	    exit 1
-	fi
-    else
-	echo 'valgrind not found => skipping leak check'
-    fi
-}
+. $srcdir/common
 
 runtest 'function foo(){ejs.exit(true);};try{foo();}catch(e){throw new Error("failed: "+e);};'

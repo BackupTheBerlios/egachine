@@ -33,15 +33,8 @@
 #include <iostream>
 
 //! throw an JavaScript Error exception
-/*!
-  \todo improve this
-*/
 #define EJS_THROW_ERROR(cx,obj,msg) do{				\
     return ejs_throw_error(cx,obj,msg);				\
-  }while(0)
-
-#define EJS_SET_ERROR(cx,obj,msg) do{				\
-    ejs_throw_error(cx,obj,msg);				\
   }while(0)
 
 #define EJS_CHECK_NUM_ARGS(cx,obj,expect,got) do{	\
@@ -57,7 +50,13 @@
 
 #define EJS_END_CLASS_SPEC 0,0,0,0,0,0,0,0
 
-#define EJS_THROW_MESSED_ERROR(cx,obj) EJS_THROW_ERROR(cx,obj,"you have messed with the ejs object")
+//! check that we are in trusted mode
+#define EJS_CHECK_TRUSTED(cx,obj) do{			\
+    if (!ejs_check_trusted(cx,obj)) return JS_FALSE;	\
+  }while(0)
+
+// end of public API -------------------------------------------------
+
 
 //! not part of the public api
 inline
@@ -107,7 +106,6 @@ ejs_throw_error(JSContext* cx, JSObject* obj, const char* msg)
 #define EJS_INFO(msg) EJS_MSG("INFO: ",msg, 0)
 #define EJS_ERROR(msg) EJS_MSG("ERROR: ",msg, 1)
 
-
 /*
   \def EJS_CHECK(expr)
   \brief EJS_CHECK is like assert but takes also effect when NDEBUG is defined
@@ -130,6 +128,8 @@ inline int ejs_fatal(const char *file,int line,const char *func, const char *msg
   std::terminate();
   return 0;
 }
+
+#define EJS_THROW_MESSED_ERROR(cx,obj) EJS_THROW_ERROR(cx,obj,"you have messed with the ejs object")
 
 inline
 JSBool ejs_get_ejs_object(JSContext* cx, JSObject* obj, JSObject* &ejsout)
@@ -158,11 +158,6 @@ JSBool ejs_get_ejs_object(JSContext* cx, JSObject* obj, JSObject* &ejsout)
   ejsout=ejs;
   return JS_TRUE;
 }
-
-//! check that we are in trusted mode
-#define EJS_CHECK_TRUSTED(cx,obj) do{			\
-    if (!ejs_check_trusted(cx,obj)) return JS_FALSE;	\
-  }while(0)
 
 //! enter untrusted mode: if we are already in untrusted mode this is an error
 #define EJS_ENTER_UNTRUSTED(cx,obj) do{			\

@@ -958,3 +958,15 @@ while (--i) {
       (a = new Array(a)).length;
 }
 
+--------------------------------------------------------------------------------
+currently loading a (native) module twice is a error / throws an exception
+this is probably a bad idea
+hmm
+either ejs.ModuleLoader.load should remember which modules are already loaded
+and simply ignore dupilcate requests or the caller must ensure that modules
+aren't loaded twice
+the native module loader (native code) already remembers which (native) modules
+were loaded => would have nearly duplicate code
+but we must be careful since module loading should only be allowed in trusted
+mode
+--------------------------------------------------------------------------------

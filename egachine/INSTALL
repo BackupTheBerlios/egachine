@@ -73,7 +73,7 @@ distribution)
 
 - SDL <http://www.libsdl.org>
 - SDL_image <http://www.libsdl.org/projects/SDL_image/>
-- libsigc++-1.2
+- libsigc++-1.0
 - OpenGL/Mesa
 - c++ compiler (f.e. g++ - probably version >=3)
 

@@ -141,15 +141,18 @@ Video.setViewportCoords=function(obj)
   gl.MatrixMode(GL_MODELVIEW);
 }
 
-/*
-Video::Rectangle
-Video::getViewport()
+Video.getViewport=function()
 {
-  GLint view[4];
-  glGetIntegerv (GL_VIEWPORT, view);
-  return Video::Rectangle(view[0],view[1],view[2],view[3]);
+  // todo perhaps our getViewport should unproject the points?
+  return glGetIntegerv (GL_VIEWPORT);
 }
-*/
+
+Video.setViewport=function(vec)
+{
+  // todo perhaps our setViewport should project the points?
+  gl.Viewport(v[0],v[1],v[2],v[3]);
+}
+
 
 // opengl constants
 // did not put them into gl. because

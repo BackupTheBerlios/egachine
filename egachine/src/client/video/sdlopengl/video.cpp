@@ -140,28 +140,6 @@ setMouseCursor()
 }
 
 static
-void
-setViewport(int x, int y, int sx, int sy)
-{
-  glViewport(x,y,sx,sy);
-}
-
-void
-Video::setViewport(const Video::Rectangle &r)
-{
-  ::setViewport(r.x,r.y,r.sx,r.sy);
-}
-
-Video::Rectangle
-Video::getViewport()
-{
-  GLint view[4];
-  glGetIntegerv (GL_VIEWPORT, view);
-  return Video::Rectangle(view[0],view[1],view[2],view[3]);
-}
-
-
-static
 void resize(int width, int height, int m_flags)
 {
   SDL_Surface* video;
@@ -229,7 +207,7 @@ createWindow(int width, int height, bool fullscreen)
   if (SDL_GL_GetAttribute( SDL_GL_DOUBLEBUFFER, &db )) JGACHINE_WARN("could not get attribute");
   if (!db) JGACHINE_WARN("did not get double buffer");
 
-  setViewport(0,0,video->w,video->h);
+  glViewport(0,0,video->w,video->h);
 
   glMatrixMode(GL_PROJECTION);		
   glLoadIdentity();

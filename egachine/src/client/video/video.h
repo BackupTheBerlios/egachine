@@ -35,7 +35,6 @@
 namespace Video
 {
   struct Coord2i;
-  struct Rectangle;
   
   void init(int w=0,int h=0, bool fullscreen=true);
 
@@ -47,9 +46,6 @@ namespace Video
   int createTexture(unsigned dsize, const char* data, const char *extension=NULL, const char *mimeType=NULL);
   void drawTexture(int tid,float w=1, float h=1);
   void drawText(const std::string &text, bool hcentered, bool vcentered);
-
-  void setViewport(const Rectangle &r);
-  Rectangle getViewport();
 
   //! get screen (window) coordinates for this point
   Coord2i project(float x, float y);
@@ -66,19 +62,6 @@ namespace Video
     int x,y;
   };
 
-  struct Rectangle
-  {
-    Rectangle()
-    {}
-    Rectangle(int _x, int _y, int _sx, int _sy)
-      : x(_x), y(_y), sx(_sx), sy(_sy)
-    {}
-    int x,y,sx,sy;
-    void set() const
-    {
-      setViewport(*this);
-    }
-  };
 };
 
 #endif

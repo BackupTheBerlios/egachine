@@ -79,51 +79,6 @@ extern "C" {
     return JS_TRUE;
   }
 
-  ECMA_BEGIN_VOID_FUNC(setViewport){
-    ECMA_CHECK_NUM_ARGS(1);
-
-    if (!JSVAL_IS_OBJECT(argv[0])) ECMA_ERROR("object required as argument");
-    JSObject *pobj=JSVAL_TO_OBJECT(argv[0]);
-    if (!pobj) ECMA_ERROR("object required as argument");
-    jsval v[4];
-    jsdouble d[4];
-    
-#define GETPROP(x,y) do{\
-if ((!JS_GetProperty(cx, pobj, x, &(v[y])))||(v[y]==JSVAL_VOID)) ECMA_ERROR("object property "x" missing"); \
-if (!JS_ValueToNumber(cx, v[y], &(d[y]))) ECMA_ERROR("object property "x" is not a number"); \
-}while(0)
-
-    GETPROP("x",0);
-    GETPROP("y",1);
-    GETPROP("w",2);
-    GETPROP("h",3);
-#undef GETPROP
-
-    Video::setViewport(Video::Rectangle(d[0],d[1],d[2],d[3]));
-
-    return JS_TRUE;
-
-  }
-  ECMA_BEGIN_FUNC(getViewport){
-    ECMA_CHECK_NUM_ARGS(0);
-    Video::Rectangle r(Video::getViewport());
-    JSObject * resobj=JS_NewObject(cx, 0, 0, 0);
-    *rval=OBJECT_TO_JSVAL(resobj);
-#define SETPROP(x) do{\
-    if (!JS_NewNumberValue(cx,r.x,&argv[0])) ECMA_ERROR("should not happen"); \
-    if (!JS_DefineProperty(cx, resobj, #x, argv[0],NULL, NULL, JSPROP_ENUMERATE)) ECMA_ERROR("should not happen");\
-    }while(0)
-      
-    SETPROP(x);
-    SETPROP(y);
-    SETPROP(sx);
-    SETPROP(sy);
-    
-#undef SETPROP
-    
-    return JS_TRUE;
-  }
-
   ECMA_BEGIN_FUNC(project){
     ECMA_CHECK_NUM_ARGS(2);
     return JS_TRUE;
@@ -140,8 +95,6 @@ static JSFunctionSpec static_methods[] = {
   ECMA_FUNCSPEC(createTexture,1),
   ECMA_FUNCSPEC(drawTexture,1),
   ECMA_FUNCSPEC(drawText,3),
-  ECMA_FUNCSPEC(setViewport,1),
-  ECMA_FUNCSPEC_EXTRA(getViewport,0,1),
   ECMA_FUNCSPEC(project,2),
   ECMA_END_FUNCSPECS
 };

@@ -7,4 +7,7 @@ usr/share/ejs/net.js
 usr/share/ejs/base64.js
 usr/bin/ejs
 etc/ejs/onstartup.js
+usr/lib/ejs/ejsutil.*
+usr/share/ejs/util.js
+usr/share/ejs/graphviz.js
 

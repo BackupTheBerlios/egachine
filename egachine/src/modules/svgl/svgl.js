@@ -7,6 +7,17 @@
   if (!fname) throw new Error("Could not find module: 'ejssvgl.la'");
   ejs.ModuleLoader.loadNative.call(svgl,"ejssvgl",fname.substring(0,fname.lastIndexOf(".")));
 
+  function assert(f){
+    if ((typeof f == "function")&&(f())) return;
+    if (f) return;
+    throw Error("Assertion: "+f.toSource()+" failed\n");
+  };
+  
+  function debug(x){
+    var stderr=ejs.ModuleLoader.get("Stream").stderr;
+    stderr.write(x+"\n");
+  }
+
   svgl.Node.prototype.addEventListener=function(type, listener, useCapture) {
     if (!this._target) this._target=new Input.EventTarget();
     this._target.addEventListener(type,listener,useCapture);
@@ -44,7 +55,6 @@
 
     var oldTarget;
 
-    function assert(f){if (!f()) throw Error("Assertion: "+f.toSource()+" failed\n");};
 
     function setNewTarget(e,newTarget) {
       assert(function(){return e && newTarget;});
@@ -60,6 +70,7 @@
 	  subevt.target=oldTarget;
 	  subevt.relatedTarget=newTarget;
 	  //	  stderr.write("setNewTarget (mouseout): "+subevt.toSource()+"\n");
+	  debug("mouseout: target: "+subevt.target.nodeName+" relatedTarget: "+subevt.relatedTarget.nodeName);
 	  Input.dispatchEvent(subevt);
 	}
 
@@ -208,6 +219,43 @@
     };
     
     document._handleScripts(this);
+
+    //! convert event attributes to addEventListener calls
+    (function(){
+      var types=["click","mouseover","mouseout","mousedown","mouseup","mousemove"];
+
+      function convert(e) {
+	var i,s,c;
+	assert(e);
+	if (e.getAttribute) {
+	  for (i=0;i<types.length;++i) {
+	    if ((s=e.getAttribute("on"+types[i]))) {
+	      // todo: wrong scope?
+	      // should those handlers really only be called if directly targeted?
+	      // or normal bubbling?
+	      // hmm
+	      debug("ADDED:"+types[i]+":"+s);
+	      e.addEventListener(types[i],(function(t,s){return function(evt){
+					       if (evt.target === t) {
+						 debug("call "+types[i]+": "+s+" ");
+						 eval(s);
+					       }else{
+						 debug("wrong target");
+					       }
+					     })(e,s),false);
+	    }
+	  }
+	}
+	c=e.childNodes;
+	for (i=0;i<c.length;++i) {
+	  convert(c.item(i));
+	};
+      };
+      
+      convert(document.documentElement);
+    })();
+    
+
     svgl.startAnimation(document);
     // animation finished
     

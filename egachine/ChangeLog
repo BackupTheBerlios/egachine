@@ -1,5 +1,7 @@
 2005-04-04  Jens Thiele  <karme@berlios.de>
 
+	* src/egachine.in: don't mess with audio API, frame skip test, gl.getMinmax test
+
 	* replace misnomer quad with rectangle
 
 2005-01-26  Jens Thiele  <karme@berlios.de>

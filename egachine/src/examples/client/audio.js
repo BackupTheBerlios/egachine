@@ -31,7 +31,7 @@ Girl.prototype.step=function(dt)
   if (this.pos.x>1) this.pos.x=-1;
   if (this.pos.x<-1) this.pos.x=1;
   this.csp+=6*dt;
-  if (Math.floor(this.csp)>=6) this.csp-=6;
+  while (Math.floor(this.csp)>=6) this.csp-=6;
   if (Math.floor(this.csp)<0) this.csp=0;
 }
 

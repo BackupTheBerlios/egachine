@@ -1,5 +1,7 @@
 2004-11-15  Jens Thiele  <karme@berlios.de>
 
+	* src/examples/client/audio.js (Girl.prototype.step): bug fix
+
 	* src/ejs.cpp: lazy definition of standard ecmascript objects
 
 2004-10-15  Jens Thiele  <karme@berlios.de>

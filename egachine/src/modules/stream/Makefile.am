@@ -1,5 +1,4 @@
-# top_srcdir is required for boost
-INCLUDES = @EJS_CFLAGS@ -I\$(top_srcdir)
+INCLUDES = @EJS_CFLAGS@
 
 pkglib_LTLIBRARIES = ejsstream.la
 

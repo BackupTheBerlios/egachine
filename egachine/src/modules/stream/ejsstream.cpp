@@ -26,7 +26,6 @@
 
 #include <cassert>
 #include <ejsmodule.h>
-#include "boost/smart_ptr.hpp"
 #include <iostream>
 
 extern "C" {

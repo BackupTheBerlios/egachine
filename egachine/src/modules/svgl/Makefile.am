@@ -6,6 +6,8 @@ ejssvgl_la_SOURCES = \
 	ejssvgl.cpp \
 	ejssvgdocument.h \
 	ejssvgdocument.cpp \
+	ejsnode.h \
+	ejsnode.cpp \
 	ejselement.h \
 	ejselement.cpp
 

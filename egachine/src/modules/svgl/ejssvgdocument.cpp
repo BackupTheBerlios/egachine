@@ -54,6 +54,21 @@ extern "C" {
 
   static
   JSBool
+  svgdocument_createTextNode(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    GET_SVGDOCUMENT_OBJ;
+    // todo: root string!
+    JSString *strtype=JS_ValueToString(cx, argv[0]);
+    if (!strtype) return JS_FALSE;
+    dom::Text* text=svgdocument->createTextNode(unicode::String::internStringUtf16(JS_GetStringChars(strtype)));
+    assert(text);
+
+    return JS_TRUE;
+  }
+  
+  static
+  JSBool
   svgdocument_createElement(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);

@@ -1,5 +1,5 @@
-#ifndef EJS_DOCUMENT_H
-#define EJS_DOCUMENT_H
+#ifndef EJS_ELEMENT_H
+#define EJS_ELEMENT_H
 
 #include <ejsmodule.h>
 #include <w3c/dom/Element.hpp>

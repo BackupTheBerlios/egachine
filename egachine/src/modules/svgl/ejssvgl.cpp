@@ -30,7 +30,9 @@
 
 #include <ejsmodule.h>
 #include "ejssvgdocument.h"
+#include "ejsnode.h"
 #include "ejselement.h"
+
 
 // TODO: this is probably not portable
 #include "GL/gl.h"
@@ -51,6 +53,9 @@ extern "C" {
       EJS_THROW_ERROR(cx,obj,"object required as first argument");
     if (!ejssvgdocument_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),svgdoc))
       return JS_FALSE;
+    // TODO: remove this
+    //    svgdoc->updateStyle();
+
     displayManager->display(svgdoc);
     return JS_TRUE;
   }
@@ -101,7 +106,8 @@ extern "C" {
 
     // register DOM wrappers
     if (!ejssvgdocument_onLoad(cx,global)) return JS_FALSE;
-    if (!ejselement_onLoad(cx,global)) return JS_FALSE;
+    if (!ejsnode_onLoad(cx,global))        return JS_FALSE;
+    if (!ejselement_onLoad(cx,global))     return JS_FALSE;
     return JS_TRUE;
   }
   

@@ -936,3 +936,6 @@ brauchbares subset auswählen
 hmm svgldom test produces warning:
 unknown SVG element rect SVGDocument.cpp:117
 --------------------------------------------------------------------------------
+JS_ConstructObject vs. JS_NewObject !!
+perhaps i should use JS_ConstructObject where i am using JS_NewObject ?!
+--------------------------------------------------------------------------------

@@ -22,6 +22,7 @@
 */
 
 #include <w3c/svg/Element.hpp>
+#include <w3c/svg/SVGElement.hpp>
 #include "ejselement.h"
 #include <cassert>
 
@@ -49,6 +50,20 @@ extern "C" {
 #define GET_ELEMENT_OBJ dom::Element* element=NULL;			\
     if (!ejselement_GetNative(cx,obj,element)) return JS_FALSE
 
+  // todo: this is a method of Node (Node->Element)
+  static
+  JSBool
+  element_setNodeValue(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    GET_ELEMENT_OBJ;
+    JSString *strtype=JS_ValueToString(cx, argv[0]);
+    if (!strtype) return JS_FALSE;
+    unicode::String* value=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
+    element->setNodeValue(value);
+    return JS_TRUE;
+  }
+  
   static
   JSBool
   element_setAttribute(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
@@ -66,7 +81,11 @@ extern "C" {
 
     // todo: catch exceptions
     element->setAttribute(name,value);
-    
+
+    // todo: hmmm
+    if (svg::SVGElement *svgelement = dynamic_cast<svg::SVGElement *>(element)) {
+      svgelement->updateStyle(NULL);
+    }
     return JS_TRUE;
   }
 
@@ -94,6 +113,7 @@ extern "C" {
 #define FUNC(name, args) { #name,element_##name,args,0,0}
 
   static JSFunctionSpec element_methods[] = {
+    FUNC(setNodeValue,1),
     FUNC(setAttribute,2),
     FUNC(appendChild,1),
     EJS_END_FUNCTIONSPEC

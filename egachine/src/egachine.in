@@ -27,6 +27,11 @@ ejs.ModuleLoader.load("Video");
 ejs.ModuleLoader.load("Input");
 ejs.ModuleLoader.load("Audio");
 ejs.ModuleLoader.load("Net");
+var useSVG=false;
+if (useSVG) {
+  ejs.ModuleLoader.load("svgl");
+  ejs.ModuleLoader.load("File");
+};
 
 EGachine.version={string:"@PACKAGE_VERSION@"};
 (function(){
@@ -80,7 +85,14 @@ EGachine.connectDialog=function(host,port){
     // this could be a security problem!!
     // example: connect to sicher.de but really connect to
     // öööösicher.de
-    
+
+    if (useSVG) {
+      var svgstream=File.read("/home/jens/develop/Diplomarbeit/egachine/limbo/egachine.svg");
+      stderr.write("avail: "+svgstream.inAvailable());
+      var svgdoc=new SVGDocument(svgstream.read(svgstream.inAvailable()));
+      var textelem=svgdoc.getElementById("textinput").childNodes.item(0);
+    }
+
     var sx=1+1/3,sy=1;
     var i;
     var welcome="    Welcome to EGachine "+EGachine.version.string+"    ";
@@ -100,45 +112,60 @@ EGachine.connectDialog=function(host,port){
       now=Timer.getTimeStamp();
       dt=(now-last)/1000000.0;
       last=now;
-      
-      if (i<sx/maxlen) i+=dt/50;
-      Video.clear();
-      Video.pushMatrix();
-      Video.translate(sx/2,3/4*sy);
-      Video.scale(i,i*1.3);
-      Video.drawText(s,true);
-      Video.translate(0,-3);
 
-      Video.pushMatrix();
-      Video.translate(0,0.5);
-      Video.pushColor();
-      Video.drawQuad(inputField.text.length+2+0.1,1+0.1);
-      Video.setColor(0.3,0.3,0.3);
-      Video.drawQuad(inputField.text.length+2,1);
-      Video.popColor();
-      Video.popMatrix();
-
-      Video.drawText(inputField.text,true);
-    
       if (now-blinkStamp>300000) {
 	blinkStamp=now;
 	blink=!blink;
       }
 
-      if (blink) {
-	Video.pushMatrix();
-	Video.translate(inputField.text.length/2,0);
-	Video.drawText("_");
-	Video.popMatrix();
-      }
+      if (useSVG) {
+	textelem.setNodeValue(inputField.text+ (blink ? "_" : "  "));
+	gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+	svgl.display(svgdoc);
+      }else{
 
-      Video.translate(0,-1);
-      Video.drawText("\n\n\npress escape to quit",true);
-      Video.popMatrix();
+	if (i<sx/maxlen) i+=dt/50;
+	Video.clear();
+
+	Video.pushMatrix();
+	Video.translate(sx/2,3/4*sy);
+	Video.scale(i,i*1.3);
+	Video.drawText(s,true);
+	Video.translate(0,-3);
+	
+	Video.pushMatrix();
+	Video.translate(0,0.5);
+	Video.pushColor();
+	Video.drawQuad(inputField.text.length+2+0.1,1+0.1);
+	Video.setColor(0.3,0.3,0.3);
+	Video.drawQuad(inputField.text.length+2,1);
+	Video.popColor();
+	Video.popMatrix();
+	
+	Video.drawText(inputField.text,true);
+	
+	if (blink) {
+	  Video.pushMatrix();
+	  Video.translate(inputField.text.length/2,0);
+	  Video.drawText("_");
+	  Video.popMatrix();
+	}
+	
+	Video.translate(0,-1);
+	Video.drawText("\n\n\npress escape to quit",true);
+	Video.popMatrix();
+      };
       Video.swapBuffers();
       //    Timer.uSleep(10000);
       Input.poll();
     }
+    if (useSVG) {
+      // restore GL state
+      Video.setViewportCoords({left:0,right:sx,bottom:0,top:sy});
+      gl.LoadIdentity();
+      gl.ClearColor(0,0,0,1);
+    }
+
     Input.charMode(false);
     var hp=inputField.text.split(":",2);
     host=hp[0];

@@ -2,7 +2,7 @@ egachine (0.0.7-1) unstable; urgency=low
 
   * new "upstream" release
   * spidermonkey is now build as shared library and shipped
-  in /usr/lib/egachine, in /usr/games are now shell script wrappers for
+  in /usr/lib/games/egachine, in /usr/games are now shell script wrappers for
   the binaries
 
  -- Jens Thiele (karme) <karme@berlios.de>  Fri, 23 Apr 2004 16:00:11 +0200

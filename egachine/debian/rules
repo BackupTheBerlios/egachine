@@ -27,7 +27,7 @@ build-stamp:
 	dh_testdir
 
 	# Add here commands to compile the package.
-	PREFIX=/usr DATADIR=/usr/share/games BINDIR=/usr/games SYSCONFDIR=/etc ./make 
+	PREFIX=/usr DATADIR=/usr/share/games BINDIR=/usr/games LIBDIR=/usr/lib/games SYSCONFDIR=/etc ./make 
 
 	touch build-stamp
 
@@ -49,7 +49,7 @@ install: build
 
 	# package egachine
 	PREFIX=/usr SYSCONFDIR=/etc DATADIR=/usr/share/games BINDIR=/usr/games \
-	DESTDIR=$(CURDIR)/debian/egachine ./install 
+	LIBDIR=/usr/lib/games DESTDIR=$(CURDIR)/debian/egachine ./install 
 
 # Build architecture-independent files here.
 binary-indep: build install

@@ -36,11 +36,6 @@ ejs.ModuleLoader.load("Util");
 function print(x){stdout.write(x);}
 function println(s){print(s+"\n");};
 
-// is the passed object an empty prototype? (empty object)
-function isEmptyProto(p) {
-  return (p=={}.__proto__);
-};
-
 //! call function for all properties of an object (and the object itself)
 /*!
   \param obj the object
@@ -75,8 +70,9 @@ function forall(obj,func,idfunc){
   _forall(obj);
 };
 
+//! rename all properties _p to __proto__
 function delp(x){
-  forall(x,(function(x,depthFirst,debug){
+  forall(x,(function(x,depthFirst){
 	      if (typeof x != 'object') return;
 	      if (!depthFirst) {
 		if (x._p) x.__proto__=x._p;
@@ -92,6 +88,13 @@ function delp(x){
   \note temporarily adds property _p as copy of __proto__
 */
 function serialize(x) {
+
+  // is the passed object an empty prototype? (empty object)
+  function isEmptyProto(p) {
+    return (p=={}.__proto__);
+  };
+
+  // copy all non-empty__proto__ properties to _p
   forall(x,(function(x,depthFirst){
 	      if (typeof x != 'object') return;
 	      if ((depthFirst)||(isEmptyProto(x.__proto__))) return;
@@ -99,9 +102,10 @@ function serialize(x) {
 		throw new Error("TODO: property _p not allowed");
 	      x._p=x.__proto__;
 	    }));
+  // now use toSource to serialize
   var r=x.toSource();
+  // remove _p properties again
   delp(x);
-  //  print("ser: "+r);
   return r;
 };
 

@@ -150,16 +150,6 @@ extern "C" {
       if (!(obj=JS_NewObject(cx,&monitorable_class,NULL,NULL))) return JS_FALSE;
       *rval=OBJECT_TO_JSVAL(obj);
     }
-
-    // todo parse arguments
-    switch(argc){
-    case 0:
-      break;
-    case 1:
-      break;
-    default:
-      EJS_THROW_ERROR(cx,obj,"Wrong number of args");
-    }
     return JS_TRUE;
   }
 

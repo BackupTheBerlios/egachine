@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="800"
+  height="600"
+  viewBox="0 0 800 600"
+  onmouseup="stopMove()"
+  >
+  <script>
+<![CDATA[
+	 function assert(f) {
+	   if (!f()) throw Error("assertion "+f.toSource()+" failed\n");
+	 };
+	 function debug(x) {
+	   ejs.ModuleLoader.get("Stream").stderr.write(x+"\n");
+	 };
+
+	 function swapAttr(e,a,b) {
+	   var va=e.getAttribute(a);
+	   var vb=e.getAttribute(b);
+	   e.setAttribute(a,vb);
+	   e.setAttribute(b,va);
+	 };
+
+	 function makeRed(t) {
+	   t.setAttribute("old",t.getAttribute("style").replace(/fill:[^;]*;/,'fill:red;'));
+	   swapAttr(t,"old","style");
+	 };
+
+	 function restore(t) {
+	   var old=t.getAttribute("old");
+	   if (old)
+	     t.setAttribute("style",old);
+	 };
+
+	 function mouseover(evt) {
+	   var t=evt.target;
+	   var oldStyle;
+	   assert(function(){return ((evt.type=="mouseover")||((evt.type=="mouseout")));});
+	   assert(function(){return (t===document.getElementById("mouseover"));});
+	   switch (evt.type) {
+	   case "mouseover":
+	     makeRed(t);
+	     break;
+	   case "mouseout":
+	     restore(t);
+	     break;
+	   };
+	 };
+
+	 function click(evt) {
+	   var t=evt.target;
+	   if (!t.getAttribute("old"))
+	     makeRed(t);
+	   else
+	     swapAttr(t,"old","style");
+	 };
+
+	 var toMove;
+	 var x=0;
+	 var last;
+	 var moving=false;
+
+	 function move() {
+	   if (!moving) {
+	     x=0;
+	     toMove.setAttribute("transform","translate("+x+" 0)");
+	     return;
+	   };
+	   var now=Date.now();
+	   x+=0.5*(now-last);
+	   last=now;
+	   // debug(x);
+	   toMove.setAttribute("transform","translate("+x+" 0)");
+	   setTimeout(move,1000/90);
+	 };
+
+	 function startMove(evt) {
+	   var t=evt.target;
+	   makeRed(t);
+	   last=Date.now();
+	   toMove=document.getElementById("l0");
+	   moving=true;
+	   move();
+	 };
+
+	 function stopMove(evt) {
+	   restore(document.getElementById("move"));
+	   moving=false;
+	 };
+
+	 // work-around gc attr loss
+         var workaround={mo:document.getElementById("mouseover"),
+			 cl:document.getElementById("click"),
+			 move:document.getElementById("move"),
+			 svg:document.getElementById("move")};
+	]]></script>
+  <rect x="0" y="0" width="800" height="600" fill="#64eeff" />
+  <svg xlink:href="../egachine/examples/client/slideshow-back.svg"/>
+
+  <text
+    style="font-size:48.000000;fill:black;text-anchor:middle"
+    x="400"
+    y="64">DOM level 2 (mouse) events</text>
+  <g id="l0">
+    <g transform="translate(200,200)">
+      <rect
+        id="mouseover"
+	style="fill:#0000ff;stroke:black;stroke-width:10;stroke-linejoin:round"
+	width="340"
+	height="200"
+	x="-170"
+	y="-100"
+	onmouseover="mouseover(evt);"
+	onmouseout="mouseover(evt);"
+	/>
+      <text
+	y="24"
+	style="font-size:48;fill:black;text-anchor:middle">mouseover</text>
+    </g>
+    <g transform="translate(350,350)">
+      <path
+        id="click"
+	style="fill:#ffff00;fill-opacity:0.75;stroke:black;stroke-width:12.5;stroke-opacity:0.2"
+	d="M 139.06020,93.693869 L 51.308941,77.737949 L 28.493951,163.96063 L -13.743229,85.405579 L -95.379749,121.32706 L -60.297389,39.326429 L -139.28147,-2.1028911 L -53.297309,-25.800951 L -70.152329,-113.38396 L 1.9858113,-60.934331 L 59.952031,-128.71922 L 63.922661,-39.617541 L 153.06037,-36.560921 L 85.873511,22.097429 L 139.06020,93.693869 z "
+        onclick="click(evt);"
+       />
+      <text
+	x="0" y="24"
+	style="font-size:48;fill:black;text-anchor:middle;">click</text>
+    </g>
+  </g>
+  <g 
+    transform="translate(400,500)"
+    >
+    <path
+      id="move"
+      style="fill:#6eff00;stroke:black;stroke-width:4;stroke-linejoin:round"
+      onmousedown="startMove(evt)"
+      d="M -165,68 C -165,29 -165,-9 -165,-47 C -14,-28 135,-9 286,10 C 135,29 -14,48 -165,68 z "/>
+    <text
+      x="0" y="24"
+      style="font-size:48;fill:black;text-anchor:middle">click to move</text>
+  </g>
+</svg>

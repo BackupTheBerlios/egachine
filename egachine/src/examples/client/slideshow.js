@@ -118,11 +118,14 @@ function displaySVG(fname) {
 			 }
 		       });
   try{
+    restoreGL();
     svgl.viewFile(findExample(fname));
   }catch(e){
     if (typeof e == 'number') {
       document=oldd;
+      restoreGL();
       svgl.selectDocument(document);
+      Video.showMouseCursor(0);
       return e;
     };
     throw e;

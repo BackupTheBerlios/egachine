@@ -8,7 +8,7 @@ function init() {
   var viewport=Video.getViewport();
   var sx=viewport[2],sy=viewport[3];
   var pos=new sg.V2D(sx/2,sy/2);
-  var size=new sg.V2D(sx/10,sy/10);
+  var size=new sg.V2D(sx/5,sy/5);
   // array - with current state of input devices
   var joypad=[];
 
@@ -21,8 +21,8 @@ function init() {
 		  // move quad
 		  var joy=joypad[0];
 		  if (joy) {
-		    pos.x+=joy.x*sx/4*dt;
-		    pos.y+=joy.y*sy/4*dt;
+		    pos.x+=joy.x*sx/2*dt;
+		    pos.y+=joy.y*sy/2*dt;
 		  }
 		});
 };

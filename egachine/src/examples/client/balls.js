@@ -70,15 +70,50 @@ EGachine.checkVersion("0.1.1");
   var i;
   var ball=[];
 
+  Compiled=function(node){
+    this.l=gl.GenLists(1);
+    gl.NewList(this.l, GL_COMPILE);
+    node.paint();
+    gl.EndList();
+  };
+  Compiled.prototype.paint=function(time){
+    gl.CallList(this.l);
+    sg.Node.prototype.paint.call(this,time);
+  };
+
   function addBall() {
     var i=ball.length;
+    var tr=spriteSize;
+    var bl=spriteSize.scale(-1);
+    var tl=new sg.V2D(-spriteSize.x,spriteSize.y);
+    var br=tl.scale(-1);
+    var hs=spriteSize.scale(0.5);
     ball.push(new Ball());
-    EGachine.sceneGraph.add(new sg.Color(rnd(0.4,1),rnd(0.4,1),rnd(0.4,1),rnd(0.4,1))
-			    .add(new sg.Sprite("ball",spriteSize,ball[i].pos,ball[i].degrees)
-				 .add(new sg.Sprite("ball",spriteSize.scale(0.5),spriteSize))
-				 .add(new sg.Sprite("ball",spriteSize.scale(0.5),spriteSize.scale(-1)))
-				 ));
+    EGachine.sceneGraph
+      .add(new sg.Translate(ball[i].pos)
+	   .add(new sg.Rotate(ball[i].degrees)
+		.add(new Compiled(new sg.Color(rnd(0.4,1),rnd(0.4,1),rnd(0.4,1),1)
+				  .add(new sg.Sprite("ball",spriteSize,new sg.V2D(0,0))
+				       .add(new sg.Sprite("ball",hs,tl))
+				       .add(new sg.Sprite("ball",hs,tr))
+				       .add(new sg.Sprite("ball",hs,bl))
+				       .add(new sg.Sprite("ball",hs,br))
+				       )))));
   }
+
+
+  // grid
+  var scroll=new sg.V2D(0,0);
+  var grid=new sg.Color(0.8,0.7,0.2);
+  var size=new sg.V2D(sx/10/10,sy+sy/3);
+  for (i=0;i<=sx+sx/4;i+=sx/4) {
+    grid.add(new sg.Quad(size,new sg.V2D(i,(sy+sy/3)/2)));
+  };
+  size=new sg.V2D(sx+sx/4,sy/10/10);
+  for (i=0;i<=sy+sy/3;i+=sy/3) {
+    grid.add(new sg.Quad(size,new sg.V2D((sx+sx/4)/2,i)));
+  };
+  EGachine.sceneGraph.add(new sg.Translate(scroll).add(new Compiled(grid)));
 
   addBall();
 
@@ -87,6 +122,11 @@ EGachine.checkVersion("0.1.1");
 		  // move balls
 		  for (i=0;i<ball.length;++i)
 		    ball[i].step(dt);
+		  // move grid
+		  scroll.x+=dt*200;
+		  while (scroll.x>0) scroll.x-=sx/4;
+		  scroll.y+=dt*100;
+		  while (scroll.y>0) scroll.y-=sy/3;
 		});
 
   function addResources(){

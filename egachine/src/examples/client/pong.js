@@ -97,7 +97,7 @@ function init() {
 		  // move rackets
 		  for (var r=0;r<2;++r) {
 		    if (joypad[r]) {
-		      rackets[r].pos.y+=joypad[r].y*sy/2*dt;
+		      rackets[r].pos.y+=joypad[r].y*sy*dt;
 		      rackets[r].pos.y=clip(spriteSize.y/2, sy-1-spriteSize.y/2, rackets[r].pos.y);
 		    }
 		  }

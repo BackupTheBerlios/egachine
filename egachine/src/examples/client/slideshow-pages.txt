@@ -107,6 +107,10 @@ SVG module
 --
 @svg/svgtetris.svg
 --
+@svg/domevent.svg
+--
+@svg/lion.svg
+--
 Audio module
 - very basic functionality
 - play music

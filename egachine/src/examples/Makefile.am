@@ -17,6 +17,8 @@ examples = \
 	server/netorigpong.js \
 	svg/svgviewer.js \
 	svg/svgtetris.svg \
+	svg/domevent.svg \
+	svg/lion.svg \
 	ejs/shell.js
 
 nobase_dist_example_DATA = $(examples)

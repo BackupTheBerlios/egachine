@@ -17,6 +17,42 @@
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    sodipodi:docbase="/home/jens/develop/Diplomarbeit/egachine/src/examples/slideshow">
+  <script>
+<![CDATA[
+	 var selected=false;
+	 function translateSelected() {
+	   if (!selected) return;
+	   selected.setAttribute("transform",(selected.old ? selected.old : "")+"translate("+(selected.trans+=40)+" 0)");
+	   setTimeout(translateSelected,1000/85);
+	 };
+
+	 function handleEvent(evt) {
+	   var n;
+	   switch (evt.type) {
+	   case "mousedown":
+	     selected=evt.target;
+	     if (evt.button==0) {
+	       selected.old=selected.getAttribute("style");
+	       selected.restore=function(){this.setAttribute("style",this.old);};
+	       selected.setAttribute("style",selected.old.replace(/fill:[^;]*;/,"fill:red;"));
+	     }else{
+	       selected.old=selected.getAttribute("transform");
+	       selected.restore=function(){this.setAttribute("transform",this.old ? this.old : "");};
+	       selected.trans=1;
+	       translateSelected();
+	     }
+	     break;
+	   case "mouseup":
+	     selected.restore();
+	     selected=false;
+	     break;
+	   };
+	 };
+	 
+	 document.addEventListener("mouseup",handleEvent,false);
+	 document.addEventListener("mousedown",handleEvent,false);
+	 if (typeof Video != "undefined" ) Video.showMouseCursor(1);
+]]></script>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"

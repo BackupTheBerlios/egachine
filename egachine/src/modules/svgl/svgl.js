@@ -63,7 +63,7 @@
     var Timer=ejs.ModuleLoader.get("Timer");
     var svgl=ejs.ModuleLoader.get("svgl");
     var stderr=ejs.ModuleLoader.get("Stream").stderr;
-    var timeout,oldTarget;
+    var timeout,oldTarget,oldTargetPath;
 
     Video.showMouseCursor(1);
 
@@ -79,6 +79,7 @@
 	  subevt=e.clone();
 	  subevt.type="mouseout";
 	  subevt.target=oldTarget;
+	  subevt._path=oldTargetPath;
 	  subevt.relatedTarget=newTarget;
 	  //debug("mouseout: target: "+subevt.target.nodeName+" relatedTarget: "+subevt.relatedTarget.nodeName);
 	  Input.dispatchEvent(subevt);
@@ -88,6 +89,7 @@
 	subevt=e.clone();
 	subevt.type="mouseover";
 	oldTarget=e.target=subevt.target=newTarget;
+	oldTargetPath=e._path;
 	//	stderr.write("setNewTarget (mouseover): "+subevt.toSource()+"\n");
 	Input.dispatchEvent(subevt);
       }
@@ -121,21 +123,32 @@
       //      stderr.write("dispatch: "+evt.toSource());
       // capturing
       evt.eventPhase=Input.Event.CAPTURING_PHASE;
-      // 1. calculate path
       var path=evt._path;
       delete evt._path;
       var i;
       for (i=0;i<path.length-1;++i) {
+	evt.currentTarget=path[i];
 	path[i].dispatchEvent(evt);
 	if (evt._stopPropagation) break;
       };
 
-      // bubbling
-      evt.eventPhase=Input.Event.BUBBLING_PHASE;
-      var i;
-      for (i=path.length-1;i>=0;--i) {
+      if (!evt._stopPropagation) {
+	// at target
+	i=path.length-1;
+	evt.eventPhase=Input.Event.AT_TARGET;
+	evt.currentTarget=path[i];
 	path[i].dispatchEvent(evt);
-	if (evt._stopPropagation) break;
+      }
+
+      if (!evt._stopPropagation) {
+	// bubbling
+	evt.eventPhase=Input.Event.BUBBLING_PHASE;
+	var i;
+	for (i=path.length-2;i>=0;--i) {
+	  evt.currentTarget=path[i];
+	  path[i].dispatchEvent(evt);
+	  if (evt._stopPropagation) break;
+	};
       };
       
       // restore path
@@ -248,11 +261,11 @@
 	      // should those handlers really only be called if directly targeted?
 	      // or normal bubbling?
 	      // hmm
-	      debug("ADDED:"+types[i]+":"+s);
+	      //	      debug("ADDED:"+types[i]+":"+s);
 	      e.addEventListener(types[i],
 				 (function(t,s){
 				   return function(evt){
-				       debug("eval: "+s);
+				     //				       debug("eval: "+s);
 				       eval(s);
 				   };})(e,s),
 				 false);

@@ -1,5 +1,7 @@
 2004-04-15  Jens Thiele  <karme@berlios.de>
 
+	* imported sources into CVS
+
 	* spidermonkey: now using CVS version (HEAD)
 	only minor changes for cross compilation made
 	(the changes are hacks => not suitable for upstream)

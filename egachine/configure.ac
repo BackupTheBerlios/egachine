@@ -134,6 +134,7 @@ if test x$enable_gl = xyes; then
         	;;
 	esac
 	AC_SUBST(GL_LIBS)
+	dnl TODO: gl module depends upon video module
 fi
 
 dnl the video module
@@ -202,6 +203,19 @@ or disable the audio module by passing --disable-audio to configure])
 	AC_SUBST(SDLMIXER_LIBS)
 fi
 
+dnl the svgl module
+AC_ARG_ENABLE([svgl],
+	AS_HELP_STRING([--enable-svgl],
+	[Build svgl module [[default=yes]]]),
+	[], enable_svgl=yes)
+if test x$enable_svgl = xyes; then
+	dnl TODO: shouldn't svgl do this already?
+	PKG_CHECK_MODULES(GLFT, glft)
+	PKG_CHECK_MODULES(SVGL, svgl)
+	SVGL_CFLAGS="$GLFT_CFLAGS $SVGL_CFLAGS"
+	dnl TODO: svgl module depends upon video module
+fi
+
 dnl todo: thread-safety
 LDFLAGS="$LDFLAGS -thread-safe -pthread"
 MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.sym"
@@ -229,6 +243,7 @@ AC_OUTPUT([
 	src/modules/video/Makefile
 	src/modules/input/Makefile
 	src/modules/audio/Makefile
+	src/modules/svgl/Makefile
 	boost/Makefile
 ])
 

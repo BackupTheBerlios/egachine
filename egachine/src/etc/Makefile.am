@@ -23,6 +23,7 @@ editbuild = sed \
 	"@abs_top_srcdir@/src/modules/video"\,\
 	"@abs_top_srcdir@/src/modules/input"\,\
 	"@abs_top_srcdir@/src/modules/audio"\,\
+	"@abs_top_srcdir@/src/modules/svgl"\,\
 	,g' \
 	-e 's,@libraryPath\@,\
 	"@abs_top_builddir@/src/modules/example"\,\
@@ -39,6 +40,7 @@ editbuild = sed \
 	"@abs_top_builddir@/src/modules/video"\,\
 	"@abs_top_builddir@/src/modules/input"\,\
 	"@abs_top_builddir@/src/modules/audio"\,\
+	"@abs_top_builddir@/src/modules/svgl"\,\
 	,g'
 
 editinst = sed \

@@ -282,6 +282,9 @@ function V2D(x,y){
   this.x=x;
   this.y=y;
 };
+V2D.middle=function(p1,p2) {
+  return p1.add(p2).scale(0.5);
+}
 V2D.prototype.clone=function()
 {
   return new V2D(this.x,this.y);
@@ -305,6 +308,26 @@ V2D.prototype.dec=function(v)
   this.x-=v.x;
   this.y-=v.y;
   return this;
+};
+V2D.prototype.scale=function(s)
+{
+  return new V2D(this.x*s,this.y*s);
+};
+V2D.prototype.rot90=function()
+{
+  return new V2D(this.y,-this.x);
+};
+V2D.prototype.length=function()
+{
+  return Math.sqrt(this.dot(this));
+};
+V2D.prototype.normalized=function()
+{
+  return this.scale(1/this.length());
+};
+V2D.prototype.dot=function(v)
+{
+  return this.x*v.x+this.y*v.y;
 };
 
 // degrees object

@@ -14,7 +14,8 @@ tests = \
 	timer \
 	scope \
 	smbug240577 \
-	opengl
+	opengl \
+	svgl
 
 TESTS = $(tests)
 

@@ -1,0 +1,19 @@
+#!/bin/bash
+../src/ejs <<EOF
+
+// not really needed for this test
+ejs.ModuleLoader.load("Stream");
+ejs.ModuleLoader.load("gl");
+if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
+	stderr.write("Warning no stencil buffer\n");
+// end of not really needed for this test
+
+ejs.ModuleLoader.load("svgl");
+
+
+var i;
+for (i=0;i<4000;++i) {
+	svgl.test();
+	Video.swapBuffers();
+}
+EOF

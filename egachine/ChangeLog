@@ -1,3 +1,7 @@
+2004-10-15  Jens Thiele  <karme@berlios.de>
+
+	* added svgl module (simple test for now)
+
 2004-09-23  Jens Thiele  <karme@berlios.de>
 
 	* modules may be compiled statically into ejs with --disable-shared

@@ -312,3 +312,16 @@ Libtool hack:
             if grep -v "^: " < "$nlist" |
                 if sort -k 3 </dev/null >/dev/null 2>&1; then
 --------------------------------------------------------------------------------
+I managed to get caught by this already twice:
+
+the API differs wether JS_THREADSAFE is defined or not
+f.e.: JS_GetClass gets 1 or 2 parameters
+
+=> if you compile with the wrong JS_THREADSAFE "setting"
+you get "random" crashes (stack corruption)
+
+2 Problems here:
+spidermonkey should use something like pkgconfig or sm-config, ....
+perhaps that's up to the package maintainers
+
+would be nice to have at least a runtime check

@@ -213,3 +213,70 @@ export LDFLAGS="-g"
 
 valgrind is a great tool
 --tool=massif is interesting, too
+--------------------------------------------------------------------------------
+SVG:
+also garnicht so einfach
+mozilla setzt ziemlich direkt auf gdi/libart oder cairo auf
+hauptaufgabe:
+paths => rendern von linienzügen bzw. polygonen
+
+evtl wäre es schlau einfach in opengl texturen zu rendern
+hmm
+wenn der ganze dreck nicht animierbar wäre ;-)
+ich könnte auch einfach mal versuchen das ganze brute-force zu machen
+und dann weitersehen
+
+
+http://archives.java.sun.com/cgi-bin/wa?A2=ind0203&L=java3d-interest&F=&S=&P=37144
+For your information:
+
+- SVG is a 600+ pages specification which uses other specifications
+ (CSS, DOM, SMIL) of comparable sizes.
+
+- Implementing Batik so far has meant about 10 men/year. There is
+  more in Batik than just the renderer, but the bulk of the effort
+  was in the renderer.
+
+It seems to me that trying harder to use Batik would be more efficient
+than writing your own renderer.
+
+
+was habe ich heute gelernt?
+gibt keine vernünftige 2d api
+opengl wird schwierig zu vverwenden sein
+
+opengl -es hat zusätzlich openvg (für vector graphik geschichten)
+
+cairo ist zumindest vom konzept her nett
+
+speicher ist das problem => vektorgraphik => embedded
+
+cairo/glitz setzt tief an => opengl wird für wenig verwendet
+anscheinend nur für blending - nee nicht nur siehe:
+http://cvs.cairographics.org/cairo/cairo/src/cairo_glitz_surface.c?view=markup
+
+--------------------------------------------------------------------------------
+hab noch agile angeschaut (java2d backend das opengl via gl4java benutzt)
+benutzt glu zum tesselieren
+und ansonsten hat es meine vorstellungen bestätigt
+
+--------------------------------------------------------------------------------
+also svgl benutzt agg für pfade:
+http://www.antigrain.com/index.html
+
+und macht dann grundsätzlich polygone, die mit glu tesseliert werden
+sicher?
+SVGPathSeg.cpp benutzt BezierPath und nicht agg?
+doch benutzt agg
+
+
+hmm - hat auch nen svg viewer?
+http://www.antigrain.com/svg/index.html
+
+
+buch:
+Computer Graphics with OpenGL, 3/E Donald Hearn and M. Pauline Baker, ISBN: 0-13-015390-7 Publisher: Prentice Hall Copyright: 2004
+
+
+Realtime Bezier Curves And Surfaces:
+http://tfpsly.planet-d.net/Docs/TomHammersley/bezier.htm

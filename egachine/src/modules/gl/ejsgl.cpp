@@ -360,7 +360,7 @@ extern "C" {
     JSObject *globj = JS_DefineObject(cx, global, "gl", NULL, NULL,
 				      JSPROP_ENUMERATE);
     if (!globj) return JS_FALSE;
-    if (!JS_DefineFunctions(cx, globj, gl_static_methods)) return false;
+    if (!JS_DefineFunctions(cx, globj, gl_static_methods)) return JS_FALSE;
     
     JSObject *gluobj = JS_DefineObject(cx, global, "glu", NULL, NULL,
 				       JSPROP_ENUMERATE);

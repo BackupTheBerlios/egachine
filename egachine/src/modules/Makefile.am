@@ -14,5 +14,5 @@ SUBDIRS = \
 	gl \
 	video \
 	input \
-	audio
-
+	audio \
+	svgl

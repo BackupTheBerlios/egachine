@@ -15,7 +15,8 @@ tests = \
 	scope \
 	smbug240577 \
 	opengl \
-	svgl
+	svgl \
+	svgldom
 
 TESTS = $(tests)
 

@@ -378,6 +378,8 @@ the user to serialize objects as needed => user is forced to think about local
 and remote objects
 --------------------------------------------------------------------------------
 SVG support (direct or indirect via transformation)
+decided to use svgl - since it already does what I wanted to do and I
+do not have the time to reinvent the wheel
 --------------------------------------------------------------------------------
 update project description to reflect new focus
 --------------------------------------------------------------------------------
@@ -898,9 +900,6 @@ build stuff:
 
 --disable-module does not work yet
 --------------------------------------------------------------------------------
-Makefile.am's:
-we probably should use la_LIBADD instead of la_LDFLAGS when adding libs?
---------------------------------------------------------------------------------
 okay
 modules can now be linked statically
 the version with static modules is: 959K
@@ -915,14 +914,22 @@ now you could replace this SDL with another one (with minimalistic dependencies)
 but no - libtool linked against every lib ....
 --------------------------------------------------------------------------------
 take a look at <http://g3d-cpp.sourceforge.net/>
-
-
-bezier offset curve:
-perhaps try to use subdivision
-"einfach wie kurve unterteilen"
-muss einen haken haben ;-)
-
 --------------------------------------------------------------------------------
 different modules (video, gl, svgl) must be able to include gl headers in a 
 portable way find a nice solution
+--------------------------------------------------------------------------------
+wrap svgl DOM objects
+--------------------------------------------------------------------------------
+hmm i have trouble with the nvidia drivers
+I use them in 16bit mode, AGP disabled and this works very well
+but svgl needs the stencil buffer which is not available in 16bit mode
+but in 24bit mode i get creashes and machine lock-ups
+it seems related to the lirc kernel module?
+--------------------------------------------------------------------------------
+svgl generates cpp headers automatically from DOM idl via python
+we should try to generate wrappers automatically in the same way
+--------------------------------------------------------------------------------
+DOM:
+hmm riesig
+brauchbares subset auswählen
 --------------------------------------------------------------------------------

@@ -58,7 +58,7 @@ am__installdirs = "$(DESTDIR)$(pkglibdir)" "$(DESTDIR)$(pkgdatadir)"
 pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 ejssvgl_la_LIBADD =
-am_ejssvgl_la_OBJECTS = ejssvgl.lo
+am_ejssvgl_la_OBJECTS = ejssvgl.lo ejssvgdocument.lo ejselement.lo
 ejssvgl_la_OBJECTS = $(am_ejssvgl_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
@@ -71,6 +71,14 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile --tag=CXX $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link --tag=CC $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(ejssvgl_la_SOURCES)
 DIST_SOURCES = $(ejssvgl_la_SOURCES)
 dist_pkgdataDATA_INSTALL = $(INSTALL_DATA)
@@ -200,7 +208,13 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = @EJS_CFLAGS@ @SVGL_CFLAGS@
 pkglib_LTLIBRARIES = ejssvgl.la
-ejssvgl_la_SOURCES = ejssvgl.cpp
+ejssvgl_la_SOURCES = \
+	ejssvgl.cpp \
+	ejssvgdocument.h \
+	ejssvgdocument.cpp \
+	ejselement.h \
+	ejselement.cpp
+
 ejssvgl_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SVGL_LIBS@
 dist_pkgdata_DATA = svgl.js
 EXTRA_DIST = export.sym
@@ -273,6 +287,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejselement.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejssvgdocument.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejssvgl.Plo@am__quote@
 
 .cpp.o:

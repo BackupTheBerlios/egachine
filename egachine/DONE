@@ -325,3 +325,14 @@ spidermonkey should use something like pkgconfig or sm-config, ....
 perhaps that's up to the package maintainers
 
 would be nice to have at least a runtime check
+--------------------------------------------------------------------------------
+bezier offset curve:
+perhaps try to use subdivision
+"einfach wie kurve unterteilen"
+muss einen haken haben ;-)
+we now use svgl which uses agg to do this
+--------------------------------------------------------------------------------
+Makefile.am's:
+we probably should use la_LIBADD instead of la_LDFLAGS when adding libs?
+No (why no? forgotton)
+--------------------------------------------------------------------------------

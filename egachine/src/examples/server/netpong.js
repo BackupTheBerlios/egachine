@@ -38,7 +38,7 @@ if (!EGachine.checkVersion(0,1,1))					\
   throw new Error('at least version 0.1.1 required');			\
 objReader=new ObjectReader(stream);					\
 Input.handleInput=function(i){						\
-  var msg=serialize(i);							\
+  var msg=jsolait.lang.objToJson(i);					\
   var h=msg.length.convertTo(16,6);					\
   stream.write(h);							\
   stream.write(msg);							\

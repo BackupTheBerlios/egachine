@@ -28,6 +28,8 @@ ejs.ModuleLoader.load("Zlib");
 ejs.ModuleLoader.load("Timer");
 ejs.ModuleLoader.load("Stream");
 ejs.ModuleLoader.load("Util");
+ejs.ModuleLoader.load("jsolait");
+jsolait.lang=jsolait.importModule("lang");
 
 // this script is evaluated from all programs in the egachine distribution
 
@@ -69,55 +71,6 @@ function forall(obj,func,idfunc){
     return;
   };
   _forall(obj);
-};
-
-//! rename all properties _p to __proto__
-function delp(x){
-  forall(x,(function(x,depthFirst){
-	      if (typeof x != 'object') return;
-	      if (!depthFirst) {
-		if (x._p) x.__proto__=x._p;
-	      }else{
-		if (x._p) delete x._p;
-	      }
-	    }));
-};
-
-//! serialize object
-/*!
-  \bug properties named _p are not allowed
-  \note temporarily adds property _p as copy of __proto__
-*/
-function serialize(x) {
-  var r;
-  // is the passed object an empty prototype? (empty object)
-  function isEmptyProto(p) {
-    return (p=={}.__proto__);
-  };
-
-  // copy all non-empty__proto__ properties to _p
-  forall(x,(function(x,depthFirst){
-	      if (typeof x != 'object') return;
-	      if ((depthFirst)||(isEmptyProto(x.__proto__))) return;
-	      if ((x._p)&&(x.hasOwnProperty("_p")))
-		throw new Error("TODO: property _p not allowed");
-	      x._p=x.__proto__;
-	    }));
-  // now use toSource to serialize
-  r=x.toSource();
-  // remove _p properties again
-  delp(x);
-  return r;
-};
-
-//! deserialize object
-/*
-  \note This calls eval - which depending on your usage may be a security hole
-*/
-function deserialize(str) {
-  var x=eval(str);
-  delp(x);
-  return x;
 };
 
 // find last element in sorted array-like object not greater than v

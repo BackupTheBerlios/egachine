@@ -63,7 +63,7 @@ ObjectWriter=function(stream)
   this.stream=stream;
   // objects to ignore completely (todo: shit)
   this._ignore={};
-  for (i in toignore) this._ignore[util.getObjectID(toignore[i])]=true;
+  for (i=0;i<toignore.length;++i) this._ignore[util.getObjectID(toignore[i])]=true;
   // "hidden" properties to use
   // (properties we are interested in which aren't enumarated)
   this._hiddenProps=["__proto__","constructor"];

@@ -41,7 +41,7 @@ Input.handleInput=function(i){
     if (pads[i.dev]) {
       var c=-1;
       for (a in i) {
-	if (i[a]!=pads[i.dev][a]) {
+	if (i.hasOwnProperty(a)&&(i[a]!=pads[i.dev][a])) {
 	  handlePress(c*2+i.dev,i[a]);
 	}
 	++c;

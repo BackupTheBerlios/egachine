@@ -91,7 +91,8 @@ while (true) {
   Video.pushMatrix();
   Video.translate(0,y);
 
-  for (var i in girls) {
+  var i;
+  for (i=0;i<girls.length;++i) {
     girls[i].step(dt);
     girls[i].paint();
   }

@@ -23,7 +23,6 @@
 */
 
 ejs.ModuleLoader.load("EGachine");
-ejs.ModuleLoader.load("File");
 
 if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
   stderr.write("Usage: egares [-h|--help|RESNAME] [FILE|-] [OPTION]...\n");

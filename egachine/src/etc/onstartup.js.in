@@ -10,10 +10,10 @@ ejs.getGlobal=function(){
 };
 
 ejs.ModuleLoader.findFile=function(path,fname) {
-  var p;
+  var i;
   var cname;
-  for (p in path){
-    cname=path[p]+"/"+fname;
+  for (i=0;i<path.length;++i){
+    cname=path[i]+"/"+fname;
     if (ejs.ModuleLoader.fileIsReadable(cname)) return cname;
   }
 };

@@ -27,7 +27,7 @@ println("Server is now running\nListening for connections on port "+listenPort);
 println("ATTENTION: at the moment the server is insecure.");
 
 // our game uses an aspect ratio of 1.333:1
-getProfile=true;
+getProfile=false;
 sx=1+1/3;
 sy=1;
 racketSize=new V2D(0.05,0.1);
@@ -100,13 +100,13 @@ function run(){if (!EGachine.checkVersion(0,1,1))			\
 objReader=new ObjectReader(stream);					\
 Input.handleInput=function(i){						\
   if (i.x) {start+=i.x*1000000;stderr.write(start+'\\n');return;};	\
-  var msg=serialize(i);							\
+  var msg=jsolait.lang.objToJson(i);					\
   var h=msg.length.convertTo(16,6);					\
   stream.write(h);							\
   stream.write(msg);							\
   stream.sync();							\
 };									\
-function trace(f){var debug=1;if (debug) var s=Timer.getTimeStamp();	\
+function trace(f){var debug=0;if (debug) var s=Timer.getTimeStamp();	\
   f();									\
   if (debug) stdout.write(						\
                     uneval(f)+': '+(Timer.getTimeStamp()-s)+'\\n');	\
@@ -180,10 +180,8 @@ function advanceTo(time) {
   }else if (ballPos.x>sx) {
     ball.appendMove(time, new LinMover(ballStartPos, ballSpeed));
     points[1].add(time, new Points(1+points[1][points[1].children-1].points,true));
-    println("point");
   }else if ((xcol<0)||(ycol<0)){
     // collission response
-    println("collision");
     ball.appendMove(time, new LinMover(ballPos, new V2D(ballSpeed.x*xcol,ballSpeed.y*ycol)));
   }
 };
@@ -445,7 +443,7 @@ while(true) {
   while ((dt=((now=getNow())-last))<(stepSize-10000)) {
     profile(function(){Net.server.poll(stepSize-dt);});
   };
-  stdout.write("dt:"+dt+"\n");
+  //  stdout.write("dt:"+dt+"\n");
   
   // forward simulation
   while ( (now-simTime) > stepSize) {

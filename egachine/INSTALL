@@ -3,6 +3,7 @@ Installing EGachine
 ======================================================================
 
 Installing a binary package:
+(recommended for beginners)
 
 ----------------------------------------------------------------------
 
@@ -28,6 +29,8 @@ game menu.
 ======================================================================
 
 Building EGachine
+(a bit tricky at the moment since EGachine depends on a CVS version
+of SDL_mixer)
 
 ----------------------------------------------------------------------
 
@@ -39,6 +42,9 @@ $apt-get source egachine
 $cd egachine-0.0.?
 $dpkg-buildpackage -rfakeroot -b -uc
 
+ATTENTION:
+unfortunately this does not work at the moment since egachine depends
+on a CVS version of SDL_mixer
 ----------------------------------------------------------------------
 
 Currently there is no Makefile,  and we currently don't use  autoutils

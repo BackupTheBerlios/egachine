@@ -286,30 +286,6 @@ still not the best solution
 --------------------------------------------------------------------------------
 client and server should check protocol compatibility/version
 --------------------------------------------------------------------------------
-audio:
-In the long run perhaps openal is the way to go.
-For now i wanted to use the sound layer of adic (http://adic.berlios.de).
-Problem: music playing with SDL_mixer only works from files
-(at least with the debian version)
-Perhaps there is a newer version?
-In adic there also was a bug with mod playing - the loops were wrong afair.
-
-OpenAL made much advances since last time I tried it.
-Really nice
-
-SDL_mixer: there is a version supporting RWOps
-
-Should I use OpenAL from the begining?
-Unfortunately there is no mod support?
-and mod is the way to go for egachine since size matters
-ogg/mp3's are simply too big
-midi would be an option (not really)
-one could make a mod like format with openal+javascript
-but then there is no editor
-an option would be than to convert mods to this format
-
-for now we use SDL_mixer
---------------------------------------------------------------------------------
 kick out the video stuff which only duplicates the gl wrapper
 should i keep a subset in Video anyway?
 currently examples in client/opengl may use gl. and in client/ itself
@@ -426,9 +402,36 @@ using JS_GetStringBytes?  It's lossy and deprecated.
 --------------------------------------------------------------------------------
 write a spidermonkey embeding "best practice" document"
 --------------------------------------------------------------------------------
-solve SDL_mixer problem - since we currently depend on a CVS version?
+audio:
+
+In the long run perhaps openal is the way to go.
+For now i wanted to use the sound layer of adic (http://adic.berlios.de).
+Problem: music playing with SDL_mixer <=1.2.5 only works from files (not RWOps)
+In adic there also was a bug with mod playing - the loops were wrong afair.
+
+we currently depend on a CVS version
 perhaps conditionally just duplicate the missing function?
 Mix_LoadMUS_RW(SDL_RWops *rw) is not available in 1.2.5
+or include a newer SDL_mixer in egachine
+the latter perhaps is neccessary anyway since we perhaps don't want to expose
+all formats available to SDL_mixer to untrusted code - but then again it would
+perhaps be better to replace SDL_mixer completely?
+
+OpenAL made much advances since last time I tried it.
+Really nice
+Unfortunately there is no mod support?
+and mod is the way to go for egachine since size matters
+ogg/mp3's are simply too big
+midi would be an option (not really)
+one could make a mod like format with openal+javascript
+but then there is no editor
+an option would be than to convert mods to this format
+for now we use SDL_mixer 
+
+other options:
+SDL_sound
+mikmod directly
+there is another mod playing library used optionally by xmms
 --------------------------------------------------------------------------------
 lsb linux binaries
 --------------------------------------------------------------------------------

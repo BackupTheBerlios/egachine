@@ -121,8 +121,7 @@ ejs_Node_getNodeValue
 {
   try{
     dom::String* value=nthis->getNodeValue();
-    if (!DomStringToJsval(cx, value, rval))
-      return JS_FALSE;
+    if (!DomStringToJsval(cx, value, rval)) return JS_FALSE;
   }catch(const dom::DOMException &e){
     EJS_THROW_ERROR(cx, jsthis, e.what());
   }
@@ -133,9 +132,21 @@ JSBool
 ejs_Node_normalize
 (JSContext* cx, JSObject* jsthis, dom::Node* nthis, uintN argc, jsval*, jsval*)
 {
-  EJS_CHECK_NUM_ARGS(cx,jsthis,0,argc);
   try{
     nthis->normalize();
+  }catch(const dom::DOMException &e){
+    EJS_THROW_ERROR(cx, jsthis, e.what());
+  }
+  return JS_TRUE;
+}
+
+JSBool
+ejs_Node_getNodeName
+(JSContext* cx, JSObject* jsthis, dom::Node* nthis, uintN, jsval*, jsval* rval)
+{
+  try{
+    dom::String* value=nthis->getNodeName();
+    if (!DomStringToJsval(cx, value, rval)) return JS_FALSE;
   }catch(const dom::DOMException &e){
     EJS_THROW_ERROR(cx, jsthis, e.what());
   }

@@ -230,11 +230,9 @@ handleNewConnection(NetStreamBufServer::ID id, JGACHINE_SMARTPTR<NetStreamBuf> s
 {
   assert(streamPtr.get());
   JGACHINE_INFO("New connection ("<<id<<")");
-  jsval rval;
   jsval args[2];
-  JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0]));
-
-  JSNetwork::newStreamObject(streamPtr.get(),&args[1]);
+  JGACHINE_CHECK(JS_NewNumberValue(ECMAScript::cx,id,&args[0])==JS_TRUE);
+  JGACHINE_CHECK(JSNetwork::newStreamObject(streamPtr.get(),&args[1])==JS_TRUE);
 
   ECMAScript::callFunction("Net","handleNewConnection",2,args);
 }

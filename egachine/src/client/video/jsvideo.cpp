@@ -80,10 +80,6 @@ extern "C" {
   }
 }
 
-#undef JSFUNC
-
-using namespace ECMAScript;
-
 static JSFunctionSpec static_methods[] = {
   ECMA_FUNCSPEC(swapBuffers,0),
   ECMA_FUNCSPEC(createTexture,1),
@@ -92,20 +88,13 @@ static JSFunctionSpec static_methods[] = {
   ECMA_END_FUNCSPECS
 };
 
-static JSClass video_class = {
-  "Video",0,
-  JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
-  JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
-  ECMA_END_CLASS_SPEC
-};
-
 bool
 JSVideo::init()
 {
-  JSObject *obj = JS_DefineObject(cx, glob, "Video", &video_class, NULL,
-				  JSPROP_ENUMERATE);
+  JSObject *obj = JS_DefineObject(ECMAScript::cx, ECMAScript::glob,
+				  "Video", NULL, NULL,JSPROP_ENUMERATE);
   if (!obj) return false;
-  if (!JS_DefineFunctions(cx, obj, static_methods)) return false;
+  if (!JS_DefineFunctions(ECMAScript::cx, obj, static_methods)) return false;
   return JSGL::init();
 }
 

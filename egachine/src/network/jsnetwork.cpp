@@ -32,6 +32,7 @@ extern "C" {
     }
     return JS_TRUE;
   }
+
   ECMA_BEGIN_METHOD(stream_send) 
   {
     ECMA_CHECK_NUM_ARGS(1);
@@ -45,6 +46,7 @@ extern "C" {
     int w=stream->sputn(ctype,strlen(ctype));
     return JS_NewNumberValue(cx,w,rval);
   }
+
   ECMA_BEGIN_METHOD(stream_recv) 
   {
     ECMA_CHECK_NUM_ARGS(1);
@@ -70,6 +72,7 @@ extern "C" {
     *rval=STRING_TO_JSVAL(r);
     return JS_TRUE;
   }
+
   ECMA_BEGIN_VOID_METHOD_VOID(stream_sync)
   {
     ECMA_CHECK_NUM_ARGS(0);
@@ -78,24 +81,23 @@ extern "C" {
     stream->pubsync();
     return JS_TRUE;
   }
+
   ECMA_BEGIN_METHOD(stream_select) 
   {
     NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);
     if (!stream) return JS_FALSE;
     JGACHINE_SMARTPTR<Timer::TimeStamp> timeout;
     assert(!timeout.get());
-    if ((argc>=1)&&(JSVAL_IS_INT(argv[0]))) {
+    if ((argc>=1)&&(JSVAL_IS_INT(argv[0])))
       timeout=JGACHINE_SMARTPTR<Timer::TimeStamp>(new Timer::TimeStamp(JSVAL_TO_INT(argv[0])));
-    }
     bool r=stream->select(timeout.get());
     *rval=BOOLEAN_TO_JSVAL(r);
     return JS_TRUE;
   }
 }
 
-using namespace ECMAScript;
-
 #define JSFUNC(prefix, name, args) { #name,prefix##name,args,0,0}
+
 static JSFunctionSpec stream_methods[] = {
   JSFUNC(stream_, send,1),
   JSFUNC(stream_, recv,1),
@@ -111,7 +113,6 @@ static JSFunctionSpec net_static_methods[] = {
 
 #undef JSFUNC
 
-
 static JSClass stream_class = {
   "Stream",JSCLASS_HAS_PRIVATE,
   JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
@@ -122,29 +123,22 @@ static JSClass stream_class = {
 JSBool
 JSNetwork::newStreamObject(NetStreamBuf* s, jsval* rval)
 {
-  JSObject *obj=JS_NewObject(cx, &stream_class, 0, 0);
+  JSObject *obj=JS_NewObject(ECMAScript::cx, &stream_class, NULL, NULL);
   if (!obj) return JS_FALSE;
   *rval=OBJECT_TO_JSVAL(obj);
   assert(JSVAL_IS_OBJECT(*rval));
-  if (!JS_DefineFunctions(cx, obj, stream_methods)) return JS_FALSE;
-  if (!JS_SetPrivate(cx,obj,(void *)s)) return JS_FALSE;
+  if (!JS_DefineFunctions(ECMAScript::cx, obj, stream_methods)) return JS_FALSE;
+  if (!JS_SetPrivate(ECMAScript::cx,obj,(void *)s)) return JS_FALSE;
   return JS_TRUE;
 }
-
-static JSClass net_class = {
-  "Net",0,
-  JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
-  JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
-  ECMA_END_CLASS_SPEC
-};
 
 bool
 JSNetwork::init()
 {
-  JSObject *obj = JS_DefineObject(cx, glob, "Net", &net_class, NULL,
-				  JSPROP_ENUMERATE);
+  JSObject *obj = JS_DefineObject(ECMAScript::cx, ECMAScript::glob,
+				  "Net", NULL, NULL, JSPROP_ENUMERATE);
   if (!obj) return JS_FALSE;
-  return JS_DefineFunctions(cx, obj, net_static_methods);
+  return JS_DefineFunctions(ECMAScript::cx, obj, net_static_methods);
 }
 
 bool

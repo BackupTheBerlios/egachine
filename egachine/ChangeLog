@@ -1,3 +1,30 @@
+2004-04-19  Jens Thiele  <karme@berlios.de>
+
+	* code clean up
+
+	* improved error handling
+
+	* clear pending exceptions after script execution
+
+	* windows binary ships with a modified sdl 1.2.7 (s.a. DONE)
+
+	* experimental debian package
+
+	* changes to the build system
+
+2004-04-17  Jens Thiele  <karme@berlios.de>
+
+	* added audio example
+
+	* added audio
+
+	* seperated step and paint
+
+	* decided to use OpenGL/MESA as base for the video/scene-graph
+	part, too. This simplifies the "native" code and it is still 
+	possible to write alternative implementations of the 
+	OpenGL/MESA subset used by the video and scene-graph objects.
+	
 2004-04-16  Jens Thiele  <karme@berlios.de>
 
 	* added glGet functions:

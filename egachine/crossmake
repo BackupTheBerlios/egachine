@@ -23,6 +23,7 @@ export PATH="$HOME/bin:/usr/local/i586-mingw32msvc/bin:$HOME/develop/cross/bin:$
 export EXE=".exe"
 LDFLAGS="$LDFLAGS -L/usr/local/i586-mingw32msvc/lib"
 
+export EGACHINE_CROSS=1
 
 source ./common.sh
 
@@ -33,6 +34,7 @@ else
     SM_BUILDDIR="mingwcross_DBG.OBJ"
 fi
 LDFLAGS="$LDFLAGS -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
+SDLMIXERLIBS="-lSDL_mixer"
 COMMONFLAGS="-c -I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_WIN $(sigc-config --cflags)"
 SERVERFLAGS=""
 CLIENTFLAGS="$(sdl-config --cflags)"
@@ -42,8 +44,8 @@ DESTDIR=${DESTDIR:=/tmp/egachine-$PACKAGE_MAJOR_VERSION.$PACKAGE_MINOR_VERSION.$
 # build spidermonkey
 cd $SPIDERMONKEY_SRCDIR
 
-#make -f Makefile.ref clean
-#rm -rf *.OBJ
+make -f Makefile.ref clean
+rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
 
 
@@ -63,7 +65,7 @@ for a in $(find . -name "*.cpp"); do
 done
 # link client
 echo Link egachine
-run "$CXX -o egachine$EXE $LDFLAGS $(find -name *.o|grep -v server|grep -v tools)  -ljs32 $(sdl-config --libs) $(sigc-config --libs) -lopengl32 -lglu32 -lwsock32 -lwinmm -lSDL_image"
+run "$CXX -o egachine$EXE $LDFLAGS $(find -name *.o|grep -v server|grep -v tools)  -ljs32 $SDLMIXERLIBS $(sdl-config --libs) $(sigc-config --libs) -lopengl32 -lglu32 -lwsock32 -lwinmm -lSDL_image"
 # link server
 echo Link egaserver
 run "$CXX -o egaserver$EXE $LDFLAGS $(find -name *.o|grep -v client|grep -v tools) -ljs32 $(sigc-config --libs) -lwsock32 -lwinmm"
@@ -78,15 +80,18 @@ done
 
 cp $SRCDIR/*.js $DESTDIR
 
-for SUBDIR in server client; do
-    mkdir $DESTDIR/$SUBDIR
-    for a in $SUBDIR/*.js; do
-	install $a $DESTDIR/$a
-    done
-done
+mkdir $DESTDIR/etc
+install $SRCDIR/etc/*.js $DESTDIR/etc
 
-cp -af examples $DESTDIR
-find $DESTDIR -name "*~" -exec rm -v \{\} \;
+mkdir $DESTDIR/examples
+mkdir $DESTDIR/examples/client
+mkdir $DESTDIR/examples/client/opengl
+mkdir $DESTDIR/examples/server
+mkdir $DESTDIR/examples/misc
+
+for a in $(find examples -name "*.js"); do
+    install $a $DESTDIR/$a
+done
 
 # create bat files for examples
 DIRBAK=$(pwd)
@@ -107,6 +112,31 @@ for a in $(find examples/client -name "*.js"); do
 done
 cd "$DIRBAK"
 
+cat >$DESTDIR/README-SDL.txt <<EOF
+Please distribute this file with the SDL runtime environment:
+
+The Simple DirectMedia Layer (SDL for short) is a cross-platfrom library
+designed to make it easy to write multi-media software, such as games and
+emulators.
+
+The Simple DirectMedia Layer library source code is available from:
+http://www.libsdl.org/
+
+This library is distributed under the terms of the GNU LGPL license:
+http://www.gnu.org/copyleft/lesser.html
+
+NOTE:
+The SDL version included in this package is a modified 1.2.7 version.
+src/video/wincommon/SDL_wingl* are from 1.2.4
+The library was cross-compiled with a mingw cross compiler
+from linux to win.
+
+The configure options:
+./configure --host=i586-mingw32 --prefix=/usr/local/i586-mingw32msvc \
+    --enable-video-opengl --disable-nasm --disable-dependency-tracking \
+    --disable-diskaudio --disable-video-dummy --disable-cdrom
+EOF
+
 # convert text files
 find $DESTDIR -name "*.js" -exec unix2dos \{\} \;
 find $DESTDIR -name "*.bat" -exec unix2dos \{\} \;
@@ -120,11 +150,13 @@ cp $SPIDERMONKEY_SRCDIR/$SM_BUILDDIR/js32.dll $DESTDIR
 $STRIP $DESTDIR/js32.dll
 
 # copy libs
-cp /usr/local/i586-mingw32msvc/lib/SDL.dll $DESTDIR
+cp /usr/local/i586-mingw32msvc/bin/SDL.dll $DESTDIR
+cp /usr/local/i586-mingw32msvc/bin/SDL_mixer.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/SDL_image.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/jpeg.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/zlib.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/libpng1.dll $DESTDIR
+
 
 # permissions
 chmod -x $DESTDIR/*.dll

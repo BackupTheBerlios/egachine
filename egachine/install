@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+
+if test ! -f $(pwd)/src/egachine.js; then
+	echo "You must type ./install in the top level directory"
+	exit 1
+fi
+
+source ./common.sh
+
+INSTDATA="install -m 644"
+DDOCDIR="$DESTDIR/$DOCDIR/egachine"
+install -dv $DDOCDIR
+
+TEXTFILES="COPYING README THANKS AUTHORS TODO ChangeLog DONE"
+for a in $TEXTFILES; do
+    $INSTDATA $TOPSRCDIR/$a $DDOCDIR/$a
+done
+
+
+EDATADIR="$DESTDIR/$DATADIR/egachine"
+install -dv $EDATADIR
+$INSTDATA $SRCDIR/*.js $EDATADIR
+
+ECONFDIR="$DESTDIR/$SYSCONFDIR/egachine"
+install -dv $ECONFDIR
+$INSTDATA $SRCDIR/etc/*.js $ECONFDIR
+
+EXDIR="$DDOCDIR/examples"
+install -dv $EXDIR/client/opengl
+install -dv $EXDIR/server
+install -dv $EXDIR/misc
+
+cd $SRCDIR/examples
+for a in $(find -name "*.js"); do
+    $INSTDATA $a $EXDIR/$a
+done
+
+EBINDIR="$DESTDIR/$BINDIR"
+install -dv $EBINDIR
+cd $SRCDIR
+install -s egachine $EBINDIR
+install -s egaserver $EBINDIR

@@ -23,11 +23,19 @@ DEFINES="\
 
 CC=${CC:=cc}
 CXX=${CXX:=c++}
-CXXFLAGS=${CXXFLAGS:=-Wall -W -g -O2}
-CXXFLAGS="$CXXFLAGS $DEFINES"
+CXXFLAGS=${CXXFLAGS:=-Wall -W -O2}
+CXXFLAGS="$CXXFLAGS $DEFINES -D_REENTRANT"
+
+if [ "x$EGACHINE_CROSS" = "x" ]; then
+    PREFIX=${PREFIX:=/usr/local}
+    BINDIR=${BINDIR:=$PREFIX/bin}
+    DATADIR=${DATADIR:=$PREFIX/share}
+    DOCDIR=${DOCDIR:=$PREFIX/share/doc}
+    SYSCONFDIR=${SYSCONFDIR:=$PREFIX/etc}
+fi
 
 # debug build?
 #DEBUG=1
 
 # verbose compilation
-#VERBOSE=1
+VERBOSE=1

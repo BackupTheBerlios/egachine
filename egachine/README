@@ -1,31 +1,43 @@
-EGachine (http://egachine.berlios.de)
+EGachine <http://egachine.berlios.de>
 is an open source (GPL) ECMA Script (Javascript) game machine/engine 
 based on jgachine <http://jgachine.berlios.de>
-which was dropped in favor of egachine.[1]
+which was dropped in favour of egachine.[1]
 
 --------------------------------------------------------------------------------
 WARNING:
-THIS SOFTWARE COMES WITHOUT ANY WARRENTY 
+THIS SOFTWARE COMES WITHOUT ANY WARRANTY 
 - PERHAPS IT DESTROYS YOUR COMPUTER
 FOR DETAILS SEE COPYING
 
-this is work in progress (pre-alpha)
-the server is insecure !!
-and the client perhaps, too
+THIS IS WORK IN PROGRESS (ALPHA)
+THE SERVER IS INSECURE !!
+AND THE CLIENT PERHAPS, TOO
+(see also TODO)
 --------------------------------------------------------------------------------
 
 FEATURES/GOALS:
-- run untrusted code in a secure manner:
-  this is similar to java applets or like browsers run javascript code.
+- Run untrusted code in a secure manner:
+  This is similar to Java applets or like browsers run javascript code.
   This means you only download the client once and games/apps
-  may be shipped via network
+  may be shipped via network. Neither server nor client can access files
+  from javascript code.
 - network support:
-  writing multiplayer network games/apps should be easy
+  Writing multi-player network games/apps should be easy.
+  The client may establish one connection to a server. The server may listen
+  on one port and establish one connection (for example to a meta-server).
+- audio support:
+  Currently the audio API is very basic but simple:
+  you can play music and samples. In the future there probably will be OpenAL
+  bindings.
 - beginner friendly:
-  get beginners started with game programing
-- optional OpenGL support:
-  for the advanced programer or OpenGL teaching - OpenGL language bindings are
-  included
+  Get beginners started with game programing. For now there is no detailed
+  documentation (any volunteers?) but the examples should get you started.
+  Javascript is a nice language and you don't need to compile code. You only
+  need egachine and a text editor to get started.
+- optional OpenGL <http://www.opengl.org> support:
+  for the advanced programmer or OpenGL teaching - OpenGL language bindings are
+  included. The API is close to the C API. Instead of glBegin write gl.Begin
+  and glGet(3x) functions return an array.
 - quick development of games
   sometimes you just want to write a game within few hours
 - portability
@@ -42,7 +54,7 @@ karme@berlios.de
 
 --------------------------------------------------------------------------------
 
-QUICKSTART (windows)
+QUICK-START (windows)
 All .bat files should do something.
 
 To run a local 2-player pong game start:
@@ -59,23 +71,26 @@ client.bat (this starts the client)
 Compilation from source:
 currently no Makefile, no autoutils (no autoconf/make)
 only a bash script (someone wants to make it a sh-script?)
+I recommend to use ccache or compilercache.
 
 Dependencies:
 SDL
 SDL_image
+SDL_mixer
 OpenGL/Mesa
 c++ (f.e. gcc - probably version >=3)
 
 For regenerating OpenGL wrappers (normally not needed):
-perl
-
+perl,sed,grep,indent,bash,?
 
 take a look at ./make - perhaps you have to edit something?
 
+If you checked out from CVS you also need spidermonkey which is not in CVS
+but in the source tarball.
 --------------------------------------------------------------------------------
-[1] why was jgachine dropped in favor of egachine?
-- javascript is easier for beginners than java
+[1] why was jgachine dropped in favour of egachine?
+- javascript is easier for beginners than Java
 - no need to compile the code
-- java serialization was too slow
-- gcc / gcj / libgcj java security is not yet ready
+- Java serialisation was too slow
+- gcc / gcj / libgcj Java security is not yet ready
 

@@ -1,6 +1,9 @@
+This is assorted stuff that was done (moved from TODO to DONE ;-)
+and which could be somehow important to remember but does not fit elsewhere. 
+
 --------------------------------------------------------------------------------
 pass command line arguments to client
-DONE: client can access command line arguments via argv vectors
+DONE: egachine and egaserver pass command line arguments via argv vector
 --------------------------------------------------------------------------------
 cross compile linux->win with mingw
 works
@@ -14,17 +17,11 @@ nehmen
 habe jetzt vorläufig den adic (dope) part genommen - cleanup später
 spidermonkey braucht nspr nur wenn man threads benutzen will
 --------------------------------------------------------------------------------
-current serializer will not work with circles?
-i have 2 methods - the faster one does not yet handle circles
-for now i use the slower one
-(egachine.js - the faster one is commented out and uses object
-properties)
---------------------------------------------------------------------------------
 switch to fullscreen and quit
 => bug
 is not correctly deinitialized
 this was a namespace problem because i called deinit in a different namespace
-i wanted to call it!!
+i wanted to call it!
 --------------------------------------------------------------------------------
 is JSVAL_TO_OBJECT the right thing to do if you want a JSObject* ????
 i think so as JS_ValueToObject also is allowed for ints ...
@@ -33,12 +30,6 @@ put boost into toplevel or src dir or remove it completely?
 for now it is inluced in the toplevel dir
 --------------------------------------------------------------------------------
 hash function for objects (serializer):
-mach grad wieder mit dem hash rum
-der bug ist momentan bei dem Aufruf von JS_TypeOfValue
-das segfault wenn man den auf eine Id loslaesst
-da ist auch ein schoenes XXX
-habe es jetzt doch einfach anhand des pointers gemacht
-hoffentlich aendert der sich auch nicht?
 okay got patch from brendan
 and it works !!
 see: 
@@ -47,10 +38,6 @@ To search for message id via gougle groups:
 http://groups.google.com/groups?as_umsgid=3oqr3c.so1.ln%40karme.myfqdn.de
 The End:
 http://groups.google.com/groups?selm=4075FD39.3020107%40meer.net
---------------------------------------------------------------------------------
-limbo/test64
-ich war gerade dabei mir mal genau anzuschauen wie die primtiven typen gehandhabt
-werden
 --------------------------------------------------------------------------------
 server examples should check that they are started from a server indeed
 client examples, too
@@ -93,4 +80,87 @@ seems there happens a strange effect
 this was interaction with watch
 if you watch a property coming from a prototype
 toSource will give different results
+watchall now does not watch prototype properties
+--------------------------------------------------------------------------------
+server does not have gl functions
+but for the distributed scene-graph it would be useful to have dummy ones
+native functions aren't enumerated => this would have been a simple method
+to create the dummies
+server will not have any dummies
+distributed scene-graph does not need them either
+--------------------------------------------------------------------------------
+cross-compile new SDL version for windows
+because:
+client/audio/sdlmixer/audiosdlmixer.cpp:100: error: `SDL_RWFromConstMem' 
+afair I had trouble with cross-compilation of 1.2.6
+opengl did not work
+at the moment I still use 1.2.4
+mail to sdl news/mail:
+
+I cross compile with mingw from linux to win32.
+
+With SDL version 1.2.4 it works fine.
+
+Since SDL 1.2.6, OpenGL applications fail.
+(They crash with a segmentation fault/SDL parachute on startup)
+
+My test case is the testgl in the test directory.
+(The other test programs work)
+
+failed SDL versions: 1.2.6, 1.2.7 (I did not test 1.2.5 - AFAIR)
+I tried my own cross compiled version
+(and out of curiosity the 1.2.7 win32 .dll from the sdl hp)
+Btw. I can't find the web-pages related to cross compilation on libsdl.org anymore.
+
+I don't know much about the win32 linking dll/declspec/...
+my main platform is linux and I am just happy if I get my stuff
+compiled for win32.
+
+A strange effect:
+My cross-compiled OpenGL apps running under wine:
+SDL 1.2.4:   program runs - but displays nothing
+SDL 1.2.6/7: program runs just fine
+(=> it works with wine but not with win32)
+
+mingw version: 
+i586-mingw32msvc-gcc (GCC) 3.3.1 (mingw special 20030804-1)
+
+this is a slightly modified version of the debian mingw package
+mingw32                  3.3.1.20030804.1-1
+mingw32-binutils         2.14.90.20030807.1-1
+mingw32-runtime          3.2-1
+
+Any help?
+Does it only happen to me?
+
+Thanks
+karme
+
+EOM
+
+i debugged it
+the gl pointers are initialized with wrong values
+i already had this problem once with ADIC
+
+what went wrong:
+this->gl_data->wglCreateContext is wrong
+and the other wgl..., too
+this happens in video/wincommon/win_gl.c
+
+a diff between 1.2.4 and 1.2.6 shows that there were a lot of
+changes
+http://www.libsdl.org/cgi/cvsweb.cgi/SDL12/src/video/wincommon/SDL_wingl.c.diff?r1=1.5%3Arelease_1_2_4&tr1=1.1&r2=1.12%3Arelease_1_2_6&tr2=1.12.2.4&f=h
+
+new:
+Init_WGL_ARB_extensions(this);
+
+i had the same problem with adic where i tried to dynamically load opengl
+with mingw for win it did not work - i think it is caused by the mingw wrapper
+library
+
+i now backed out the changes to (back to version 1.2.4)
+wingl_c.h
+wingl.c
+
+and it works ;-)
 --------------------------------------------------------------------------------

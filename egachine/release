@@ -42,7 +42,6 @@ rm -rf win
 # build debian package
 tar xzvf $EGANAME.tar.gz
 cd $EGANAME
-export CXXFLAGS="-I/usr/local/include/SDL -Wall -W -O2"
 dpkg-buildpackage -rfakeroot
 cd $RELEASEDIR
 rm -rf "$EGANAME"

@@ -254,16 +254,36 @@ Input::charHandler(Unicode uc)
     throw CallbackError();
 }
 
+
+
 void
 Input::devStateHandler(const Input::DevState& d)
 {
   EJS_CHECK(pollData.cx&&pollData.obj);
   std::ostringstream o;
   o << "handleInput(new DevState("<<int(d.devno)<<","<<int(d.x)<<","<<int(d.y)<<","<<int(d.buttons)<<"));\n";
-  // todo: i think we should use JS_CallFunction
-  jsval rval;
-  if (!JS_EvaluateScript(pollData.cx, pollData.obj,
-			 o.str().c_str(), o.str().length(),
-			 EJS_FUNCTIONNAME,1,&rval))
+
+  // We can't use JS_EvaluateScript since the stack would be wrong
+  JSFunction *func;
+  JSObject* fobj;
+  const char* fbody="throw new Error(msg);";
+  const char* argnames[]={"msg"};
+  if (!(func=JS_CompileFunction(pollData.cx, pollData.obj, NULL,
+			       1, argnames,
+			       o.str().c_str(), o.str().length(),
+			       EJS_FUNCTIONNAME, 0)))
     throw CallbackError();
+
+  // root function
+  if ( (!(fobj = JS_GetFunctionObject(func)))
+       || (!JS_AddNamedRoot(pollData.cx, &fobj, "fobj")) )
+    throw CallbackError();
+
+  jsval dummy;
+  if (!JS_CallFunction(pollData.cx, pollData.obj, func, 0, NULL, &dummy)) {
+    JS_RemoveRoot(pollData.cx, &fobj);
+    throw CallbackError();
+  }
+  JS_RemoveRoot(pollData.cx, &fobj);
 }
+

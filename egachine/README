@@ -1,17 +1,17 @@
 EGachine <http://egachine.berlios.de>
 
-is an  open source (GPL)  ECMAScript (JavaScript) game machine/engine
-using mozilla's JavaScript engine, Spidermonkey.   Though the focus is
-on 2D multi-player (networked) games, EGachine isn't limited to  games
-at all.  You can  think of EGachine as a programmable OpenGL terminal,
-which could be used in various ways - for example as presentation tool 
-or movie  player similar to Flash,  for teaching and  learning OpenGL, 
-as special purpose terminal,... . Technically speaking EGachine is a
-JavaScript interpreter  with bindings for subsets of:
-OpenGL/MESA, SDL, SDL_mixer, SDL_image and ZLib.
+is an open source  (GPL)  ECMAScript (JavaScript) game  machine/engine
+using mozilla's JavaScript engine,  Spidermonkey.  Though the focus is
+on 2D multi-player (networked)  games, EGachine isn't limited to games
+at all.  You can think of  EGachine as a programmable OpenGL terminal,
+which could be used in various ways - for example as presentation tool
+or movie player similar to Flash, for teaching and learning OpenGL, as
+special purpose terminal,...  .   Technically speaking  EGachine  is a
+JavaScript interpreter with bindings for subsets of: OpenGL/MESA, SDL,
+SDL_mixer, SDL_image and ZLib.
 
 Perhaps a better name would have been pglTerm (for programmable opengl
-terminal) but  then again this would suggest  it is somehow related to
+terminal) but then  again this would suggest it  is somehow related to
 xterm and other terminal emulation programs.
 
 ----------------------------------------------------------------------

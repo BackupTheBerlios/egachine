@@ -1,0 +1,14 @@
+util module:
+
+contains various utility functions which don't fit anywhere else 
+but don't introduce external library dependencies.
+
+The util.ieval and util.isCompilableUnit functions allow to write
+a interactive shell. The simplest interactive shell:
+#!/usr/bin/ejs
+ejs.ModuleLoader.load("Stream");
+ejs.ModuleLoader.load("util");
+util.ieval.call(this,stdin,stdout,stderr);
+
+The util.getObjectID function returns a unique key value for an
+arbitrary object.

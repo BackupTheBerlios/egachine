@@ -94,8 +94,24 @@ extern "C" {
   }
 
   static
+  JSBool
+  global_newresolve(JSContext *cx, JSObject *obj, jsval id,
+		    uintN flags, JSObject **objp)
+  {
+    /* taken from js.c - I don't understand the flags yet */
+    if ((flags & JSRESOLVE_ASSIGNING) == 0) {
+      JSBool resolved;
+      if (!JS_ResolveStandardClass(cx, obj, id, &resolved))
+	return JS_FALSE;
+      if (resolved)
+	*objp = obj;
+    }
+    return JS_TRUE;
+  }
+
+  static
   JSClass global_class = {
-    "global",0,
+    "global",JSCLASS_NEW_RESOLVE,
     JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
     JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
     EJS_END_CLASS_SPEC
@@ -105,7 +121,8 @@ extern "C" {
   JSClass ejs_class = {
     "ejs", JSCLASS_HAS_RESERVED_SLOTS(1),
     JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
-    JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
+    JS_EnumerateStandardClasses, (JSResolveOp)global_newresolve,
+    JS_ConvertStub,JS_FinalizeStub,
     EJS_END_CLASS_SPEC
   };
 
@@ -183,8 +200,10 @@ struct EJSShell
     if (!(rt = JS_NewRuntime(1L * 1024L * 1024L))) return EXIT_FAILURE;
     if (!(cx = JS_NewContext(rt, 2<<13))) return EXIT_FAILURE;
     if (!(glob = JS_NewObject(cx, &global_class, NULL, NULL))) return EXIT_FAILURE;
-    if (!JS_InitStandardClasses(cx, glob)) return EXIT_FAILURE;
+    //    if (!JS_InitStandardClasses(cx, glob)) return EXIT_FAILURE;
     JS_SetErrorReporter(cx, printError);
+    JS_SetGlobalObject(cx, glob);
+
     return EXIT_SUCCESS;
   }
 

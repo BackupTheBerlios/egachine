@@ -2,9 +2,9 @@
   // module configuration options
   
   // function used to adjust constructor functions
-  var adjCons=ejs.config.sg.adjCons || (function(c){return c;});
-  // Video implementation to use
-  var Video=ejs.config.sg.Video;
+  var adjCons=(ejs.config.sg && ejs.config.sg.adjCons) || (function(c){return c;});
+  // Video implementation to use (todo: good default?)
+  var Video=ejs.config.sg && ejs.config.sg.Video;
 
   // vector object
   sg.V2D=adjCons(function(x,y){
@@ -98,7 +98,26 @@
     this[this.children++]=n;
     return this;
   };
-
+  // delete child node (Note: this is O(n))
+  sg.Node.prototype.del=function(n){
+    var i;
+    for (i=0;i<this.children;++i)
+      if (this[i]===n) {
+	for (;i<this.children-1;++i)
+	  this[i]=this[i+1];
+	delete this[--this.children];
+	return this;
+      }
+    throw Error("Should delete children which is not my own: "+n.toSource());
+  };
+  sg.Node.prototype.reverse=function(n){
+    var i,j,t;
+    for (i=0,j=this.children-1;(i<j)&&(i<this.children/2);++i,--j) {
+      t=this[i];
+      this[i]=this[j];
+      this[j]=t;
+    }
+  }
   // derived object Rotate
   sg.Rotate=adjCons(function (degrees) {
 			     this.degrees=degrees;

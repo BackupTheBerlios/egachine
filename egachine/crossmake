@@ -90,7 +90,6 @@ mkdir $DESTDIR/examples
 mkdir $DESTDIR/examples/client
 mkdir $DESTDIR/examples/client/opengl
 mkdir $DESTDIR/examples/server
-mkdir $DESTDIR/examples/misc
 
 for a in $(find examples -name "*.js"); do
     install $a $DESTDIR/$a

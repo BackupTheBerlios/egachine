@@ -164,6 +164,3 @@ wingl.c
 
 and it works ;-)
 --------------------------------------------------------------------------------
-update install, crossmake
-fix file read buf in egares.cpp (file is closed before reading)
---------------------------------------------------------------------------------

@@ -306,13 +306,6 @@ should try if opengl works with it => no need for hacked SDL version?
 server and client are crashing
 very strange
 --------------------------------------------------------------------------------
-do not install all examples
-especially misc
-somehow tag the examples which should not get shipped with binaries
---------------------------------------------------------------------------------
-compression support
-we already depend on zlib
---------------------------------------------------------------------------------
 we often assume that there is only one javascript context
 especially in client/video/jsgl
 --------------------------------------------------------------------------------
@@ -326,4 +319,20 @@ or must JS strings be \0 terminated?
 perhaps wrap:
 std::streambuf (nearly done in the network part)
 std::vector
+--------------------------------------------------------------------------------
+compression support
+we already depend on zlib
+done: Zlib.compress and Zlib.decompress
+todo: allow files passed on startup to be .gz
+--------------------------------------------------------------------------------
+do not install all examples
+especially misc
+somehow tag the examples which should not get shipped with binaries
+
+the tag is DONTINSTALL in the first line
+(done: but only install does use this
+todo: crossmake (win32) should use this, too
+or perhaps completely remove this misc dir
+and put stuff like this into limbo
+)
 --------------------------------------------------------------------------------

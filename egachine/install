@@ -29,7 +29,6 @@ $INSTDATA $SRCDIR/etc/*.js $ECONFDIR
 EXDIR="$DDOCDIR/examples"
 install -dv $EXDIR/client/opengl
 install -dv $EXDIR/server
-install -dv $EXDIR/misc
 
 cd $SRCDIR/examples
 for a in $(find -name "*.js"); do

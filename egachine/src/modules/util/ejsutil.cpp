@@ -34,11 +34,11 @@ extern "C" {
   getObjectID(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    if (!JSVAL_IS_OBJECT(argv[0])) EJS_THROW_ERROR(cx,obj,"object required as argument");
-    JSObject *o=JSVAL_TO_OBJECT(argv[0]);
-    if (!o) return JS_FALSE;
-    JS_GetObjectId(cx,o,rval);
-
+    JSObject *o;
+    if ((!JSVAL_IS_OBJECT(argv[0]))
+	||(!(o=JSVAL_TO_OBJECT(argv[0]))))
+      EJS_THROW_ERROR(cx,obj,"object required as argument");
+    if (!JS_GetObjectId(cx,o,rval)) return JS_FALSE;
     // this is needed for spiedermonkey v. <1.7
     // see news <4075FD39.3020107@meer.net>
     if (!(*rval&JSVAL_INT)) {

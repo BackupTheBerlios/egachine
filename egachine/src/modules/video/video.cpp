@@ -142,8 +142,9 @@ void resize(int width, int height, int m_flags)
   if (height==0) height=1;
 
   if (!(video=SDL_SetVideoMode(width, height, 0, m_flags))) {
-    EJS_WARN(SDL_GetError()<< " width: "<<width<<" height: "<<height);
-    throw Video::FatalError((std::string("Couldn't set video mode: ")+SDL_GetError()).c_str());
+    assert(SDL_GetError());
+    EJS_WARN(SDL_GetError());
+    throw Video::FatalError(SDL_GetError());
   }
   if (!(video->flags&SDL_OPENGL))
     EJS_WARN("could not get OpenGL context");
@@ -162,7 +163,7 @@ static
 void
 createWindow(int width, int height, bool fullscreen) 
 {
-  // todo: perhaps get config as parameters
+  // todo: perhaps get as config parameters
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 1 );
   //  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 1 );
@@ -177,7 +178,9 @@ createWindow(int width, int height, bool fullscreen)
   if (fullscreen) sdlflags|=SDL_FULLSCREEN;
   try{
     ::resize(width,height,sdlflags);
-  }catch(...){
+  }catch(Video::FatalError){
+    // try again without stencil buffer
+    // (typically 16bit modes don't have a stencil buffer)
     SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
     ::resize(width,height,sdlflags);
     EJS_WARN("no stencil buffer");

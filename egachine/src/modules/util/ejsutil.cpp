@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <ejsmodule.h>
+#include <cassert>
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,9 +82,9 @@ extern "C" {
     \return JS_TRUE on success
   */
   JSBool
-  ejsutil_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejsutil_LTX_onLoad(JSContext *cx, JSObject *util)
   {
-    return JS_DefineFunctions(cx, obj, static_methods);
+    return JS_DefineFunctions(cx, util, static_methods);
   }
 #ifdef __cplusplus
 }

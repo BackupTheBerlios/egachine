@@ -24,6 +24,8 @@ editbuild = sed \
 	"@abs_top_srcdir@/src/modules/input"\,\
 	"@abs_top_srcdir@/src/modules/audio"\,\
 	"@abs_top_srcdir@/src/modules/svgl"\,\
+	"@abs_top_srcdir@/src/modules/util"\,\
+	"@abs_top_builddir@/src/modules/graphviz"\,\
 	,g' \
 	-e 's,@libraryPath\@,\
 	"@abs_top_builddir@/src/modules/example"\,\
@@ -34,13 +36,13 @@ editbuild = sed \
 	"@abs_top_builddir@/src/modules/network"\,\
 	"@abs_top_builddir@/src/modules/bytearray"\,\
 	"@abs_top_builddir@/src/modules/egachine"\,\
-	"@abs_top_builddir@/src/modules/base64"\,\
 	"@abs_top_builddir@/src/modules/timer"\,\
 	"@abs_top_builddir@/src/modules/gl"\,\
 	"@abs_top_builddir@/src/modules/video"\,\
 	"@abs_top_builddir@/src/modules/input"\,\
 	"@abs_top_builddir@/src/modules/audio"\,\
 	"@abs_top_builddir@/src/modules/svgl"\,\
+	"@abs_top_builddir@/src/modules/util"\,\
 	,g'
 
 editinst = sed \

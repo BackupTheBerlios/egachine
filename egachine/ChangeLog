@@ -1,6 +1,26 @@
+2004-11-29  Jens Thiele  <karme@berlios.de>
+
+	* src/modules/graphviz: graphviz module added
+
+	* renamed EGachine.hashObject to util.getObjectID (=> moved
+	function from EGachine to util module
+
+	* added util.isCompilableUnit and util.ieval
+
+	* new module util:
+	contains various utility functions which don't fit anywhere else
+	but don't introduce external library dependencies.
+
+2004-11-27  Jens Thiele  <karme@berlios.de>
+
+	* added interactive eval function (for interactive shells)
+
+	* bump version to 0.1.1
+
 2004-11-22  Jens Thiele  <karme@berlios.de>
 
 	* release 0.1.0
+	
 	* renamed package to ejs
 
 2004-11-15  Jens Thiele  <karme@berlios.de>

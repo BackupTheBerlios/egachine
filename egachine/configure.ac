@@ -335,6 +335,8 @@ AC_CONFIG_FILES([
 	src/modules/input/Makefile
 	src/modules/audio/Makefile
 	src/modules/svgl/Makefile
+	src/modules/util/Makefile
+	src/modules/graphviz/Makefile
 ])
 
 AC_OUTPUT

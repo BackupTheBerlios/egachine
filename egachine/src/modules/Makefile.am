@@ -44,6 +44,8 @@ SUBDIRS = \
 	$(MAYBE_VIDEO) \
 	$(MAYBE_INPUT) \
 	$(MAYBE_AUDIO) \
-	$(MAYBE_SVGL)
+	$(MAYBE_SVGL) \
+	util \
+	graphviz
 
 include_HEADERS=ejsmodule.h

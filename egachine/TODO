@@ -306,6 +306,10 @@ charset:
 strings/messages:
 	javascript has no special features for translating messages?
 	come up with some framework
+
+gcc 3.3.x c++ locale stuff seams buggy:
+http://gcc.gnu.org/bugzilla/show_bug.cgi?id=9520
+
 --------------------------------------------------------------------------------
 audio:
 
@@ -433,19 +437,6 @@ alles kacke
 
 js2 ist auch scheiße da xpcom
 ngs-js ist tot?
---------------------------------------------------------------------------------
-ich war gerade dabei einen javascript objekt-graphen visualisierer zu schreiben
-welches visualisierungstool?
-tulip?
-springgraph? ist anscheinend ungeeignet (benutzt .dot von graphviz)
-vielleicht svg? nee zuviel act
-
-benutze jetzt graphviz (dot) funktioniert soweit ganz gut
-muß ich nur noch in brauchbare form bringen
-beispiele evtl. eine html seite dazu
-funktioniert nicht mit smjs
-=> brauche eine eigene shell (wegen hashObject)
-
 --------------------------------------------------------------------------------
 Eine Shell:
 
@@ -946,7 +937,24 @@ jsunit
 burstlib
 
 Another problem is to generate docu for the wrapped native code
+--------------------------------------------------------------------------------
+clean-up the module / namespace stuff
+a module should if possible only define one object
+what about nesting?
+--------------------------------------------------------------------------------
+spidermonkey bug:
+https://bugzilla.mozilla.org/show_bug.cgi?id=271716
+https://bugzilla.mozilla.org/show_bug.cgi?id=271718
+https://bugzilla.mozilla.org/show_bug.cgi?id=271734
+https://bugzilla.mozilla.org/show_bug.cgi?id=271739
 
+a = new Array(); while (1) { (a = new Array(a)).sort();}
 
+or
 
+var i=100000;
+var a;
+while (--i) {
+      (a = new Array(a)).length;
+}
 

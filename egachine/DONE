@@ -352,3 +352,10 @@ don't link everything against libz
 write a spidermonkey embeding "best practice" document"
 started and for now is at http://egachine.berlios.de/embedding-sm-best-practice/
 --------------------------------------------------------------------------------
+object graph visualization via JavaScript and graphviz (script creating .dot
+files suitable for graphviz)
+--------------------------------------------------------------------------------
+new util module
+for now contains: ieval, isCompilableUnit, getObjectID (formerly hashObject)
+--------------------------------------------------------------------------------
+

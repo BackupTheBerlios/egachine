@@ -2,9 +2,12 @@ EXTRA_DIST = \
 	changelog \
 	control \
 	copyright \
-	dirs \
-	docs \
 	egachine.menu \
 	README.Debian \
-	rules
-
+	rules \
+	ejs.install \
+	ejs-multimedia.install \
+	egachine-base.install \
+	egachine-base.examples \
+	egachine.install \
+	egachine.examples

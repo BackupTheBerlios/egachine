@@ -27,7 +27,9 @@ build-stamp:
 	dh_testdir
 
 	# Add here commands to compile the package.
-	PREFIX=/usr DATADIR=/usr/share/games BINDIR=/usr/games LIBDIR=/usr/lib/games SYSCONFDIR=/etc ./make 
+	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --sysconfdir=/etc
+
+	$(MAKE)
 
 	touch build-stamp
 
@@ -37,7 +39,7 @@ clean:
 	rm -f build-stamp 
 
 	# Add here commands to clean up after the build process.
-	./clean
+	-$(MAKE) distclean
 
 	dh_clean
 
@@ -45,11 +47,10 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
-	dh_installdirs
 
-	# package egachine
-	PREFIX=/usr SYSCONFDIR=/etc DATADIR=/usr/share/games BINDIR=/usr/games \
-	LIBDIR=/usr/lib/games DESTDIR=$(CURDIR)/debian/egachine ./install 
+	# install all
+	$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+	dh_install --sourcedir=$(CURDIR)/debian/tmp
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -57,10 +58,10 @@ binary-indep: build install
 
 # Build architecture-dependent files here.
 binary-arch: build install
-	rm $(CURDIR)/debian/egachine/usr/share/doc/egachine/COPYING
-	mv $(CURDIR)/debian/egachine/usr/share/doc/egachine/ChangeLog \
-	   $(CURDIR)/debian/egachine/usr/share/doc/egachine/changelog
-	gzip -9 $(CURDIR)/debian/egachine/usr/share/doc/egachine/changelog
+#	rm $(CURDIR)/debian/egachine/usr/share/doc/egachine/COPYING
+#	mv $(CURDIR)/debian/egachine/usr/share/doc/egachine/ChangeLog \
+#	   $(CURDIR)/debian/egachine/usr/share/doc/egachine/changelog
+#	gzip -9 $(CURDIR)/debian/egachine/usr/share/doc/egachine/changelog
 	dh_testdir
 	dh_testroot
 	dh_installdocs

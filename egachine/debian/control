@@ -1,21 +1,62 @@
-Source: egachine
-Section: games
+Source: ejs
 Priority: optional
 Maintainer: Jens Thiele (karme) <karme@berlios.de>
-Build-Depends: debhelper (>> 3.0.0), libsdl1.2-dev, libsdl-image1.2-dev, xlibmesa-gl-dev | libgl-dev, libsigc++-dev
+Build-Depends: debhelper (>> 3.0.0), libsdl1.2-dev, libsdl-image1.2-dev, xlibmesa-gl-dev | libgl-dev, libsigc++-dev, libsmjs-dev
 Standards-Version: 3.6.1
 
-Package: egachine
+Package: ejs
+Section: interpreters
 Architecture: any
 Depends: ${shlibs:Depends}
+Description: extensible JavaScript shell
+ EJS is a simple minimalistic (at the moment 
+ non-interactive) JavaScript shell utilizing  mozilla's
+ JavaScript interpreter SpiderMonkey.
+ The purpose of this shell is to get an JavaScript shell
+ which is extensible in the spirit of other interpreters
+ like perl, python and all the others. 
+ The module framework is kept as simple as possible to
+ encourage code-reuse among peoples using the
+ SpiderMonkey API directly. (even if they don't use ejs)
+ .
+  Homepage: http://egachine.berlios.de
+
+Package: ejs-multimedia
+Section: interpreters
+Architecture: any
+Depends: ${shlibs:Depends}, ejs
+Description: JavaScript multimedia module
+ provides JavaScript objects for audio, video (graphics)
+ and input. It includes language bindings to a subset of
+ the OpenGL API.
+ .
+  Homepage: http://egachine.berlios.de
+ 
+Package: egachine-base
+Section: interpreters
+Architecture: any
+Depends: ejs
+Suggests: egachine
 Description: a simple networked game engine
- EGachine (ECMA Script/Javascript Game machine) is a simple 
+ EGachine (ECMA Script/JavaScript Game machine) is a simple 
  networked game engine mainly intended but not limited to
  2D multi-player (networked) games. It should get
  beginners started with game programing and let you write 
  multi-player networked games quickly.
- For the advanced programmer OpenGL language bindings are
- included.
+ This package provides some resources and a generic server
+ for egachine.
  .
   Homepage: http://egachine.berlios.de
- 
+
+Package: egachine
+Section: interpreters
+Architecture: all
+Depends: ejs-multimedia, egachine-base
+Description: a simple networked game engine
+ EGachine (ECMA Script/JavaScript Game machine) is a simple 
+ networked game engine mainly intended but not limited to
+ 2D multi-player (networked) games. It should get
+ beginners started with game programing and let you write 
+ multi-player networked games quickly.
+ .
+  Homepage: http://egachine.berlios.de

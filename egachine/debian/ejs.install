@@ -1,0 +1,10 @@
+usr/lib/ejs/ejszlib.*
+usr/lib/ejs/ejsstream.*
+usr/lib/ejs/ejsfile.*
+usr/share/ejs/file.js
+usr/lib/ejs/ejsnet.*
+usr/share/ejs/net.js
+usr/share/ejs/base64.js
+usr/bin/ejs
+etc/ejs/onstartup.js
+

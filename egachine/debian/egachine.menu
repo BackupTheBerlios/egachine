@@ -1,4 +1,4 @@
 ?package(egachine):needs="X11" section="Games/Arcade" \
-  title="epong" command="/usr/games/egachine /usr/share/doc/egachine/examples/client/pong.js"
+  title="epong" command="/usr/bin/egachine /usr/share/doc/egachine/examples/pong.js"
 ?package(egachine):needs="X11" section="Games/Arcade" \
-  title="morse scooter" command="/usr/games/egachine /usr/share/doc/egachine/examples/client/opengl/morse-scooter.js"
+  title="morse scooter" command="/usr/bin/egachine /usr/share/doc/egachine/examples/opengl/morse-scooter.js"

@@ -140,7 +140,7 @@ function drawGLScene()
   if (t - t0 >= 1000000.0) {
     seconds = (t - t0) / 1000000.0;
     fps = Frames / seconds;
-    print(Frames+" frames in "+seconds+" seconds = "+fps+" FPS");
+    Stream.stdout.write(Frames+" frames in "+seconds+" seconds = "+fps+" FPS\n");
     t0 = t;
     Frames = 0;
   }

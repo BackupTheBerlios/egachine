@@ -94,13 +94,6 @@
       for (i=0;i<this.children;++i)
 	this[i].paint(time);
   };
-  // deprecated
-  sg.Node.prototype.step=function(dt){
-    var i;
-    if (!this.children) return;
-    for (i=0;i<this.children;++i)
-      this[i].step(dt);
-  };
   sg.Node.prototype.add=function(n){
     if (!this.children) this.children=0;
     this[this.children++]=n;

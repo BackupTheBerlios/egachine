@@ -1,3 +1,11 @@
+egachine (0.0.9) unstable; urgency=low
+
+  * new "upstream" release
+  * more updates to the build dependencies
+  * update Standards-Version
+
+ -- Jens Thiele (karme) <karme@berlios.de>  Mon, 30 Aug 2004 11:40:04 +0200
+
 egachine (0.0.8-2) unstable; urgency=low
 
   * really fix build dependency - thanks to Christophe Roux

@@ -4,7 +4,7 @@
 
 set -e
 
-if [ "x$USER" != "xjens" ]; then
+if [ "x$EMAIL" != "xkarme@berlios.de" ]; then
 	echo this script is probably not what you want
 	exit 1
 fi

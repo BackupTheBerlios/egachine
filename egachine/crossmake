@@ -1,10 +1,13 @@
 #!/bin/bash
 
 # script to cross compile for win32
-# NOTE: you will have to modify it
-# especially the section marked settings very specific to my setup
 
 set -e
+
+if [ "x$EMAIL" != "xkarme@berlios.de" ]; then
+    echo "This script is very specific to my setup you must edit it"
+    exit 1
+fi
 
 # setup environment for cross compilation
 export CC=i586-mingw32msvc-gcc
@@ -37,12 +40,8 @@ else
     SM_BUILDDIR="mingwcross_DBG.OBJ"
 fi
 LDFLAGS="$LDFLAGS -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
-SDLMIXERLIBS="$SDLMIXER_SRCDIR/.libs/libSDL_mixer.a"
-
 COMMONFLAGS="-c -I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I$SDLMIXER_SRCDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_WIN $(sigc-config --cflags)"
-CLIENTFLAGS="$(sdl-config --cflags)"
 DESTDIR=${DESTDIR:=/tmp/egachine-$PACKAGE_MAJOR_VERSION.$PACKAGE_MINOR_VERSION.$PACKAGE_MICRO_VERSION}
-JSLIB="-lsmjs"
 
 # build spidermonkey
 cd $SPIDERMONKEY_SRCDIR
@@ -64,7 +63,7 @@ rm -vf $(find -name "*.o" -o -name "*.so" -o -name "*.lo" -o -name "*.a") egachi
 for a in $(find . -name "*.cpp"); do 
     echo Compile $a
     if (echo $a|grep client >/dev/null); then
-	FLAGS="$COMMONFLAGS $CLIENTFLAGS $CXXFLAGS"
+	FLAGS="$COMMONFLAGS $SDLCFLAGS $CXXFLAGS"
     else
 	FLAGS="$COMMONFLAGS $CXXFLAGS"
     fi
@@ -83,7 +82,7 @@ run "$CXX -o egares$EXE $LDFLAGS $(find -name *.o|grep -v client|grep -v server|
 # install
 mkdir $DESTDIR
 
-TEXTFILES="COPYING README THANKS AUTHORS TODO ChangeLog DONE"
+TEXTFILES="COPYING README THANKS AUTHORS TODO ChangeLog DONE INSTALL"
 for a in $TEXTFILES; do
     cp $TOPSRCDIR/$a $DESTDIR/$a.txt
 done

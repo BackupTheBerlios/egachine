@@ -22,7 +22,6 @@ fi
 
 TOPSRCDIR=${TOSRCDIR:=$(pwd)}
 SRCDIR=${SRCDIR:=$TOPSRCDIR/src}
-#SPIDERMONKEY_SRCDIR=$TOPSRCDIR/spidermonkey-1.5rc6/src
 SPIDERMONKEY_SRCDIR=$TOPSRCDIR/spidermonkey/src
 SDLMIXER_SRCDIR=$TOPSRCDIR/SDL_mixer
 export LC_ALL=C
@@ -59,3 +58,6 @@ fi
 
 PROGRAMS="egachine egaserver egares"
 LIBPROGRAMS="smjs"
+JSLIB="-lsmjs"
+SDLCFLAGS="$(sdl-config --cflags)"
+SDLMIXERLIBS="$SDLMIXER_SRCDIR/.libs/libSDL_mixer.a"

@@ -13,13 +13,13 @@ fi
 
 rm -vf $(find -name "*.o" -o -name "*.so" -o -name "*.lo" -o -name "*.a") 
 
-for a in $PROGRAMS; do rm -vf src/$a; done
-for a in $PROGRAMS; do rm -vf src/$a.exe; done
-for a in $PROGRAMS; do rm -vf src/$a.bin; done
+for a in $PROGRAMS $LIBPROGRAMS; do rm -vf src/$a src/$a.exe src/$a.bin; done
 
 cd $SPIDERMONKEY_SRCDIR
 rm -rf *.OBJ fdlibm/*.OBJ
 make -f Makefile.ref clean
 
 cd $SDLMIXER_SRCDIR
-make clean
+if test -f Makefile; then
+    make distclean
+fi

@@ -461,3 +461,7 @@ of course this would not hide the network stuff verry well and would require
 the user to serialize objects as needed => user is forced to think about local
 and remote objects
 --------------------------------------------------------------------------------
+SVG support (direct or indirect via transformation)
+--------------------------------------------------------------------------------
+update project description to reflect new focus
+--------------------------------------------------------------------------------

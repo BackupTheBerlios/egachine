@@ -16,10 +16,6 @@ source ./common.sh
 
 LDFLAGS="$LDFLAGS -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
 COMMONFLAGS="-I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I$SDLMIXER_SRCDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_UNIX $(sigc-config --cflags) -DSYSCONFDIR=$SYSCONFDIR -DDATADIR=$DATADIR"
-CLIENTFLAGS="$(sdl-config --cflags)"
-#SDLMIXERLIBS="-lSDL_mixer -lvorbisfile -lvorbis -logg -lsmpeg"
-SDLMIXERLIBS="$SDLMIXER_SRCDIR/.libs/libSDL_mixer.a"
-JSLIB="-lsmjs"
 
 # build spidermonkey
 cd $SPIDERMONKEY_SRCDIR
@@ -45,7 +41,7 @@ done
 for a in $(find . -name "*.cpp"); do 
     echo Compile $a
     if (echo $a|grep client >/dev/null); then
-	FLAGS="$COMMONFLAGS $CLIENTFLAGS $CXXFLAGS"
+	FLAGS="$COMMONFLAGS $SDLCFLAGS $CXXFLAGS"
     else
 	FLAGS="$COMMONFLAGS $CXXFLAGS"
     fi

@@ -128,15 +128,9 @@ FEATURES/GOALS:
 
 ROADMAP:
 
-1.0.0 (July 2004):
+1.0.0 (January 2005):
 	- feature complete stable API with documentation
-	- not yet suitable for running untrusted code
-
-1.2.0 (End of 2004):
-	- suitable for running untrusted code
-	- optional GUI toolkit
-	- useful demo
-	- downwards compatible
+	- SVG support
 
 ----------------------------------------------------------------------
 

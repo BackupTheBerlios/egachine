@@ -2,6 +2,10 @@ ejs.config={
   modules:{
     scriptPath:[@scriptPath@],
     libraryPath:[@libraryPath@]
+  },
+  Video:{
+    fullscreen:true
+    //    ,width:640,height:480,
   }
 };
 

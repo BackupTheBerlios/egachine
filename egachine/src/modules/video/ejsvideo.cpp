@@ -120,10 +120,28 @@ extern "C" {
   JSBool
   ejsvideo_LTX_onLoad(JSContext* cx, JSObject* module)
   {
+    jsval jsw,jsh,jsfullscreen;
+    int w=0,h=0;
+    JSBool fullscreen=JS_TRUE;
+
+    if (!ejs_evalExpression(cx,module,"ejs.config.Video.width",&jsw))
+      JS_ClearPendingException(cx);
+    else
+      if (!JS_ValueToECMAInt32(cx,jsw,&w)) return JS_FALSE;
+
+    if (!ejs_evalExpression(cx,module,"ejs.config.Video.height",&jsh))
+      JS_ClearPendingException(cx);
+    else
+      if (!JS_ValueToECMAInt32(cx,jsh,&h)) return JS_FALSE;
+
+    if (!ejs_evalExpression(cx,module,"ejs.config.Video.fullscreen",&jsfullscreen))
+      JS_ClearPendingException(cx);
+    else
+      if (!JS_ValueToBoolean(cx, jsfullscreen, &fullscreen)) return JS_FALSE;
+
     try{
-      Video::init(0,0,false);
-    }
-    catch(const Video::FatalError &error) {
+      Video::init(w,h,fullscreen);
+    }catch(const Video::FatalError &error) {
       EJS_THROW_ERROR(cx,module,error.what());
     }
     

@@ -138,7 +138,7 @@ void resize(int width, int height, int m_flags)
   if (height==0) height=1;
 
   if (!(video=SDL_SetVideoMode(width, height, 0, m_flags))) {
-    EJS_WARN(SDL_GetError());
+    EJS_WARN(SDL_GetError()<< " width: "<<width<<" height: "<<height);
     throw Video::FatalError((std::string("Couldn't set video mode: ")+SDL_GetError()).c_str());
   }
 }

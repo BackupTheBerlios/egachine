@@ -280,19 +280,43 @@ if test x$enable_audio = xyes; then
 	dnl we need Mix_LoadWAV_RW (at the moment only supported by cvs version of SDL_mixer)
 	dnl update: i think the newest release will suffice now
 	dnl todo: improve this check and check if the header file is also correct
-	TMP="$LDFLAGS"
-	dnl Newer versions of SDL_mixer might be linked agains libmikmod
-	dnl todo: we should check if we need -lmikmod and test if it is available
-	dnl for now we assume we need it and it is available => really bad
-	LDFLAGS="$LDFLAGS -lmikmod"
-	AC_CHECK_LIB(SDL_mixer, Mix_LoadWAV_RW, [SDLMIXER_LIBS="-lSDL_mixer -lmikmod"], [
-		AC_MSG_ERROR([Could not find required SDL_mixer library
+	dnl the problem is that newer SDL_mixer version might depend upon mikmod
+
+
+	AC_LANG_PUSH(C)
+	OLD_LIBS="$LIBS"
+	OLD_CPPFLAGS="$CPPFLAGS"
+	SDLMIXER_LIBS="-lSDL_mixer"
+	CPPFLAGS="$SDL_CFLAGS $CPPFLAGS -DUSE_RWOPS"
+	AC_CHECK_LIB(SDL_mixer, Mix_LoadMUS_RW, [SDLMIXER_LIBS="-lSDL_mixer"],
+            	[
+			dnl Newer versions of SDL_mixer might be linked against libmikmod
+			dnl hmm cant call AC_CHECK_LIB again since result is cached
+			dnl is there a simple way to remove a cheched result?
+			
+			SDLMIXER_LIBS="-lSDL_mixer -lmikmod"
+			LIBS="$SDLMIXER_LIBS $SDL_LIBS $OLD_LIBS"
+			AC_TRY_LINK(
+				[
+#include <SDL_mixer.h>
+],
+	            		[
+SDL_RWops* rw;
+Mix_Music *music = Mix_LoadMUS_RW(rw);
+],
+				[AC_MSG_RESULT([yes - using external mikmod])],
+        	    		[
+					AC_MSG_ERROR([Could not find required SDL_mixer library
 Perhaps you have to add some -L/path/to/libz to your LDFLAGS
 or your SDL_mixer library is missing Mix_LoadWAV_RW - you need a version newer than 1.2.5
 or disable the audio module by passing --disable-audio to configure])
-], [$SDL_LIBS])
-	LDFLAGS="$TMP"
+				])
+		],
+		["$SDL_LIBS"])
+	CPPFLAGS="$OLD_CPPFLAGS"
+	LIBS="$OLD_LIBS"
 	AC_SUBST(SDLMIXER_LIBS)
+	AC_LANG_POP(C)
 fi
 AM_CONDITIONAL([BUILD_AUDIO], [test x$enable_audio = xyes])
 
@@ -302,8 +326,8 @@ AC_ARG_ENABLE([svgl],
 	[Build svgl module [[default=no]]]),
 	[], enable_svgl=no)
 if test x$enable_svgl = xyes; then
-	dnl TODO: shouldn't svgl do this already?
-	PKG_CHECK_MODULES(GLFT, glft)
+	dnl TODO: do we need the glft check?
+	dnl PKG_CHECK_MODULES(GLFT, glft)
 	PKG_CHECK_MODULES(SVGL, svgl)
 	SVGL_CFLAGS="$GLFT_CFLAGS $SVGL_CFLAGS"
 	dnl TODO: svgl module depends upon video module

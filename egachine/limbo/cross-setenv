@@ -13,3 +13,4 @@ export NM=i586-mingw32msvc-nm
 export OBJDUMP=i586-mingw32msvc-objdump
 export STRIP=i586-mingw32msvc-strip
 export PATH="/usr/local/i586-mingw32msvc/bin:$HOME/develop/cross/bin:$PATH"
+export PKG_CONFIG_PATH=/usr/local/i586-mingw32msvc/lib/pkgconfig

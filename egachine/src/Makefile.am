@@ -6,6 +6,9 @@ INCLUDES = @LTDLINCL@ @EJS_CFLAGS@
 bin_PROGRAMS = ejs
 
 ejs_SOURCES = ejsmoduleloader.h ejs.cpp ejsmoduleloader.cpp
+
+#todo should be in sync with modules/Makefile.am
+
 ejs_LDADD = @LIBLTDL@ \
 	-dlopen modules/example/ejsexample.la\
 	-dlopen modules/zlib/ejszlib.la\
@@ -19,7 +22,9 @@ ejs_LDADD = @LIBLTDL@ \
 	-dlopen modules/gl/ejsgl.la\
 	-dlopen modules/video/ejsvideo.la\
 	-dlopen modules/input/ejsinput.la\
-	-dlopen modules/audio/ejsaudio.la
+	-dlopen modules/audio/ejsaudio.la\
+	-dlopen modules/svgl/ejssvgl.la\
+	-dlopen modules/util/ejsutil.la
 
 # note -export-symbols-regex only works since we use a hacked libtool
 # and better would be called -import-symbols-regex

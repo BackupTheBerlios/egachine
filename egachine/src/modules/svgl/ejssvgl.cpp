@@ -149,7 +149,7 @@ extern "C" {
     EJS_CHECK(svglContext && glinfo);
 
     // get args
-    int x,y;
+    int32 x,y;
     EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
     if (!JS_ValueToECMAInt32(cx, argv[0], &x)) return JS_FALSE;
     if (!JS_ValueToECMAInt32(cx, argv[1], &y)) return JS_FALSE;

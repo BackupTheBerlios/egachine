@@ -74,7 +74,7 @@ extern "C" {
     if (!JS_IsConstructing(cx)) EJS_THROW_ERROR(cx,obj,"must be called as constructor");
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     
-    int index;
+    int32 index;
     if (!JS_ValueToECMAInt32(cx, argv[0], &index)) return JS_FALSE;
     if ((index<0)||(index>=SDL_NumJoysticks())) EJS_THROW_ERROR(cx,obj,"out of range");
     

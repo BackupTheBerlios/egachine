@@ -108,7 +108,7 @@ extern "C" {
   JSBool
   showMouseCursor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
-    int i=-1;
+    int32 i=-1;
     if (argc>0) {
       if (!JS_ValueToECMAInt32(cx, argv[0], &i)) return JS_FALSE;
       if ((i<-1)||(i>1)) EJS_THROW_ERROR(cx, obj, "out of range");
@@ -135,7 +135,7 @@ extern "C" {
   ejsvideo_LTX_onLoad(JSContext* cx, JSObject* module)
   {
     jsval jsw,jsh,jsfullscreen;
-    int w=0,h=0;
+    int32 w=0,h=0;
     JSBool fullscreen=JS_TRUE;
 
     if (!ejs_evalExpression(cx,module,"ejs.config.Video.width",&jsw))

@@ -145,7 +145,7 @@ extern "C" {
   enableKeyRepeat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
-    int delay, interval;
+    int32 delay, interval;
     if (!JS_ValueToECMAInt32(cx, argv[0], &delay)) return JS_FALSE;
     if (!JS_ValueToECMAInt32(cx, argv[1], &interval)) return JS_FALSE;
     if (SDL_EnableKeyRepeat(delay, interval)!=0)
@@ -158,7 +158,7 @@ extern "C" {
   enableUnicode(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    int enable;
+    int32 enable;
     if (!JS_ValueToECMAInt32(cx, argv[0], &enable)) return JS_FALSE;
     if ((enable<-1)||(enable>1)) EJS_THROW_ERROR(cx,obj,"value out of range");
     *rval=BOOLEAN_TO_JSVAL(SDL_EnableUNICODE(enable));

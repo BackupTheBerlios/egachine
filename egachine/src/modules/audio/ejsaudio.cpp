@@ -135,10 +135,13 @@ extern "C" {
     GET_STRING(sdevice);
     
 #define GET_INT32(prop) do{						\
+      int32 i;								\
       if (!ejs_evalExpression(cx,module,"ejs.config.Audio."#prop,&val))	\
 	JS_ClearPendingException(cx);					\
-      else								\
-	if (!JS_ValueToECMAInt32(cx,val,&ac.prop)) return JS_FALSE;	\
+      else{								\
+	if (!JS_ValueToECMAInt32(cx,val,&i)) return JS_FALSE;		\
+	ac.prop=i;							\
+      }									\
     }while(0)
     
     GET_INT32(srate);

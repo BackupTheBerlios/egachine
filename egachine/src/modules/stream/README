@@ -1,11 +1,24 @@
-JavaScript Stream object
+Stream module
+
+Description:
+
+Objects:
+Stream objects: stdin, stdout, stderr
 
 Stream objects provide following methods:
+
 String read(Number)
 Number write(String)
+String readAll()
 Number inAvailable()
+sync()
 
-Existing Stream objects:
-stdin, stdout, stderr
+(To construct other Stream objects see the network and file modules)
 
-To construct other Stream objects see the network and file modules
+Constructors:
+
+StringStream
+ObjectWriter
+ObjectReader
+
+

@@ -1,3 +1,8 @@
+2004-04-22  Jens Thiele  <karme@berlios.de>
+
+	* cross compiled new versions of: zlib, libpng, libjpeg, SDL_image
+	for win32
+
 2004-04-21  Jens Thiele  <karme@berlios.de>
 
 	* resources are now objects and may be compressed

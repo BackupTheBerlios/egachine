@@ -10,7 +10,6 @@ fi
 
 rm -vf $(find -name "*.o" -o -name "*.so" -o -name "*.lo" -o -name "*.a") 
 
-PROGRAMS="egachine egaserver egares"
 for a in $PROGRAMS; do rm -vf src/$a; done
 for a in $PROGRAMS; do rm -vf src/$a.exe; done
 

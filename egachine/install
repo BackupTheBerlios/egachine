@@ -41,5 +41,7 @@ done
 EBINDIR="$DESTDIR/$BINDIR"
 install -dv $EBINDIR
 cd $SRCDIR
-install -s egachine $EBINDIR
-install -s egaserver $EBINDIR
+for a in $PROGRAMS; do
+    install -s "$a" $EBINDIR
+    install -s "$a" $EBINDIR
+done

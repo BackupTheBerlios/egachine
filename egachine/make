@@ -24,8 +24,8 @@ JSLIB="-lsmjs"
 # build spidermonkey
 cd $SPIDERMONKEY_SRCDIR
 
-#make -f Makefile.ref clean
-#rm -rf *.OBJ
+make -f Makefile.ref clean
+rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
 
 # build egachine

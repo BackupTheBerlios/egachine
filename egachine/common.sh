@@ -39,3 +39,5 @@ fi
 
 # verbose compilation
 VERBOSE=1
+
+PROGRAMS="egachine egaserver egares"

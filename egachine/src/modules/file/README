@@ -1,5 +1,5 @@
 Description:
-Module allowing to read and write to files.
+Module allowing to read and write files.
 
 Security:
 Not allowed in untrusted mode

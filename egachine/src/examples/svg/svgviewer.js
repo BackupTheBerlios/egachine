@@ -1,7 +1,6 @@
 ejs.ModuleLoader.load("gl");
 ejs.ModuleLoader.load("EGachine");
 ejs.ModuleLoader.load("Input");
-ejs.ModuleLoader.load("File");
 
 if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
   stderr.write("Warning no stencil buffer\n");

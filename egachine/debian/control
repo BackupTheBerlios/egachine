@@ -24,7 +24,7 @@ Description: extensible JavaScript shell
 Package: ejs-multimedia
 Section: interpreters
 Architecture: any
-Depends: ${shlibs:Depends}, ejs
+Depends: ${shlibs:Depends}, ejs (=${Source-Version})
 Description: ejs multimedia modules
  provides  JavaScript     objects    for   audio, video
  (graphics) and  input.  Included are language bindings
@@ -36,7 +36,7 @@ Description: ejs multimedia modules
 Package: egachine-base
 Section: interpreters
 Architecture: any
-Depends: ejs
+Depends: ejs (=${Source-Version})
 Suggests: egachine
 Description: a simple networked game engine
  EGachine is an  JavaScript  game engine focused  on 2D
@@ -51,7 +51,7 @@ Description: a simple networked game engine
 Package: egachine
 Section: interpreters
 Architecture: all
-Depends: ejs-multimedia, egachine-base
+Depends: ejs-multimedia (=${Source-Version}), egachine-base (=${Source-Version})
 Description: a simple networked game engine
  EGachine is an  JavaScript  game engine focused  on 2D
  multi-player (networked) games. The idea is to provide

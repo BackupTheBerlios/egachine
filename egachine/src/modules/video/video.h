@@ -48,6 +48,9 @@ namespace Video
   void drawTexture(int tid,float w=1, float h=1);
   void drawText(const std::string &text, bool hcentered, bool vcentered);
 
+  //! toggle: -1 => query, 0 => disable, 1 => enable
+  int showMouseCursor(int toggle);
+
   void deinit();
 
   struct FatalError : std::runtime_error

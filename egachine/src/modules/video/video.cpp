@@ -361,3 +361,9 @@ Video::iconify()
 {
   SDL_WM_IconifyWindow();
 }
+
+int
+Video::showMouseCursor(int toggle)
+{
+  return SDL_ShowCursor(toggle);
+}

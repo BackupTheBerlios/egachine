@@ -103,6 +103,19 @@ extern "C" {
     Video::toggleFullscreen();
     return JS_TRUE;
   }
+
+  static
+  JSBool
+  showMouseCursor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    int i=-1;
+    if (argc>0) {
+      if (!JS_ValueToECMAInt32(cx, argv[0], &i)) return JS_FALSE;
+      if ((i<-1)||(i>1)) EJS_THROW_ERROR(cx, obj, "out of range");
+    }
+    *rval=INT_TO_JSVAL(Video::showMouseCursor(i));
+    return JS_TRUE;
+  }
   
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
@@ -112,6 +125,7 @@ extern "C" {
     FUNC(drawTexture,1),
     FUNC(drawText,3),
     FUNC(toggleFullscreen,0),
+    FUNC(showMouseCursor,1),
     EJS_END_FUNCTIONSPEC
   };
 

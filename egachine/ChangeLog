@@ -1,3 +1,7 @@
+2004-12-06  Jens Thiele  <karme@berlios.de>
+
+	* improved Monitorable object
+
 2004-11-29  Jens Thiele  <karme@berlios.de>
 
 	* src/modules/graphviz: graphviz module added

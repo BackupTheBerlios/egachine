@@ -22,6 +22,73 @@
 */
 
 #include <ejsmodule.h>
+#include <cassert>
+
+//! get monitor if available
+/*!
+  \return monitor object or NULL
+
+  \todo - we do not differentiate between and errors?
+*/
+static
+JSObject*
+getMonitor(JSContext *cx, JSObject *obj)
+{
+  jsval prop;
+  JSObject *monitor=NULL;
+  if ((!JS_GetProperty(cx,obj,"monitor",&prop))
+      ||(JSVAL_IS_VOID(prop))
+      ||(!JSVAL_IS_OBJECT(prop))
+      ||(!JS_ValueToObject(cx, prop, &monitor)))
+    return NULL;
+  return monitor;
+}
+
+//! get monitor and callback function if available
+static
+JSBool
+getCallback(JSContext *cx, JSObject *obj, const char* cbName, JSObject *&monitor, JSFunction *&cb)
+{
+  cb=NULL;
+  monitor=getMonitor(cx,obj);
+  if (!monitor) return JS_TRUE;
+  
+  // does monitor have corresponding callback?
+  jsval cbProp;
+  // todo: JS_ValueToFunction is deprecated - why?
+  if ((!JS_GetProperty(cx,monitor,cbName,&cbProp))
+      ||(JSVAL_IS_VOID(cbProp))
+      ||(!(cb=JS_ValueToFunction(cx,cbProp))))
+    return JS_TRUE;
+  return JS_TRUE;
+}
+
+//! call callback function of monitor object if available
+static
+JSBool
+callback(JSContext *cx, JSObject *obj, jsval id, jsval *vp, const char* cbName)
+{
+  JSObject* monitor;
+  JSFunction* cb;
+  JSBool ret=getCallback(cx,obj,cbName,monitor,cb);
+  if (!cb) return ret;
+  assert(monitor);
+  
+  // call back
+  jsval argv[]={OBJECT_TO_JSVAL(obj),id,*vp};
+  if (!JS_CallFunction(cx,monitor,cb, sizeof(argv)/sizeof(argv[0]), argv, vp))
+    return JS_FALSE;
+  
+  jsval error;
+  if (JS_GetPendingException(cx,&error)) {
+    // pending exception - catch exception of type CallbackError or the like
+    if (!JSVAL_IS_OBJECT(error)) return JS_FALSE;
+    // todo test if "correct" exception
+    if (0) return JS_FALSE;
+    JS_ClearPendingException(cx);
+  }
+  return JS_TRUE;
+}
 
 extern "C" {
 
@@ -29,60 +96,38 @@ extern "C" {
   JSBool
   addProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   {
-    // do we have a monitor?
-    jsval prop;
-    if (!JS_GetProperty(cx,obj,"monitor",&prop)) return JS_TRUE;
-    if (JSVAL_IS_VOID(prop)) return JS_TRUE;
-    if (!JSVAL_IS_OBJECT(prop)) EJS_THROW_ERROR(cx,obj,"monitor must be an object");
-    JSObject *monitor;
-    if (!JS_ValueToObject(cx, prop, &monitor)) return JS_FALSE;
-    if (!monitor) EJS_THROW_ERROR(cx,obj,"monitor is null or undefined");
-
-    // does monitor have corresponding callback?
-    jsval cbProp;
-    if (!JS_GetProperty(cx,monitor,"onAdd",&cbProp)) return JS_FALSE;
-    if (JSVAL_IS_VOID(cbProp)) return JS_TRUE;
-    JSFunction* cb;
-    // todo: JS_ValueToFunction is deprecated - why?
-    if (!(cb=JS_ValueToFunction(cx,cbProp))) return JS_FALSE;
-
-    // call back
-    jsval argv[]={OBJECT_TO_JSVAL(obj),id,*vp};
-    if (!JS_CallFunction(cx,monitor,cb, sizeof(argv)/sizeof(argv[0]), argv, vp)) return JS_FALSE;
-
-    jsval error;
-    if (JS_GetPendingException(cx,&error)) {
-      // pending exception - catch exception of type PropertyAddError
-      if (!JSVAL_IS_OBJECT(error)) return JS_FALSE;
-      // todo test if "correct" exception (this.propertyAddError)
-      if (0) return JS_FALSE;
-      JS_ClearPendingException(cx);
-    }
-    return JS_TRUE;
+    return callback(cx,obj,id,vp,"onAdd");
   }
 
   static
   JSBool
   delProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   {
-    // todo
-    return JS_TRUE;
+    return callback(cx,obj,id,vp,"onDelete");
   }
 
   static
   JSBool
   getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   {
-    // todo
-    return JS_TRUE;
+    // hmm trouble here because we to get the callback we get a property
+    // => the callback to get a property is called again
+    // => endless loop => crash
+    // => we must treat the monitor property specially
+    // todo: improve this
+    JSString* s=NULL;
+    char* cstr=NULL;
+    if ((s=JS_ValueToString(cx, id))
+	&&(cstr=JS_GetStringBytes(s))
+	&&(!strcmp("monitor",cstr))) return JS_TRUE;
+    return callback(cx,obj,id,vp,"onGet");
   }
 
   static
   JSBool
   setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   {
-    // todo
-    return JS_TRUE;
+    return callback(cx,obj,id,vp,"onSet");
   }
 
   static
@@ -121,20 +166,12 @@ extern "C" {
   JSBool
   ejsmonitorable_LTX_onLoad(JSContext *cx, JSObject *global)
   {
-    JSObject *proto = JS_InitClass(cx, global,
-				   NULL,
-				   &monitorable_class,
-				   monitorable_cons, 0,
-				   NULL, NULL,
-				   NULL, NULL);
-    if (!proto) EJS_THROW_ERROR(cx,global,"Could not init class");
-    return JS_TRUE;
-  }
-
-  JSBool
-  ejsmonitorable_LTX_onUnLoad()
-  {
+    if (!JS_InitClass(cx, global,
+		      NULL,
+		      &monitorable_class,
+		      monitorable_cons, 0,
+		      NULL, NULL,
+		      NULL, NULL)) return JS_FALSE;
     return JS_TRUE;
   }
 }
-

@@ -10,4 +10,4 @@ etc/ejs/onstartup.js
 usr/lib/ejs/ejsutil.*
 usr/share/ejs/util.js
 usr/share/ejs/graphviz.js
-
+usr/lib/ejs/ejsmonitorable.*

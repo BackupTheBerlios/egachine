@@ -327,15 +327,6 @@ Degrees.prototype.dec=function(deg)
   return this;
 };
 
-// devstate class
-// this holds the state of joypad like input device
-function DevState(dev,x,y,buttons){
-  this.dev=dev;
-  this.x=x;
-  this.y=y;
-  this.buttons=buttons;
-};
-
 // Node object
 // curently prototype object of all nodes in the scenegraph
 // (prototype of the prototypes)

@@ -278,9 +278,14 @@ AC_ARG_ENABLE([audio],
 if test x$enable_audio = xyes; then
 	dnl Note: the current audio module uses SDL_mixer / SDL
 	dnl we need Mix_LoadWAV_RW (at the moment only supported by cvs version of SDL_mixer)
+	dnl update: i think the newest release will suffice now
 	dnl todo: improve this check and check if the header file is also correct
 	TMP="$LDFLAGS"
-	AC_CHECK_LIB(SDL_mixer, Mix_LoadWAV_RW, [SDLMIXER_LIBS="-lSDL_mixer"], [
+	dnl Newer versions of SDL_mixer might be linked agains libmikmod
+	dnl todo: we should check if we need -lmikmod and test if it is available
+	dnl for now we assume we need it and it is available => really bad
+	LDFLAGS="$LDFLAGS -lmikmod"
+	AC_CHECK_LIB(SDL_mixer, Mix_LoadWAV_RW, [SDLMIXER_LIBS="-lSDL_mixer -lmikmod"], [
 		AC_MSG_ERROR([Could not find required SDL_mixer library
 Perhaps you have to add some -L/path/to/libz to your LDFLAGS
 or your SDL_mixer library is missing Mix_LoadWAV_RW - you need a version newer than 1.2.5

@@ -21318,7 +21318,8 @@ else
   enable_audio=yes
 fi;
 if test x$enable_audio = xyes; then
-				TMP="$LDFLAGS"
+					TMP="$LDFLAGS"
+				LDFLAGS="$LDFLAGS -lmikmod"
 	echo "$as_me:$LINENO: checking for Mix_LoadWAV_RW in -lSDL_mixer" >&5
 echo $ECHO_N "checking for Mix_LoadWAV_RW in -lSDL_mixer... $ECHO_C" >&6
 if test "${ac_cv_lib_SDL_mixer_Mix_LoadWAV_RW+set}" = set; then
@@ -21383,7 +21384,7 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_SDL_mixer_Mix_LoadWAV_RW" >&5
 echo "${ECHO_T}$ac_cv_lib_SDL_mixer_Mix_LoadWAV_RW" >&6
 if test $ac_cv_lib_SDL_mixer_Mix_LoadWAV_RW = yes; then
-  SDLMIXER_LIBS="-lSDL_mixer"
+  SDLMIXER_LIBS="-lSDL_mixer -lmikmod"
 else
 
 		{ { echo "$as_me:$LINENO: error: Could not find required SDL_mixer library

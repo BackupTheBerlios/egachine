@@ -999,7 +999,7 @@ beim Monitorable object könnte ich nen hook machen
 das ganze ist im prinzip ein distributed shared memory system
 
 write summary of javascript deffects/pitfalls:
-uneval/toSource and prototype, constructor, __proto__
+uneval/toSource and prototype, constructor, __proto__, scope
 typeof / instanceof
 for in vs. propertyIsEnumerable
 local variable arguments in function (strange object)
@@ -1156,3 +1156,47 @@ src/egaserver ../egachine/limbo/js/serprofile.js 2>/tmp/log && cmp -s /tmp/log /
 
 --------------------------------------------------------------------------------
 auf client seite ist paint das problem
+evtl. szenengraphen compilieren (am einfachsten opengl display list draus
+machen)
+--------------------------------------------------------------------------------
+SVG:
+also ich kann ein SVG document anzeigen
+allerdings ist das ganze nicht Auflösungsunabhängig und paßt überhaupt nicht
+in meinen szenengraph
+
+habe einen maxpect zoom/pan gemacht
+--------------------------------------------------------------------------------
+
+also ich wollte jetzt mal ein SVG basiertes menü machen
+dazu brauche ich mehr dom objekte
+und erneut taucht das problem auf, daß ich ein dom::Element* object bekomme
+aber ein spezialisiertes brauche
+(in diesem Fall dom::Text)
+also 2 möglichkeiten:
+	1) in javascript irgendwie casten
+	2) das spezialisierte javascript objekt zurückgeben
+	=> eine weiche die feststellt was das für ein element ist
+	und ein entsprechendes javascript objekt erstellt und zurückgibt
+	das geht dann über rtti oder dom::Element->getTagName()
+
+HIER geht es um   svgdocument_getElementById u.a.:
+    // now create javascript wrapper object for element
+    // TODO: what about polymorphism? shouldn't we create a specialized element?
+    // and who is the owner of the native object? gc -> creash
+    // perhaps we must map native to js object?
+    // or is svgl always the owner of the native object?
+--------------------------------------------------------------------------------
+war dabei zu schauen wie sowas geht:
+groupelem.childNodes.item(cn).setAttribute("transform","rotate("+rot+")");
+sprich ob item nicht ein Element anstatt eines Nodes zurückliefern sollte
+spec anschauen
+
+und generell habe ich versucht in egachine.in via transform="rotate()" sterne
+zu drehen
+--------------------------------------------------------------------------------
+nochmal generell über javascript dom wrapper nachdenken
+
+war grad dabei zu versuchen das svgtetris zum laufen zu bekommen
+--------------------------------------------------------------------------------
+fix test for SDL_mixer in configure.ac
+--------------------------------------------------------------------------------

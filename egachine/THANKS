@@ -10,6 +10,7 @@ Brian Paul/Mesa (for the nice gl.h which allowed to easily generate wrappers)
 Éric Tremblay   (for the music "adios" written for adic <http://adic.berlios.de>)
 Jens Schwarz	(for the nice animated girl)
 Christophe Roux (for testing egachine and giving feedback)
+Alex Fritze     (for SVG Tetris)
 
 SDL   <http://libsdl.org>
 boost <http://www.boost.org>

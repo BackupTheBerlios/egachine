@@ -213,7 +213,9 @@ examples = \
 	client/horror.js \
 	client/audio.js \
 	server/netpong.js \
-	server/netorigpong.js
+	server/netorigpong.js \
+	svg/svgviewer.js \
+	svg/svgtetris.svg
 
 nobase_dist_example_DATA = $(examples)
 all: all-am
@@ -285,7 +287,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/client $(distdir)/client/opengl $(distdir)/server
+	$(mkdir_p) $(distdir)/client $(distdir)/client/opengl $(distdir)/server $(distdir)/svg
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

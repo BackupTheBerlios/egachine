@@ -12,6 +12,7 @@ examples = \
 	client/audio.js \
 	server/netpong.js \
 	server/netorigpong.js \
-	svg/svgviewer.js
+	svg/svgviewer.js \
+	svg/svgtetris.svg
 
 nobase_dist_example_DATA = $(examples)

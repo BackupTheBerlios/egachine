@@ -4,10 +4,13 @@
 // all modifications to the scene-graph are distributed to the clients
 // => not the recommended way for this kind of game
 
-if (!EGachine.server) 
+if ((typeof EGachine == 'undefined') || (!EGachine.server))
   throw new Error("This file must be run by egaserver");
-if (!EGachine.checkVersion(0,0,7)) 
-  throw new Error("at least version 0.0.7 required");
+EGachine.checkVersion(0,1,1);
+
+function println(x){
+  Stream.stdout.write(x+"\n");
+};
 
 println("Server is now running\nListening for connections on port "+listenPort);
 println("ATTENTION: at the moment the server is insecure.");
@@ -34,29 +37,28 @@ function handleNewConnection(id,stream){
   // code we send to the client - which executes it
   // this is quite generic and should work for any similar networked game
   Net.server.remoteEval(id,"\
-if (!EGachine.checkVersion(0,1,1))					\
-  throw new Error('at least version 0.1.1 required');			\
-objReader=new ObjectReader(stream);					\
-Input.handleInput=function(i){						\
-  var msg=jsolait.lang.objToJson(i);					\
-  var h=msg.length.convertTo(16,6);					\
-  stream.write(h);							\
-  stream.write(msg);							\
-  stream.sync();							\
-};									\
-Video.setViewportCoords({left:0,right:"+sx+",bottom:0,top:"+sy+"});	\
-last=Timer.getTimeStamp();						\
-while (true) {								\
-  Video.clear();							\
-  now=Timer.getTimeStamp();						\
-  dt=(now-last)/1000000;						\
-  last=now;								\
-  if (typeof root != 'undefined') {					\
-  root.paint(dt);							\
-  };									\
-  Input.poll();								\
-  while (stream.inAvailable()>0) objReader.read();			\
-  Video.swapBuffers();							\
+EGachine.checkVersion(0,1,1);\
+objReader=new Stream.ObjectReader(stream);\
+Input.handleInput=function(i){\
+  var msg=EGachine.objToJson(i);\
+  var h=msg.length.convertTo(16,6);\
+  stream.write(h);\
+  stream.write(msg);\
+  stream.sync();\
+};\
+Video.setViewportCoords({left:0,right:"+sx+",bottom:0,top:"+sy+"});\
+last=Timer.getTimeStamp();\
+while (true) {\
+  Video.clear();\
+  now=Timer.getTimeStamp();\
+  dt=(now-last)/1000000;\
+  last=now;\
+  if (typeof root != 'undefined') {\
+  root.paint(dt);\
+  };\
+  Input.poll();\
+  while (stream.inAvailable()>0) objReader.read();\
+  Video.swapBuffers();\
 }");
 
 }

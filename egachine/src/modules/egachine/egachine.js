@@ -34,6 +34,35 @@
   EGachine.objToJson=lang.objToJson;
   EGachine.jsonToObj=lang.jsonToObj;
 
+  // todo: remove this 
+  Number.prototype.convertTo=function(base,padTo){
+    var s=this.toString(base);
+    if (!padTo || s.length>=padTo) throw new Error("Does not fit");
+    return Math.pow(10,padTo-s.length).toString().slice(1)+s;
+  };
+
+  // todo: remove
+  findLastNotGreater=function(at,length,v){
+    var last;
+    if ((!at)||(!length)) throw new Error("invalid input");
+    if (at(0)>v) return -1;
+    last=length-1;
+    if (at(last)<=v) return last;
+  
+    function _find(l,r) {
+      var d,m;
+      d=r-l;
+      if (d<2) return l;
+      m=l+(d>>1);
+      if (at(m)>v)
+	return _find(l,m);
+      else
+	return _find(m,r);
+    };
+  
+    return _find(0,last);
+  };
+
   EGachine.Version=function(version) {
     var a;
     if (arguments.length==3) {
@@ -67,37 +96,6 @@
     if (required.mic>this.mic) return false;
     return true;
   };
-
-  // find last element in sorted array-like object not greater than v
-  function findLastNotGreater(at,length,v){
-    var last;
-    if ((!at)||(!length)) throw new Error("invalid input");
-    if (at(0)>v) return -1;
-    last=length-1;
-    if (at(last)<=v) return last;
-  
-    function _find(l,r) {
-      var d,m;
-      d=r-l;
-      if (d<2) return l;
-      m=l+(d>>1);
-      if (at(m)>v)
-	return _find(l,m);
-      else
-	return _find(m,r);
-    };
-  
-    return _find(0,last);
-  };
-
-  /*
-  // misc extensions
-  Number.prototype.convertTo=function(base,padTo){
-    var s=this.toString(base);
-    if (!padTo || s.length>=padTo) throw new Error("Does not fit");
-    return Math.pow(10,padTo-s.length).toString().slice(1)+s;
-  };
-  */
 
   //! Resource object
   EGachine.Resource=function(resname,resource) {

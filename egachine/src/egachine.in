@@ -26,8 +26,10 @@ ejs.ModuleLoader.load("EGachine");
 ejs.ModuleLoader.load("Video");
 ejs.ModuleLoader.load("Input");
 ejs.ModuleLoader.load("Audio");
+ejs.ModuleLoader.load("Stream");
 ejs.ModuleLoader.load("Net");
 ejs.ModuleLoader.load("sg");
+ejs.ModuleLoader.load("gl");
 sg.Video=Video;
 ejs.ModuleLoader.load("Timer");
 ejs.ModuleLoader.load("Base64");
@@ -82,7 +84,7 @@ EGachine.connectDialog=function(host,port){
       //      var svgstream=File.read("/home/jens/develop/Diplomarbeit/egachine/limbo/egachine.svg");
       //      stderr.write("avail: "+svgstream.inAvailable());
       //      svgstream.read(svgstream.inAvailable()));
-      var svgdoc=new SVGDocument(EGachine.getResource("egachine.svg").decode());
+      var svgdoc=new svgl.SVGDocument(EGachine.getResource("egachine.svg").decode());
       var textelem=svgdoc.getElementById("textinput").childNodes.item(0);
       /*
       var groupelem=svgdoc.getElementById("starGroup1");
@@ -199,6 +201,10 @@ EGachine.connectDialog=function(host,port){
     ejs.enterUntrusted();
     while (true) readMsg();
   }catch(error){
+    function println(x){
+      Stream.stdout.write(x+"\n");
+    };
+    
     println(error);
     println("Stack:");
     println(error.stack);

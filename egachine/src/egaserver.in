@@ -24,15 +24,15 @@
 
 ejs.ModuleLoader.load("Monitorable");
 
-function adjustConstructor(func){
+function adjCons(func){
   return function(){
     // required to get [[class]] right
-    var ret=new Monitorable();
+    var ret=new Monitorable.Monitorable();
     // repair
     ret.__proto__=this.__proto__;
-    if (!(ret instanceof Monitorable)) {
+    if (!(ret instanceof Monitorable.Monitorable)) {
       if (!ret.__proto__.__proto__ === Object.prototype) throw new Error("bug");
-      ret.__proto__.__proto__=Monitorable.prototype;
+      ret.__proto__.__proto__=Monitorable.Monitorable.prototype;
     }
 
     func.apply(ret,arguments);
@@ -41,7 +41,11 @@ function adjustConstructor(func){
 };
 
 ejs.ModuleLoader.load("EGachine");
+ejs.ModuleLoader.load("Stream");
 ejs.ModuleLoader.load("Net");
+ejs.ModuleLoader.load("util");
+ejs.ModuleLoader.load("sg");
+ejs.ModuleLoader.load("Timer");
 
 // todo fetch from config file
 listenPort=47000;
@@ -57,24 +61,24 @@ Input={};
 Net.server=new Net.Server(listenPort);
 Net.server.connections={};
 Net.server._movie="";
-Net.server._buffer=new StringStream();
-Net.server.objWriter=new ObjectWriter(Net.server._buffer);
+Net.server._buffer=new Stream.StringStream();
+Net.server.objWriter=new Stream.ObjectWriter(Net.server._buffer);
 
 // todo: remove this hack
 dontwatch=false;
 
-Monitorable.prototype.monitor={
+Monitorable.Monitorable.prototype.monitor={
   onSet:function(obj,prop,val){
     if ((!dontwatch)
 	&&(prop!="monitor")
 	&&(Net.server.objWriter.written(obj))) {
-      //      stderr.write("set: '"+Net.server.objWriter._serialized[util.getObjectID(obj)].n+"'\n");
+      //      Stream.stderr.write("set: '"+Net.server.objWriter._serialized[util.getObjectID(obj)].n+"'\n");
       Net.server.objWriter.updateProperty(obj,prop,val);
     }
     return val;
   }
 };
-EGachine.r=new Monitorable();
+EGachine.r=new Monitorable.Monitorable();
 
 Net.server.distribute=function(obj,remoteName){
   var ret;
@@ -109,7 +113,7 @@ Net.server.handleDataAvailable=function(id) {
     delete this.connections[id];
     return;
   }
-  Input.handleInput(jsolait.lang.jsonToObj(this.connections[id].read(len)));
+  Input.handleInput(EGachine.jsonToObj(this.connections[id].read(len)));
 };
 
 Net.server.remoteEval=function(id,msg) {

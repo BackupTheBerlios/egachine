@@ -1,24 +1,24 @@
-(function(mod){
+(function(Stream){
   // load native library
   var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsstream.la");
   if (!fname) throw new Error("Could not find module: 'ejsstream.la'");
-  ejs.ModuleLoader.loadNative.call(mod,"ejsstream",fname.substring(0,fname.lastIndexOf(".")));
+  ejs.ModuleLoader.loadNative.call(Stream,"ejsstream",fname.substring(0,fname.lastIndexOf(".")));
 
-  mod.StringStream=function()
+  Stream.StringStream=function()
     {
       this.buffer="";
       this.pos=0;
     };
 
-  mod.StringStream.prototype.write=function(x){
+  Stream.StringStream.prototype.write=function(x){
     this.buffer+=x;
   };
 
-  mod.StringStream.prototype.inAvailable=function(){
+  Stream.StringStream.prototype.inAvailable=function(){
     return this.buffer.length-this.pos;
   };
 
-  mod.StringStream.prototype.read=function(n){
+  Stream.StringStream.prototype.read=function(n){
     var ret;
     if ((n === undefined)||(n<0)) 
       throw Error("Number expected");
@@ -28,11 +28,11 @@
     return ret;
   };
 
-  mod.StringStream.prototype.str=function(){
+  Stream.StringStream.prototype.str=function(){
     return this.buffer;
   };
 
-  mod.StringStream.prototype.clear=function(){
+  Stream.StringStream.prototype.clear=function(){
     this.buffer="";
     this.pos=0;
   };
@@ -47,11 +47,11 @@
     (example: new String("kjhkjh").foo=10;)
     - RegExp objects don't work (caused by typeof new RegExp() == 'function' ?)
   */
-  mod.ObjectWriter=function(stream)
+  Stream.ObjectWriter=function(stream)
     {
       var i, toignore=[{}.constructor, Object.prototype, Function, Function.prototype];
       if (typeof Monitorable != typeof undefined)
-	toignore.push(Monitorable.prototype);
+	toignore.push(Monitorable.Monitorable.prototype);
 
       // remember already serialized objects
       this._serialized={};
@@ -61,37 +61,39 @@
       this.stream=stream;
       // objects to ignore completely (todo: shit)
       this._ignore={};
-      for (i=0;i<toignore.length;++i) this._ignore[util.getObjectID(toignore[i])]=true;
+      for (i=0;i<toignore.length;++i)
+	if (typeof toignore[i] != "object" && typeof toignore[i] != "function") throw "i: "+i+" "+toignore[i];
+	else this._ignore[util.getObjectID(toignore[i])]=true;
       // "hidden" properties to use
       // (properties we are interested in which aren't enumarated)
       this._hiddenProps=["__proto__","constructor"];
     };
 
   // todo: put this somewhere suitable
-  mod.ObjectWriter.toHex=function(n){
+  Stream.ObjectWriter.toHex=function(n){
     var s=Number(n).toString(16), padTo=6, z="000000";
     if (s.length>=padTo) throw new Error("out of range");
     return z.slice(-6+s.length)+s;
   }
 
-  mod.ObjectWriter.prototype.sync=function()
+  Stream.ObjectWriter.prototype.sync=function()
     {
       this.stream.sync();
     };
 
-  mod.ObjectWriter.prototype._remoteEval=function(x)
+  Stream.ObjectWriter.prototype._remoteEval=function(x)
     {
       this.stream.write(""+ObjectWriter.toHex(x.length+1)+"e"+x);
     };
 
   //! object already written?
-  mod.ObjectWriter.prototype.written=function(obj)
+  Stream.ObjectWriter.prototype.written=function(obj)
     {
       return this._serialized[util.getObjectID(obj)] != undefined;
     };
 
   //! write object/value
-  mod.ObjectWriter.prototype.write=function(x)
+  Stream.ObjectWriter.prototype.write=function(x)
     {
       var oo=this;
       // sharp variables within object graph
@@ -310,7 +312,7 @@
     };
 
   //! update property of already written object
-  mod.ObjectWriter.prototype.updateProperty=function(obj,pname,pval)
+  Stream.ObjectWriter.prototype.updateProperty=function(obj,pname,pval)
     {
       var valt, objo, valo, fqpname, rpval;
 
@@ -335,7 +337,7 @@
       }
     };
 
-  mod.ObjectReader=function(stream)
+  Stream.ObjectReader=function(stream)
     {
       // remember already deserialized objects
       this.o=[];
@@ -346,7 +348,7 @@
     };
 
   //! read object
-  mod.ObjectReader.prototype.read=function()
+  Stream.ObjectReader.prototype.read=function()
     {
       var h="0x"+this.stream.read(6);
       var msg=this.stream.read(Number(h));

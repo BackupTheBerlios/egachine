@@ -37,8 +37,9 @@ else
     SM_BUILDDIR="mingwcross_DBG.OBJ"
 fi
 LDFLAGS="$LDFLAGS -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
-SDLMIXERLIBS="-lSDL_mixer"
-COMMONFLAGS="-c -I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_WIN $(sigc-config --cflags)"
+SDLMIXERLIBS="$SDLMIXER_SRCDIR/.libs/libSDL_mixer.a"
+
+COMMONFLAGS="-c -I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I$SDLMIXER_SRCDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_WIN $(sigc-config --cflags)"
 CLIENTFLAGS="$(sdl-config --cflags)"
 DESTDIR=${DESTDIR:=/tmp/egachine-$PACKAGE_MAJOR_VERSION.$PACKAGE_MINOR_VERSION.$PACKAGE_MICRO_VERSION}
 JSLIB="-ljs32"
@@ -48,6 +49,12 @@ cd $SPIDERMONKEY_SRCDIR
 make -f Makefile.ref clean
 rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
+
+# build SDL_mixer
+cd $SDLMIXER_SRCDIR
+./configure --host=mingw32 --disable-music-ogg --disable-music-mp3 --disable-music-midi --disable-midi --disable-music-timidity-midi--disable-music-cmd --disable-shared
+make clean
+make
 
 # build egachine
 cd $SRCDIR
@@ -152,7 +159,7 @@ $STRIP $DESTDIR/js32.dll
 
 # copy libs
 cp /usr/local/i586-mingw32msvc/bin/SDL.dll $DESTDIR
-cp /usr/local/i586-mingw32msvc/bin/SDL_mixer.dll $DESTDIR
+#cp /usr/local/i586-mingw32msvc/bin/SDL_mixer.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/libSDL_image.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/libjpeg.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/lib/libz.dll $DESTDIR

@@ -157,11 +157,12 @@ namespace ECMAScript
 //! wrap a native function (without return value) in namespace ns which takes 4 floating point argument(s) (jsdouble)
 #define ECMA_VOID_FUNC_FLOAT4(ns,name) ECMA_BEGIN_STATIC_VOID_FUNC(name) { ECMA_ARGS_TO_FLOAT_ARRAY(4,d);ns::name(d[0],d[1],d[2],d[3]);return JS_TRUE;}
 
-// TODO: bug? - len correct? number of chars in the unicode string?
+// TODO: bug? - len correct? 
+// number of chars in the unicode string?
+// we loose unicode information in ctype=JS_GetStringBytes(strtype);
 #define ECMA_STRING_TO_CHARVEC(val,ctype,len) do{if (!JSVAL_IS_STRING(val)) ECMA_THROW_ERROR("string required"); \
     JSString *strtype=JS_ValueToString(cx, val); \
     if (!strtype) return JS_FALSE; \
-    // todo: we loose unicode information here \
     ctype=JS_GetStringBytes(strtype); \
     if (!ctype) return JS_FALSE; \
     len=JS_GetStringLength(strtype); \

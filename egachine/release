@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# script i use to build a complete release
+
 set -e
 
 if [ "x$USER" != "xjens" ]; then
@@ -6,10 +9,8 @@ if [ "x$USER" != "xjens" ]; then
 	exit 1
 fi
 
-# script i use to build a complete release
-
 if test ! -f $(pwd)/src/egachine.js; then
-	echo "You must type ./dist in the top level directory"
+	echo "You must type ./release in the top level directory"
 	exit 1
 fi
 

@@ -14,10 +14,9 @@ download the zip archive extract it and read the README file
 
 debian/gnu linux: 
 
-add following 2 lines to /etc/apt/sources.list:
+add following line to /etc/apt/sources.list:
 
 deb http://egachine.berlios.de/debian testing main
-deb-src http://egachine.berlios.de/debian testing main
 
 Then as root:
 
@@ -29,23 +28,27 @@ game menu.
 ======================================================================
 
 Building EGachine
-(a bit tricky at the moment since EGachine depends on a CVS version
-of SDL_mixer)
 
 ----------------------------------------------------------------------
 
-Debian users should read:
+debian/gnu linux:
+
+add following line to /etc/apt/sources.list:
+
+deb-src http://egachine.berlios.de/debian testing main
+
+read:
 http://www.debian.org/doc/manuals/apt-howto/ch-sourcehandling.en.html
 
 for example:
+$apt-get update
 $apt-get source egachine
 $cd egachine-0.0.?
 $dpkg-buildpackage -rfakeroot -b -uc
 
-ATTENTION:
-unfortunately this does not work at the moment since egachine depends
-on a CVS version of SDL_mixer
 ----------------------------------------------------------------------
+
+generic build instructions:
 
 Currently there is no Makefile,  and we currently don't use  autoutils
 (no autoconf/make). There are only some bash scripts (someone wants to
@@ -59,15 +62,13 @@ distribution)
 
 - SDL <http://www.libsdl.org>
 - SDL_image <http://www.libsdl.org/projects/SDL_image/>
-- SDL_mixer <http://www.libsdl.org/projects/SDL_mixer/>
-	ATTENTION: you currently need the CVS version - hopefully will
-	be released as 1.2.6 soon?
 - libsigc++-1.2
 - OpenGL/Mesa
 - c++ compiler (f.e. g++ - probably version >=3)
 
 If you checked out from CVS you also need:
 - spidermonkey which is not in CVS but in the source tarball.
+- SDL_mixer which is not in CVS but in the source tarball.
 
 For regenerating OpenGL wrappers (normally not needed):
 perl,sed,grep,indent,bash,?
@@ -81,4 +82,7 @@ run ./make
 
 you don't have to install but can do so with ./install
 
+building for win32 platforms:
+at the moment a native build is not supported - the win32 binaries
+are cross-compiled with mingw from linux
 ----------------------------------------------------------------------

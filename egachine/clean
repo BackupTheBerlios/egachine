@@ -20,3 +20,6 @@ for a in $PROGRAMS; do rm -vf src/$a.bin; done
 cd $SPIDERMONKEY_SRCDIR
 rm -rf *.OBJ fdlibm/*.OBJ
 make -f Makefile.ref clean
+
+cd $SDLMIXER_SRCDIR
+make clean

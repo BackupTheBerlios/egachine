@@ -15,9 +15,10 @@ fi
 source ./common.sh
 
 LDFLAGS="$LDFLAGS -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
-COMMONFLAGS="-I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_UNIX $(sigc-config --cflags) -DSYSCONFDIR=$SYSCONFDIR -DDATADIR=$DATADIR"
+COMMONFLAGS="-I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I$SDLMIXER_SRCDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_UNIX $(sigc-config --cflags) -DSYSCONFDIR=$SYSCONFDIR -DDATADIR=$DATADIR"
 CLIENTFLAGS="$(sdl-config --cflags)"
-SDLMIXERLIBS="-lSDL_mixer -lvorbisfile -lvorbis -logg -lsmpeg"
+#SDLMIXERLIBS="-lSDL_mixer -lvorbisfile -lvorbis -logg -lsmpeg"
+SDLMIXERLIBS="$SDLMIXER_SRCDIR/.libs/libSDL_mixer.a"
 JSLIB="-lsmjs"
 
 # build spidermonkey
@@ -25,6 +26,12 @@ cd $SPIDERMONKEY_SRCDIR
 make -f Makefile.ref clean
 rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
+
+# build SDL_mixer
+cd $SDLMIXER_SRCDIR
+./configure --disable-music-ogg --disable-music-mp3 --disable-music-midi --disable-midi --disable-music-timidity-midi--disable-music-cmd --disable-shared
+make clean
+make
 
 # build egachine
 cd $SRCDIR
@@ -45,7 +52,7 @@ for a in $(find . -name "*.cpp"); do
 done
 # link client
 echo Link egachine
-run "$CXX -o egachine.bin $LDFLAGS $(find -name *.o|grep -v server|grep -v tools) $JSLIB $SDLMIXERLIBS $(sdl-config --libs) $(sigc-config --libs) -lGL -lGLU -lSDL_image"
+run "$CXX -o egachine.bin $LDFLAGS $(find -name *.o|grep -v server|grep -v tools) $JSLIB $(sdl-config --libs) $(sigc-config --libs) -lGL -lGLU -lSDL_image $SDLMIXERLIBS"
 # link server
 echo Link egaserver
 run "$CXX -o egaserver.bin $LDFLAGS $(find -name *.o|grep -v client|grep -v tools) $JSLIB $(sigc-config --libs) -lz"

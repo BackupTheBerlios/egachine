@@ -113,7 +113,8 @@ extern "C" {
   JSClass global_class = {
     "global",JSCLASS_NEW_RESOLVE,
     JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
-    JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
+    JS_EnumerateStandardClasses, (JSResolveOp)global_newresolve,
+    JS_ConvertStub,JS_FinalizeStub,
     EJS_END_CLASS_SPEC
   };
 
@@ -121,8 +122,7 @@ extern "C" {
   JSClass ejs_class = {
     "ejs", JSCLASS_HAS_RESERVED_SLOTS(1),
     JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
-    JS_EnumerateStandardClasses, (JSResolveOp)global_newresolve,
-    JS_ConvertStub,JS_FinalizeStub,
+    JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
     EJS_END_CLASS_SPEC
   };
 

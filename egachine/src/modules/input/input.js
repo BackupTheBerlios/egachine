@@ -328,13 +328,33 @@
       ...
     */
   }
-  Input.Event.prototype.CAPTURING_PHASE = 1;
-  Input.Event.prototype.AT_TARGET = 2;
-  Input.Event.prototype.BUBBLING_PHASE = 3;
+  Input.Event.CAPTURING_PHASE = 1;
+  Input.Event.AT_TARGET = 2;
+  Input.Event.BUBBLING_PHASE = 3;
+
+  Input.Event.prototype.preventDefault=function(){
+    this._preventDefault=true;
+  };
+
+  Input.Event.prototype.stopPropagation=function(){
+    this._stopPropagation=true;
+  };
+
+  Input.Event.prototype.clone=function(){
+    // only works for now!
+    var ret=new Input.Event();
+    var i;
+    for (i in this)
+      if (this.hasOwnProperty(i))
+	ret[i]=this[i];
+    return ret;
+  }
 
   Input.MouseEvent=function() {
   };
 
+  Input.MouseEvent.prototype=new Input.Event();
+  /* todo
   Input.MouseEvent.prototype.initMouseEvent=function(typeArg,
 						     canBubbleArg,
 						     cancelableArg,
@@ -351,7 +371,7 @@
 						     buttonArg,
 						     relatedTargetArg) {
     throw Error("not yet implemented");
-  };
+    };*/
 
   //! convert event to dom level 2 MouseEvent
   Input.toMouseEvent=function(e) {
@@ -379,20 +399,69 @@
       default:
       throw Error("wrong event type");
     };
+    ret.bubbles=true;
+    ret.cancelable=true;
+    ret.timeStamp=Date.now();
     return ret;
   };
 
-  var listeners={};
-  Input._clearListeners=function(){listeners={};};
-  Input.addEventListener=function(type, listener, useCapture) {
-    var a=listeners[type];
-    if (!a) listeners[type]=a=[];
+  Input.EventTarget=function() {
+    this.listeners={};
+  };
+
+  Input.EventTarget.prototype.addEventListener=function(type, listener, useCapture) {
+    var a=this.listeners[type];
+    if (!a) this.listeners[type]=a=[];
     a.push({listener:listener,useCapture:useCapture});
   };
-  
+
+  Input.EventTarget.prototype.dispatchEvent=function(evt) {
+    var stderr=ejs.ModuleLoader.get("Stream").stderr;
+    //    stderr.write("i.e.p.dispatch: "+this.toSource()+":"+evt.toSource()+"\n");
+
+    var i;
+    var l=this.listeners[evt.type];
+    if (l) {
+      for (i=0;i<l.length;++i) {
+	var bubble=(evt.eventPhase==Input.Event.BUBBLING_PHASE)&&(!l[i].useCapture);
+	var capture=(evt.eventPhase==Input.Event.CAPTURING_PHASE)&&(l[i].useCapture);
+	if (bubble||capture||evt.eventPhase==Input.Event.AT_TARGET) {
+	  try{
+	    //	    stderr.write("call listener: "+l[i].listener+"\n");
+	    l[i].listener(evt);
+	  }catch(e){
+	    // Any exceptions thrown inside an EventListener will not stop 
+	    // propagation of the event.
+	    stderr.write("Warning: "+e+"\n"+e.stack+"\n");
+	  }
+	}
+      }
+    }
+    /*
+      the return value of dispatchEvent indicates whether any of the listeners 
+      which handled the event called preventDefault. 
+      If preventDefault was called the value is false, else the value is true.
+    */
+    return evt._preventDefault;
+  };
+
+  Input.EventTarget.prototype.clear=function(){
+    this.listeners={};
+  };
+
   /* todo:
-  Input.removeEventListener(type, listener, useCapture) {
+  Input.EventTarget.prototype.removeEventListener=function(type, listener, useCapture) {
   };*/
+
+  var target=new Input.EventTarget();
+  Input.addEventListener=function(type, listener, useCapture) {
+    target.addEventListener(type, listener, useCapture);
+  };
+  Input.dispatchEvent=function(evt) {
+    evt.eventPhase=Input.Event.AT_TARGET;
+    target.dispatchEvent(evt);
+  };
+  
 
   Input.handleMouse=function(e) {
     var domevent=Input.toMouseEvent(e);
@@ -411,12 +480,8 @@
       throw Error("wrong type: "+e.type);
     };
 
-    var i;
-    var l=listeners[type];
-    if (l) {
-      for (i=0;i<l.length;++i)
-	l[i].listener(domevent);
-    }
+    domevent.type=type;
+    Input.dispatchEvent(domevent);
   };
 
   //! todo: this must always work => untrusted code should not be allowed to mess with this

@@ -14,6 +14,8 @@ examples = \
 	client/slideshow.js \
 	client/simple.js \
 	client/balls.js \
+	client/sgdemo.js \
+	client/rail.js \
 	server/netpong.js \
 	server/netorigpong.js \
 	svg/svgviewer.js \

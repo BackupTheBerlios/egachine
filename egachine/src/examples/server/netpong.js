@@ -6,7 +6,7 @@
 
 if ((typeof EGachine == 'undefined') || (!EGachine.server))
   throw new Error("This file must be run by egaserver");
-EGachine.checkVersion(0,1,1);
+EGachine.checkVersion("0.1.2");
 
 function println(x){
   Stream.stdout.write(x+"\n");
@@ -37,7 +37,7 @@ function handleNewConnection(id,stream){
   // code we send to the client - which executes it
   // this is quite generic and should work for any similar networked game
   Net.server.remoteEval(id,"\
-EGachine.checkVersion(0,1,1);\
+EGachine.checkVersion('0.1.2');\
 objReader=new Stream.ObjectReader(stream);\
 Input.handleInput=function(i){\
   var msg=EGachine.objToJson(i);\

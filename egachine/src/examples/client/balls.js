@@ -2,7 +2,7 @@
 
 if ((typeof EGachine == 'undefined')||(!EGachine.client))
   throw "This file must be run by egachine";
-EGachine.checkVersion("0.1.1");
+EGachine.checkVersion("0.1.2");
 
 (function(){
   // array - with current state of input devices
@@ -107,11 +107,11 @@ EGachine.checkVersion("0.1.1");
   var grid=new sg.Color(0.8,0.7,0.2);
   var size=new sg.V2D(sx/10/10,sy+sy/3);
   for (i=0;i<=sx+sx/4;i+=sx/4) {
-    grid.add(new sg.Quad(size,new sg.V2D(i,(sy+sy/3)/2)));
+    grid.add(new sg.Rectangle(size,new sg.V2D(i,(sy+sy/3)/2)));
   };
   size=new sg.V2D(sx+sx/4,sy/10/10);
   for (i=0;i<=sy+sy/3;i+=sy/3) {
-    grid.add(new sg.Quad(size,new sg.V2D((sx+sx/4)/2,i)));
+    grid.add(new sg.Rectangle(size,new sg.V2D((sx+sx/4)/2,i)));
   };
   EGachine.sceneGraph.add(new sg.Translate(scroll).add(new Compiled(grid)));
 

@@ -3,7 +3,7 @@
 
 if ((typeof EGachine == 'undefined')||(!EGachine.client))
   throw "This file must be run by egachine";
-EGachine.checkVersion("0.1.1");
+EGachine.checkVersion("0.1.2");
 
 var frameDiv=0;
 
@@ -17,7 +17,7 @@ function init() {
   var ctest=0;
   var speed=sx;
   var dir=new sg.Degrees(0);
-  var marker=new sg.Color(1,0,0,1).add(new sg.Translate(new sg.V2D(sx/2,0)).add(new sg.Quad(new sg.V2D(quadSize.x,sy/20))));
+  var marker=new sg.Color(1,0,0,1).add(new sg.Translate(new sg.V2D(sx/2,0)).add(new sg.Rectangle(new sg.V2D(quadSize.x,sy/20))));
   var unitSize=new sg.V2D(1,1);
 
   addResources();
@@ -53,21 +53,21 @@ function init() {
 		   .add(new sg.Scale(new sg.V2D(1,1/4))
 			.add(new sg.Translate(new sg.V2D(0,-2))
 			     .add(new sg.Color(1,0,0,1)
-				  .add(new sg.Quad(unitSize,new sg.V2D(0,3.5))))
+				  .add(new sg.Rectangle(unitSize,new sg.V2D(0,3.5))))
 			     .add(new sg.Color(0,1,0,1)
-				  .add(new sg.Quad(unitSize,new sg.V2D(0,2.5))))
+				  .add(new sg.Rectangle(unitSize,new sg.V2D(0,2.5))))
 			     .add(new sg.Color(0,0,1,1)
-				  .add(new sg.Quad(unitSize,new sg.V2D(0,1.5))))
+				  .add(new sg.Rectangle(unitSize,new sg.V2D(0,1.5))))
 			     .add(new sg.Color(1,1,1,1)
-				  .add(new sg.Quad(unitSize,new sg.V2D(0,0.5)))))))))
+				  .add(new sg.Rectangle(unitSize,new sg.V2D(0,0.5)))))))))
     .add(marker);
 
   test[2]=new sg.Node().add(new sg.Translate(new sg.V2D(sx/2,sy/2))
-			    .add(new sg.Quad(new sg.V2D(sx,sy))))
+			    .add(new sg.Rectangle(new sg.V2D(sx,sy))))
     .add(new sg.Color(0,0,0,1)
 	 .add(new sg.Translate(pos)
 	      .add(new sg.Rotate(dir)
-		   .add(new sg.Quad(quadSize)))));
+		   .add(new sg.Rectangle(quadSize)))));
   
   // wrap value to [min,max[
   function wrap(min,max,value)

@@ -53,7 +53,7 @@ while (true) {
     //    Video.clear();
     for (i=1;i<6;++i) {
       Video.setColor4v(cols[(note+i)%cols.length]);
-      Video.drawQuad(0.8-i/8,0.8-i/8);
+      Video.drawRectangle(0.8-i/8,0.8-i/8);
       Video.rotate(i/2);
     }
     Video.swapBuffers();

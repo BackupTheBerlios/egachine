@@ -79,7 +79,7 @@ Simple scene-graph
 - for beginners
 - good enough to move some sprites
 EGachine.sceneGraph
-=new sg.Quad(size,pos);
+=new sg.Rectangle(size,pos);
 --
 @client/simple.js
 --

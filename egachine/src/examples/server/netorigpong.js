@@ -20,7 +20,7 @@
 
 if ((typeof EGachine == 'undefined') || (!EGachine.server))
   throw new Error("This file must be run by egaserver");
-EGachine.checkVersion(0,1,1);
+EGachine.checkVersion("0.1.2");
 
 function println(x){
   Stream.stdout.write(x+"\n");
@@ -34,7 +34,7 @@ getProfile=false;
 sx=1+1/3;
 sy=1;
 racketSize=new sg.V2D(0.05,0.1);
-racket=new sg.Quad(racketSize);
+racket=new sg.Rectangle(racketSize);
 rackets=[];
 points=[];
 ballSize=new sg.V2D(0.025,0.025);
@@ -98,7 +98,7 @@ function handleNewConnection(id,stream){
   // code we send to the client - which executes it
   // this is quite generic and should work for any similar networked game
   Net.server.remoteEval(id,"\
-function run(){EGachine.checkVersion(0,1,1);\
+function run(){EGachine.checkVersion('0.1.2');\
 objReader=new Stream.ObjectReader(stream);			\
 Input.handleInput=function(i){\
   if (i.x) {start+=i.x*1000000;Stream.stderr.write(start+'\\n');return;};\
@@ -365,7 +365,7 @@ Points.prototype.paint=function(){
     var y;
     for (y=0;y<5;++y) {
       for (x=0;x<3;++x) {
-	if (s.charAt(x+y*3)=="1") Video.drawQuad(1,1);
+	if (s.charAt(x+y*3)=="1") Video.drawRectangle(1,1);
 	Video.translate(1,0);
       }
       Video.translate(-3,-1);
@@ -378,7 +378,7 @@ Points.prototype.paint=function(){
 // build our scenegraph
 root=new sg.Node()
   .add(new sg.Color(bgColor)
-       .add(new sg.Quad(new sg.V2D(sx,sy-topBorder-bottomBorder),new sg.V2D(sx/2,fieldMiddle))))
+       .add(new sg.Rectangle(new sg.V2D(sx,sy-topBorder-bottomBorder),new sg.V2D(sx/2,fieldMiddle))))
 // racket of player one (right, green)
   .add(new sg.Color(playerColors(0))
        .add(rackets[0]=new MultiMover()
@@ -390,18 +390,18 @@ root=new sg.Node()
 	    .appendMove(0,new LinMover(new sg.V2D(   2*racketSize.x,fieldMiddle),dontMove))
 	    .add(racket)))
   .add(new sg.Color(borderColor)
-       .add(new sg.Quad(new sg.V2D(sx,3*0.05/5),new sg.V2D(sx/2,sy-topBorder+3*0.05/5/2)))
-       .add(new sg.Quad(new sg.V2D(sx,2*0.05/5),new sg.V2D(sx/2,bottomBorder-2*0.05/5/2))))
+       .add(new sg.Rectangle(new sg.V2D(sx,3*0.05/5),new sg.V2D(sx/2,sy-topBorder+3*0.05/5/2)))
+       .add(new sg.Rectangle(new sg.V2D(sx,2*0.05/5),new sg.V2D(sx/2,bottomBorder-2*0.05/5/2))))
   .add(new sg.Color(bgColor)
-       .add(new sg.Quad(new sg.V2D(sx,    10*0.05/5),new sg.V2D(sx/2,         sy-topBorder+3*0.05/5+10*0.05/5/2)))
-       .add(new sg.Quad(new sg.V2D(sx-0.1,     0.01),new sg.V2D(sx/2+0.1,sy-topBorder+3*0.05/5+10*0.05/5+0.01/2))))
+       .add(new sg.Rectangle(new sg.V2D(sx,    10*0.05/5),new sg.V2D(sx/2,         sy-topBorder+3*0.05/5+10*0.05/5/2)))
+       .add(new sg.Rectangle(new sg.V2D(sx-0.1,     0.01),new sg.V2D(sx/2+0.1,sy-topBorder+3*0.05/5+10*0.05/5+0.01/2))))
   .add(new sg.Color([0,0,0,1])
-       .add(new sg.Quad(new sg.V2D(sx,bottomBorder-2*0.05/5),new sg.V2D(sx/2,(bottomBorder-2*0.05/5)/2))))
+       .add(new sg.Rectangle(new sg.V2D(sx,bottomBorder-2*0.05/5),new sg.V2D(sx/2,(bottomBorder-2*0.05/5)/2))))
 // the ball
   .add(new sg.Color(ballColor(1))
        .add((ball=new MultiMover()
 	     .appendMove(0,new LinMover(ballStartPos, new sg.V2D(-1/3/1000000,-1/5/1000000)))
-	     .add(new sg.Quad(ballSize)))))
+	     .add(new sg.Rectangle(ballSize)))))
   .add(new sg.Translate(new sg.V2D(0,0.85*sy))
        // display points for player one
        .add(new sg.Color(playerColors(0))

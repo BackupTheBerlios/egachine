@@ -20,7 +20,7 @@
 
 
 if (!EGachine.client) throw new Error("This file must be run by egachine");
-if (!EGachine.checkVersion(0,0,5)) throw new Error("at least version 0.0.5 required");
+EGachine.checkVersion("0.1.2");
 if (!this.gl) throw new Error("This game needs OpenGL");
 
 

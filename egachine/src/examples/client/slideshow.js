@@ -1,7 +1,7 @@
 // slideshow / demo of egachine
 if ((typeof EGachine == 'undefined')||(!EGachine.client))
   throw "This file must be run by egachine";
-EGachine.checkVersion("0.1.1");
+EGachine.checkVersion("0.1.2");
 ejs.ModuleLoader.load("svgl");
 
 /*

@@ -2,7 +2,7 @@
 
 if ((typeof EGachine == 'undefined')||(!EGachine.client))
   throw "This file must be run by egachine";
-EGachine.checkVersion("0.1.1");
+EGachine.checkVersion("0.1.2");
 
 function init() {
   var sx=4;
@@ -23,15 +23,15 @@ function init() {
 		       });
 
   // quad in bottom left corner
-  example[0]=new sg.Quad(quadSize);
+  example[0]=new sg.Rectangle(quadSize);
 
   // quad moved to middle of the screen
-  example[1]=new sg.Translate(middle).add(new sg.Quad(quadSize));
+  example[1]=new sg.Translate(middle).add(new sg.Rectangle(quadSize));
 
   // quad moved to middle of the screen and then rotated by 45 degrees
   example[2]=new sg.Translate(middle)
     .add(new sg.Rotate(new sg.Degrees(45))
-	 .add(new sg.Quad(quadSize)));
+	 .add(new sg.Rectangle(quadSize)));
 
   // give the quad some color
   // (Note: we simply reuse the scene from the example above)
@@ -43,15 +43,15 @@ function init() {
   // move to middle
   example[4]=new sg.Translate(middle)
     // draw a quad
-    .add(new sg.Quad(quadSize))
+    .add(new sg.Rectangle(quadSize))
     // move a bit right, set color to red and draw quad
     .add(new sg.Translate(new sg.V2D(middle.x/2,0))
 	 .add(new sg.Color(1,0,0)
-	      .add(new sg.Quad(quadSize))))
+	      .add(new sg.Rectangle(quadSize))))
     // (automatically return back to middle and color white)
     // move a bit left and draw quad
     .add(new sg.Translate(new sg.V2D(-middle.x/2,0))
-	 .add(new sg.Quad(quadSize)));
+	 .add(new sg.Rectangle(quadSize)));
 
   // to see how to use the scene-graph for animations
   // see the simple.js example

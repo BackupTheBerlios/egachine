@@ -2,7 +2,7 @@
 
 if ((typeof EGachine == 'undefined')||(!EGachine.client))
   throw "This file must be run by egachine";
-EGachine.checkVersion("0.1.1");
+EGachine.checkVersion("0.1.2");
 
 function init() {
   var viewport=Video.getViewport();
@@ -12,7 +12,7 @@ function init() {
   // array - with current state of input devices
   var joypad=[];
 
-  EGachine.sceneGraph=new sg.Quad(size,pos);
+  EGachine.sceneGraph=new sg.Rectangle(size,pos);
   Input.addDevListener(function(i){
 			 joypad[i.dev]={x:i.x, y:i.y, buttons:i.buttons};
 		       });

@@ -2,7 +2,7 @@
 
 if ((typeof EGachine == 'undefined')||(!EGachine.client))
   throw "This file must be run by egachine";
-EGachine.checkVersion("0.1.1");
+EGachine.checkVersion("0.1.2");
 
 function init() {
   // array - with current state of input devices

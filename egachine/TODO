@@ -57,6 +57,8 @@ how buggy/safe/secure/trustworthy are opengl/mesa implementations?
 SDL_mixer/mikmod?
 SDL_image?
 --------------------------------------------------------------------------------
+the svgl module is completely insecure at the moment
+--------------------------------------------------------------------------------
 
 
 OTHER:

@@ -28,10 +28,6 @@ ejs.ModuleLoader.load("Input");
 ejs.ModuleLoader.load("Audio");
 ejs.ModuleLoader.load("Net");
 var useSVG=false;
-if (useSVG) {
-  ejs.ModuleLoader.load("svgl");
-  ejs.ModuleLoader.load("File");
-};
 
 EGachine.version={string:"@PACKAGE_VERSION@"};
 (function(){
@@ -42,7 +38,6 @@ EGachine.version={string:"@PACKAGE_VERSION@"};
  })();
 
 EGachine.client=true;
-
 
 EGachine.connectDialog=function(host,port){
   if (!host) host="localhost";
@@ -87,10 +82,15 @@ EGachine.connectDialog=function(host,port){
     // öööösicher.de
 
     if (useSVG) {
-      var svgstream=File.read("/home/jens/develop/Diplomarbeit/egachine/limbo/egachine.svg");
-      stderr.write("avail: "+svgstream.inAvailable());
-      var svgdoc=new SVGDocument(svgstream.read(svgstream.inAvailable()));
+      //      var svgstream=File.read("/home/jens/develop/Diplomarbeit/egachine/limbo/egachine.svg");
+      //      stderr.write("avail: "+svgstream.inAvailable());
+      //      svgstream.read(svgstream.inAvailable()));
+      var svgdoc=new SVGDocument(EGachine.getResource("egachine.svg").decode());
       var textelem=svgdoc.getElementById("textinput").childNodes.item(0);
+      /*
+      var groupelem=svgdoc.getElementById("starGroup1");
+      var rot=0;
+      */
     }
 
     var sx=1+1/3,sy=1;
@@ -99,8 +99,9 @@ EGachine.connectDialog=function(host,port){
     var constr="Connect to";
     var s=welcome+"\n\n"+constr;
     Video.setViewportCoords({left:0,right:sx,bottom:0,top:sy});
+    // todo: shit
     var maxlen=Math.max(welcome.length,constr.length);
-    var inputField=new InputField(host+":"+port,maxlen);
+    var inputField=new InputField(host+":"+port,maxlen-(useSVG ? 4 : 0));
     
     i=0.01;
     var start=Timer.getTimeStamp();
@@ -124,7 +125,14 @@ EGachine.connectDialog=function(host,port){
 	// is there no inverse white space ("blackspace") in unicode?
 	// i tried many alternatives somewhere around \u2000 (2001 and 2003?)
 	// it seems the common fonts don't support those characters?
+	// update: now "fixed" by not using text-anchor:middle
 	textelem.setNodeValue(inputField.text+ (blink ? "_" : "  "));
+	/*
+	rot+=dt/5;
+	for (cn=0;cn<4;++cn)
+	  if ((groupelem.childNodes.item(cn))&&(groupelem.childNodes.item(cn).setAttribute))
+	    groupelem.childNodes.item(cn).setAttribute("transform","rotate("+rot+")");
+	*/
 	gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 	svgl.display(svgdoc);
       }else{
@@ -161,7 +169,7 @@ EGachine.connectDialog=function(host,port){
 	Video.popMatrix();
       };
       Video.swapBuffers();
-      //    Timer.uSleep(10000);
+      Timer.uSleep(20000);
       Input.poll();
     }
     if (useSVG) {
@@ -169,6 +177,7 @@ EGachine.connectDialog=function(host,port){
       Video.setViewportCoords({left:0,right:sx,bottom:0,top:sy});
       gl.LoadIdentity();
       gl.ClearColor(0,0,0,1);
+      gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
     }
 
     Input.charMode(false);
@@ -228,7 +237,19 @@ Audio.playSample=function(resname,repeat) {
   return Audio._playSample(sid,repeat);
 };
 
+addResources();
+//Audio.playMusic("...");
+
 if ((argv.length<2)||(argv.length==3)) {
+  if (useSVG) {
+    try{
+      useSVG=true;
+      ejs.ModuleLoader.load("svgl");
+    }catch(e){
+      useSVG=false;
+    };
+  }
+
   EGachine.connectDialog(argv[1],argv[2]);
   ejs.exit(true);
 };
@@ -241,4 +262,43 @@ if ((argv.length>3)||(argv[1]=="-h")||(argv[1]=="--help")) {
 if (argv.length==2) {
   ejs.loadUntrusted(argv[1]);
   ejs.exit(true);
+};
+
+function addResources(){
+EGachine.addResource(
+({name:"egachine.svg", size:5368, z:true, data:"\
+eJy9WF1vG7cSfc+v2Lt+aR/E5fCbiuUC18kNCqT3Fm3a4j4qWsraVt4VpLUd99f3DFdSJMt2G7RwgCC\
+rITmcOTNnZpjzbz5dL4vbtN40XTspSciySO2sq5v2alL+9OE/o1AWm37a1tNl16ZJ2XblNxevzv/15n\
++XH/7//dtic3tVfP/Tv99/e1mUo6r6RV9W1ZsPb4off35XKClJRmmq6u1/y1flou9X46q6u7sTd1p06\
+6vqww8V76l+eHs5woHR/gA0VNBMUtR9XfJ9o1FxuU7TPtXFXdMvih9h4gp/i68O9W62UjHrrqvy62I0\
+wlkoelUUBRxtN5NHrMCtkm8r97vGn5ZN+9tjeynGWOXVvPsIuHx8Ug4f97uPu6buF5MyyOHnIjVXi35\
+Suu3vpp6UuNs7vbt+vFlNZ0B6tU6btL5NB2bt3Ntbtvd3092sZ2kOE5NoUz8AuF0cDSiymp1ovDdcCm\
+2Ol+pu1k6vYUC16K5T9WtqN1WdbtOyW1VvmtWyu56uP6amr9LVdLZo2lQtm+uP3f6n2EF5qPHjdPPFG\
+suL870Ktqi+bdLdDjNWWBbVxXmd5pudkL+9sziICKXp+t16Wjep7Xfrx1KnAl/Rd6tsbX+/hIn8czTr\
+lt16fJaSi1K+zqIOQWn6+zG9zr518/km9bsY5yBil1Mx2/SMTmco0PxZnXSsU8usszo2/q+56IP/Mxe\
+R/F/iog/hH3fRh/g3XIxb5jEpx4t1mk/Ks9NA5y3E+U7klI+DBfeDJFpNyg57FJPZeOeNIT9sUrwpqu\
+iCt9lQ1jtdHto1A/HBM9LGyGCH62b3WbkfzrFkzbq9tyRlHCTzR87NT86x18d37hx4xmuOfUaVWQGb0\
+6w/CNi8a/vRpvk9jUm9njfL5fhmvfzqoYoov86Lo/XNMo1B2bara0R23f2WRrmyIbJ5w4NAZ4txI6B+\
+UAWF0TZYdVQMbYzAl6SikyLqBSiodJAmjdQA/taRrUpnjwursftKvEXvfv/1vO8nCD/t+/hMyi1xDqF\
+Qwu4kDORsuhqvu5u2PhT+2jXtsbSebhYDMcbKCWWPEfTBZbevPjOGA9TdrAawLs5X037xrHdnSfto1B\
+d6o4XfmoJLvyu0NCJqEwqlpQDopnhfaB1BFYiMwpq2LHIxp26hFGhkSGdZgExRoWwQMsR8NHqB9PIFu\
+ChctDHvU8IpviJKIZ3K+iwJpYIttML9MgzXSmElllU0wjlPkKmoRTBykNnoHO8jB267WChnhdUxsOzE\
+jd+Lg2KU1u2QZS8DKsG7IF0oSHlYSB4WksOn8fgXBhrFwCiJc8ZZyBxA9ewIeY9SFmNBkbAvMlgUlPD\
+BGoDvRfDEwJAFWAEYYJhCiBg/IqxGCRnyLeI+lgFeR1FBncRRz/tiwK0WWsgx9poxJW2FjHEwj5zNZ0\
++8eIgpDZXo6uK8T5/6LT2N3LMcyh4nqFav+cRo2s4W6C3XTV0v02eC8JqP6snR6eKXtMQomIq+K96+G\
+4aLAnYLOq/47FP2KPl37Hl6lLu47Nq2B6th0M6Cl8k0pZ0AUyJIAb4FziCllAgabNRWI4MkZ1BmMihV\
+6GCECpnSSiLpJIGCAZmmcp7pzHuDnFI6c5y8EUg46MeH0yrnhUG1J9BTOxz0mc/4KawzrtC4aSgZ5LV\
+QEataWujIaaYkCY1SAdpHgeMseujBQZIxhs77F2SugTXeRMoGOi8ZA2OVMCHqXMh8IHbOhMDGhlwEbX\
+DMK4NllDeFIgitIVCWoR4q76EYtU9Gxg+dkumkgTMUZ0oayTHTqkBhENLafK2MgJTjA3WScuVDgDA9I\
+LRQK43ioBkl+TMbhyqYT544cYKpe0FMUWqE8twTKGcEY2A18IteIfweyZe9s55zk2UqiKAkJ7O1kXuH\
+Rq0HViqXTeuDiFGZ3BysJQbQIu2s1LgjYOYIuSdYgpoAmcaHVJGyDCNftOgnqKkKjYvhQsnFMmSIpVG\
+5x1gZuEpzD4wiuEyiUz9OYI0vCKsmUBMzORIlYLzIXZUsLLRII4PKTprzQxvLs6lDKlreljsyPJF4UQ\
+2ux6Gbg5pkwWCLrNTBZm567vo4YpB40uQocSmxRhvI0JEp9zblkJe8zUJkcn9S6E+Riw/nJ9kMNPo9q\
+hCAZjJEvv/9qRcPMQ36BTF1BkYwhdEtQSjDFqLCccqY3F8N8gEyD25qArGIweJcxD40bEW8D+CD8iHv\
+88gylENu68rlcoJiB6Jyp0WmAlQW4UQIcB5PFqGVjFkmUURwg+UszsnrAJExvM2g8JIdjqJJA380aZR\
+za1WWPfTiBFT5kqASZxHwAFBAI4cdbzd+enHBw2wB4rAMWWQ9aG8wf+KDsw0tB5mCJmJQCJAxYSuDe1\
+SYCJe3aGGUwnMDZ9F1rBtqB5dmnn04UxXlamnR64zk7GVehzDs49cL6GxgaKCB/5hjpeW6zfOuy83r1\
+I8TWB9/yjz4PyJER2LaIzK7Fw0djCjIjkgBPj7/tDmzM6mlPn6lIWO8pueipU+jZdCvFXL2+dfM5yvQ\
+ncLxWybIgaMHQxfR3iO0/yeHrsGVef5zPG417eqmf3rgWnaz6XLRbfrduMX/03fx6g84zJZp\
+"}));
 };

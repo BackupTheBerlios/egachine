@@ -4,10 +4,10 @@
 #include "../sdlopengl/sdlgl.h"
 
 #include "jsgl_convert.h"
+#include "jsgl_glgetnumargs.h"
 
 extern "C" {
 #include "jsgl_funcs.h"
-
   // some functions we do handcraft
   ECMA_BEGIN_VOID_FUNC (Lightfv)
   {
@@ -68,6 +68,66 @@ extern "C" {
     glMaterialfv(face,pname,v);
     return JS_TRUE;
   }
+  ECMA_BEGIN_FUNC (GetBooleanv)
+  {
+    ECMA_CHECK_NUM_ARGS (1);
+    GLenum pname;
+    if (!ecma_to_GLenum (argv[0], pname))
+      ECMA_ERROR ("argument 0 has wrong type");
+    int vecsize=jsgl_glGetNumArgs(pname);
+    if (vecsize<=0)
+      ECMA_ERROR ("unknown parameter");
+    GLboolean v[vecsize];
+    glGetBooleanv(pname,v);
+    if (!ecma_from_boolean_vec(v,vecsize,rval))
+      ECMA_ERROR ("could not store result");
+    return JS_TRUE;
+  }  
+  ECMA_BEGIN_FUNC (GetDoublev)
+  {
+    ECMA_CHECK_NUM_ARGS (1);
+    GLenum pname;
+    if (!ecma_to_GLenum (argv[0], pname))
+      ECMA_ERROR ("argument 0 has wrong type");
+    int vecsize=jsgl_glGetNumArgs(pname);
+    if (vecsize<=0)
+      ECMA_ERROR ("unknown parameter");
+    GLdouble v[vecsize];
+    glGetDoublev(pname,v);
+    if (!ecma_from_number_vec(v,vecsize,rval))
+      ECMA_ERROR ("could not store result");
+    return JS_TRUE;
+  }
+  ECMA_BEGIN_FUNC (GetFloatv)
+  {
+    ECMA_CHECK_NUM_ARGS (1);
+    GLenum pname;
+    if (!ecma_to_GLenum (argv[0], pname))
+      ECMA_ERROR ("argument 0 has wrong type");
+    int vecsize=jsgl_glGetNumArgs(pname);
+    if (vecsize<=0)
+      ECMA_ERROR ("unknown parameter");
+    GLfloat v[vecsize];
+    glGetFloatv(pname,v);
+    if (!ecma_from_number_vec(v,vecsize,rval))
+      ECMA_ERROR ("could not store result");
+    return JS_TRUE;
+  }
+  ECMA_BEGIN_FUNC (GetIntegerv)
+  {
+    ECMA_CHECK_NUM_ARGS (1);
+    GLenum pname;
+    if (!ecma_to_GLenum (argv[0], pname))
+      ECMA_ERROR ("argument 0 has wrong type");
+    int vecsize=jsgl_glGetNumArgs(pname);
+    if (vecsize<=0)
+      ECMA_ERROR ("unknown parameter");
+    GLint v[vecsize];
+    glGetIntegerv(pname,v);
+    if (!ecma_from_number_vec(v,vecsize,rval))
+      ECMA_ERROR ("could not store result");
+    return JS_TRUE;
+  }
 
 #include "jsglu_funcs.h"
 
@@ -77,6 +137,10 @@ static JSFunctionSpec gl_static_methods[] = {
 #include "jsgl_fspecs.h"
   ECMA_FUNCSPEC (Lightfv, 3),
   ECMA_FUNCSPEC (Materialfv, 3),
+  ECMA_FUNCSPEC (GetBooleanv, 1),
+  ECMA_FUNCSPEC (GetDoublev, 1),
+  ECMA_FUNCSPEC (GetFloatv, 1),
+  ECMA_FUNCSPEC (GetIntegerv, 1),
   ECMA_END_FUNCSPECS
 };
 

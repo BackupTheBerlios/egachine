@@ -107,6 +107,7 @@ extern "C" {
     Video::Color cppcol(Video::getColor());
     double c[4];
     c[0]=cppcol.r;c[1]=cppcol.g;c[2]=cppcol.b;c[3]=cppcol.a;
+    // TODO: probably bug here since the values are not rooted!
     jsval v[4];
     for (int i=0;i<4;++i)
       if (!JS_NewNumberValue(cx,c[i],&(v[i]))) return JS_FALSE;

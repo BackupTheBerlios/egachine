@@ -123,3 +123,30 @@ inline bool ecma_from_const_GLubyte_ptr(const GLubyte* nres, jsval* rval)
   *rval=STRING_TO_JSVAL(s);
   return true;
 }
+
+inline bool ecma_from_boolean_vec(const GLboolean* v,int s, jsval* rval)
+{
+  JSObject *nobj=JS_NewArrayObject(ECMAScript::cx, 0, NULL);
+  if (!nobj) return JS_FALSE;
+  *rval=OBJECT_TO_JSVAL(nobj);
+  for (int i=0;i<s;++i) {
+    jsval n=BOOLEAN_TO_JSVAL(v[i]);
+    if (!JS_SetElement(ECMAScript::cx, nobj, i, &n))
+      return false;
+  }
+  return true;
+}
+
+template <typename N>
+inline bool ecma_from_number_vec(const N* v,int s, jsval* rval)
+{
+  JSObject *nobj=JS_NewArrayObject(ECMAScript::cx, 0, NULL);
+  if (!nobj) return JS_FALSE;
+  *rval=OBJECT_TO_JSVAL(nobj);
+  for (int i=0;i<s;++i) {
+    jsval n;
+    if (!JS_NewNumberValue(ECMAScript::cx, v[i], &n)) return false;
+    if (!JS_SetElement(ECMAScript::cx, nobj, i, &n)) return false;
+  }
+  return true;
+}

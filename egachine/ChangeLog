@@ -1,5 +1,8 @@
 2004-04-16  Jens Thiele  <karme@berlios.de>
 
+	* added glGet functions:
+	gl.GetBooleanv, gl.GetDoublev, gl.GetFloatv, gl.GetIntegerv
+
 	* new serializer
 
 2004-04-15  Jens Thiele  <karme@berlios.de>

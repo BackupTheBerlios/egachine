@@ -224,6 +224,11 @@ if (!this.Video) {
   Video.scale=function(){};
   Video.createTexture=function(){return 1;};
   Video.drawTexture=function(){};
+
+  // the server does not have opengl either
+  gl={};
+  gl.GetFloatv=function(){return {};};
+
   EGachine.server=true;
 }else{
   EGachine.client=true;
@@ -245,7 +250,7 @@ Video.getTextureID=function(resname){
 };
 
 Video.pushColor=function() {
-  Video.colors.push(this.getColor());
+  Video.colors.push(gl.GetFloatv(GL_CURRENT_COLOR));
 }
 
 Video.popColor=function() {

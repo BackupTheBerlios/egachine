@@ -42,7 +42,8 @@ tests = \
 	scope \
 	smbug240577 \
 	jsolait \
-	util
+	util \
+	namespace
 
 check_SCRIPTS = \
 	$(tests) \

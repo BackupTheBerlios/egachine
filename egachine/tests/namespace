@@ -1,0 +1,73 @@
+#!/bin/sh 
+../src/ejs <<EOF
+// check if modules pollute the global namespace
+(function(){
+  // todo: this only detects enumerable properties
+  function globalProps() {
+    var i,ret=[];
+    for (j in this) ret.push(j);
+    return ret;
+  };
+
+  function ArrayContains(array,elem) {
+    var i;
+    for (i=0;i<array.length;++i)
+      if (array[i]==elem) return true;
+    return false;
+  };
+  
+  function expectFail(elem){
+    var fail=["gl","jsolait","EGachine"];
+    return ArrayContains(fail,elem);
+  };
+
+  function modulFailed(module) {
+    throw new Error("Module: "+module+" introduces new global properties. Global properties: "+props);
+  }
+
+  function diff(a,b) {
+    var i;
+    var ret=[];
+    for (i=0;i<b.length;++i)
+      if (!ArrayContains(a,b[i]))
+	ret.push(b[i]);
+    return ret;
+  }
+
+  function maxLength(x,l) {
+    var s=x.toString();
+    if (s.length>l) s=s.slice(0,l-3)+"...";
+    return s;
+  }
+  var expect=globalProps();
+  var modules=["Doesnotexist",
+	       "sg","Audio","Base64","Stream","Input","Timer","Zlib","File","graphviz",
+	       "jsolait","Monitorable","Net","sg","Stream","util",
+	       "gl","Video","EGachine"];
+
+  var stderr=ejs.ModuleLoader.get("Stream").stderr;
+  var i,j,props;
+  var added;
+
+  function warning(x){stderr.write("WARNING: "+x+"\n");};
+
+  if ((added=diff(expect,(props=globalProps()))).length) moduleFailed("Stream",added);
+
+  for (i=0;i<modules.length;++i) {
+    try{
+	ejs.ModuleLoader.get(modules[i]);
+    }catch(e){}
+    if ((added=diff(expect,(props=globalProps()))).length) {
+      if (expectFail(modules[i]))
+	// todo:: issue warning
+	warning("Module: "+modules[i]+" still introduces new global properties:\n"+maxLength(added,72));
+      else
+	moduleFailed(modules[i],added);
+    }else if (expectFail(modules[i])) {
+      // juhu another module doesn't pollute the global namespace
+      warning("Juhu! Module: "+modules[i]+" does not introduce new global properties anymore => fix this test");
+    }
+    expect=props;
+  }
+ })();
+EOF

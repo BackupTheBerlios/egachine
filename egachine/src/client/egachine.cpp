@@ -137,7 +137,7 @@ Input::devStateHandler(const Input::DevState& d)
   std::ostringstream o;
   o << "Input.handleInput(new DevState("<<int(d.devno)<<","<<int(d.x)<<","<<int(d.y)<<","<<int(d.buttons)<<"));\n";
   std::istringstream i(o.str());
-  ECMAScript::eval(i,JGACHINE_FUNCTIONNAME);
+  if (!ECMAScript::eval(i,JGACHINE_FUNCTIONNAME)) JGACHINE_WARN("error while calling Input.handleInput()");
 }
 
 #ifndef main

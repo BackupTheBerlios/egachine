@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+if test ! -f $(pwd)/src/egachine.js; then
+	echo "You must type ./clean in the top level directory"
+	exit 1
+fi
+
+. common.sh
+
+rm -vf $(find -name "*.o" -o -name "*.so" -o -name "*.lo" -o -name "*.a") src/egachine src/egaserver src/egachine.exe src/egaserver.exe
+cd $SPIDERMONKEY_SRCDIR
+rm -rf *.OBJ fdlibm/*.OBJ
+make -f Makefile.ref clean

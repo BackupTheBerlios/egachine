@@ -1,0 +1,264 @@
+? config/mingwcross.mk
+cvs server: Diffing .
+Index: Makefile.ref
+===================================================================
+RCS file: /cvsroot/mozilla/js/src/Makefile.ref,v
+retrieving revision 3.29
+diff -u -r3.29 Makefile.ref
+--- Makefile.ref	15 Nov 2003 00:10:55 -0000	3.29
++++ Makefile.ref	15 Apr 2004 16:07:12 -0000
+@@ -61,11 +61,11 @@
+ 
+ ifdef JS_THREADSAFE
+ DEFINES += -DJS_THREADSAFE
+-INCLUDES += -I../../dist/$(OBJDIR)/include
++INCLUDES += $(NSPR_CFLAGS)
+ ifdef USE_MSVC
+ OTHER_LIBS += ../../dist/$(OBJDIR)/lib/libnspr${NSPR_LIBSUFFIX}.lib
+ else
+-OTHER_LIBS += -L../../dist/$(OBJDIR)/lib -lnspr${NSPR_LIBSUFFIX}
++OTHER_LIBS += $(NSPR_LDFLAGS)
+ endif
+ endif
+ 
+@@ -138,8 +138,8 @@
+ endif
+ 
+ # For purify
+-PURE_CFLAGS     = -DXP_UNIX $(OPTIMIZER) $(PURE_OS_CFLAGS) $(DEFINES) \
+-                  $(INCLUDES) $(XCFLAGS)
++#PURE_CFLAGS     = -DXP_UNIX $(OPTIMIZER) $(PURE_OS_CFLAGS) $(DEFINES) \
++#                  $(INCLUDES) $(XCFLAGS)
+ 
+ #
+ # JS file lists
+@@ -281,18 +281,30 @@
+ SHARED_LIBRARY = $(OBJDIR)/js32.dll
+ PROGRAM = $(OBJDIR)/js.exe
+ else
+-LIBRARY = $(OBJDIR)/libjs.a
+-SHARED_LIBRARY = $(OBJDIR)/libjs.$(SO_SUFFIX)
+-PROGRAM = $(OBJDIR)/js
++ifdef USE_MINGW
++LIBRARY = $(OBJDIR)/js32.lib
++SHARED_LIBRARY = $(OBJDIR)/js32.dll
++PROGRAM = $(OBJDIR)/smjs
++LDFLAGS += -L $(OBJDIR)
++else
++LIBRARY = $(OBJDIR)/libsmjs.a
++OTHER_LIBS += -lsmjs
++SHARED_LIBRARY_BASE=libsmjs
++SHARED_LIBRARY_NAME=$(SHARED_LIBRARY_BASE).$(SO_SUFFIX).$(SOVER)
++SHARED_LIBRARY = $(OBJDIR)/$(SHARED_LIBRARY_NAME)
++PROGRAM = $(OBJDIR)/smjs
++LDFLAGS += -L $(OBJDIR)
+ ifdef JS_PERLCONNECT
+ PROG_LIBS += $(PERLLDFLAGS)
+ endif
+ endif
++endif
++
+ 
+ include rules.mk
+ 
+ MOZ_DEPTH = ../..
+-include jsconfig.mk
++#include jsconfig.mk
+ 
+ nsinstall-target:
+ 	cd ../../config; $(MAKE) OBJDIR=$(OBJDIR) OBJDIR_NAME=$(OBJDIR)
+@@ -301,8 +313,7 @@
+ 	link.exe -out:"$@" $(EXE_LINK_FLAGS) $^
+ else
+ $(PROGRAM): $(PROG_OBJS) $(LIBRARY) $(FDLIBM_LIBRARY)
+-	$(CC) -o $@ $(CFLAGS) $(PROG_OBJS) $(LIBRARY) $(LDFLAGS) $(OTHER_LIBS) \
+-	    $(PROG_LIBS)
++	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(PROG_OBJS) $(OTHER_LIBS) $(PROG_LIBS)
+ endif
+ 
+ $(PROGRAM).pure: $(PROG_OBJS) $(LIBRARY)
+Index: config.mk
+===================================================================
+RCS file: /cvsroot/mozilla/js/src/config.mk,v
+retrieving revision 3.12
+diff -u -r3.12 config.mk
+--- config.mk	15 Nov 2003 00:10:55 -0000	3.12
++++ config.mk	15 Apr 2004 16:07:12 -0000
+@@ -61,6 +61,11 @@
+ OS_ARCH         := IRIX
+ endif
+ 
++ifeq ($(CC),i586-mingw32msvc-gcc)
++OS_ARCH:=mingwcross
++OS_RELEASE:=
++endif
++
+ # Handle output from win32 unames other than Netscape's version
+ ifeq (,$(filter-out Windows_95 Windows_98 CYGWIN_95-4.0 CYGWIN_98-4.10, $(OS_ARCH)))
+ 	OS_ARCH   := WIN95
+@@ -113,7 +118,7 @@
+ endif
+ 
+ ifdef BUILD_OPT
+-OPTIMIZER  = -O
++OPTIMIZER  = -O2
+ DEFINES    += -UDEBUG -DNDEBUG -UDEBUG_$(shell whoami)
+ OBJDIR_TAG = _OPT
+ else
+Index: jstypes.h
+===================================================================
+RCS file: /cvsroot/mozilla/js/src/jstypes.h,v
+retrieving revision 3.28
+diff -u -r3.28 jstypes.h
+--- jstypes.h	15 Nov 2003 00:11:04 -0000	3.28
++++ jstypes.h	15 Apr 2004 16:07:12 -0000
+@@ -77,6 +77,9 @@
+ **
+ ***********************************************************************/
+ #ifdef WIN32
++
++
++#if 0
+ /* These also work for __MWERKS__ */
+ #define JS_EXTERN_API(__type) extern __declspec(dllexport) __type
+ #define JS_EXPORT_API(__type) __declspec(dllexport) __type
+@@ -86,6 +89,18 @@
+ #define JS_DLL_CALLBACK
+ #define JS_STATIC_DLL_CALLBACK(__x) static __x
+ 
++#else
++/* karme: i use mingw and only build a static library */
++#define JS_EXTERN_API(__type) extern __type
++#define JS_EXPORT_API(__type) __type
++#define JS_EXTERN_DATA(__type) extern __type
++#define JS_EXPORT_DATA(__type) __type
++
++#define JS_DLL_CALLBACK
++#define JS_STATIC_DLL_CALLBACK(__x) static __x
++
++#endif /* 0 */
++
+ #elif defined(WIN16)
+ 
+ #ifdef _WINDLL
+@@ -138,10 +153,14 @@
+ #    define JS_IMPORT_API(__x)      JS_EXPORT_API (__x)
+ #endif
+ 
+-#if defined(_WIN32) && !defined(__MWERKS__)
++#if defined(_WIN32)
++#  if defined(__MWERKS__) || defined(__GNUC__)
++#    define JS_IMPORT_DATA(__x)      __x
++#  else
+ #    define JS_IMPORT_DATA(__x)      __declspec(dllimport) __x
++#  endif
+ #else
+-#    define JS_IMPORT_DATA(__x)     __x
++#  define JS_IMPORT_DATA(__x)     __x
+ #endif
+ 
+ /*
+Index: rules.mk
+===================================================================
+RCS file: /cvsroot/mozilla/js/src/rules.mk,v
+retrieving revision 3.11
+diff -u -r3.11 rules.mk
+--- rules.mk	15 Nov 2003 00:11:04 -0000	3.11
++++ rules.mk	15 Apr 2004 16:07:12 -0000
+@@ -54,12 +54,13 @@
+ CFILES = $(LIB_CFILES) $(PROG_CFILES)
+ OBJS   = $(LIB_OBJS) $(PROG_OBJS)
+ 
+-ifdef USE_MSVC
++#ifdef USE_MSVC
+ # TARGETS = $(LIBRARY)   # $(PROGRAM) not supported for MSVC yet
+-TARGETS += $(SHARED_LIBRARY) $(PROGRAM)  # it is now
+-else
+-TARGETS += $(LIBRARY) $(SHARED_LIBRARY) $(PROGRAM) 
+-endif
++#TARGETS += $(SHARED_LIBRARY) $(PROGRAM)  # it is now
++#else
++TARGETS += $(LIBRARY) $(SHARED_LIBRARY)
++#endif
++#TARGETS += $(LIBRARY)
+ 
+ all:
+ 	+$(LOOP_OVER_PREDIRS) 
+@@ -110,12 +111,23 @@
+ 	    /out:"$@" /pdb:none\
+ 	    /implib:"$(OBJDIR)/$(@F:.dll=.lib)" $^
+ else
++ifdef USE_MINGW
+ $(LIBRARY): $(LIB_OBJS)
+ 	$(AR) rv $@ $?
+ 	$(RANLIB) $@
+ 
+ $(SHARED_LIBRARY): $(LIB_OBJS)
+ 	$(MKSHLIB) -o $@ $(LIB_OBJS) $(LDFLAGS) $(OTHER_LIBS)
++else
++$(LIBRARY): $(LIB_OBJS)
++	$(AR) rv $@ $?
++	$(RANLIB) $@
++
++$(SHARED_LIBRARY): $(LIB_OBJS)
++	$(MKSHLIB) -o $@ $(LIB_OBJS) $(LDFLAGS) $(OTHER_LIBS)
++	ln -s $(SHARED_LIBRARY_NAME) $(OBJDIR)/$(SHARED_LIBRARY_BASE).so.$(SOMAJOR)
++	ln -s $(SHARED_LIBRARY_NAME) $(OBJDIR)/$(SHARED_LIBRARY_BASE).so
++endif
+ endif
+ endif
+ 
+cvs server: Diffing config
+Index: config/Linux_All.mk
+===================================================================
+RCS file: /cvsroot/mozilla/js/src/config/Linux_All.mk,v
+retrieving revision 1.12
+diff -u -r1.12 Linux_All.mk
+--- config/Linux_All.mk	16 May 2003 00:21:08 -0000	1.12
++++ config/Linux_All.mk	15 Apr 2004 16:07:12 -0000
+@@ -36,13 +36,13 @@
+ # Config for all versions of Linux
+ #
+ 
+-CC = gcc
++#CC = gcc
+ CCC = g++
+-CFLAGS +=  -Wall -Wno-format
++CFLAGS +=  -Wall -Wno-format -fPIC -rdynamic
+ OS_CFLAGS = -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DHAVE_LOCALTIME_R
+ 
+ RANLIB = echo
+-MKSHLIB = $(LD) -shared $(XMKSHLIBOPTS)
++MKSHLIB = gcc -shared -Wl,-soname=$(SHARED_LIBRARY_BASE).$(SO_SUFFIX).$(SOMAJOR) $(XMKSHLIBOPTS)
+ 
+ #.c.o:
+ #      $(CC) -c -MD $*.d $(CFLAGS) $<
+@@ -83,7 +83,7 @@
+ endif
+ 
+ # Use the editline library to provide line-editing support.
+-JS_EDITLINE = 1
++#JS_EDITLINE = 1
+ 
+ ifeq ($(CPU_ARCH),x86_64)
+ # Use VA_COPY() standard macro on x86-64
+cvs server: Diffing fdlibm
+Index: fdlibm/Makefile.ref
+===================================================================
+RCS file: /cvsroot/mozilla/js/src/fdlibm/Makefile.ref,v
+retrieving revision 1.7
+diff -u -r1.7 Makefile.ref
+--- fdlibm/Makefile.ref	15 Nov 2003 00:11:04 -0000	1.7
++++ fdlibm/Makefile.ref	15 Apr 2004 16:07:12 -0000
+@@ -91,8 +91,8 @@
+ #
+ # Default IEEE libm
+ #
+-CFLAGS          += -DXP_UNIX $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) \
+-		  -DJSFILE $(XCFLAGS) -D_IEEE_LIBM
++CFLAGS          += $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) \
++		  $(XCFLAGS) -D_IEEE_LIBM
+ 
+ # Need for jstypes.h and friends
+ INCLUDES += -I..
+cvs server: Diffing sh

@@ -1,0 +1,40 @@
+Source: egachine
+Section: games
+Priority: optional
+Maintainer: Jens Thiele <karme@berlios.de>
+Build-Depends: debhelper (>> 3.0.0), libsdl1.2-dev, libsdl-image1.2-dev, gcj, libgl-dev, libglu-dev
+Standards-Version: 3.5.2
+
+Package: egachine
+Architecture: any
+Depends: egachine-data, ${shlibs:Depends}
+Description: a simple networked game engine
+ EGachine (ECMA Script/Javascript Game machine) is a simple 
+ networked game engine mainly intended but not limited to
+ 2D multi-player (networked) games. It should get
+ beginners started with game programing and let you write 
+ multi-player networked games quickly.
+ For the advanced programmer OpenGL language bindings are
+ included.
+ .
+ This package contains the executables.
+ .
+  Homepage: http://egachine.berlios.de
+ 
+Package: egachine-data
+Architecture: all
+Depends: 
+Description: egachine class library
+ EGachine (ECMA Script/Javascript Game machine) is a simple 
+ networked game engine mainly intended but not limited to
+ 2D multi-player (networked) games. It should get
+ beginners started with game programing and let you write 
+ multi-player networked games quickly.
+ For the advanced programmer OpenGL language bindings are
+ included.
+ .
+ This package contains scripts and data.
+ .
+  Homepage: http://egachine.berlios.de
+
+

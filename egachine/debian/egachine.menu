@@ -1,0 +1,6 @@
+?package(egachine):needs=X11 section=Games/Arcade\
+  title="jpong 1" command="/usr/games/jpong 1"
+?package(egachine):needs=X11 section=Games/Arcade\
+  title="jpong 2" command="/usr/games/jpong 2"
+?package(egachine):needs=X11 section=Games/Arcade\
+  title="jpong 3" command="/usr/games/jpong 3"

@@ -1,0 +1,19 @@
+Thanks to:
+
+Brendan Eich    (for the spidermonkey javascript engine and answering my questions)
+Daniel Fournier (for first javascript serialization code)
+Andrew Mustun   (for the car texture from trophy <http://trophy.sourceforge.net>)
+Masanao Izumo <mo@goice.co.jp> (for base64 encode decode)
+Mike Phillips   (for glxgears.js)
+Brian Paul/Mesa (for the nice gl.h which allowed to easily generate wrappers)
+
+SDL   <http://libsdl.org>
+boost <http://www.boost.org>
+OpenGL/mesa
+gcc
+mingw
+xemacs
+debian
+perl
+bash
+...

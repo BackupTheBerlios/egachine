@@ -1,0 +1,20 @@
+egachine (0.2.0-1) unstable; urgency=low
+
+  * added example for distributed scenegraph
+  * started distributed scenegraph
+
+ --
+
+egachine (0.1.1-1) unstable; urgency=low
+
+  * improved error handling
+  * startup in windowed mode (press alt+enter to enter fullscreen)
+
+ -- Jens Thiele (karme) <karme@berlios.de>  Sat, 22 Nov 2003 17:26:25 +0100
+
+egachine (0.1.0-1) unstable; urgency=low
+
+  * initial release
+
+ -- Jens Thiele (karme) <karme@berlios.de>  Tue, 18 Nov 2003 12:17:44 +0100
+

@@ -1,0 +1,16 @@
+# setup environment for cross compilation
+export CC=i586-mingw32msvc-gcc
+export CXX=i586-mingw32msvc-g++
+export GCJ=i586-mingw32msvc-gcj
+export GCJH=i586-mingw32msvc-gcjh
+export LD=i586-mingw32msvc-ld
+export AR=i586-mingw32msvc-ar
+export RANLIB=i586-mingw32msvc-ranlib 
+export DLLTOOL=i586-mingw32msvc-dlltool
+export DLLWRAP=i586-mingw32msvc-dllwrap
+export AS=i586-mingw32msvc-as
+export NM=i586-mingw32msvc-nm
+export OBJDUMP=i586-mingw32msvc-objdump
+
+#settings very specific to my setup
+export PATH="/usr/local/i586-mingw32msvc/bin:$HOME/develop/cross/bin:$PATH"

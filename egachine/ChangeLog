@@ -1,0 +1,66 @@
+2004-04-15  Jens Thiele  <karme@berlios.de>
+
+	* spidermonkey: now using CVS version (HEAD)
+	only minor changes for cross compilation made
+	(the changes are hacks => not suitable for upstream)
+	
+	* src/examples/client/client.js:
+	hightlight input field
+	and blinking cursor
+
+	* applied patch from brendan to spidermonkey see also:
+	news://news.mozilla.org:119/6ifk5c.p15.ln@karme.myfqdn.de
+	and http://bugzilla.mozilla.org/show_bug.cgi?id=240577
+	=> removed my workaround
+
+2004-04-13  Jens Thiele  <karme@berlios.de>
+
+	* src/examples/client/client.js: you can now edit host:port
+
+	* added character input mode (for text input)
+
+2004-04-11  Jens Thiele  <karme@berlios.de>
+
+	* added version/engine checks to examples
+	(test for egachine/egaserver, test version, perhaps test for OpenGL)
+
+	* VERSION (PACKAGE_MICRO_VERSION): bumbed version to 0.0.5
+
+	* src/common/ecmascript.cpp: hashObject should now work with original
+	spiedermonkey version again
+
+	* src/examples/client/opengl/morse-scooter.js: added game morse-scooter
+
+2004-04-10  Jens Thiele  <karme@berlios.de>
+
+	* commented out width/height in client/config.js again
+	(grgrg just released 0.0.4 which now uses 640x480 instead of the default)
+
+	* improved error handling
+
+	* pass version information to egachine
+
+	* generate .bat script automatically
+
+	* pass command line arguments to egachine
+
+2004-04-09  Jens Thiele  <karme@berlios.de>
+
+	* added 2 nehe tutorial lessons to the examples
+
+	* updated examples to not assume a specific screen resolution
+
+	* try to use current desktop/screen resolution by default
+
+	* build spidermonkey as dll with mingw
+
+2004-04-08  Jens Thiele  <karme@berlios.de>
+
+	* added opengl wrapper functions
+
+	* general clean up
+
+	* make width/height/fullscreen configurable via config file
+
+	* fixed many warnings to see the important ones again
+

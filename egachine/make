@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e
+
+source ./common.sh
+
+if [ "x$DEBUG" = "x" ]; then
+    SM_BUILDDIR="Linux_All_OPT.OBJ"
+    BUILD_OPT="BUILD_OPT=1"
+else
+    SM_BUILDDIR="Linux_All_DBG.OBJ"
+fi
+LDFLAGS="$LDFLAGS -g -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -rdynamic"
+COMMONFLAGS="-I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_UNIX $(sigc-config --cflags)"
+SERVERFLAGS=""
+CLIENTFLAGS="$(sdl-config --cflags)"
+
+# build spidermonkey
+cd $SPIDERMONKEY_SRCDIR
+
+#make -f Makefile.ref clean
+#rm -rf *.OBJ
+make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
+
+# build egachine
+cd $SRCDIR
+echo "make[0]: Entering directory \`$SRCDIR'"
+rm -vf $(find -name "*.o" -o -name "*.so" -o -name "*.lo" -o -name "*.a") egachine egaserver
+
+for a in $(find . -name "*.cpp"); do 
+    echo Compile $a
+    if (echo $a|grep server >/dev/null); then
+	FLAGS="$COMMONFLAGS $SERVERFLAGS $CXXFLAGS"
+    else
+	FLAGS="$COMMONFLAGS $CLIENTFLAGS $CXXFLAGS"
+    fi
+    run "$CXX -o ${a%*.cpp}.o $FLAGS -c $a"
+done
+# link client
+echo Link egachine
+run "$CXX -o egachine $LDFLAGS $(find -name *.o|grep -v server|grep -v tools) -lsmjs $(sdl-config --libs) $(sigc-config --libs) -lGL -lGLU -lSDL_image"
+# link server
+echo Link egaserver
+run "$CXX -o egaserver $LDFLAGS $(find -name *.o|grep -v client|grep -v tools) -lsmjs $(sigc-config --libs)"
+
+

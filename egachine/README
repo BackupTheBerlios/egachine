@@ -1,0 +1,81 @@
+EGachine (http://egachine.berlios.de)
+is an open source (GPL) ECMA Script (Javascript) game machine/engine 
+based on jgachine <http://jgachine.berlios.de>
+which was dropped in favor of egachine.[1]
+
+--------------------------------------------------------------------------------
+WARNING:
+THIS SOFTWARE COMES WITHOUT ANY WARRENTY 
+- PERHAPS IT DESTROYS YOUR COMPUTER
+FOR DETAILS SEE COPYING
+
+this is work in progress (pre-alpha)
+the server is insecure !!
+and the client perhaps, too
+--------------------------------------------------------------------------------
+
+FEATURES/GOALS:
+- run untrusted code in a secure manner:
+  this is similar to java applets or like browsers run javascript code.
+  This means you only download the client once and games/apps
+  may be shipped via network
+- network support:
+  writing multiplayer network games/apps should be easy
+- beginner friendly:
+  get beginners started with game programing
+- optional OpenGL support:
+  for the advanced programer or OpenGL teaching - OpenGL language bindings are
+  included
+- quick development of games
+  sometimes you just want to write a game within few hours
+- portability
+- not limited to games - could also be used as:
+	presentation tool
+	"movie" player similar to flash
+	...
+
+--------------------------------------------------------------------------------
+
+HELP WANTED:
+if you like EGachine please contact me/us. For now mail me directly:
+karme@berlios.de
+
+--------------------------------------------------------------------------------
+
+QUICKSTART (windows)
+All .bat files should do something.
+
+To run a local 2-player pong game start:
+pong.bat
+
+To run a networked 2-player pong game:
+first start
+netpong.bat (this starts the server)
+then
+client.bat (this starts the client)
+
+--------------------------------------------------------------------------------
+
+Compilation from source:
+currently no Makefile, no autoutils (no autoconf/make)
+only a bash script (someone wants to make it a sh-script?)
+
+Dependencies:
+SDL
+SDL_image
+OpenGL/Mesa
+c++ (f.e. gcc - probably version >=3)
+
+For regenerating OpenGL wrappers (normally not needed):
+perl
+
+
+take a look at ./make - perhaps you have to edit something?
+
+--------------------------------------------------------------------------------
+[1] why was jgachine dropped in favor of egachine?
+- javascript is easier for beginners than java
+- no need to compile the code
+- java serialization was too slow
+- gcc / gcj / libgcj java security is not yet ready
+

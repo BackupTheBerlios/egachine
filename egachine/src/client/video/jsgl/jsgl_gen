@@ -1,0 +1,8 @@
+#!/bin/bash
+# script generating opengl wrapper
+
+# wrap functions
+./fdecl_oneline <./gl.h.in|grep -v SGIS|grep -v ARB|grep -v EXT|grep -v MESA|indent -nbc -l4000|./gen_funcs|indent >jsgl_funcs.h
+./fdecl_oneline <./gl.h.in|grep -v SGIS|grep -v ARB|grep -v EXT|grep -v MESA|indent -nbc -l4000|./gen_fspecs >jsgl_fspecs.h
+./fdecl_oneline <./glu.h.in|./gen_funcs |indent >jsglu_funcs.h
+./fdecl_oneline <./glu.h.in|./gen_fspecs >jsglu_fspecs.h

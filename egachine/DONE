@@ -1,0 +1,88 @@
+--------------------------------------------------------------------------------
+pass command line arguments to client
+DONE: client can access command line arguments via argv vectors
+--------------------------------------------------------------------------------
+cross compile linux->win with mingw
+works
+of course win98 mutitasking still sucks
+--------------------------------------------------------------------------------
+netzwerk
+da spidermonkey von nspr abhängt habe ich überlegt ob ich für den teil
+nspr benutze
+auf der anderen seite könnte ich auch einfach den netzwerk-teil von adic
+nehmen
+habe jetzt vorläufig den adic (dope) part genommen - cleanup später
+spidermonkey braucht nspr nur wenn man threads benutzen will
+--------------------------------------------------------------------------------
+current serializer will not work with circles?
+i have 2 methods - the faster one does not yet handle circles
+for now i use the slower one
+(egachine.js - the faster one is commented out and uses object
+properties)
+--------------------------------------------------------------------------------
+switch to fullscreen and quit
+=> bug
+is not correctly deinitialized
+this was a namespace problem because i called deinit in a different namespace
+i wanted to call it!!
+--------------------------------------------------------------------------------
+is JSVAL_TO_OBJECT the right thing to do if you want a JSObject* ????
+i think so as JS_ValueToObject also is allowed for ints ...
+--------------------------------------------------------------------------------
+put boost into toplevel or src dir or remove it completely?
+for now it is inluced in the toplevel dir
+--------------------------------------------------------------------------------
+hash function for objects (serializer):
+mach grad wieder mit dem hash rum
+der bug ist momentan bei dem Aufruf von JS_TypeOfValue
+das segfault wenn man den auf eine Id loslaesst
+da ist auch ein schoenes XXX
+habe es jetzt doch einfach anhand des pointers gemacht
+hoffentlich aendert der sich auch nicht?
+okay got patch from brendan
+and it works !!
+see: 
+Message ID: <3oqr3c.so1.ln@karme.myfqdn.de>
+To search for message id via gougle groups:
+http://groups.google.com/groups?as_umsgid=3oqr3c.so1.ln%40karme.myfqdn.de
+The End:
+http://groups.google.com/groups?selm=4075FD39.3020107%40meer.net
+--------------------------------------------------------------------------------
+limbo/test64
+ich war gerade dabei mir mal genau anzuschauen wie die primtiven typen gehandhabt
+werden
+--------------------------------------------------------------------------------
+server examples should check that they are started from a server indeed
+client examples, too
+--------------------------------------------------------------------------------
+spielidee:
+mit dem roller
+2 spieler /evtl. auch mehr über netz
+"latenzzeit messen" ;-)
+
+aufgabe der spieler:
+möglichst perfekt EGachine morsen
+je besser gemorst desto schneller faehrt er
+
+see morse-scooter.js
+no network version
+--------------------------------------------------------------------------------
+allow character input:
+
+define callback:
+handleChar=function(c){
+  print(c.charCodeAt(0));
+}
+
+enter character input mode (keyboard as gamepad will not work in this mode!)
+Input.charMode(true);
+--------------------------------------------------------------------------------
+nochmal anschauen warum das bei watchall nicht so geht wie ich dachte
+this was a bug in spidermonkey, see also:
+<407E34E1.5080207@meer.net>
+and
+http://bugzilla.mozilla.org/show_bug.cgi?id=240577
+--------------------------------------------------------------------------------
+welche spidermonkey version soll ich benutzen?
+HEAD
+--------------------------------------------------------------------------------

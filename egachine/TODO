@@ -1,0 +1,216 @@
+SECURITY RELATED BUGS:
+--------------------------------------------------------------------------------
+serialize/deserialize
+fast enough? is okay
+we will not completely serialize often because we only send
+differences => should be fast enough
+problem remaining:
+deserializing is done with eval
+this is okay on client side but not on server side
+because CLIENTS SHOULD NOT BE ALLOWED TO RUN CODE ON THE SERVER
+=> supply a limited deserialize for the server
+clients only send primitive messages to the server
+--------------------------------------------------------------------------------
+spidermonkey bug: assertion in jsarena.c:274 fails
+of course this only happens with the debug build
+i posted it to the newsgroup
+perhaps only the assert is wrong ;-) ?
+see:
+http://bugzilla.mozilla.org/show_bug.cgi?id=239721
+--------------------------------------------------------------------------------
+server network code must be non-blocking (or use threads)
+now a client can simply block the server => DOS
+--------------------------------------------------------------------------------
+client must always be interruptable
+=> how to interrupt the interpreter from time to time?
+does spidermonkey support this? similar to the GC
+(or perhaps use threads)
+--------------------------------------------------------------------------------
+client.js: see TODO / BUG
+--------------------------------------------------------------------------------
+
+OTHER:
+--------------------------------------------------------------------------------
+error reporting from native code:
+be careful with exceptions
+c++ exceptions can't be thrown through c-code
+(this was true but it seems today the c-compiler handles this?)
+anyway we can't throw exceptions in native code called by the interpreter 
+since he will not like it
+
+hmm
+kann man keine javascript exceptions aus dem native code herauswerfen?
+evtl. doch habe irgendwas wie pendingexception gelesen?
+bei der fehlerbehandlung muss ich mir was einfallen lassen
+im moment kann man beispielweise einen fehlgeschlagenen connect nicht
+abfangen
+
+it seems ReportError is the way to go
+--------------------------------------------------------------------------------
+segfault on new Timer() !!
+=> habe noch keine funktionierende javascript klasse von c++ aus definiert
+das problem war auch das ich eigentlich nur ein namespace wollte
+das habe ich denke ich behoben, da ich keine klasse benutze sondern nur ein
+objekt
+--------------------------------------------------------------------------------
+complete scenegraph (color, ...)
+wrap remaining video/input functions
+--------------------------------------------------------------------------------
+perhaps redesign the scene-graph and take advantage of ecmascript features
+the current scenegraph is mainly taken from jgachine
+--------------------------------------------------------------------------------
+seperate step and paint
+perhaps seperate scenegraph from animation logic completely?
+--------------------------------------------------------------------------------
+watchall does not handle circles?!
+--------------------------------------------------------------------------------
+somehow remove dontwatch hack
+--------------------------------------------------------------------------------
+write docu / tutorial
+autogenerate docu for javascript stuff?
+problematic since underspecified
+--------------------------------------------------------------------------------
+solve the win32 opengl 1.1 problem
+probably use glew
+perhaps i should split the opengl wrapper stuff completely out of egachine
+there might be some interest in this
+on the other side there is already monkeyglobs which seems dead?
+--------------------------------------------------------------------------------
+FONT STUFF:
+
+currently we have one built in font which is stored in one texture
+("bitmap" font - in fact a png grayscale with alpha blending in the moment
+at minimum this font should be much nicer - it is very ugly)
+
+ttf fonts:
+library shootout:
+freetype directly: too much work? => NO
+gltt: no freetype2 support => NO
+oglft: no deb, seems it wasn't updated for a while? => NO
+
+					SDL_ttf    vs.	ftgl
+cross-compile/portability		trivial		simple
+features				minimal		many
+
+SDL_ttf uses textures
+ftgl can use textures as well as polys
+
+for now we use SDL_ttf (perhaps simpler, often used)
+and stay with texture fonts
+
+=> redesign texture handling completely
+allow to create textures from text and data
+
+currently creating a texture is coupled with image decompression
+=> perhaps change this?
+image decompression could become a seperate step
+on the other side this perhaps would require some image object
+hmm
+access to image data is useful
+currently one would need to create a texture and then it would
+require opengl to get the image data
+(=> load image|decompress|load to graka|get from graka
+ => stupid)
+i want to keep it small and simple
+and i don't want to introduce a "hard" dependency on SDL
+good design would be a seperate image api / binding
+but this fights the keep it small and simple aproach
+and it is very unlikely that there will be any other implementation
+than the SDL one?
+the image api would merely be a SDL_Surface wrapper
+perhaps there is already an existing one?
+nothing found
+
+hmm ttf fonts are quite huge
+but then again if i would supply a unicode bitmap font this 
+probably would be much bigger
+
+btw. what about user defined fonts?
+ttf fonts supplied by the user are problematic
+is freetype secure?
+font images wouldn't be problematic
+
+http://www.gameprogrammer.com/polyfonts/polyfonts.html ?
+hmm linux only? try to cross-compile it
+there is a zip => probably win32, too
+does not use freetype
+
+hmm an end-user friendly choice would be to use system fonts
+and let the end-user decide which fonts to use
+
+
+--------------------------------------------------------------------------------
+win32 timestamp currently only ms precision
+--------------------------------------------------------------------------------
+report spidermonkey docu "bugs"
+
+JS_NewObject: class pointer may be NULL => Object
+FunctionSpec: extra arguments field
+--------------------------------------------------------------------------------
+fix netpong and netpong2
+i removed netpong / netpong2 is now netpong
+
+perhaps complete pong3
+--------------------------------------------------------------------------------
+supply version information
+nearly done
+not yet done:
+expose opengl version info
+(for now you can test for the existance of opengl functions)
+currently checkVersion assumes complete downward compatibility and no upward
+compatibility
+this is of course stupid - and wouldn't require a version number with 3 parts;-)
+it should work like this:
+micro: script wants 1.0.3 (=> 1.0.5 is okay but 1.0.2 is not)
+minor: script wants 1.2.3 (=> 1.4.3 perhaps okay but 1.0.3 is not)
+major: script wants 2.2.3 (=> 3.2.3 not okay and 1.2.3 not okay)
+=> different majors never ok (perhaps exception 0 instead of 1)
+we make no guarantee that this scheme is established until version 1!!
+expose spidermonkey/javascript version
+--------------------------------------------------------------------------------
+fix client.js
+this will be the general client
+implement a menu/input field where connect to
+nearly done
+--------------------------------------------------------------------------------
+use autoutils again? (autoconf/make..)
+for now i like the simple shell script
+i recommend to use ccache/compilercache
+--------------------------------------------------------------------------------
+debian package
+hmm
+should i use autoconf/make again before i make a deb?
+--------------------------------------------------------------------------------
+let user redefine keys
+see also redesign input layer?
+--------------------------------------------------------------------------------
+write DOCU!
+--------------------------------------------------------------------------------
+ship with resource utility
+--------------------------------------------------------------------------------
+allow #!/usr/.../egachine at beginning of scripts
+to allow "normal" execution on unix systems
+--------------------------------------------------------------------------------
+unicode text input does not work yet - and perhaps even is buggy?
+--------------------------------------------------------------------------------
+redesign input layer?
+
+perhaps rethink the gamepad event design
+or the complete input layer?
+the idea was to keep it simple
+but perhaps someone wants mouse input/analog joy input/..
+for now we keep the simple everything is a gamepad
+and you can enter some text aproach
+sometime in the future:
+expose more of the SDL Input stuff
+it is more powerful and there will not be any other implementation
+in the near future
+--------------------------------------------------------------------------------
+wieder CVS benutzen
+--------------------------------------------------------------------------------
+i am not sure if I do create the dll with my mingw cross compiler the right way
+do I need -fPIC, too ?
+do I need the declspec shit and have to use dlltool?
+for now I simply compile like I would do on a unix system and it seems to work
+--------------------------------------------------------------------------------
+

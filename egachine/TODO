@@ -316,3 +316,27 @@ we already depend on zlib
 we often assume that there is only one javascript context
 especially in client/video/jsgl
 --------------------------------------------------------------------------------
+do:
+grep -r JS_realloc
+grep -r JS_NewString
+why?
+are JS strings with \0 allowed?
+or must JS strings be \0 terminated?
+--------------------------------------------------------------------------------
+ich war dabei den zlib support zu machen
+resourcen sollen optional comprimiert sein
+=> ich muss endlich das resourcen tool schreiben
+
+also ich hab ganz schön rumgepfuscht noch
+das resourcen tool muss die resource auf 80 spalten brgrenzt ausgeben
+file nach js und umgedreht wäre evtl. doch nicht schlecht
+vermutlich wäre auch eine gute lsg.
+den std::streambuf zu wrappen
+
+ein byte array ist vielleicht auch angebracht wenn man den
+string so nicht benutzen darf
+das würde auf sowas wie std::vector wrappen rauslaufen
+jetzt schlaf ich mal besser
+das war ja jetzt alles sehr chaotisch
+--------------------------------------------------------------------------------
+

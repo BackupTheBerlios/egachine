@@ -370,7 +370,7 @@ Audio.playSample=function(resname,repeat) {
 
 	// paint scenegraph
 	if (EGachine.sceneGraph) {
-	  EGachine.sceneGraph.paint(dt);
+	  EGachine.sceneGraph.paint(now-start);
 	  Video.swapBuffers();
 	};
       };

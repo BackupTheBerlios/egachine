@@ -13,7 +13,7 @@ extern "C" {
     if (connectAttempts) ECMA_THROW_ERROR("Security: Already tried to establish an outgoing connection");
     ECMA_CHECK_NUM_ARGS(2);
     // we allow only one connection for security reasons
-    if (outgoing) return JS_FALSE;
+    if (outgoing) ECMA_THROW_ERROR("Security: Already established an outgoing connection");
     if (!JSVAL_IS_STRING(argv[0])) ECMA_THROW_ERROR("Argument 0 must be a hostname");
     int32 port;
     if (!JS_ValueToInt32(cx,argv[1],&port)) ECMA_ERROR("Argument 1 must be a port number");
@@ -25,7 +25,7 @@ extern "C" {
     try {
       ++connectAttempts;
       outgoing=new NetStreamBuf(InternetAddress(ctype,port));
-      if (!outgoing) return JS_FALSE;
+      if (!outgoing) return ECMA_THROW_ERROR("Failed to create native object");
       if (!JSNetwork::newStreamObject(outgoing,rval)) return JS_FALSE;
     }catch(const SocketError &e){
       ECMA_THROW_ERROR(e.what());
@@ -33,11 +33,14 @@ extern "C" {
     return JS_TRUE;
   }
 
+  // todo: dangerous cast - this could compromise security 
+#define GET_STREAM_OBJ do{NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);\
+if (!stream) ECMA_THROW_ERROR("Function must be called on stream object");}while(0)
+
   ECMA_BEGIN_METHOD(stream_send) 
   {
     ECMA_CHECK_NUM_ARGS(1);
-    NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);
-    if (!stream) return JS_FALSE;
+    GET_STREAM_OBJ;
     if (!JSVAL_IS_STRING(argv[0])) return JS_FALSE;
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -51,8 +54,7 @@ extern "C" {
   ECMA_BEGIN_METHOD(stream_recv) 
   {
     ECMA_CHECK_NUM_ARGS(1);
-    NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);
-    if (!stream) return JS_FALSE;
+    GET_STREAM_OBJ;
     if (!JSVAL_IS_INT(argv[0])) return JS_FALSE;
     int toread=JSVAL_TO_INT(argv[0]);
     char* buf=(char *)JS_malloc(cx,toread+1);
@@ -77,16 +79,14 @@ extern "C" {
   ECMA_BEGIN_VOID_METHOD_VOID(stream_sync)
   {
     ECMA_CHECK_NUM_ARGS(0);
-    NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);
-    if (!stream) return JS_FALSE;
+    GET_STREAM_OBJ;
     stream->pubsync();
     return JS_TRUE;
   }
 
   ECMA_BEGIN_METHOD(stream_select) 
   {
-    NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);
-    if (!stream) return JS_FALSE;
+    GET_STREAM_OBJ;
     JGACHINE_SMARTPTR<Timer::TimeStamp> timeout;
     assert(!timeout.get());
     if ((argc>=1)&&(JSVAL_IS_INT(argv[0])))
@@ -95,6 +95,7 @@ extern "C" {
     *rval=BOOLEAN_TO_JSVAL(r);
     return JS_TRUE;
   }
+#undefine GET_STREAM_OBJ
 }
 
 #define JSFUNC(prefix, name, args) { #name,prefix##name,args,0,0}

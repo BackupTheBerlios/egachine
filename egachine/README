@@ -1,18 +1,19 @@
 		EGachine <http://egachine.berlios.de>
 
-is an open source  (GPL)  ECMAScript (JavaScript) game  machine/engine
-using mozilla's JavaScript engine,  Spidermonkey.  Though the focus is
-on 2D multi-player (networked)  games, EGachine isn't limited to games
-at all.  You can think of  EGachine as a programmable OpenGL terminal,
-which could be used in various ways - for example as presentation tool
-or movie player similar to Flash, for teaching and learning OpenGL, as
-special purpose terminal,...  .   Technically speaking  EGachine  is a
-JavaScript interpreter with bindings for subsets of: OpenGL/MESA, SDL,
-SDL_mixer, SDL_image and ZLib.
+is  an JavaScript game  engine focused  on 2D multi-player (networked)
+games. The idea is to provide a  tool for learning by writing computer
+games.   EGachine is based upon a   simple extensible JavaScript shell
+(EJS) and  includes different modules providing functionality required
+for programing games.
 
-Perhaps a better name would have been pglTerm (for programmable opengl
-terminal) but then  again this would suggest it  is somehow related to
-xterm and other terminal emulation programs.
+		  EJS (extensible JavaScript shell)
+
+is a  simple minimalistic (currently non-interactive) JavaScript shell
+utilizing mozilla's  JavaScript interpreter SpiderMonkey.  The purpose
+of EJS is to get a JavaScript shell which is  extensible in the spirit
+of other interpreters like Perl  and Python.  The module framework  is
+kept as simple as possible  to encourage code-reuse among people using
+the SpiderMonkey API directly, even if they don't use EJS.
 
 ----------------------------------------------------------------------
 
@@ -33,48 +34,46 @@ THIS IS WORK IN PROGRESS (ALPHA) THE SERVER AND CLIENT ARE INSECURE !
 QUICK-START
 
 Input / controls:
-if you have a joystick, it acts like a gamepad
-no joystick/gamepad => keyboard acts like a gamepad
 
-Keyboard controls:
+General:
 
 Key		Function		Comments
 
 ESC		quit
 Alt+Enter	toggle fullscreen	(not supported on win32)
-Ctrl+Z		iconify window		(not supported on win32?)
+
+
+Gamepads:
+
+If you have (a) joystick(s), they act like gamepads.
+Joysticks/Gamepads are prefered but are emulated by keyboard
+if not available.
 
 Keypad 1:
-cursor keys _on the number block_
+cursor keys on the number block
 buttons: 0 and . (, on german keyboards)
 
 Keypad 2:
 w,a,s,d
 buttons: 1 and 2
 
+Keypad 3:
+cursor keys
+buttons: right alt and right meta
+
+NOTE:
+
 For best results please make sure your video driver synchronizes page
 flips to the vertical retrace of your monitor.
 
-(if you use linux and nvidia drivers:
-export __GL_SYNC_TO_VBLANK=1
-with version 1.0-5336 it seems to works well
-older versions used a busy loop)
+
+RUNNING:
 
 Windows:
 All .bat files should do something.
 
-To run a local 2-player pong game start:
-pong.bat
-
-To run a networked 2-player pong game:
-first start
-netpong.bat (this starts the server)
-then
-client.bat (this starts the client)
-
-Linux users:
+Linux/Unix users:
 USAGE: egachine script
-
 
 ----------------------------------------------------------------------
 
@@ -86,9 +85,7 @@ FEATURES/GOALS:
 
 - open source / free software (GPL)
 
-- not limited to games - could also be used as:
-  presentation tool, "movie" player similar to flash, special purpose
-  terminal, tool to teach/learn OpenGL
+- tool for learning by writing computer games
 
 - beginner friendly:
   Get  beginners started with  game  programing. For  now  there is no
@@ -97,26 +94,17 @@ FEATURES/GOALS:
   compile  code.  You only  need  EGachine and  a   text editor to get
   started.
 
-- audio support:
-  Currently the audio API is very basic but simple:
-  you can play music and samples. In the future there probably will be
-  OpenAL bindings.
-
-- optional OpenGL <http://www.opengl.org> support:
-  for the advanced programmer or OpenGL teaching - OpenGL language 
-  bindings are included. The API is close to the C API. Instead of 
-  glBegin write gl.Begin and glGet(3x) functions return an array.
-
 - quick development of games
   sometimes you just want to write a game within few hours
 
 - portability
 
-- Run untrusted code in a secure manner:
+- run untrusted code in a secure manner:
   This is similar to Java applets or like browsers run JavaScript 
   code. This means you only download the client once and games/apps
   may be shipped via network. Neither server nor client can access 
-  files from JavaScript code.
+  files from JavaScript code. (ATTENTION: at the moment you should
+  not run untrusted scripts)
 
 - network support:
   Writing multi-player network games/apps should be easy.
@@ -124,13 +112,37 @@ FEATURES/GOALS:
   listen on one port and establish one connection (for example to a 
   meta-server).
 
-----------------------------------------------------------------------
+- not limited to games - could also be used as:
+  presentation tool, "movie" player similar to flash, special purpose
+  terminal, tool to teach/learn OpenGL
 
-ROADMAP:
+- modular:
+  based upon EJS and modules for EJS
 
-1.0.0 (January 2005):
-	- feature complete stable API with documentation
-	- SVG support
+  Video modules:
+  - OpenGL language bindings
+  - Video layer (basic 2D functionality)
+  - a simple scene-graph
+  - experimental SVG module
+
+  Audio module:
+  - very basic functionality
+  - play music
+  - play samples
+
+  Input module:
+  For beginners:
+  - gamepad like input devices (perhaps emulated by keyboard)
+  - or text input
+  For advanced users:
+  - events for:
+    keyboard, mouse, joystick, window manager, ...
+
+  Network Module:
+  - basic stream interface (read/write)
+  - distributed object graph
+
+  ...
 
 ----------------------------------------------------------------------
 
@@ -138,16 +150,6 @@ HELP WANTED:
 
 if you like EGachine please contact me/us. For now mail me directly:
 karme@berlios.de
-
-Could someone write a small GUI in JavaScript?
-(Menu, checkboxes, themable, suitable for games)
-
-Perhaps a game generator frontend which produces suitable output for
-egaserver/egachine ?
-
-As you probably noticed I am  no native English  speaker and for me it
-is quite  difficult to write texts and  documentation. Perhaps you are
-a good writer?
 
 ----------------------------------------------------------------------
 
@@ -163,7 +165,7 @@ http://www.jsdb.org
 
 ----------------------------------------------------------------------
 
-Similar projects:
+Projects similar to EGachine:
 
 Sphere <http://sphere.sourceforge.net/>:
   License: GPL
@@ -182,102 +184,27 @@ JiggleScript <http://www.jigglescript.com/>:
   be a little more  fun  without needing to  learn C  or C++ or  other
   "bigger" languages."
 
+Pygame <http://www.pygame.org/>: 
+  License: LGPL
+  Description: "Pygame is a set of Python modules designed for writing
+  games.  It is written  on  top of the   excellent SDL library.  This
+  allows you to create fully featured games and multimedia programs in
+  the python  language. Pygame is highly portable  and runs  on nearly
+  every platform and operating system."
+
+
+Projects also embedding SpiderMonkey (similar to EJS):
+
+JSDB  <http://www.jsdb.org/>:
+  "is a JavaScript shell  designed with network-centric programming in
+  mind.  It can  be used as  a database interface,  XML processor, and
+  internet-oriented scripting language. JSDB can  do nearly any  batch
+  processing task that Visual Basic can do,  and it has drivers to let
+  you read and send  email, query an  Oracle database, and run regular
+  expression searches,  without having to  learn a specific SQL syntax
+  or install a bunch of ActiveX components."
+
+A list of projects embedding SpiderMonkey:
+<http://www.mozilla.org/js/projects.html>
+
 ----------------------------------------------------------------------
-Extensible Javascript shell.
-
-This is a minimalistic extensible non-interactive Javascript shell.
-
-minimalistic:
-	keep it small and simple
-
-extensible:
-	modules (Javascript or native code) can be loaded at runtime
-
-non-interactive:
-	it is not intended to be a command line interpreter with
-	history and advanced editing functions (although it should be
-	possible to write a module which provides that functionality)
-
-Javascript:
-	it uses mozilla's Javascript interpreter spidermonkey
-
-
-Dependencies:
-spidermonkey (jsapi.h header and library)
-
-
-Debugging / leak checking (f.e. with valgrind):
-
-export GLIBCPP_FORCE_NEW=1
-export CXXFLAGS="-Wall -W -g -O0"
-export LDFLAGS="-g"
-
-valgrind is a great tool
---tool=massif is interesting, too
---------------------------------------------------------------------------------
-SVG:
-also garnicht so einfach
-mozilla setzt ziemlich direkt auf gdi/libart oder cairo auf
-hauptaufgabe:
-paths => rendern von linienzügen bzw. polygonen
-
-evtl wäre es schlau einfach in opengl texturen zu rendern
-hmm
-wenn der ganze dreck nicht animierbar wäre ;-)
-ich könnte auch einfach mal versuchen das ganze brute-force zu machen
-und dann weitersehen
-
-
-http://archives.java.sun.com/cgi-bin/wa?A2=ind0203&L=java3d-interest&F=&S=&P=37144
-For your information:
-
-- SVG is a 600+ pages specification which uses other specifications
- (CSS, DOM, SMIL) of comparable sizes.
-
-- Implementing Batik so far has meant about 10 men/year. There is
-  more in Batik than just the renderer, but the bulk of the effort
-  was in the renderer.
-
-It seems to me that trying harder to use Batik would be more efficient
-than writing your own renderer.
-
-
-was habe ich heute gelernt?
-gibt keine vernünftige 2d api
-opengl wird schwierig zu vverwenden sein
-
-opengl -es hat zusätzlich openvg (für vector graphik geschichten)
-
-cairo ist zumindest vom konzept her nett
-
-speicher ist das problem => vektorgraphik => embedded
-
-cairo/glitz setzt tief an => opengl wird für wenig verwendet
-anscheinend nur für blending - nee nicht nur siehe:
-http://cvs.cairographics.org/cairo/cairo/src/cairo_glitz_surface.c?view=markup
-
---------------------------------------------------------------------------------
-hab noch agile angeschaut (java2d backend das opengl via gl4java benutzt)
-benutzt glu zum tesselieren
-und ansonsten hat es meine vorstellungen bestätigt
-
---------------------------------------------------------------------------------
-also svgl benutzt agg für pfade:
-http://www.antigrain.com/index.html
-
-und macht dann grundsätzlich polygone, die mit glu tesseliert werden
-sicher?
-SVGPathSeg.cpp benutzt BezierPath und nicht agg?
-doch benutzt agg
-
-
-hmm - hat auch nen svg viewer?
-http://www.antigrain.com/svg/index.html
-
-
-buch:
-Computer Graphics with OpenGL, 3/E Donald Hearn and M. Pauline Baker, ISBN: 0-13-015390-7 Publisher: Prentice Hall Copyright: 2004
-
-
-Realtime Bezier Curves And Surfaces:
-http://tfpsly.planet-d.net/Docs/TomHammersley/bezier.htm

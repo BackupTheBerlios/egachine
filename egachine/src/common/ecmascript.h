@@ -38,6 +38,10 @@ namespace ECMAScript
   bool init();
   void deinit();
 
+  //! if there are pending exceptions print stacktrace and clear them
+  void
+  handleExceptions();
+
   bool
   eval(jsval &rval, const char* script, unsigned scriptlen, const char* resname=0);
 

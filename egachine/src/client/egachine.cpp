@@ -124,7 +124,6 @@ Input::charHandler(Unicode uc)
   JGACHINE_CHECK(js);
   JGACHINE_CHECK(JS_AddRoot(ECMAScript::cx,js));
   jsval args[1];
-  jsval rval;
   args[0]=STRING_TO_JSVAL(js);
 
   ECMAScript::callFunction("Input","handleChar",1,args);

@@ -38,7 +38,12 @@ extern "C" {
     if (!s) return JS_FALSE;
     // root the string
     argv[0]=STRING_TO_JSVAL(s);
-    std::cout << JS_GetStringBytes(s) << std::endl;
+    // does not print the complete string if there is a \0 in it
+    // std::cout << JS_GetStringBytes(s) << std::endl;
+    char* ctype=JS_GetStringBytes(s);
+    if (!ctype) return JS_FALSE;
+    unsigned len=JS_GetStringLength(s);
+    std::cout.rdbuf()->sputn(ctype,len);
     return JS_TRUE;
   }
   
@@ -97,28 +102,26 @@ JSClass global_class = {
   ECMA_END_CLASS_SPEC
 };
 
-//! if there are pending exceptions print stacktrace and clear them
-static
-void
-handleExceptions()
-{
-  if (JS_IsExceptionPending(ECMAScript::cx)) {
-    jsval error;
-    if (!JS_GetPendingException(ECMAScript::cx, &error)) {
-      JGACHINE_MSG("Error:", "Could not get exception");
-    }else{
-      // todo: print stack trace
-    }
-    // we clear pending exceptions because we wish to use this context again
-    JS_ClearPendingException(ECMAScript::cx);
-  }
-}
-
 namespace ECMAScript
 {
   JSRuntime *rt;
   JSContext *cx;
   JSObject  *glob;
+
+  void
+  handleExceptions()
+  {
+    if (JS_IsExceptionPending(ECMAScript::cx)) {
+      jsval error;
+      if (!JS_GetPendingException(ECMAScript::cx, &error)) {
+	JGACHINE_MSG("Error:", "Could not get exception");
+      }else{
+	// todo: print stack trace
+      }
+      // we clear pending exceptions because we wish to use this context again
+      JS_ClearPendingException(ECMAScript::cx);
+    }
+  }
   
   bool
   eval(jsval &rval, const char* script, unsigned scriptlen, const char* resname)

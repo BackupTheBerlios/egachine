@@ -18,19 +18,39 @@
 
 /*!
    \file egares.js
-   \brief resource utility 
+   \brief resource utility hack
    \author Jens Thiele
 */
+
+//! wrap a string to fit into 80 columns
+function wrapString(str)
+{
+  var result="";
+  var s=0,e,cols=80;
+  while ((e=s+cols-1)<=str.length) {
+    result+=str.substring(s,e)+"\\\n";
+    s+=cols-1;
+  }
+  result+=str.substring(s,e);
+  return result;
+}
 
 function egares(resource) {
   var resname=argv[0];
   var res=new Resource(resname,resource);
-  res="EGachine.addResource("+res.toSource()+");";
-  var s=0,e,cols=80;
-  while ((e=s+cols-1)<=res.length) {
-    print(res.substring(s,e)+"\\");
-    s+=cols-1;
-  }
-  print(res.substring(s,e));
-}
+  var stdout="EGachine.addResource(\n";
 
+  res=res.toSource();
+
+  // this is buggy since we may use "\" only in a string to wrap wrong lines
+  // but at least we detect errors (below)
+  stdout+=wrapString(res)+");";
+  // check for errors (decoding should result in the resource again)
+  eval(stdout);
+  var dec=EGachine.getResource(resname).decode();
+  if (dec!=resource)
+    throw new Error("egares is buggy and something went wrong");
+
+  // puh ;-) good luck
+  print(stdout);
+}

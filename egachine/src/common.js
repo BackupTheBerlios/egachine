@@ -133,19 +133,19 @@ function Resource(resname,resource) {
   this.name=resname;
   this.size=resource.length;
 
+  // try if the compressed version is smaller
   var comp=Base64.encode(Zlib.compress(resource));
   var uncomp=Base64.encode(resource);
   if (comp.length<uncomp.length) {
-    this.zip=true;
+    this.z=true;
     this.data=comp;
   }else{
-    this.zip=false;
     this.data=uncomp;
   }
 }
 
 Resource.prototype.decode=function(){
-  if (this.zip)
+  if (this.z)
     return Zlib.decompress(Base64.decode(this.data),this.size);
   return Base64.decode(this.data);
 }
@@ -156,7 +156,7 @@ EGachine.r={};
 EGachine.addResource=function(name,res){
   if (res!=undefined){
     // legacy case (TODO: remove it)
-    print("legacy resource:"+name+" this is deprecated");
+    print("legacy resource:"+name+" this is deprecated\n");
     EGachine.r[name]=new Resource(name,Base64.decode(res));
   }else if (typeof(name) == 'object') {
     var resource=name;

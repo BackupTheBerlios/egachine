@@ -17,9 +17,9 @@
  */
 
 /*!
-   \file tools/egares.cpp
-   \brief resource tool
-   \author Jens Thiele
+  \file tools/egares.cpp
+  \brief resource tool
+  \author Jens Thiele
 */
 
 /*
@@ -37,7 +37,102 @@
 #include "common/ecmascript.h"
 #include "common/jszlib.h"
 
-void printUsage()
+//! the program
+/*!
+  \note we use a struct/class to make sure everything is always deinititalized (by the destructor)
+*/
+struct EGares
+{
+  int
+  init() 
+  {
+    if (!ECMAScript::init()) {
+      JGACHINE_ERROR("could not inititialize interpreter");
+      ECMAScript::deinit();
+      return EXIT_FAILURE;
+    }
+
+    // now register our objects/functions
+    if (!(JSZlib::init())) {
+      JGACHINE_ERROR("could not register functions/objects with interpreter");
+      ECMAScript::deinit();
+      return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+  }
+
+  ~EGares()
+  {
+    JSZlib::deinit();
+    ECMAScript::deinit();
+  }
+
+  //! copy stream to JSString
+  /*!
+    \note the result is not rooted! be careful not to run the GC
+  */
+  JSString*
+  streamToString(std::streambuf* buf)
+  {
+    // copy streambuf to javascript string
+    // hmm quite a hack
+    const unsigned blkSize=1024;
+    unsigned destLen=0;
+    char* dest=NULL;
+    unsigned got;
+  
+    do{
+      dest=(char *)JS_realloc(ECMAScript::cx,dest,destLen+blkSize);
+      if (!dest) return NULL;
+      got=buf->sgetn(dest+destLen,blkSize);
+      destLen+=got;
+    }while(got==blkSize); // todo this might abort to early?
+    dest=(char *)JS_realloc(ECMAScript::cx,dest,destLen);
+    if (!dest) return NULL;
+  
+    return JS_NewString(ECMAScript::cx, dest, destLen);
+  }
+
+  int
+  main(int argc, char** argv)
+  {
+    // load libs
+    ECMAScript::parseLib("common.js");
+    ECMAScript::parseLib("egares.js");
+
+    // copy version information to the interpreter
+    ECMAScript::setVersion("EGachine.version");
+
+    ECMAScript::copyargv(argc,argv);
+
+    // Attention: we do not root s
+    JSString* s=NULL;
+    if (argc<3)
+      s=streamToString(std::cin.rdbuf());
+    else {
+      std::ifstream in(argv[2]);
+      if (!in.good()) {
+	JGACHINE_ERROR("Could not open file: \""<<argv[1]<<"\"");
+	return EXIT_FAILURE;
+      }
+      s=streamToString(in.rdbuf());
+    }
+
+    JGACHINE_CHECK(s);
+    jsval param[1];
+    param[0]=STRING_TO_JSVAL(s);
+    jsval rval;
+    if (!JS_CallFunctionName(ECMAScript::cx, ECMAScript::glob, "egares", 1, param, &rval)) {
+      JGACHINE_ERROR("error while calling egares. TODO: why don't we get more info?");
+      ECMAScript::handleExceptions();
+      return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+  }
+};
+
+void
+printUsage()
 {
   std::cerr << "Usage: egares [-h|--help] RESNAME [FILE] [OPTION]...\n";
 }
@@ -58,70 +153,8 @@ main(int argc, char** argv)
     }
   }
   
-  
-  if (!ECMAScript::init()) {
-    JGACHINE_ERROR("could not inititialize interpreter");
-    ECMAScript::deinit();
-    return EXIT_FAILURE;
-  }
-
-  // now register our objects/functions
-  if (!(JSZlib::init())) {
-    JGACHINE_ERROR("could not register functions/objects with interpreter");
-    ECMAScript::deinit();
-    return EXIT_FAILURE;
-  }
-
-  // load libs
-  ECMAScript::parseLib("common.js");
-  ECMAScript::parseLib("egares.js");
-
-  // copy version information to the interpreter
-  ECMAScript::setVersion("EGachine.version");
-
-  // copy file/stdinput to string
-  std::string resource;
-  std::streambuf* buf;
-  if (argc<3)
-    buf=std::cin.rdbuf();
-  else {
-    std::ifstream in(argv[2]);
-    if (!in.good()) {
-      JGACHINE_ERROR("Could not open file: \""<<argv[1]<<"\"");
-      return EXIT_FAILURE;
-    }
-    buf=in.rdbuf();
-  }
-
-  // copy streambuf to javascript string
-  // hmm quite a hack
-
-  const unsigned blkSize=1024;
-  unsigned destLen=0;
-  char* dest=NULL;
-  unsigned got;
-  
-  do{
-    dest=(char *)JS_realloc(ECMAScript::cx,dest,destLen+blkSize);
-    if (!dest) return EXIT_FAILURE;
-    got=buf->sgetn(dest,blkSize);
-    destLen+=got;
-  }while(got==blkSize);
-  dest=(char *)JS_realloc(ECMAScript::cx,dest,destLen);
-  if (!dest) return EXIT_FAILURE;
-  
-  JSString *s;
-  JGACHINE_CHECK(s=JS_NewString(ECMAScript::cx, dest, destLen));
-  jsval param[1];
-  param[0]=STRING_TO_JSVAL(s);
-  
-  ECMAScript::copyargv(argc,argv);
-
-  jsval rval;
-  if (!JS_CallFunctionName(ECMAScript::cx, ECMAScript::glob, "egares", 1, param, &rval)) return EXIT_FAILURE;
-
-  ECMAScript::deinit();
-
-  return EXIT_SUCCESS;
+  EGares egares;
+  if (egares.init()!=EXIT_SUCCESS) return EXIT_FAILURE;
+  return egares.main(argc,argv);
 }
 

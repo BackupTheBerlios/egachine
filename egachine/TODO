@@ -314,4 +314,7 @@ Attention:
 JS_ValueToNumber does not fail if value==undefined
 i have to test what happens - i guess NaN (since a double is returned)
 and if a NaN double is converted to an int ...
+also check warnings
+perhaps the simplest method would be to check this in javascript where not
+critical
 --------------------------------------------------------------------------------

@@ -18,7 +18,7 @@ inline bool ecma_to_float(jsval x,F &y)
 {
   jsdouble d;
   bool r=JS_ValueToNumber(ECMAScript::cx,x,&d)==JS_TRUE;
-  y=d; // TODO: check for overflow?
+  y=d; // TODO: check for overflow? - check for NaN?
   return r;
 }
 

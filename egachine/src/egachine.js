@@ -50,6 +50,8 @@ if (this.Audio) {
     var sid=Audio.samples[resname];
     if (sid==undefined)
       sid=Audio.loadSample(resname);
+    if (repeat==undefined)
+      repeat=0;
     return Audio._playSample(sid,repeat);
   }
 }

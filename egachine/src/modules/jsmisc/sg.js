@@ -1,12 +1,14 @@
 (function(sg){
-  var Video=ejs.ModuleLoader.get("Video");
+  var cons;
 
   // hack currently needed for the distributed scene graph
   if (typeof adjCons == "undefined")
-    adjCons=function(func){return func;};
+    cons=function(func){return func;};
+  else
+    cons=adjCons;
 
   // vector object
-  sg.V2D=adjCons(function(x,y){
+  sg.V2D=cons(function(x,y){
 			  this.x=x;
 			  this.y=y;
 			});
@@ -60,7 +62,7 @@
 
   // degrees object
   // this is mainly to get reference semantic / wrap primitive type
-  sg.Degrees=adjCons(function (deg){
+  sg.Degrees=cons(function (deg){
 			      this.value=deg;
 			    });
   sg.Degrees.prototype.add=function(deg)
@@ -85,7 +87,7 @@
   // Node object
   // curently prototype object of all nodes in the scenegraph
   // (prototype of the prototypes)
-  sg.Node=adjCons(function() {});
+  sg.Node=cons(function() {});
   sg.Node.prototype.paint=function(time){
     var i;
     if (this.children)
@@ -106,55 +108,55 @@
   };
 
   // derived object Rotate
-  sg.Rotate=adjCons(function (degrees) {
+  sg.Rotate=cons(function (degrees) {
 			     this.degrees=degrees;
 			   });
   sg.Rotate.prototype=new sg.Node();
   sg.Rotate.prototype.paint=function(time){
-    Video.pushMatrix();
-    Video.rotate(this.degrees.value);
+    sg.Video.pushMatrix();
+    sg.Video.rotate(this.degrees.value);
     //  Node.prototype.paint.call(this,time);
     Node.prototype.paint.call(this,time);
-    Video.popMatrix();
+    sg.Video.popMatrix();
   };
 
   // derived object Texture
-  sg.Texture=adjCons(function(resname){
+  sg.Texture=cons(function(resname){
 			      this.resname=resname;
 			    });
   sg.Texture.prototype=new sg.Node();
   sg.Texture.prototype.paint=function(time){
-    Video.drawTexture(Video.getTextureID(this.resname));
+    sg.Video.drawTexture(sg.Video.getTextureID(this.resname));
     //  Node.prototype.paint.call(this,time);
     sg.Node.prototype.paint.call(this,time);
   };
 
   // derived object Scale
-  sg.Scale=adjCons(function(v) {
+  sg.Scale=cons(function(v) {
 			    this.v=v;
 			  });
   sg.Scale.prototype=new sg.Node();
   sg.Scale.prototype.paint=function(time){
-    Video.pushMatrix();
-    Video.scale(this.v.x,this.v.y);
+    sg.Video.pushMatrix();
+    sg.Video.scale(this.v.x,this.v.y);
     sg.Node.prototype.paint.call(this,time);
-    Video.popMatrix();
+    sg.Video.popMatrix();
   };
 
   // derived object Translate
-  sg.Translate=adjCons(function(v) {
+  sg.Translate=cons(function(v) {
 				this.v=v;
 			      });
   sg.Translate.prototype=new sg.Node();
   sg.Translate.prototype.paint=function(time){
-    Video.pushMatrix();
-    Video.translate(this.v.x,this.v.y);
+    sg.Video.pushMatrix();
+    sg.Video.translate(this.v.x,this.v.y);
     sg.Node.prototype.paint.call(this,time);
-    Video.popMatrix();
+    sg.Video.popMatrix();
   };
 
   // derived object Sprite
-  sg.Sprite=adjCons(function(resname,size,pos,degrees) {
+  sg.Sprite=cons(function(resname,size,pos,degrees) {
 			     this.size=size;
 			     this.pos=pos;
 			     this.degrees=degrees;
@@ -162,19 +164,19 @@
 			   });
   sg.Sprite.prototype=new sg.Node();
   sg.Sprite.prototype.paint=function(time){
-    Video.pushMatrix();
-    Video.translate(this.pos.x,this.pos.y);
-    if (this.degrees) Video.rotate(this.degrees.value);
-    Video.pushMatrix();
-    Video.scale(this.size.x,this.size.y);
-    Video.drawTexture(Video.getTextureID(this.resname));
-    Video.popMatrix();
+    sg.Video.pushMatrix();
+    sg.Video.translate(this.pos.x,this.pos.y);
+    if (this.degrees) sg.Video.rotate(this.degrees.value);
+    sg.Video.pushMatrix();
+    sg.Video.scale(this.size.x,this.size.y);
+    sg.Video.drawTexture(sg.Video.getTextureID(this.resname));
+    sg.Video.popMatrix();
     sg.Node.prototype.paint.call(this,time);
-    Video.popMatrix();
+    sg.Video.popMatrix();
   };
 
   // derived object Color
-  sg.Color=adjCons(function(r,g,b,a) {
+  sg.Color=cons(function(r,g,b,a) {
 			    if (r.length)
 			      this.c=r;
 			    else
@@ -182,42 +184,42 @@
 			  });
   sg.Color.prototype=new sg.Node();
   sg.Color.prototype.paint=function(time){
-    Video.pushColor();
-    Video.setColor4v(this.c);
+    sg.Video.pushColor();
+    sg.Video.setColor4v(this.c);
     sg.Node.prototype.paint.call(this,time);
-    Video.popColor();
+    sg.Video.popColor();
   };
 
   // derived object Text
-  sg.Text=adjCons(function(text,hcenter,vcenter) {
+  sg.Text=cons(function(text,hcenter,vcenter) {
 			   this.text=text;
 			   this.hcenter=hcenter;
 			   this.vcenter=vcenter;
 			 });
   sg.Text.prototype=new sg.Node();
   sg.Text.prototype.paint=function(time){
-    Video.drawText(this.text,this.hcenter,this.vcenter);
+    sg.Video.drawText(this.text,this.hcenter,this.vcenter);
     sg.Node.prototype.paint.call(this,time);
   };
 
   // derived object Quad
-  sg.Quad=adjCons(function(size,pos,degrees) {
+  sg.Quad=cons(function(size,pos,degrees) {
 			   this.size=size;
 			   this.pos=pos;
 			   this.degrees=degrees;
 			 });
   sg.Quad.prototype=new sg.Node();
   sg.Quad.prototype.paint=function(time){
-    Video.pushMatrix();
-    if (this.pos) Video.translate(this.pos.x,this.pos.y);
-    if (this.degrees) Video.rotate(this.degrees.value);
-    Video.drawQuad(this.size.x,this.size.y);
+    sg.Video.pushMatrix();
+    if (this.pos) sg.Video.translate(this.pos.x,this.pos.y);
+    if (this.degrees) sg.Video.rotate(this.degrees.value);
+    sg.Video.drawQuad(this.size.x,this.size.y);
     sg.Node.prototype.paint.call(this,time);
-    Video.popMatrix();
+    sg.Video.popMatrix();
   };
 
   // derived object Mover (deprecated)
-  sg.Mover=adjCons(function(speed, rotspeed) {
+  sg.Mover=cons(function(speed, rotspeed) {
 			    this.speed=speed;
 			    this.rotspeed=rotspeed;
 			    this.time=0;

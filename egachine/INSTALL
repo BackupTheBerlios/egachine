@@ -78,9 +78,11 @@ take a look at ./make - perhaps you have to edit something?
 supported environment variables (see also common.sh):
 CC, CXX, CXXFLAGS, PREFIX, BINDIR, DATADIR, DOCDIR, SYSCONFDIR
 
-run ./make
+run (in the top level source directory):
+$./make
 
-you don't have to install but can do so with ./install
+you don't have to install but can do so with:
+$./install
 
 building for win32 platforms:
 at the moment a native build is not supported - the win32 binaries

@@ -43,7 +43,7 @@ namespace ECMAScript
   handleExceptions();
 
   bool
-  eval(jsval &rval, const char* script, unsigned scriptlen, const char* resname=0);
+  eval(jsval &rval, const char* script, unsigned scriptlen, const char* resname=NULL);
 
   //! read script from stream and evaluate it
   /*!
@@ -54,10 +54,10 @@ namespace ECMAScript
     \return true on success, false on error
   */
   bool
-  eval(jsval &rval, std::istream &in,const char* resname=0);
+  eval(jsval &rval, std::istream &in,const char* resname=NULL);
 
   bool
-  eval(std::istream &in,const char* resname=0);
+  eval(std::istream &in,const char* resname=NULL);
 
   //! evaluate expression returning a number which fits into an int32
   int32

@@ -34,7 +34,6 @@
 
 namespace Video
 {
-  struct Color;
   struct ViewportCoordinates;
   struct Coord2i;
   struct Rectangle;
@@ -45,54 +44,21 @@ namespace Video
   void iconify();
   void resize(int sx, int sy);
   
-  void drawLine(float x1,float y1,float x2,float y2);
   void swapBuffers();
-  int createTexture(unsigned dsize, const char* data, const char *extension=0, const char *mimeType=0);
+  int createTexture(unsigned dsize, const char* data, const char *extension=NULL, const char *mimeType=NULL);
   void drawTexture(int tid,float w=1, float h=1);
   void drawText(const std::string &text, bool hcentered, bool vcentered);
-  void drawQuad(float w=1, float h=1);
-  
-  void setColor(const Color &c);
-  Color getColor();
 
   void setViewportCoordinates(const ViewportCoordinates &coords);
   ViewportCoordinates getViewportCoordinates();
   
   void setViewport(const Rectangle &r);
   Rectangle getViewport();
-  
-  void pushMatrix();
-  void popMatrix();
-  void translate(float x,float y);
-  void scale(float x,float y);
-  void rotate(float r);
-  void clear();
+
   //! get screen (window) coordinates for this point
   Coord2i project(float x, float y);
   
   void deinit();
-
-  struct Color {
-    Color(float _r, float _g, float _b, float _a)
-      : r(_r), g(_g), b(_b), a(_a)
-    {}
-    
-    float r,g,b,a;
-    
-    void set()
-    {
-      setColor(*this);
-    }
-
-    Color &adjust(const Color &o)
-    {
-      r*=o.r;
-      g*=o.g;
-      b*=o.b;
-      a*=o.a;
-      return *this;
-    }
-  };
 
   struct ViewportCoordinates 
   {

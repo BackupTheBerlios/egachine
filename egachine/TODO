@@ -297,6 +297,13 @@ an option would be than to convert mods to this format
 for now we use SDL_mixer
 --------------------------------------------------------------------------------
 kick out the video stuff which only duplicates the gl wrapper
+should i keep a subset in Video anyway?
+currently examples in client/opengl may use gl. and in client/ itself
+the should not use it - otherwise the destinction would be stupid
+i think it would be a good idea to have an explicit subset
+of course this must be documented
+are the scenegraph objects allowed to call gl functions?
+nicer would be if they were not
 --------------------------------------------------------------------------------
 I just found the sdl mingw developer package again
 should try if opengl works with it => no need for hacked SDL version?

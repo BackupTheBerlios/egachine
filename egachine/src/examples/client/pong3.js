@@ -129,18 +129,18 @@ function Ballsprite() {
   // node which draws rotated and scaled sprite without shadow (the ball)
   ball=new Translate(this.pos);
   this.rotate = new Rotate();
-  ball.addNode(this.rotate.addNode(new Scale(this.size).addNode(new Texture("ball.png"))));
+  ball.add(this.rotate.add(new Scale(this.size).add(new Texture("ball.png"))));
 
   // node which draws the lightmap
-  lightMap=new Translate(this.pos).addNode(new Scale(this.size).addNode(new Texture("ball-light.png")));
+  lightMap=new Translate(this.pos).add(new Scale(this.size).add(new Texture("ball-light.png")));
 
   // node which draws the shadow
-  shadow=new Translate(new V2D(12,-12)).addNode(new AdjustColor(new Color(0,0,0,0.3)).addNode(ball));
+  shadow=new Translate(new V2D(12,-12)).add(new AdjustColor(new Color(0,0,0,0.3)).add(ball));
 
   // put it all together
-  this.addNode(shadow)
-    .addNode(ball)
-    .addNode(lightMap);
+  this.add(shadow)
+    .add(ball)
+    .add(lightMap);
 }
 BallSprite.prototype=new Node();
 BallSprite.prototype.constructor=BallSprite;
@@ -165,9 +165,9 @@ function BluredBallSprite() {
       // we blend all ball sprites except the last one and start with an alpha of startAlpha and fade
       // out linear
       startAlpha=0.1f;
-      node = new AdjustColor(new Color(1.0,1.0,1.0,startAlpha*(i+1)/(this.blured-1) ) ).addNode(node);
+      node = new AdjustColor(new Color(1.0,1.0,1.0,startAlpha*(i+1)/(this.blured-1) ) ).add(node);
     }
-    addNode(node);
+    add(node);
   }
 }
 BluredBallSprite.prototype=new Node();
@@ -203,20 +203,20 @@ class ShadowedSprite extends Node
 	    // node which draws rotated and scaled sprite without shadow
 	    Translate t=new Translate(pos[i]);
 	    rotate = new Rotate(dir);
-	    t.addNode(rotate.addNode(sprite));
+	    t.add(rotate.add(sprite));
 
 	    // node which draws a shadow (black, alpha blended sprite)
-	    AdjustColor shadow = (AdjustColor)new AdjustColor(new Color(0.0f,0.0f,0.0f,0.3f)).addNode(t);
+	    AdjustColor shadow = (AdjustColor)new AdjustColor(new Color(0.0f,0.0f,0.0f,0.3f)).add(t);
 
 	    Node base = this;
 	    if (i<blured-1) {
 		base = new AdjustColor(new Color(1.0f,1.0f,1.0f,0.1f*((float)i+1)/(blured-1) ) );
-		addNode(base);
+		add(base);
 	    }
 	    base
-		.addNode(new Translate(new Vector2f(6.0f,-6.0f)).addNode(shadow))
-		.addNode(new Translate(new Vector2f(12.0f,-12.0f)).addNode(shadow))
-		.addNode(t);
+		.add(new Translate(new Vector2f(6.0f,-6.0f)).add(shadow))
+		.add(new Translate(new Vector2f(12.0f,-12.0f)).add(shadow))
+		.add(t);
 	}
     }
     void rotateTo(float dir){
@@ -325,7 +325,7 @@ public class Pong implements Runnable
 	// add background
 	int bgTextureID=JGachine.createTexture("data:back.jpg");
 	sceneGraph
-	    .addNode(camera.addNode(new Scale(new Vector2f(Pong.width,Pong.width)).addNode(new Sprite(bgTextureID))));
+	    .add(camera.add(new Scale(new Vector2f(Pong.width,Pong.width)).add(new Sprite(bgTextureID))));
 
 	// add rackets
 	for (int i=0;i<racket.length;++i) {
@@ -334,14 +334,14 @@ public class Pong implements Runnable
 	    float r=( i   %3)!=0 ? 0.6f:1.0f;
 	    float g=((i+1)%3)!=0 ? 0.4f:1.0f;
 	    float b=((i+2)%3)!=0 ? 0.6f:1.0f;
-	    racketSprite[i]=new ShadowedSprite(new Scale(new Vector2f(Pong.spriteSize,Pong.spriteSize)).addNode(new Sprite(JGachine.createTexture("data:car.png"))),racket[i].pos,0);
-	    camera.addNode(new AdjustColor(new Color(r,g,b,1.0f)).addNode(racketSprite[i]));
+	    racketSprite[i]=new ShadowedSprite(new Scale(new Vector2f(Pong.spriteSize,Pong.spriteSize)).add(new Sprite(JGachine.createTexture("data:car.png"))),racket[i].pos,0);
+	    camera.add(new AdjustColor(new Color(r,g,b,1.0f)).add(racketSprite[i]));
 	}
 
 	// add ball
 	Ball ball = new Ball();
 	BluredBallSprite ballSprite= new BluredBallSprite();
-	camera.addNode(ballSprite);
+	camera.add(ballSprite);
 
 	// add point displays
 	pointsText = new Text[2];
@@ -352,8 +352,8 @@ public class Pong implements Runnable
 	final float textSize=Pong.spriteSize/2;
 	final float border=textSize/10;
 	camera
-	    .addNode(new AdjustColor(new Color(1.0f,0.4f,0.6f,0.9f)).addNode(new Translate(new Vector2f(-Pong.width/2   ,Pong.height/2-textSize-border)).addNode(new Scale(new Vector2f(textSize,textSize)).addNode(pointsText[0]))))
-	    .addNode(new AdjustColor(new Color(0.6f,0.4f,1.0f,0.9f)).addNode(new Translate(new Vector2f( Pong.width/2-Pong.spriteSize,Pong.height/2-textSize-border)).addNode(new Scale(new Vector2f(textSize,textSize)).addNode(pointsText[1]))));
+	    .add(new AdjustColor(new Color(1.0f,0.4f,0.6f,0.9f)).add(new Translate(new Vector2f(-Pong.width/2   ,Pong.height/2-textSize-border)).add(new Scale(new Vector2f(textSize,textSize)).add(pointsText[0]))))
+	    .add(new AdjustColor(new Color(0.6f,0.4f,1.0f,0.9f)).add(new Translate(new Vector2f( Pong.width/2-Pong.spriteSize,Pong.height/2-textSize-border)).add(new Scale(new Vector2f(textSize,textSize)).add(pointsText[1]))));
 	
 
 	long start = JGachine.time();

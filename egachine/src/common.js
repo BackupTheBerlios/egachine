@@ -32,6 +32,8 @@
 
 // global functions - todo: there perhaps should be none
 
+function println(s){print(s+"\n");}
+
 // is the passed object an empty prototype? (empty object)
 function isEmptyProto(p) {
   return (p=={}.__proto__);
@@ -419,7 +421,7 @@ Node.prototype.step=function(dt){
   for (var i=0;i<this.children.length;++i)
     this.children[i].step(dt);
 }
-Node.prototype.addNode=function(n){
+Node.prototype.add=function(n){
   if (!this.children) this.children=[];
   this.children.push(n);
   return this;
@@ -466,7 +468,7 @@ function Translate(v) {
 Translate.prototype=new Node();
 Translate.prototype.paint=function(){
   Video.pushMatrix();
-  translate(this.v.x,this.v.y);
+  Video.translate(this.v.x,this.v.y);
   Node.prototype.paint.call(this);
   Video.popMatrix();
 }
@@ -528,7 +530,19 @@ function Color(r,g,b,a) {
 Color.prototype=new Node();
 Color.prototype.paint=function(){
   Video.pushColor();
-  Video.setColor(this.c[0],this.c[1],this.c[2],this.c[3]);
+  Video.setColor4v(this.c);
   Node.prototype.paint.call(this);
   Video.popColor();
+}
+
+// derived object Text
+function Text(text,hcenter,vcenter) {
+  this.text=text;
+  this.hcenter=hcenter;
+  this.vcenter=vcenter;
+}
+Text.prototype=new Node();
+Text.prototype.paint=function(){
+  Video.drawText(this.text,this.hcenter,this.vcenter);
+  Node.prototype.paint.call(this);
 }

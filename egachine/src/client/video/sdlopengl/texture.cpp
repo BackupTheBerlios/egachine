@@ -213,7 +213,7 @@ Texture::Texture(unsigned dsize, const char* data, const char *extension, const 
 Texture::~Texture()
 {
   glDeleteTextures(1,&textureID);
-  //  JGACHINE_MSG("Info:","freed texture: "<<textureID);
+  JGACHINE_MSG("Info:","freed texture: "<<textureID);
 }
 
 SDL_Surface*

@@ -296,7 +296,6 @@ Scooter.prototype.drive=function(dx)
 
 var sx=1+1/3;
 var sy=1;
-//Video.setViewportCoordinates({left:0,right:sx,bottom:0,top:sy});
 
 gl.MatrixMode(GL_PROJECTION);
 gl.LoadIdentity();

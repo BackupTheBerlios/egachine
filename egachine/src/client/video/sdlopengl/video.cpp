@@ -361,14 +361,6 @@ void Video::deinit()
 
 
 
-void
-Video::drawLine(float x1,float y1,float x2,float y2)
-{
-  glBegin(GL_LINES);
-  glVertex2f(x1,y1);
-  glVertex2f(x2,y2);
-  glEnd();
-}
 
 
 
@@ -389,20 +381,6 @@ Video::createTexture(unsigned dsize, const char* data, const char *extension, co
   //  JGACHINE_MSG("Info:", "Texture ID: "<<id);
   (*textures)[id]=t;
   return id;
-}
-
-void
-Video::drawQuad(float w, float h)
-{
-  const float w2=w/2;
-  const float h2=h/2;
-
-  glBegin(GL_QUADS);
-  glVertex2f(-w2,-h2);
-  glVertex2f(w2,-h2);
-  glVertex2f(w2,h2);
-  glVertex2f(-w2,h2);
-  glEnd();
 }
 
 void
@@ -442,59 +420,9 @@ void
 Video::drawText(const std::string &text, bool hcentered, bool vcentered)
 {
   assert(font);
-  pushMatrix();
-  font->drawText(text,hcentered,vcentered);
-  popMatrix();
-}
-
-void
-Video::setColor(const Color &c)
-{
-  glColor4f(c.r,c.g,c.b,c.a);
-}
-
-Video::Color
-Video::getColor()
-{
-  float c[4];
-  glGetFloatv(GL_CURRENT_COLOR, c);
-  return Color(c[0],c[1],c[2],c[3]);
-}
-
-void
-Video::pushMatrix()
-{
   glPushMatrix();
-}
-
-void
-Video::popMatrix()
-{
+  font->drawText(text,hcentered,vcentered);
   glPopMatrix();
-}
-
-void
-Video::translate(float x,float y)
-{
-  glTranslatef(x,y,0);
-}
-
-void
-Video::scale(float x,float y)
-{
-  glScalef(x,y,0);
-}
-
-void
-Video::rotate(float r)
-{
-  glRotatef(r,0,0,1);
-}
-
-void
-Video::clear()
-{
-  glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void

@@ -30,7 +30,6 @@
 #include "jsgl/jsgl.h"
 
 extern "C" {
-  ECMA_VOID_FUNC_FLOAT4(Video,drawLine);
   ECMA_VOID_FUNC_VOID  (Video,swapBuffers);
   
   ECMA_BEGIN_FUNC(createTexture){
@@ -80,42 +79,6 @@ extern "C" {
     return JS_TRUE;
   }
 
-  ECMA_BEGIN_STATIC_VOID_FUNC(drawQuad)
-  {
-    if (argc>2) ECMA_ERROR("too much arguments (2 at max)");
-    jsdouble w,h;
-    w=h=1;
-    if (argc>=1) JS_ValueToNumber(cx,argv[0],&w);
-    if (argc>=2) JS_ValueToNumber(cx,argv[1],&h);
-    Video::drawQuad(w,h);
-    return JS_TRUE;
-  }
-
-  ECMA_BEGIN_STATIC_VOID_FUNC(setColor){
-    ECMA_ARGS_TO_FLOAT_ARRAY(4,d);
-    Video::Color c(d[0],d[1],d[2],d[3]);
-    c.set();
-    return JS_TRUE;
-
-  }
-  ECMA_BEGIN_FUNC_VOID(getColor){
-    ECMA_CHECK_NUM_ARGS(0);
-
-    Video::Color cppcol(Video::getColor());
-    double c[4];
-    c[0]=cppcol.r;c[1]=cppcol.g;c[2]=cppcol.b;c[3]=cppcol.a;
-    // TODO: probably bug here since the values are not rooted!
-    jsval v[4];
-    for (int i=0;i<4;++i)
-      if (!JS_NewNumberValue(cx,c[i],&(v[i]))) return JS_FALSE;
-
-    JSObject *nobj=JS_NewArrayObject(cx, 4, v);
-    if (!nobj) return JS_FALSE;
-    *rval=OBJECT_TO_JSVAL(nobj);
-    assert(JSVAL_IS_OBJECT(*rval));
-
-    return JS_TRUE;
-  }
   ECMA_BEGIN_VOID_FUNC(setViewportCoordinates){
     ECMA_CHECK_NUM_ARGS(1);
     if (!JSVAL_IS_OBJECT(argv[0])) ECMA_ERROR("object required as argument");
@@ -193,13 +156,6 @@ if (!JS_ValueToNumber(cx, v[y], &(d[y]))) ECMA_ERROR("object property "x" is not
     return JS_TRUE;
   }
 
-  ECMA_VOID_FUNC_VOID(Video,pushMatrix);
-  ECMA_VOID_FUNC_VOID(Video,popMatrix);
-  ECMA_VOID_FUNC_FLOAT2(Video,translate);
-  ECMA_VOID_FUNC_FLOAT2(Video,scale);
-  ECMA_VOID_FUNC_FLOAT1(Video,rotate);
-  ECMA_VOID_FUNC_VOID(Video,clear);
-
   ECMA_BEGIN_FUNC(project){
     ECMA_CHECK_NUM_ARGS(2);
     return JS_TRUE;
@@ -212,23 +168,13 @@ if (!JS_ValueToNumber(cx, v[y], &(d[y]))) ECMA_ERROR("object property "x" is not
 using namespace ECMAScript;
 
 static JSFunctionSpec static_methods[] = {
-  ECMA_FUNCSPEC(drawLine,4),
   ECMA_FUNCSPEC(swapBuffers,0),
   ECMA_FUNCSPEC(createTexture,1),
   ECMA_FUNCSPEC(drawTexture,1),
   ECMA_FUNCSPEC(drawText,3),
-  ECMA_FUNCSPEC(drawQuad,0),
-  ECMA_FUNCSPEC(setColor,4),
-  ECMA_FUNCSPEC(getColor,0),
   ECMA_FUNCSPEC(setViewportCoordinates,1),
   ECMA_FUNCSPEC(setViewport,1),
   ECMA_FUNCSPEC_EXTRA(getViewport,0,1),
-  ECMA_FUNCSPEC(pushMatrix,0),
-  ECMA_FUNCSPEC(popMatrix,0),
-  ECMA_FUNCSPEC(translate,2),
-  ECMA_FUNCSPEC(scale,2),
-  ECMA_FUNCSPEC(rotate,1),
-  ECMA_FUNCSPEC(clear,0),
   ECMA_FUNCSPEC(project,2),
   ECMA_END_FUNCSPECS
 };

@@ -1,3 +1,16 @@
+2004-04-23  Jens Thiele  <karme@berlios.de>
+
+	* started to remove Video functions from native code which are
+	in fact gl wrappers and implemented them in Javascript using 
+	the gl wrapper directly
+	(see also ChangeLog entry 2004-04-17: decided)
+
+	* improved pong examples
+
+	* gl constants are now const
+
+	* renamed addNode to add
+
 2004-04-22  Jens Thiele  <karme@berlios.de>
 
 	* cross compiled new versions of: zlib, libpng, libjpeg, SDL_image

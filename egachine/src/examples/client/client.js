@@ -75,7 +75,7 @@ function connect(host,port) {
     Video.translate(0,0.5);
     Video.pushColor();
     Video.drawQuad(inputField.text.length+2+0.1,1+0.1);
-    Video.setColor(0.3,0.3,0.3,1);
+    Video.setColor(0.3,0.3,0.3);
     Video.drawQuad(inputField.text.length+2,1);
     Video.popColor();
     Video.popMatrix();

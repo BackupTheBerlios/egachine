@@ -35,4 +35,12 @@ util.ieval=function(istream,ostream,estream){
       ejs.lastError=error;
     }
   }
-}
+};
+
+//! get current stack as string
+util.getStack=function(){
+  function chopLine(x){
+    return x.substring(x.indexOf("\n")+1,x.length);
+  };
+  return chopLine(chopLine(new Error().stack));
+};

@@ -80,6 +80,7 @@ ejs_throw_error(JSContext* cx, JSObject* obj, const char* msg)
   script+=op;							
   script+="');";						
   jsval dummy;						
+  // todo: stack is empty but we want to report a stacktrace
   return JS_EvaluateScript(cx, obj,				
 			   script.c_str(), script.length(),	
 			   NULL, 0, &dummy);			

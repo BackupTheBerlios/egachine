@@ -191,6 +191,8 @@ function init() {
   var joypad=[];
   var pos=new sg.V2D(sx/2,sy/2);
 
+  //  gl.ColorMask(false,false,true,false);
+
   /*
   var i,j,s=pointCloud();
 

@@ -1,5 +1,10 @@
 2004-12-30  Jens Thiele  <karme@berlios.de>
 
+	* replaced serialize/deserialize with jsolait.lang.jsonToObj/objToJson
+	for client to server communication (not server to client!!)
+	don't use for in loops anymore (without care)
+	especially with arrays (since jsolait adds properties to Array.prototype)
+
 	* added jsolait module
 
 2004-12-22  Jens Thiele  <karme@berlios.de>

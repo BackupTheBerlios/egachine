@@ -1,3 +1,7 @@
+2005-04-04  Jens Thiele  <karme@berlios.de>
+
+	* replace misnomer quad with rectangle
+
 2005-01-26  Jens Thiele  <karme@berlios.de>
 
 	* added port property to Server object

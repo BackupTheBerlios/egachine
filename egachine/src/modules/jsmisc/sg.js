@@ -213,18 +213,18 @@
     sg.Node.prototype.paint.call(this,time);
   };
 
-  // derived object Quad
-  sg.Quad=adjCons(function(size,pos,degrees) {
+  // derived object Rectangle
+  sg.Rectangle=adjCons(function(size,pos,degrees) {
 			   this.size=size;
 			   this.pos=pos;
 			   this.degrees=degrees;
 			 });
-  sg.Quad.prototype=new sg.Node();
-  sg.Quad.prototype.paint=function(time){
+  sg.Rectangle.prototype=new sg.Node();
+  sg.Rectangle.prototype.paint=function(time){
     Video.pushMatrix();
     if (this.pos) Video.translate(this.pos.x,this.pos.y);
     if (this.degrees) Video.rotate(this.degrees.value);
-    Video.drawQuad(this.size.x,this.size.y);
+    Video.drawRectangle(this.size.x,this.size.y);
     sg.Node.prototype.paint.call(this,time);
     Video.popMatrix();
   };

@@ -90,7 +90,7 @@
       gl.End();
     };
 
-  Video.drawQuad=function(w,h)
+  Video.drawRectangle=function(w,h)
     {
       var w2=w/2;
       var h2=h/2;

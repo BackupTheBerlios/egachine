@@ -32,9 +32,9 @@ do{
 	Video.pushMatrix();
 	Video.translate(e.x,height-e.y);
 	Video.setColor(1,1,1);
-	Video.drawQuad(width/20,width/20);
+	Video.drawRectangle(width/20,width/20);
 	Video.setColor(0,0,0);
-	Video.drawQuad(width/40,width/40);
+	Video.drawRectangle(width/40,width/40);
 	Video.popMatrix();
 
 	Video.setColor(1,1,1);

@@ -18,14 +18,14 @@ export NM=i586-mingw32msvc-nm
 export OBJDUMP=i586-mingw32msvc-objdump
 export STRIP=i586-mingw32msvc-strip
 
+export EGACHINE_CROSS=1
+source ./common.sh
+
 #settings very specific to my setup
-export PATH="$HOME/bin:/usr/local/i586-mingw32msvc/bin:$HOME/develop/cross/bin:$PATH"
+export PATH="$HOME/bin:/usr/local/i586-mingw32msvc/bin:$PATH"
 export EXE=".exe"
 LDFLAGS="$LDFLAGS -L/usr/local/i586-mingw32msvc/lib"
-
-export EGACHINE_CROSS=1
-
-source ./common.sh
+CXXFLAGS="$CXXFLAGS -I/usr/local/i586-mingw32msvc/include"
 
 if [ "x$DEBUG" = "x" ]; then
     SM_BUILDDIR="mingwcross_OPT.OBJ"
@@ -36,16 +36,15 @@ fi
 LDFLAGS="$LDFLAGS -L$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR"
 SDLMIXERLIBS="-lSDL_mixer"
 COMMONFLAGS="-c -I$TOPSRCDIR -I$SPIDERMONKEY_SRCDIR -I$SPIDERMONKEY_SRCDIR/$SM_BUILDDIR -I. -I$SRCDIR -I$SRCDIR/common -DXP_WIN $(sigc-config --cflags)"
-SERVERFLAGS=""
 CLIENTFLAGS="$(sdl-config --cflags)"
 DESTDIR=${DESTDIR:=/tmp/egachine-$PACKAGE_MAJOR_VERSION.$PACKAGE_MINOR_VERSION.$PACKAGE_MICRO_VERSION}
-
+JSLIB="-ljs32"
 
 # build spidermonkey
 cd $SPIDERMONKEY_SRCDIR
 
-make -f Makefile.ref clean
-rm -rf *.OBJ
+#make -f Makefile.ref clean
+#rm -rf *.OBJ
 make -f Makefile.ref SOVER=1.5 SOMAJOR=1 $BUILD_OPT
 
 
@@ -56,19 +55,23 @@ rm -vf $(find -name "*.o" -o -name "*.so" -o -name "*.lo" -o -name "*.a") egachi
 
 for a in $(find . -name "*.cpp"); do 
     echo Compile $a
-    if (echo $a|grep server >/dev/null); then
-	FLAGS="$COMMONFLAGS $SERVERFLAGS $CXXFLAGS"
-    else
+    if (echo $a|grep client >/dev/null); then
 	FLAGS="$COMMONFLAGS $CLIENTFLAGS $CXXFLAGS"
+    else
+	FLAGS="$COMMONFLAGS $CXXFLAGS"
     fi
     run "$CXX -o ${a%*.cpp}.o $FLAGS $a"
 done
 # link client
 echo Link egachine
-run "$CXX -o egachine$EXE $LDFLAGS $(find -name *.o|grep -v server|grep -v tools)  -ljs32 $SDLMIXERLIBS $(sdl-config --libs) $(sigc-config --libs) -lopengl32 -lglu32 -lwsock32 -lwinmm -lSDL_image"
+run "$CXX -o egachine$EXE $LDFLAGS $(find -name *.o|grep -v server|grep -v tools)  $JSLIB $SDLMIXERLIBS $(sdl-config --libs) $(sigc-config --libs) -lopengl32 -lglu32 -lwsock32 -lwinmm -lSDL_image -lz"
 # link server
 echo Link egaserver
-run "$CXX -o egaserver$EXE $LDFLAGS $(find -name *.o|grep -v client|grep -v tools) -ljs32 $(sigc-config --libs) -lwsock32 -lwinmm"
+run "$CXX -o egaserver$EXE $LDFLAGS $(find -name *.o|grep -v client|grep -v tools) $JSLIB $(sigc-config --libs) -lwsock32 -lwinmm -lz"
+
+# link egares
+echo Link egares
+run "$CXX -o egares$EXE $LDFLAGS $(find -name *.o|grep -v client|grep -v server|grep -v network) -lwinmm $JSLIB -lz"
 
 # install
 mkdir $DESTDIR
@@ -142,9 +145,10 @@ find $DESTDIR -name "*.js" -exec unix2dos \{\} \;
 find $DESTDIR -name "*.bat" -exec unix2dos \{\} \;
 find $DESTDIR -name "*.txt" -exec unix2dos \{\} \;
 
-cp egachine$EXE $DESTDIR
-cp egaserver$EXE $DESTDIR
-$STRIP $DESTDIR/*.exe
+for a in $PROGRAMS; do
+    cp $a$EXE $DESTDIR
+    $STRIP $DESTDIR/$a$EXE
+done
 
 cp $SPIDERMONKEY_SRCDIR/$SM_BUILDDIR/js32.dll $DESTDIR
 $STRIP $DESTDIR/js32.dll
@@ -152,10 +156,10 @@ $STRIP $DESTDIR/js32.dll
 # copy libs
 cp /usr/local/i586-mingw32msvc/bin/SDL.dll $DESTDIR
 cp /usr/local/i586-mingw32msvc/bin/SDL_mixer.dll $DESTDIR
-cp /usr/local/i586-mingw32msvc/lib/SDL_image.dll $DESTDIR
-cp /usr/local/i586-mingw32msvc/lib/jpeg.dll $DESTDIR
-cp /usr/local/i586-mingw32msvc/lib/zlib.dll $DESTDIR
-cp /usr/local/i586-mingw32msvc/lib/libpng1.dll $DESTDIR
+cp /usr/local/i586-mingw32msvc/lib/libSDL_image.dll $DESTDIR
+cp /usr/local/i586-mingw32msvc/lib/libjpeg.dll $DESTDIR
+cp /usr/local/i586-mingw32msvc/lib/libz.dll $DESTDIR
+cp /usr/local/i586-mingw32msvc/lib/libpng.dll $DESTDIR
 
 
 # permissions

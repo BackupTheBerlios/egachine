@@ -27,21 +27,9 @@
 #include <cassert>
 #include "ejsmodule.h" // EJS_ macros
 
-// hack needed for c callback
-AudioSDLMixer *thisptr=NULL;
-
-static void music_finished()
-{
-  assert(thisptr);
-  thisptr->musicFinished.emit();
-}
-
 AudioSDLMixer::AudioSDLMixer(AudioConfig &sc)
   : Audio(sc), audio_open(0), music(NULL), oldPlaying(false)
 {
-  assert(!thisptr);
-  thisptr=this;
-  
   if ( SDL_InitSubSystem(SDL_INIT_AUDIO) < 0 ) 
     throw std::runtime_error(std::string("Couldn't initialize SDL: ")+SDL_GetError());
     
@@ -68,8 +56,6 @@ AudioSDLMixer::AudioSDLMixer(AudioConfig &sc)
   /* Set the external music player, if any */
   // TODO: perhaps we should not use this for security reasons
   Mix_SetMusicCMD(getenv("MUSIC_CMD"));
-
-  Mix_HookMusicFinished(music_finished);
 }
 
 AudioSDLMixer::~AudioSDLMixer()
@@ -79,8 +65,6 @@ AudioSDLMixer::~AudioSDLMixer()
 
 void AudioSDLMixer::deinit()
 {
-  Mix_HookMusicFinished(NULL);
-  thisptr=NULL;
   stopMusic();
   for (unsigned i=0;i<samples.size();++i)
     unloadSample(i);
@@ -122,6 +106,12 @@ AudioSDLMixer::stopMusic()
     Mix_FreeMusic(music);
     music = NULL;
   }
+}
+
+bool
+AudioSDLMixer::playingMusic() 
+{
+  return Mix_PlayingMusic();
 }
   
 void 

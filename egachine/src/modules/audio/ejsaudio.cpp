@@ -33,7 +33,6 @@
     len=JS_GetStringLength(strtype);				\
   }while(0)
 
-
 extern "C" {
 
   static
@@ -65,6 +64,17 @@ extern "C" {
     // sound disabled?
     if (!Audio::audio) return JS_TRUE;
     Audio::audio->stopMusic();
+    return JS_TRUE;
+  }
+
+  static
+  JSBool
+  playingMusic(JSContext *, JSObject *, uintN, jsval *, jsval *rval)
+  {
+    *rval=JSVAL_FALSE;
+    // sound disabled?
+    if (!Audio::audio) return JS_TRUE;
+    *rval=Audio::audio->playingMusic() ? JSVAL_TRUE : JSVAL_FALSE;
     return JS_TRUE;
   }
   
@@ -107,6 +117,7 @@ extern "C" {
   static JSFunctionSpec static_methods[] = {
     FUNC(playMusic,3),
     FUNC(stopMusic,0),
+    FUNC(playingMusic,0),
     FUNC(loadSample,1),
     FUNC(playSample,2),
     EJS_END_FUNCTIONSPEC

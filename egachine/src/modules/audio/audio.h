@@ -26,7 +26,6 @@
 #define AUDIO_H
 
 #include "audioconfig.h"
-#include <sigc++/signal_system.h>
 
 //! audio interface class
 /*!
@@ -74,9 +73,8 @@ public:
   
   virtual void stopMusic()=0;
 
-  //! signal that is emitted if music is finished
-  SigC::Signal0<void> musicFinished;
-  
+  virtual bool playingMusic()=0;
+
   //! this is called every frame
   /*!
     This should allow an implementation without threads

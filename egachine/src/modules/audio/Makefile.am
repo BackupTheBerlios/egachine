@@ -1,4 +1,4 @@
-INCLUDES = @EJS_CFLAGS@ @SDL_CFLAGS@ @SIGC_CFLAGS@
+INCLUDES = @EJS_CFLAGS@ @SDL_CFLAGS@
 
 pkglib_LTLIBRARIES = ejsaudio.la
 
@@ -11,6 +11,6 @@ ejsaudio_la_SOURCES = \
 	ejsaudio.cpp
 
 # todo: why do we have to specify SDL_LIBS ? this should be tracked automatically by libtool!
-ejsaudio_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SDLMIXER_LIBS@ @SDL_LIBS@ @SIGC_LIBS@
+ejsaudio_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SDLMIXER_LIBS@ @SDL_LIBS@
 
 EXTRA_DIST = export.sym

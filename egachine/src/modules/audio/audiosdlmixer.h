@@ -53,6 +53,7 @@ public:
 
   void playMusic(const char *data, unsigned dsize, R volume=R(1), int repeat=0);
   void stopMusic();
+  bool playingMusic();
   
   void step(R dt);
   

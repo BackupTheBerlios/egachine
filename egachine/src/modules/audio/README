@@ -1,9 +1,47 @@
-Simple audio module providing:
+Description:
+Simple audio module allowing to play music and samples.
+
+
+Security:
+Depends on security of SDL_mixer and the libraries enabled and used by
+SDL_mixer.
+
+
+Module dependencies:
+None
+
+
+Library dependencies:
+
+The current implementation uses SDL_mixer. SDL_mixer always depends on
+libSDL.  Older versions  ship with a  modified libmikmod whereas newer
+versions   might  be linked   against an  external libmikmod.  Current
+EGachine distributions ship  with  a statically linked CVS  version of
+libSDL_mixer   because  this  module  depends  on   the Mix_LoadMUS_RW
+function only available in newer versions.  Midi,  ogg and mp3 support
+are disabled.
+
+Audio -> libSDL_mixer
+libSDL_mixer -> libSDL
+[libSDL_mixer -> libmikmod]
+[libSDL_mixer -> libogg]
+[libSDL_mixer -> libvorbis]
+[libSDL_mixer -> libvorbisfile]
+[libSDL_mixer -> libsmpeg]
+
+
+Functions:
 
 //! play music (String contains music)
 playMusic(String)
 
-//! load sa sample (String contains sample)
+//! stop playing music
+stopMusic()
+
+//! are we playing music?
+playingMusic()
+
+//! load a sample (String contains sample)
 /*!
 	\returns sample ID
 */

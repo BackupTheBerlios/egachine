@@ -213,4 +213,9 @@ do I need -fPIC, too ?
 do I need the declspec shit and have to use dlltool?
 for now I simply compile like I would do on a unix system and it seems to work
 --------------------------------------------------------------------------------
-
+serialize:
+why so complicated?
+toSource can handle graphs
+only because of the __proto__ field?
+i started a second try in src/examples/misc/ser.js
+--------------------------------------------------------------------------------

@@ -98,7 +98,7 @@ function connect(host,port) {
     Video.drawText("\n\n\npress escape to quit",true);
     Video.popMatrix();
     Video.swapBuffers();
-    Timer.uSleep(10000);
+    //    Timer.uSleep(10000);
     Input.poll();
   }
   Input.charMode(false);

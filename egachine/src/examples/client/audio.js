@@ -101,7 +101,7 @@ while (true) {
   Video.drawText(text,true);
   Video.popMatrix();
   Video.swapBuffers();
-  Timer.uSleep(10000);
+  //  Timer.uSleep(10000);
   Input.poll();
 }
 

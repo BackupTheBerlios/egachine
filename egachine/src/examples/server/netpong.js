@@ -158,7 +158,7 @@ while(true) {
   // send updates to clients
   Net.update(dt);
   // sleep a bit
-  if (dt<10000) Timer.uSleep(10000-dt);
+  if (dt<15000) Timer.uSleep(15000-dt);
 }
 
 function addResources(){

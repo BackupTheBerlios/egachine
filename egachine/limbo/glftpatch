@@ -1,0 +1,31 @@
+cvs diff: Diffing .
+cvs diff: Diffing build
+cvs diff: Diffing build/automake
+Index: build/automake/bootstrap
+===================================================================
+RCS file: /cvsroot/svgl/glft/build/automake/bootstrap,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 bootstrap
+--- build/automake/bootstrap	22 Jun 2004 12:09:07 -0000	1.1.1.1
++++ build/automake/bootstrap	1 Jan 2005 18:38:23 -0000
+@@ -80,7 +80,7 @@
+ set -x
+ 
+ rm -rf autom4te*.cache
+-aclocal -I /sw/share/aclocal || exit 1
++aclocal
+ autoheader || exit 2
+ libtoolize --automake || exit 3
+ automake --add-missing || exit 4
+cvs diff: Diffing build/automake/files
+cvs diff: Diffing build/automake/files/demos
+cvs diff: Diffing build/automake/files/glft
+cvs diff: Diffing build/automake/utils
+cvs diff: Diffing build/xcode
+cvs diff: Diffing build/xcode/English.lproj
+cvs diff: Diffing build/xcode/glft.xcode
+cvs diff: Diffing demos
+cvs diff: Diffing docs
+cvs diff: Diffing glft
+cvs diff: Diffing glft/sysdep
+cvs diff: Diffing glft/sysdep/macosx

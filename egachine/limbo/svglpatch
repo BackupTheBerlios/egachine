@@ -1,0 +1,381 @@
+cvs diff: Diffing .
+cvs diff: Diffing apps
+cvs diff: Diffing apps/glutSVGViewer
+cvs diff: Diffing apps/svg2raster
+cvs diff: Diffing build
+cvs diff: Diffing build/automake
+Index: build/automake/bootstrap
+===================================================================
+RCS file: /cvsroot/svgl/svgl/build/automake/bootstrap,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 bootstrap
+--- build/automake/bootstrap	22 Jun 2004 12:09:40 -0000	1.1.1.1
++++ build/automake/bootstrap	1 Jan 2005 18:37:12 -0000
+@@ -80,7 +80,7 @@
+ set -x
+ 
+ rm -rf autom4te*.cache
+-aclocal -I /sw/share/aclocal || exit 1
++aclocal
+ autoheader || exit 2
+ libtoolize --automake || exit 3
+ automake --add-missing || exit 4
+cvs diff: Diffing build/automake/files
+cvs diff: Diffing build/automake/files/apps
+cvs diff: Diffing build/automake/files/apps/glutSVGViewer
+Index: build/automake/files/apps/glutSVGViewer/Makefile.am
+===================================================================
+RCS file: /cvsroot/svgl/svgl/build/automake/files/apps/glutSVGViewer/Makefile.am,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 Makefile.am
+--- build/automake/files/apps/glutSVGViewer/Makefile.am	22 Jun 2004 12:09:40 -0000	1.1.1.1
++++ build/automake/files/apps/glutSVGViewer/Makefile.am	1 Jan 2005 18:37:12 -0000
+@@ -5,7 +5,7 @@
+ 
+ glutSVGViewer_SOURCES = glutSVGViewer.cpp GlutTimeManager.cpp
+ glutSVGViewer_LDADD = -lsvgl
+-glutSVGViewer_LDFLAGS = -framework GLUT -framework Foundation -L$(top_builddir)/src -lstdc++_ZeroLink
++glutSVGViewer_LDFLAGS = -lglut -L$(top_builddir)/src -lstdc++
+ 
+ INCLUDES = -I$(top_builddir)/src/
+ 
+cvs diff: Diffing build/automake/files/apps/svg2raster
+cvs diff: Diffing build/automake/files/demos
+cvs diff: Diffing build/automake/files/demos/tutorial
+Index: build/automake/files/demos/tutorial/Makefile.am
+===================================================================
+RCS file: /cvsroot/svgl/svgl/build/automake/files/demos/tutorial/Makefile.am,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 Makefile.am
+--- build/automake/files/demos/tutorial/Makefile.am	22 Jun 2004 12:09:40 -0000	1.1.1.1
++++ build/automake/files/demos/tutorial/Makefile.am	1 Jan 2005 18:37:12 -0000
+@@ -4,25 +4,25 @@
+ 
+ 00simplest_SOURCES = 00-simplest.cpp
+ 00simplest_LDADD =  -lsvgl
+-00simplest_LDFLAGS =  -framework GLUT -framework Foundation  -L$(top_builddir)/src
++00simplest_LDFLAGS =  -lglut -L$(top_builddir)/src
+ 01loading_SOURCES = 01-loading.cpp
+ 01loading_LDADD =  -lsvgl
+-01loading_LDFLAGS =  -framework GLUT -framework Foundation -L$(top_builddir)/src
++01loading_LDFLAGS =  -lglut -L$(top_builddir)/src
+ 02zoomAndPan_SOURCES = 02-zoomAndPan.cpp
+ 02zoomAndPan_LDADD =  -lsvgl
+-02zoomAndPan_LDFLAGS =  -framework GLUT -framework Foundation -L$(top_builddir)/src
++02zoomAndPan_LDFLAGS =  -lglut -L$(top_builddir)/src
+ 03picking_SOURCES = 03-picking.cpp
+ 03picking_LDADD =  -lsvgl -lsvgltest
+-03picking_LDFLAGS =  -framework GLUT -framework Foundation -L$(top_builddir)/tests -L$(top_builddir)/src
++03picking_LDFLAGS =  -lglut -L$(top_builddir)/tests -L$(top_builddir)/src
+ 04useExternal_SOURCES = 04-useExternal.cpp
+ 04useExternal_LDADD =  -lsvgl -lsvgltest
+-04useExternal_LDFLAGS =  -framework GLUT -framework Foundation -L$(top_builddir)/tests -L$(top_builddir)/src
++04useExternal_LDFLAGS =  -lglut -L$(top_builddir)/tests -L$(top_builddir)/src
+ 05text_SOURCES = 05-text.cpp
+ 05text_LDADD =  -lsvgl
+-05text_LDFLAGS =  -framework GLUT -framework Foundation -L$(top_builddir)/src
++05text_LDFLAGS =  -lglut -L$(top_builddir)/src
+ 06animation_SOURCES = 06-animation.cpp GlutTimeManager.cpp GlutTimeManager.hpp
+ 06animation_LDADD =  -lsvgl
+-06animation_LDFLAGS =  -framework GLUT -framework Foundation -L$(top_builddir)/src
++06animation_LDFLAGS =  -lglut -L$(top_builddir)/src
+ 
+ AM_CPPFLAGS = -I$(top_builddir)/src/ -L$(top_builddir)/src
+ 
+cvs diff: Diffing build/automake/files/scripts
+cvs diff: Diffing build/automake/files/src
+cvs diff: Diffing build/automake/files/src/agg
+cvs diff: Diffing build/automake/files/src/svgl
+cvs diff: Diffing build/automake/files/src/utils
+cvs diff: Diffing build/automake/files/src/w3c
+cvs diff: Diffing build/automake/files/src/w3c/css
+cvs diff: Diffing build/automake/files/src/w3c/dom
+cvs diff: Diffing build/automake/files/src/w3c/dom/ext
+cvs diff: Diffing build/automake/files/src/w3c/dom/impl
+cvs diff: Diffing build/automake/files/src/w3c/events
+cvs diff: Diffing build/automake/files/src/w3c/smil
+cvs diff: Diffing build/automake/files/src/w3c/svg
+cvs diff: Diffing build/automake/files/tests
+cvs diff: Diffing build/make
+cvs diff: Diffing build/make/tools
+cvs diff: Diffing build/visual
+cvs diff: Diffing build/xcode
+cvs diff: Diffing build/xcode/English.lproj
+cvs diff: Diffing build/xcode/svgl.xcode
+cvs diff: Diffing demos
+cvs diff: Diffing demos/tutorial
+Index: demos/tutorial/03-picking.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/demos/tutorial/03-picking.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 03-picking.cpp
+--- demos/tutorial/03-picking.cpp	22 Jun 2004 12:09:42 -0000	1.1.1.1
++++ demos/tutorial/03-picking.cpp	1 Jan 2005 18:37:12 -0000
+@@ -21,6 +21,7 @@
+ 
+ #include "../../tests/panAndZoom.hpp"
+ #include <iostream>
++#include <cassert>
+ 
+ svg::SVGDocument * thesvgdoc=0;
+ svgl::DisplayManager * displayManager=0;
+@@ -94,14 +95,14 @@
+   return doc;
+ }
+ 
+-
++/*
+ std::ostream&
+ operator<< (std::ostream& out, const svg::SVGMatrix& m)
+ {
+     out << "a:" << m.getA() << " b:" << m.getB() << " c:" << m.getC() << std::endl;
+     out << "d:" << m.getD() << " e:" << m.getE() << " f:" << m.getF() << std::endl;
+     return out;
+-}
++    }*/
+ 
+ void
+ setupTranslation(svg::SVGElement *e)
+@@ -262,7 +263,8 @@
+ void
+ display()
+ {
+-  glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
++//  glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
++  glClear(GL_COLOR_BUFFER_BIT);
+   displayManager->display(thesvgdoc);
+   glutSwapBuffers();
+ 
+@@ -287,7 +289,8 @@
+ main(int argc, char **argv)
+ {
+   glutInit(&argc, argv);
+-  glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE | GLUT_STENCIL);
++ // glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE);// | GLUT_STENCIL);
++  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);// | GLUT_STENCIL);
+   glutCreateWindow(argv[0]);
+   glutDisplayFunc(display);
+   glutReshapeFunc(reshape);
+Index: demos/tutorial/06-animation.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/demos/tutorial/06-animation.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 06-animation.cpp
+--- demos/tutorial/06-animation.cpp	22 Jun 2004 12:09:42 -0000	1.1.1.1
++++ demos/tutorial/06-animation.cpp	1 Jan 2005 18:37:12 -0000
+@@ -107,7 +107,7 @@
+   }
+ }
+ 
+-struct GlutRedisplayListener : svgl::Animation::RedisplayListener {
++struct GlutRedisplayListener : svgl::Animation::RedisplayEventListener {
+   virtual void doit(const svgl::Animation::RedisplayEvent&) { glutPostRedisplay(); }
+ };
+ 
+cvs diff: Diffing docs
+cvs diff: Diffing samples
+cvs diff: Diffing scripts
+cvs diff: Diffing share
+cvs diff: Diffing src
+cvs diff: Diffing src/agg
+cvs diff: Diffing src/svgl
+Index: src/svgl/GLInfo.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/svgl/GLInfo.cpp,v
+retrieving revision 1.3
+diff -u -r1.3 GLInfo.cpp
+--- src/svgl/GLInfo.cpp	7 Dec 2004 15:42:55 -0000	1.3
++++ src/svgl/GLInfo.cpp	1 Jan 2005 18:37:13 -0000
+@@ -315,7 +315,7 @@
+   void
+   GLInfo::setTessContext()
+   {
+-    typedef GLvoid (CALLBACK *fn_type)(...);
++    typedef GLvoid (CALLBACK *fn_type)();
+     gluTessCallback(gluTriangulator, GLU_TESS_BEGIN, reinterpret_cast<fn_type>(tessBegin) );
+     gluTessCallback(gluTriangulator, GLU_TESS_END, reinterpret_cast<fn_type>(tessEnd));
+     gluTessCallback(gluTriangulator, GLU_TESS_ERROR, reinterpret_cast<fn_type>(tessError));
+@@ -328,7 +328,7 @@
+   GLInfo::setTessPolygonContext()
+   {
+     setTessContext();
+-    typedef void (CALLBACK *fn_type)(...);
++    typedef void (CALLBACK *fn_type)();
+     gluTessCallback(gluTriangulator, GLU_TESS_VERTEX, reinterpret_cast<fn_type>(tessVertexPolygon));
+     gluTessCallback(gluTriangulator, GLU_TESS_COMBINE, reinterpret_cast<fn_type>(tessVertexCombine));				
+   }
+@@ -337,7 +337,7 @@
+   GLInfo::setTessPathContext()
+   {
+     setTessContext();
+-    typedef void (CALLBACK *fn_type)(...);
++    typedef void (CALLBACK *fn_type)();
+     // gluTessCallback(gluTriangulator, GLU_TESS_VERTEX, reinterpret_cast<fn_type>(tessVertexPath));
+     gluTessCallback(gluTriangulator, GLU_TESS_VERTEX, reinterpret_cast<fn_type>(glVertex2dv));
+     gluTessCallback(gluTriangulator, GLU_TESS_COMBINE, reinterpret_cast<fn_type>(tessCombine));
+Index: src/svgl/InitHelper.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/svgl/InitHelper.cpp,v
+retrieving revision 1.2
+diff -u -r1.2 InitHelper.cpp
+--- src/svgl/InitHelper.cpp	7 Dec 2004 15:42:55 -0000	1.2
++++ src/svgl/InitHelper.cpp	1 Jan 2005 18:37:13 -0000
+@@ -97,7 +97,7 @@
+     if (!fontdir) fontdir = "c:/Winnt/Fonts" ;
+     if (!cachedir) cachedir = "c:/Temp/glft-cache" ;
+ #else
+-    if (!fontdir) fontdir = "/usr/X11R6/lib/X11/fonts/drakfont/ttf" ;
++    if (!fontdir) fontdir = "/usr/share/fonts/truetype" ;
+     if (!cachedir) cachedir = "/tmp/glft-cache" ;
+ #endif
+     fontManager = new glft::FontManager(fontdir, cachedir, true, true) ;
+Index: src/svgl/TextureSnapshot.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/svgl/TextureSnapshot.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 TextureSnapshot.cpp
+--- src/svgl/TextureSnapshot.cpp	22 Jun 2004 12:09:52 -0000	1.1.1.1
++++ src/svgl/TextureSnapshot.cpp	1 Jan 2005 18:37:13 -0000
+@@ -15,7 +15,7 @@
+  */
+ 
+ #include <svgl/TextureSnapshot.hpp>
+-#include <svgl/debug.hpp>
++#include <svgl/debug.hpp>
+ #if defined (__APPLE__)
+ #include <OpenGL/glext.h>
+ #else
+@@ -27,7 +27,7 @@
+   TextureSnapshot::TextureSnapshot(int x, int y, int width, int height, GLenum format)
+     : _x(x), _y(y), _width(width), _height(height), _format(format)
+   {
+-#if 1
++#ifdef GL_TEXTURE_RECTANGLE_EXT
+ 	_target = GL_TEXTURE_RECTANGLE_EXT;
+ 	_texwidth=width;
+ 	_texheight=height;
+@@ -37,7 +37,7 @@
+     while(_texwidth<_width)
+       _texwidth<<=1;
+     while(_texheight<_height)
+-      _texheight<<=1
++      _texheight<<=1;
+ #endif
+ 		  
+     //std::cerr << DBGVAL(_texwidth) << DBGVAL(_texheight) << std::endl;
+Index: src/svgl/parseHelper.hpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/svgl/parseHelper.hpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 parseHelper.hpp
+--- src/svgl/parseHelper.hpp	22 Jun 2004 12:09:51 -0000	1.1.1.1
++++ src/svgl/parseHelper.hpp	1 Jan 2005 18:37:13 -0000
+@@ -224,6 +224,7 @@
+ void
+ read ( unicode::String* in, svg::SVGTransformList& l)
+ {
++  l.clear();
+   if(in)
+     svg::parseTransform(in, &l);
+ }
+cvs diff: Diffing src/utils
+cvs diff: Diffing src/w3c
+cvs diff: Diffing src/w3c/css
+cvs diff: Diffing src/w3c/dom
+Index: src/w3c/dom/ParentNode.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/w3c/dom/ParentNode.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 ParentNode.cpp
+--- src/w3c/dom/ParentNode.cpp	22 Jun 2004 12:09:53 -0000	1.1.1.1
++++ src/w3c/dom/ParentNode.cpp	1 Jan 2005 18:37:13 -0000
+@@ -1,5 +1,6 @@
+ #include <w3c/dom/ParentNode.hpp>
+ #include <w3c/dom/Document.hpp>
++#include <cassert>
+ 
+ namespace dom {
+ ParentNode::ParentNode(Document * o)
+@@ -167,6 +168,7 @@
+   } else {
+     ChildNode * prev = oldInternal->previousSibling;
+     ChildNode * next = oldInternal->nextSibling;
++    assert(prev && next);
+     prev->nextSibling = next;
+     if (next == null) {
+       // removing last child
+cvs diff: Diffing src/w3c/dom/ext
+cvs diff: Diffing src/w3c/dom/impl
+cvs diff: Diffing src/w3c/events
+cvs diff: Diffing src/w3c/smil
+cvs diff: Diffing src/w3c/svg
+Index: src/w3c/svg/SVGAnimateTransformElement.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/w3c/svg/SVGAnimateTransformElement.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 SVGAnimateTransformElement.cpp
+--- src/w3c/svg/SVGAnimateTransformElement.cpp	22 Jun 2004 12:09:54 -0000	1.1.1.1
++++ src/w3c/svg/SVGAnimateTransformElement.cpp	1 Jan 2005 18:37:13 -0000
+@@ -380,13 +380,13 @@
+       else {
+       }
+ #endif
+-#if 0
++      //#if 0
+       STDDBG;
+       for(unsigned int j=0; j<_keyFrames.size(); ++j) {
+ 	std::cerr << "( " << _keyFrames[j].value << ", " << _keyFrames[j].time << ")";
+       }
+       std::cerr << std::endl;
+-#endif
++      //#endif
+ 
+     SVGAnimationElement::animationTraverse(animinfo);
+ 
+Index: src/w3c/svg/SVGDocument.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/w3c/svg/SVGDocument.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 SVGDocument.cpp
+--- src/w3c/svg/SVGDocument.cpp	22 Jun 2004 12:09:54 -0000	1.1.1.1
++++ src/w3c/svg/SVGDocument.cpp	1 Jan 2005 18:37:13 -0000
+@@ -102,7 +102,7 @@
+     SVGElement * res=0;
+ #if 1
+     #define STRDEF(name, value) \
+-    if(tagName==SVG##name##Element_element_string) { \
++    if(*tagName==*SVG##name##Element_element_string) { \
+       res = new SVG##name##Element(this); \
+     } \
+     else
+Index: src/w3c/svg/SVGLinearGradientElement.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/w3c/svg/SVGLinearGradientElement.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 SVGLinearGradientElement.cpp
+--- src/w3c/svg/SVGLinearGradientElement.cpp	22 Jun 2004 12:09:54 -0000	1.1.1.1
++++ src/w3c/svg/SVGLinearGradientElement.cpp	1 Jan 2005 18:37:14 -0000
+@@ -34,6 +34,7 @@
+ 
+ #include <svgl/debug.hpp>
+ #include <svgl/getattr.hpp>
++#include <cassert>
+ 
+ #define DBGCO(n) std::cerr << "x_"#n"=" << x_##n << " y_"#n"=" << y_##n << " " << std::endl;
+ // #define DBGVERBOSE
+Index: src/w3c/svg/SVGRadialGradientElement.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/w3c/svg/SVGRadialGradientElement.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 SVGRadialGradientElement.cpp
+--- src/w3c/svg/SVGRadialGradientElement.cpp	22 Jun 2004 12:09:55 -0000	1.1.1.1
++++ src/w3c/svg/SVGRadialGradientElement.cpp	1 Jan 2005 18:37:14 -0000
+@@ -34,6 +34,7 @@
+ 
+ #include <svgl/debug.hpp>
+ #include <svgl/getattr.hpp>
++#include <cassert>
+ 
+ #define DBGCO(n) std::cerr << "x_"#n"=" << x_##n << " y_"#n"=" << y_##n << " " << __FILE__;
+ 
+cvs diff: Diffing tests

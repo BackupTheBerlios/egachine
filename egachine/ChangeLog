@@ -1,5 +1,8 @@
 2004-04-19  Jens Thiele  <karme@berlios.de>
 
+	* client does not read scripts from stdin anymore since this could be
+	quite annoying in fullscreen mode
+
 	* release 0.0.6
 
 	* code clean up

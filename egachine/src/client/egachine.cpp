@@ -151,6 +151,11 @@ extern "C" {
 int cppmain(int argc,char *argv[])
 #endif
 {
+  if (argc<2) {
+    std::cerr << "Usage: egachine FILE [OPTION]...\n";
+    return EXIT_FAILURE;
+  }
+  
   if (!ECMAScript::init()) {
     JGACHINE_ERROR("could not inititialize interpreter");
     ECMAScript::deinit();
@@ -202,17 +207,12 @@ int cppmain(int argc,char *argv[])
   ECMAScript::setVersion("EGachine.version");
 
   int ret=EXIT_SUCCESS;
-  
-  if (argc<2) {
-    if (!ECMAScript::eval(std::cin,"stdin")) ret=EXIT_FAILURE;
+  std::ifstream in(argv[1]);
+  if (in.good()) {
+    if (!ECMAScript::eval(in,argv[1])) ret=EXIT_FAILURE;
   }else{
-    std::ifstream in(argv[1]);
-    if (in.good()) {
-      if (!ECMAScript::eval(in,argv[1])) ret=EXIT_FAILURE;
-    }else{
-      ret=EXIT_FAILURE;
-      JGACHINE_ERROR("Could not open file: \""<<argv[1]<<"\"");
-    }
+    ret=EXIT_FAILURE;
+    JGACHINE_ERROR("Could not open file: \""<<argv[1]<<"\"");
   }
 
   deinit();

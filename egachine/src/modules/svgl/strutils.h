@@ -31,7 +31,7 @@ JSBool
 DomStringToJsval(JSContext* cx, dom::String* strIn, jsval* strOut)
 {
   if (!strIn) {
-    *strOut=OBJECT_TO_JSVAL(NULL);
+    *strOut=JSVAL_NULL;
     return JS_TRUE;
   }
   JSString *s;
@@ -39,7 +39,16 @@ DomStringToJsval(JSContext* cx, dom::String* strIn, jsval* strOut)
     if (!(s=JS_NewUCStringCopyN(cx, strIn->as_utf16(), strIn->getLength()))) return JS_FALSE;
     *strOut=STRING_TO_JSVAL(s);
   }else if (strIn->getType()==dom::String::string_lat1) {
-    if (!(s=JS_NewStringCopyN(cx, strIn->as_lat1(), strIn->getLength()))) return JS_FALSE;
+    // hmm probably bug in svgl:
+    // as_lat1() returned 0 and getLength()>0
+    const char *c=strIn->as_lat1();
+    unsigned l=strIn->getLength();
+    if (!c) {
+      if (l>0) EJS_WARN("probably bug in svgls string handling?");
+      *strOut=OBJECT_TO_JSVAL(NULL);
+      return JS_TRUE;
+    }
+    if (!(s=JS_NewStringCopyN(cx, c, l))) return JS_FALSE;
     *strOut=STRING_TO_JSVAL(s);
   }else
     // todo

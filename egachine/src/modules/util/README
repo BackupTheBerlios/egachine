@@ -1,7 +1,8 @@
 util module:
 
 contains various utility functions which don't fit anywhere else 
-but don't introduce external library dependencies.
+but don't introduce external library dependencies nor do they
+depend upon other modules.
 
 The util.ieval and util.isCompilableUnit functions allow to write
 a interactive shell. The simplest interactive shell:

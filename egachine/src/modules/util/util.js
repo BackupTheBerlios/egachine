@@ -5,6 +5,7 @@ util={};
   if (!fname) throw new Error("Could not find module: 'ejsutil.la'");
   ejs.ModuleLoader.loadNative.call(util,"ejsutil",fname.substring(0,fname.lastIndexOf(".")));
  })();
+
 util.ieval=function(istream,ostream,estream){
   function readline(){
     var res="";

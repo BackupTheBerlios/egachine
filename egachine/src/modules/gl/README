@@ -1,3 +1,20 @@
+gl module:
+OpenGL wrapper module. Tries to be close to the C API.
+
+Differences from the C API:
+- all functions are in the gl object:
+  Example:
+  instead of glBegin write gl.Begin
+
+- function results are always return values
+  Example:
+
+  C API:
+  void glGetIntegerv( GLenum pname, GLint *params )
+
+  JavaScript:
+  array=gl.GetIntegerv( pname )
+
 Javascript OpenGL language binding
 (quite a hack - needs a major cleanup)
 
@@ -47,4 +64,5 @@ uses doxygen to parse source code (same does Qt#)
 1) is clearly the way to go (perhaps the xml file needs some modification)
 especially difficult is glGet (where I used the man page to extract the needed
 information)
+some stuff might be difficult to express in xml/require a programing language
 --------------------------------------------------------------------------------

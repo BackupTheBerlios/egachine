@@ -27,6 +27,7 @@ ejs.ModuleLoader.load("Base64");
 ejs.ModuleLoader.load("Zlib");
 ejs.ModuleLoader.load("Timer");
 ejs.ModuleLoader.load("Stream");
+ejs.ModuleLoader.load("Util");
 
 // this script is evaluated from all programs in the egachine distribution
 

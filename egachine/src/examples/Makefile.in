@@ -37,7 +37,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = src/examples
-DIST_COMMON = $(nobase_dist_example_DATA) $(srcdir)/Makefile.am \
+DIST_COMMON = README $(nobase_dist_example_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -209,13 +209,13 @@ examples = \
 	client/opengl/nehe-l05.js \
 	client/opengl/nehe-l08.js \
 	client/pong.js \
-	client/pong3.js \
 	client/horror.js \
 	client/audio.js \
 	server/netpong.js \
 	server/netorigpong.js \
 	svg/svgviewer.js \
-	svg/svgtetris.svg
+	svg/svgtetris.svg \
+	ejs/shell.js
 
 nobase_dist_example_DATA = $(examples)
 all: all-am
@@ -287,7 +287,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/client $(distdir)/client/opengl $(distdir)/server $(distdir)/svg
+	$(mkdir_p) $(distdir)/client $(distdir)/client/opengl $(distdir)/ejs $(distdir)/server $(distdir)/svg
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

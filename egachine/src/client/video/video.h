@@ -47,21 +47,7 @@ namespace Video
   void drawTexture(int tid,float w=1, float h=1);
   void drawText(const std::string &text, bool hcentered, bool vcentered);
 
-  //! get screen (window) coordinates for this point
-  Coord2i project(float x, float y);
-  
   void deinit();
-
-  struct Coord2i
-  {
-    Coord2i()
-    {}
-    Coord2i(int _x,int _y)
-      : x(_x), y(_y)
-    {}
-    int x,y;
-  };
-
 };
 
 #endif

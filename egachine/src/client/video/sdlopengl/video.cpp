@@ -392,22 +392,3 @@ Video::iconify()
 {
   SDL_WM_IconifyWindow();
 }
-
-Video::Coord2i
-Video::project(float x, float y)
-{
-  GLint view[4];
-  GLdouble model[16], proj[16], win[3];
-  glGetIntegerv (GL_VIEWPORT, view);
-  glGetDoublev (GL_MODELVIEW_MATRIX, model);
-  glGetDoublev (GL_PROJECTION_MATRIX, proj);
-  if (!gluProject(x,y,0,
-		  model,proj,view,
-		  &win[0],&win[1],&win[2])){
-    // todo BUG: we are in trouble
-    GL_ERRORS();
-    JGACHINE_WARN("gluProject failed");
-    win[0]=win[1]=0;
-  }
-  return Coord2i(win[0],win[1]);
-}

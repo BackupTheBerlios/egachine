@@ -78,12 +78,6 @@ extern "C" {
     JS_RemoveRoot(cx,strtype);
     return JS_TRUE;
   }
-
-  ECMA_BEGIN_FUNC(project){
-    ECMA_CHECK_NUM_ARGS(2);
-    return JS_TRUE;
-
-  }
 }
 
 #undef JSFUNC
@@ -95,7 +89,6 @@ static JSFunctionSpec static_methods[] = {
   ECMA_FUNCSPEC(createTexture,1),
   ECMA_FUNCSPEC(drawTexture,1),
   ECMA_FUNCSPEC(drawText,3),
-  ECMA_FUNCSPEC(project,2),
   ECMA_END_FUNCSPECS
 };
 

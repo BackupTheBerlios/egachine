@@ -235,6 +235,7 @@ perhaps i should compile then dynamically anyway and place them in
 this would require LD_LIBRARY_PATH and a shell wrapper around the programs
 --------------------------------------------------------------------------------
 write DOCU!
+perhaps use jsdoc
 --------------------------------------------------------------------------------
 allow #!/usr/.../egachine at beginning of scripts
 to allow "normal" execution on unix systems

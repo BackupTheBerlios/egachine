@@ -208,7 +208,7 @@
       throw Error("Could not open file: "+argv[1]);
     
     // todo: hmm global
-    document=new svgl.SVGDocument(stream.read(stream.inAvailable()));
+    document=new svgl.SVGDocument(stream.readAll());
     document.documentElement=document.getDocumentElement();
     svgl.selectDocument(document);
 

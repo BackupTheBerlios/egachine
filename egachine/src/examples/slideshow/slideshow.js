@@ -59,14 +59,14 @@ function ifstream(fname) {
   var stream,fullname;
   if ((fullname=findExample(fname)) 
       && (stream=File.read(fullname)) 
-      && (stream.inAvailable()>0))
+      && (stream.inAvailable()>=0))
     return stream;
   throw Error("Could not open file: "+fname);
 };
 
 function loadFile(fname) {
   var stream=ifstream(fname);
-  return stream.read(stream.inAvailable());
+  return stream.readAll();
 };
 
 function readline(istream){

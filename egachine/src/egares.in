@@ -30,7 +30,7 @@ if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
   stderr.write("Usage: egares [-h|--help|RESNAME] [FILE|-] [OPTION]...\n");
 }else{
   var resname=argv[1];
-  var resource="";
+  var resource;
   var stream;
   if ((argv.length<3)||(argv[2]=="-"))
     stream=stdin;
@@ -38,10 +38,7 @@ if ((argv.length<2)||(argv[1]=="-h")||(argv[1]=="--help")){
     stream=File.read(argv[2]);
 
   // copy resource from stream
-  var s;
-  while ((s=stream.read(1024))!="") {
-    resource+=s;
-  }
+  resource=stream.readAll();
 
   var res=new EGachine.Resource(resname,resource);
   var towrite="EGachine.addResource(\n";

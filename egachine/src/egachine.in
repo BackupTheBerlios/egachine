@@ -83,7 +83,7 @@ EGachine.connectDialog=function(host,port){
     if (useSVG) {
       //      var svgstream=File.read("/home/jens/develop/Diplomarbeit/egachine/limbo/egachine.svg");
       //      Stream.stderr.write("avail: "+svgstream.inAvailable());
-      //      svgstream.read(svgstream.inAvailable()));
+      //      svgstream.readAll();
       var svgdoc=new svgl.SVGDocument(EGachine.getResource("egachine.svg").decode());
       var textelem=svgdoc.getElementById("textinput").childNodes.item(0);
       /*
@@ -278,10 +278,9 @@ Audio.playSample=function(resname,repeat) {
   };
 
   var refreshRate=detectRefreshRate();
-  if (refreshRate>300)
+  Stream.stderr.write("Detected display refresh rate: "+refreshRate+"Hz\n");
+  if (refreshRate>120)
     Stream.stderr.write("Warning: it seems your graphics card/driver/os/hardware combination currently doesn't synchronize OpenGL buffer swaps to the screen refresh rate. You should fix this. Perhaps you have to change driver settings or update your driver. (nvidia linux: set the __GL_SYNC_TO_VBLANK environment variable)\n");
-  else
-    Stream.stderr.write("Detected display refresh rate: "+refreshRate+"\n");
 
   if ((argv.length<2)||(argv[1]=="-c")) {
     if (useSVG) {

@@ -4,11 +4,16 @@
   if (!fname) throw new Error("Could not find module: 'ejsstream.la'");
   ejs.ModuleLoader.loadNative.call(Stream,"ejsstream",fname.substring(0,fname.lastIndexOf(".")));
 
-  Stream.StringStream=function()
-    {
-      this.buffer="";
-      this.pos=0;
-    };
+  Stream.Stream.prototype.readAll=function(){
+    var r="",s;
+    while ((s=this.read(1024))!="") r+=s;
+    return r;
+  };
+
+  Stream.StringStream=function(){
+    this.buffer="";
+    this.pos=0;
+  };
 
   Stream.StringStream.prototype.write=function(x){
     this.buffer+=x;

@@ -332,14 +332,13 @@ Module("jsolait", "0.1.0", function(mod){
         @return                 The content of the file.
     */
     var getFile=function(url, headers) { 
+        var ret,got;
         //if callback is defined then the operation is done async
         headers = (headers != null) ? headers : [];
         //setup the request
 	var fname=ejs.ModuleLoader.findFile(ejs.config.modules.scriptPath,url);
 	if (fname) {
-	  var stream=File.read(fname);
-	  if (stream.inAvailable()<0) throw Error("hmm");
-	  return stream.read(stream.inAvailable());
+	  return File.read(fname).readAll();
 	}else{
 	  try{
             var xmlhttp= getHTTP();

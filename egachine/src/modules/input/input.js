@@ -329,7 +329,7 @@
     this.buttons=buttons || 0;
   };
 
-  Input.DevState.prototype.xxx=function() {
+  Input.DevState.prototype.clone=function() {
     return new Input.DevState(this.dev,this.x,this.y,this.buttons);
   };
 
@@ -374,7 +374,7 @@
       assert(function(){return ((dev>=0)&&(dev<Input.devState.length));});
   
       m_state=Input.devState[dev];
-      old=m_state.xxx();
+      old=m_state.clone();
       pressed=e.state;
 
       k=e.sym;
@@ -404,7 +404,7 @@
 	else m_state.buttons&=~2;
       }
       if ((m_state.x!=old.x)||(m_state.y!=old.y)||(m_state.buttons!=old.buttons)) {
-	Input.handleInput(m_state);
+	Input.handleInput(m_state.clone());
 	return true;
       }
       return false;

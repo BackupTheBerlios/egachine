@@ -151,7 +151,7 @@ Man.prototype.step=function(dt)
 
 
 viewport=Video.getViewport();
-gl.Scalef(viewport.[2],viewport[3],1);
+gl.Scalef(viewport[3],viewport[3],1);
 gl.Enable(GL_LINE_SMOOTH);
 
 var back = gl.GenLists(1);
@@ -203,5 +203,5 @@ while (true) {
   gl.PopMatrix();
   man.step(dt);
   Video.swapBuffers();
-  Timer.uSleep(10000);
+  //  Timer.uSleep(10000);
 }

@@ -129,5 +129,5 @@ but in the source tarball.
 - javascript is easier for beginners than Java
 - no need to compile the code
 - Java serialisation was too slow
-- gcc / gcj / libgcj Java security is not yet ready
+- gcc / gcj / libgcj Java security is (was?) not yet ready
 

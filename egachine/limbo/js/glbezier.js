@@ -10,7 +10,6 @@ var points=[0, 0,       0,
 	    sx,sy*9/10, 0,
 	    0, sy*9/10, 0,
 	    sx/2,0,       0];
-println("map");
 gl.Map1f(GL_MAP1_VERTEX_3,0,1,points);
 if ((error=gl.GetError()) != GL_NO_ERROR) println("Error: "+glu.ErrorString(error));
 gl.Enable(GL_MAP1_VERTEX_3);

@@ -13,8 +13,7 @@
 
 	* updated examples
 
-	* added presentation/slide show using about egachine using
-	ejs+modules itself
+	* added presentation/slide show about egachine using egachine
 
 	* egachine provides now a main loop which can be used optionally
 	by registering a function via EGachine.step to be called regulary

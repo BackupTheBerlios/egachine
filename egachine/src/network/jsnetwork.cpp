@@ -6,6 +6,13 @@
 // connection to server
 static NetStreamBuf* outgoing=0;
 static int connectAttempts=0;
+static JSClass stream_class = {
+  "Stream",JSCLASS_HAS_PRIVATE,
+  JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
+  JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
+  ECMA_END_CLASS_SPEC
+};
+
 
 extern "C" {
   ECMA_BEGIN_FUNC(jsnet_connect) 
@@ -33,8 +40,9 @@ extern "C" {
     return JS_TRUE;
   }
 
-  // todo: dangerous cast - this could compromise security 
-#define GET_STREAM_OBJ NetStreamBuf* stream=(NetStreamBuf *)JS_GetPrivate(cx,obj);\
+  // todo: is this class check good enough to make this dangerous cast safe?
+#define GET_STREAM_OBJ NetStreamBuf* stream=NULL; \
+    if (JS_GET_CLASS(cx,obj) == &stream_class) stream=(NetStreamBuf *)JS_GetPrivate(cx,obj); \
 if (!stream) ECMA_THROW_ERROR("Function must be called on stream object")
 
   ECMA_BEGIN_METHOD(stream_send) 
@@ -114,13 +122,6 @@ static JSFunctionSpec net_static_methods[] = {
 };
 
 #undef JSFUNC
-
-static JSClass stream_class = {
-  "Stream",JSCLASS_HAS_PRIVATE,
-  JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,JS_PropertyStub,
-  JS_EnumerateStub,JS_ResolveStub,JS_ConvertStub,JS_FinalizeStub,
-  ECMA_END_CLASS_SPEC
-};
 
 JSBool
 JSNetwork::newStreamObject(NetStreamBuf* s, jsval* rval)

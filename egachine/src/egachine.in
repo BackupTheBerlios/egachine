@@ -277,10 +277,30 @@ Audio.playSample=function(resname,repeat) {
     return avghz;
   };
 
-  var refreshRate=detectRefreshRate();
-  Stream.stderr.write("Detected display refresh rate: "+refreshRate+"Hz\n");
-  if (refreshRate>120)
-    Stream.stderr.write("Warning: it seems your graphics card/driver/os/hardware combination currently doesn't synchronize OpenGL buffer swaps to the screen refresh rate. You should fix this. Perhaps you have to change driver settings or update your driver. (nvidia linux: set the __GL_SYNC_TO_VBLANK environment variable)\n");
+  function info(x){
+    Stream.stderr.write("INFO: "+x+"\n");
+  }
+
+  function warning(x){
+    Stream.stderr.write("WARNING: "+x+"\n");
+  }
+
+  (function(){
+    var error;
+
+    info("GL Vendor: "+gl.GetString(GL_VENDOR));
+    info("GL Renderer: "+gl.GetString(GL_RENDERER));
+    info("GL Version: "+gl.GetString(GL_VERSION));
+    info("GL Extensions: "+gl.GetString(GL_EXTENSIONS));
+
+    if ( (error=gl.GetError()) != GL_NO_ERROR)
+      throw new Error("OpenGL error: "+error);
+
+    var refreshRate=detectRefreshRate();
+    info("Detected page flip rate: "+refreshRate+"Hz");
+    if (refreshRate>120)
+      warning("it seems your graphics card/driver/os/hardware combination currently doesn't synchronize OpenGL buffer swaps to the screen refresh rate. You should fix this. Perhaps you have to change driver settings or update your driver. (nvidia linux: set the __GL_SYNC_TO_VBLANK environment variable)");
+  })();
 
   if ((argv.length<2)||(argv[1]=="-c")) {
     if (useSVG) {
@@ -294,7 +314,10 @@ Audio.playSample=function(resname,repeat) {
     EGachine.connectDialog(argv[2],argv[3]);
     ejs.exit(true);
   }else if ((argv[1]!="-h")&&(argv[1]!="--help")) {
-    ejs.loadUntrusted(argv[1]);
+    if (argv[1]=="-r")
+      ejs.loadUntrusted(argv[2]);
+    else
+      ejs.load(argv[1]);
     if (EGachine._step) {
       // application without its own main loop
       // => we provide the main loop
@@ -324,7 +347,7 @@ Audio.playSample=function(resname,repeat) {
     };
     ejs.exit(true);
   }else{
-    Stream.stderr.write("Usage: egachine [-h|--help|FILE|[-c host port]] [OPTION]...\n");
+    Stream.stderr.write("Usage: egachine [-h|--help|[[-r] FILE]|[-c host port]] [OPTION]...\n");
     ejs.exit(true);
   };
 

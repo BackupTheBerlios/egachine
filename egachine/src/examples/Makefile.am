@@ -9,13 +9,13 @@ examples = \
 	client/pong.js \
 	client/horror.js \
 	client/audio.js \
+	client/slideshow-pages.txt \
+	client/slideshow-back.svg \
+	client/slideshow.js \
 	server/netpong.js \
 	server/netorigpong.js \
 	svg/svgviewer.js \
 	svg/svgtetris.svg \
-	ejs/shell.js \
-	slideshow/pages.txt \
-	slideshow/back.svg \
-	slideshow/slideshow.js
+	ejs/shell.js
 
 nobase_dist_example_DATA = $(examples)

@@ -5,6 +5,6 @@ Directory layout:
 client/			examples to be run by egachine
 client/opengl/		examples using gl module directly
 server/			examples to be run by egaserver
-svg/			examples using svgl module
+svg/			examples using svgl module directly
 ejs/			examples to be run by ejs
-slideshow/		slideshow about egachine (using egachine itself)
+

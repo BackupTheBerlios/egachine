@@ -209,14 +209,14 @@ examples = \
 	client/pong.js \
 	client/horror.js \
 	client/audio.js \
+	client/slideshow-pages.txt \
+	client/slideshow-back.svg \
+	client/slideshow.js \
 	server/netpong.js \
 	server/netorigpong.js \
 	svg/svgviewer.js \
 	svg/svgtetris.svg \
-	ejs/shell.js \
-	slideshow/pages.txt \
-	slideshow/back.svg \
-	slideshow/slideshow.js
+	ejs/shell.js
 
 nobase_dist_example_DATA = $(examples)
 all: all-am
@@ -288,7 +288,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/client $(distdir)/client/opengl $(distdir)/ejs $(distdir)/server $(distdir)/slideshow $(distdir)/svg
+	$(mkdir_p) $(distdir)/client $(distdir)/client/opengl $(distdir)/ejs $(distdir)/server $(distdir)/svg
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

@@ -109,7 +109,6 @@ extern "C" {
   JSBool
   stream_sync(JSContext* cx, JSObject* obj, uintN argc, jsval*, jsval*)
   {
-    EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
     GET_STREAM_OBJ;
     stream->pubsync();
     return JS_TRUE;
@@ -119,9 +118,17 @@ extern "C" {
   JSBool
   stream_inAvailable(JSContext* cx, JSObject* obj, uintN argc, jsval*, jsval* rval)
   {
-    EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
     GET_STREAM_OBJ;
     return JS_NewNumberValue(cx,stream->in_avail(),rval);
+  }
+
+  static
+  JSBool
+  stream_close(JSContext* cx, JSObject* obj, uintN argc, jsval*, jsval* rval)
+  {
+    GET_STREAM_OBJ;
+    delete stream;
+    return JS_SetPrivate(cx,obj,NULL);
   }
 
 #undef GET_STREAM_OBJ
@@ -135,6 +142,7 @@ extern "C" {
     FUNC(read,1),
     FUNC(sync,0),
     FUNC(inAvailable,0),
+    FUNC(close,0),
     EJS_END_FUNCTIONSPEC
   };
 

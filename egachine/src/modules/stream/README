@@ -12,6 +12,7 @@ Number write(String)
 String readAll()
 Number inAvailable()
 sync()
+close()
 
 (To construct other Stream objects see the network and file modules)
 

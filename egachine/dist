@@ -1,0 +1,34 @@
+#!/bin/bash
+set -e
+
+# similar to make dist
+
+if test ! -f $(pwd)/src/egachine.js; then
+	echo "You must type ./dist in the top level directory"
+	exit 1
+fi
+
+. common.sh
+
+./clean
+
+EGANAME="egachine-$PACKAGE_MAJOR_VERSION.$PACKAGE_MINOR_VERSION.$PACKAGE_MICRO_VERSION"
+
+TMPFILE=$(tempfile)
+tar cf $TMPFILE .
+mkdir _dist
+cd _dist
+mkdir $EGANAME
+cd $EGANAME
+tar xf $TMPFILE
+find -name "*~" -exec rm -v \{\} \;
+rm -vf egachine-*.tar.gz
+find -name CVS -exec rm -rfv \{\} \; 2>/dev/null || true
+rm -rf limbo
+
+cd $TOPSRCDIR/_dist
+tar czf ../$EGANAME.tar.gz $EGANAME
+
+cd $TOPSRCDIR
+rm -rf _dist
+

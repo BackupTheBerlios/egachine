@@ -137,7 +137,6 @@
   //! EGachine object
   EGachine.r={};
   EGachine.addResource=function(res){
-    res.constructor=Resource.prototype.constructor;
     res.__proto__=Resource.prototype;
     EGachine.r[res.name]=res;
   };

@@ -704,4 +704,12 @@ M-1 M-|
 setNodeValue() is not in es dom bindings
 it is the nodeValue property (writable)
 --------------------------------------------------------------------------------
-
+GL_POLYGON_SMOOTH needs alpha buffer and polygons must be sorted
+with my graphics card it is very slow - and quads look ugly (you see the
+triangles) - it seems it isn't worth it - either use fsaa or when using
+textured quads use transparency (at the borders)
+--------------------------------------------------------------------------------
+egachine should not mess with audio module api
+=> moved resource handling into audio module and added config option
+for function mapping resource name to resource
+--------------------------------------------------------------------------------

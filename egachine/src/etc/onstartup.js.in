@@ -3,9 +3,10 @@ ejs.config={
     scriptPath:[@scriptPath@],
     libraryPath:[@libraryPath@]
   },
+  // module configuration options should be moved out of onstartup.js
   Video:{
     fullscreen:true
-    //    ,width:640,height:480,
+    //    ,width:320,height:240,
   },
   Audio:{
     sdriver:"sdlmixer",

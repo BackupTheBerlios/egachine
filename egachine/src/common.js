@@ -23,21 +23,21 @@
  */
 
 /*!
-   \file common.js
-   \brief script library
-   \author Jens Thiele
+  \file common.js
+  \brief script library
+  \author Jens Thiele
 */
 
 // this script is evaluated from all programs in the egachine distribution
 
 // global functions - todo: there perhaps should be none
 
-function println(s){print(s+"\n");}
+function println(s){print(s+"\n");};
 
 // is the passed object an empty prototype? (empty object)
 function isEmptyProto(p) {
   return (p=={}.__proto__);
-}
+};
 
 // is this property from a prototype?
 function isFromProto(o,prop) {
@@ -47,7 +47,7 @@ function isFromProto(o,prop) {
     p=p.__proto__;
   }
   return false;
-}
+};
 
 //! call function for all properties of an object (and the object itself)
 /*!
@@ -81,18 +81,18 @@ function forall(obj,func,idfunc){
     return;
   };
   _forall(obj);
-}
+};
 
 function delp(x){
   forall(x,(function(x,depthFirst,debug){
-    if (typeof x != 'object') return;
-    if (!depthFirst) {
-      if (x._p) x.__proto__=x._p;
-    }else{
-      if (x._p) delete x._p;
-    }
-  }));
-}
+	      if (typeof x != 'object') return;
+	      if (!depthFirst) {
+		if (x._p) x.__proto__=x._p;
+	      }else{
+		if (x._p) delete x._p;
+	      }
+	    }));
+};
 
 //! serialize object
 /*!
@@ -101,17 +101,17 @@ function delp(x){
 */
 function serialize(x) {
   forall(x,(function(x,depthFirst){
-    if (typeof x != 'object') return;
-    if ((depthFirst)||(isEmptyProto(x.__proto__))) return;
-    if ((x._p)&&(!isFromProto(x,"_p")))
-      throw new Error("TODO: property _p not allowed");
-    x._p=x.__proto__;
-  }));
+	      if (typeof x != 'object') return;
+	      if ((depthFirst)||(isEmptyProto(x.__proto__))) return;
+	      if ((x._p)&&(!isFromProto(x,"_p")))
+		throw new Error("TODO: property _p not allowed");
+	      x._p=x.__proto__;
+	    }));
   var r=x.toSource();
   delp(x);
   //  print("ser: "+r);
   return r;
-}
+};
 
 //! deserialize object
 /*
@@ -121,14 +121,14 @@ function deserialize(str) {
   var x=eval(str);
   delp(x);
   return x;
-}
+};
 
 // misc extensions
 Number.prototype.convertTo=function(base,padTo){
-    var s=this.toString(base);
-    if (!padTo || s.length>=padTo) throw new Error("Does not fit");
-    return Math.pow(10,padTo-s.length).toString().slice(1)+s;
-}
+  var s=this.toString(base);
+  if (!padTo || s.length>=padTo) throw new Error("Does not fit");
+  return Math.pow(10,padTo-s.length).toString().slice(1)+s;
+};
 
 //! Resource object
 function Resource(resname,resource) {
@@ -144,13 +144,12 @@ function Resource(resname,resource) {
   }else{
     this.data=uncomp;
   }
-}
+};
 
 Resource.prototype.decode=function(){
-  if (this.z)
-    return Zlib.decompress(Base64.decode(this.data),this.size);
+  if (this.z) return Zlib.decompress(Base64.decode(this.data),this.size);
   return Base64.decode(this.data);
-}
+};
 
 Resource.prototype.toString=function(){
   //! wrap a string to fit into 80 columns
@@ -166,7 +165,7 @@ Resource.prototype.toString=function(){
     return result;
   };
   return "({name:\""+this.name+"\", size:"+this.size+","+(this.z ? " z:true, ":" ")+"data:\"\\\n"+wrapString(this.data)+"\\\n\"})";
-}
+};
 
 //! EGachine object
 EGachine={};
@@ -175,11 +174,11 @@ EGachine.addResource=function(name,res){
   var resource=name;
   resource.__proto__=Resource.prototype;
   EGachine.r[resource.name]=resource;
-}
+};
 EGachine.getResource=function(name){
   if (!EGachine.r[name]) throw new Error("Resource '"+name+"' not found");
   return EGachine.r[name];
-}
+};
 
 //! check required version
 /*!
@@ -195,7 +194,7 @@ EGachine.checkVersion=function(maj,min,mic)
   if (mic<this.version.mic) return true;
   if (mic>this.version.mic) return false;
   return true;
-}
+};
 
 
 //! restricted deserializer/eval
@@ -272,8 +271,8 @@ EGachine.checkVersion=function(maj,min,mic)
   a strict grammar and then use eval? this could cause trouble if the language
   changes and we do not update our parser
 
-function deserialize(str) {
-}
+  function deserialize(str) {
+  }
 */
 
 // begin base 64 stuff:
@@ -288,14 +287,14 @@ function deserialize(str) {
 Base64={};
 Base64._encodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 Base64._decodeChars = new Array(
-				     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-				     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-				     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
-				     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
-				     -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
-				     15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
-				     -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-				     41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
+				-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+				-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+				-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
+				52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
+				-1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+				15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
+				-1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+				41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
 
 Base64.encode=function(str) {
   var out, i, len;
@@ -329,7 +328,7 @@ Base64.encode=function(str) {
     out += this._encodeChars.charAt(c3 & 0x3F);
   }
   return out;
-}
+};
 
 Base64.decode=function(str) {
   var c1, c2, c3, c4;
@@ -379,21 +378,63 @@ Base64.decode=function(str) {
     out += String.fromCharCode(((c3 & 0x03) << 6) | c4);
   }
   return out;
-}
+};
 // end base 64 stuff
 
 
-// vector object - TODO: operator +,-,... - perhaps native code
+// vector object
 function V2D(x,y){
   this.x=x;
   this.y=y;
-}
+};
+V2D.prototype.clone=function()
+{
+  return new V2D(this.x,this.y);
+};
+V2D.prototype.add=function(v)
+{
+  return new V2D(this.x+v.x,this.y+v.y);
+};
+V2D.prototype.inc=function(v)
+{
+  this.x+=v.x;
+  this.y+=v.y;
+  return this;
+};
+V2D.prototype.sub=function(v)
+{
+  return new V2D(this.x-v.x,this.y-v.y);
+};
+V2D.prototype.dec=function(v)
+{
+  this.x-=v.x;
+  this.y-=v.y;
+  return this;
+};
 
-// degrees object - TODO: operator +,-
+// degrees object
 // this is mainly to get reference semantic / wrap primitive type
 function Degrees(deg){
   this.value=deg;
-}
+};
+Degrees.prototype.add=function(deg)
+{
+  return new Degrees(this.value+deg);
+};
+Degrees.prototype.inc=function(deg)
+{
+  this.value+=deg;
+  return this;
+};
+Degrees.prototype.sub=function(deg)
+{
+  return new Degrees(this.value-deg);
+};
+Degrees.prototype.dec=function(deg)
+{
+  this.value-=deg;
+  return this;
+};
 
 // devstate class
 // this holds the state of joypad like input device
@@ -402,76 +443,79 @@ function DevState(dev,x,y,buttons){
   this.x=x;
   this.y=y;
   this.buttons=buttons;
-}
+};
 
 // Node object
 // curently prototype object of all nodes in the scenegraph
 // (prototype of the prototypes)
 function Node() {
-}
-Node.prototype.paint=function(){
+};
+Node.prototype.paint=function(time){
   if (!this.children) return;
   for (var i=0;i<this.children.length;++i)
     if (!this.children[i].disabled) {
-      this.children[i].paint();
+      this.children[i].paint(time);
     }
-}
+};
+// deprecated
 Node.prototype.step=function(dt){
   if (!this.children) return;
   for (var i=0;i<this.children.length;++i)
     this.children[i].step(dt);
-}
+};
 Node.prototype.add=function(n){
   if (!this.children) this.children=[];
   this.children.push(n);
   return this;
-}
+};
 
 // derived object Rotate
 function Rotate(degrees) {
   this.degrees=degrees;
 }
 Rotate.prototype=new Node();
-Rotate.prototype.paint=function(){
+Rotate.prototype.paint=function(time){
   Video.pushMatrix();
   Video.rotate(this.degrees.value);
-  Node.prototype.paint.call(this);
+  //  Node.prototype.paint.call(this,time);
+  Node.prototype.paint.call(this,time);
   Video.popMatrix();
-}
+};
 
 // derived object Texture
 function Texture(resname){
   this.resname=resname;
 }
 Texture.prototype=new Node();
-Texture.prototype.paint=function(){
+Texture.prototype.paint=function(time){
   Video.drawTexture(Video.getTextureID(this.resname));
-  Node.prototype.paint.call(this);
-}
+  //  Node.prototype.paint.call(this,time);
+  Node.prototype.paint.call(this,time);
+};
 
 // derived object Scale
 function Scale(v) {
   this.v=v;
 }
 Scale.prototype=new Node();
-Scale.prototype.paint=function(){
+Scale.prototype.paint=function(time){
   Video.pushMatrix();
   Video.scale(this.v.x,this.v.y);
-  Node.prototype.paint.call(this);
+  Node.prototype.paint.call(this,time);
   Video.popMatrix();
-}
+};
 
 // derived object Translate
 function Translate(v) {
   this.v=v;
 }
 Translate.prototype=new Node();
-Translate.prototype.paint=function(){
+Translate.prototype.paint=function(time){
   Video.pushMatrix();
   Video.translate(this.v.x,this.v.y);
-  Node.prototype.paint.call(this);
+  Node.prototype.paint.call(this,time);
   Video.popMatrix();
-}
+};
 
 // derived object Sprite
 function Sprite(resname,size,pos,degrees) {
@@ -481,7 +525,7 @@ function Sprite(resname,size,pos,degrees) {
   this.resname=resname;
 }
 Sprite.prototype=new Node();
-Sprite.prototype.paint=function(){
+Sprite.prototype.paint=function(time){
   Video.pushMatrix();
   Video.translate(this.pos.x,this.pos.y);
   if (this.degrees) Video.rotate(this.degrees.value);
@@ -489,11 +533,57 @@ Sprite.prototype.paint=function(){
   Video.scale(this.size.x,this.size.y);
   Video.drawTexture(Video.getTextureID(this.resname));
   Video.popMatrix();
-  Node.prototype.paint.call(this);
+  Node.prototype.paint.call(this,time);
   Video.popMatrix();
+};
+
+// derived object Color
+function Color(r,g,b,a) {
+  if (r.length)
+    this.c=r;
+  else
+    this.c=[r,g,b,a];
+}
+Color.prototype=new Node();
+Color.prototype.paint=function(time){
+  Video.pushColor();
+  Video.setColor4v(this.c);
+  Node.prototype.paint.call(this,time);
+  Video.popColor();
+};
+
+// derived object Text
+function Text(text,hcenter,vcenter) {
+  this.text=text;
+  this.hcenter=hcenter;
+  this.vcenter=vcenter;
+}
+Text.prototype=new Node();
+Text.prototype.paint=function(time){
+  Video.drawText(this.text,this.hcenter,this.vcenter);
+  Node.prototype.paint.call(this,time);
+};
+
+// derived object Quad
+function Quad(size,pos,degrees) {
+  this.size=size;
+  this.pos=pos;
+  this.degrees=degrees;
 }
 
-// derived object Mover
+Quad.prototype=new Node();
+Quad.prototype.paint=function(time){
+  Video.pushMatrix();
+  println("foo");
+  if (this.pos) Video.translate(this.pos.x,this.pos.y);
+  println("bar");
+  if (this.degrees) Video.rotate(this.degrees.value);
+  Video.drawQuad(this.size.x,this.size.y);
+  Node.prototype.paint.call(this,time);
+  Video.popMatrix();
+};
+
+// derived object Mover (deprecated)
 function Mover(speed, rotspeed) {
   this.speed=speed;
   this.rotspeed=rotspeed;
@@ -521,53 +611,9 @@ Mover.prototype.step=function(dt){
   }
   dontwatch=false;
   Node.prototype.step.call(this,dt);
-}
-
-// derived object Color
-function Color(r,g,b,a) {
-  if (r.length)
-    this.c=r;
-  else
-    this.c=[r,g,b,a];
-}
-Color.prototype=new Node();
-Color.prototype.paint=function(){
-  Video.pushColor();
-  Video.setColor4v(this.c);
-  Node.prototype.paint.call(this);
-  Video.popColor();
-}
-
-// derived object Text
-function Text(text,hcenter,vcenter) {
-  this.text=text;
-  this.hcenter=hcenter;
-  this.vcenter=vcenter;
-}
-Text.prototype=new Node();
-Text.prototype.paint=function(){
-  Video.drawText(this.text,this.hcenter,this.vcenter);
-  Node.prototype.paint.call(this);
-}
-
-// derived object Quad
-function Quad(size,pos,degrees) {
-  this.size=size;
-  this.pos=pos;
-  this.degrees=degrees;
-}
-
-Quad.prototype=new Node();
-Quad.prototype.paint=function(){
-  Video.pushMatrix();
-  Video.translate(this.pos.x,this.pos.y);
-  if (this.degrees) Video.rotate(this.degrees.value);
-  Video.drawQuad(this.size.x,this.size.y);
-  Node.prototype.paint.call(this);
-  Video.popMatrix();
-}
+};
 
 function jsthrow(msg)
 {
   throw new Error(msg);
-}
+};

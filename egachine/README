@@ -1,10 +1,10 @@
 		EGachine <http://egachine.berlios.de>
 
-is  an JavaScript game  engine focused  on 2D multi-player (networked)
-games. The idea is to provide a  tool for learning by writing computer
-games.   EGachine is based upon a   simple extensible JavaScript shell
-(EJS) and  includes different modules providing functionality required
-for programing games.
+is an JavaScript game  engine  focused on 2D multi-player  (networked)
+games. The idea is to provide a tool  for learning by writing computer
+games.  EGachine  is based upon  a simple  extensible JavaScript shell
+(EJS)  and  different   modules  providing  functionality required for
+programing games.
 
 		  EJS (extensible JavaScript shell)
 

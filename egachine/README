@@ -109,10 +109,10 @@ FEATURES/GOALS:
 - portability
 
 - Run untrusted code in a secure manner:
-  This is similar to Java applets or like browsers run javascript 
+  This is similar to Java applets or like browsers run JavaScript 
   code. This means you only download the client once and games/apps
   may be shipped via network. Neither server nor client can access 
-  files from javascript code.
+  files from JavaScript code.
 
 - network support:
   Writing multi-player network games/apps should be easy.

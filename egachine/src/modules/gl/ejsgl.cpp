@@ -332,6 +332,50 @@ extern "C" {
     return from_number_vec(cx,obj,v, 3, rval) ? JS_TRUE : JS_FALSE;
   }
 
+  static JSBool Map1f(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,4,argc);
+    GLenum target;
+    GLfloat u1,u2;
+    GLint stride,order;
+    if (!to_GLenum(cx,obj,argv[0],target)) return JS_FALSE;
+    if (!to_GLfloat(cx,obj,argv[1],u1)) return JS_FALSE;
+    if (!to_GLfloat(cx,obj,argv[2],u2)) return JS_FALSE;
+    if (!JSVAL_IS_OBJECT(argv[3])) EJS_THROW_ERROR(cx,obj,"array object required");
+    JSObject *aobj=JSVAL_TO_OBJECT(argv[3]);
+    jsuint l;
+    if (!JS_GetArrayLength(cx, aobj, &l)) return JS_FALSE;
+    switch(target){
+    case GL_MAP1_INDEX:
+    case GL_MAP1_TEXTURE_COORD_1:
+      stride=1;
+      break;
+    case GL_MAP1_TEXTURE_COORD_2:
+      stride=2;
+      break;
+    case GL_MAP1_VERTEX_3:
+    case GL_MAP1_NORMAL:
+    case GL_MAP1_TEXTURE_COORD_3:
+      stride=3;
+      break;
+    case GL_MAP1_VERTEX_4:
+    case GL_MAP1_COLOR_4:
+    case GL_MAP1_TEXTURE_COORD_4:
+      stride=4;
+      break;
+    default:
+      EJS_THROW_ERROR(cx,obj,"unknown target");
+    }
+    if (l%stride) EJS_THROW_ERROR(cx,obj,"array incomplete");
+    order=l/stride;
+    if (!order) EJS_THROW_ERROR(cx,obj,"order must be positive");
+    GLfloat points[l];
+    if (!to_floatvec(cx,obj,argv[3],points,l)) return JS_FALSE;
+    glMap1f(target,u1,u2,stride,order,points);
+    return JS_TRUE;
+  }
+  
+
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
   static JSFunctionSpec gl_static_methods[] = {
@@ -342,6 +386,7 @@ extern "C" {
     FUNC (GetDoublev, 1),
     FUNC (GetFloatv, 1),
     FUNC (GetIntegerv, 1),
+    FUNC (Map1f, 1),
     EJS_END_FUNCTIONSPEC
   };
 

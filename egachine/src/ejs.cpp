@@ -98,14 +98,48 @@ extern "C" {
   global_newresolve(JSContext *cx, JSObject *obj, jsval id,
 		    uintN flags, JSObject **objp)
   {
-    /* taken from js.c - I don't understand the flags yet */
-    if ((flags & JSRESOLVE_ASSIGNING) == 0) {
-      JSBool resolved;
-      if (!JS_ResolveStandardClass(cx, obj, id, &resolved))
-	return JS_FALSE;
-      if (resolved)
-	*objp = obj;
+    if (flags & JSRESOLVE_ASSIGNING)
+      return JS_TRUE;
+    JSBool resolved;
+    if (!JS_ResolveStandardClass(cx, obj, id, &resolved))
+      return JS_FALSE;
+    if (resolved) {
+      *objp = obj;
+      return JS_TRUE;
     }
+#if 0
+    // this was an experiment to reflect the resolve hook back to javascript
+    // it crashed and is for now disabled
+
+    // we can't use the resolve hook to resolve our resolver (ejs.resolve)
+    // and module loader
+    // todo: this is not correct (unicode!)
+    JSString* s;
+    char* cstr;
+    if ((s=JS_ValueToString(cx, id))
+	&&(cstr=JS_GetStringBytes(s))
+	&&(!strcmp("ejs",cstr))) {
+	/* todo: should we set *objp = obj ? */
+      return JS_TRUE;
+    }
+
+    jsval args[2]={id,INT_TO_JSVAL(flags)};
+    jsval rval;
+
+    // todo: improve for speed
+    if (!JS_GetProperty(cx, obj, "ejs", &rval))
+      return JS_FALSE;
+    if (!(JSVAL_IS_OBJECT(rval))) return JS_TRUE;
+    JSObject* ejs=NULL;
+    if (!JS_ValueToObject(cx,rval,&ejs))
+      return JS_FALSE;
+    if (!JS_CallFunctionName(cx, ejs, "resolve", 2, args, &rval))
+      return JS_FALSE;
+    if (JSVAL_IS_OBJECT(rval)) {
+      if (!JS_ValueToObject(cx,rval,objp))
+	return JS_FALSE;
+    }
+#endif
     return JS_TRUE;
   }
 
@@ -193,7 +227,7 @@ struct EJSShell
   JSRuntime *rt;
   JSContext *cx;
   JSObject  *glob;
-
+  
   int
   initSpiderMonkey()
   {
@@ -222,7 +256,6 @@ struct EJSShell
     if (!copyargv(cx,glob,argc,argv))
       INIT_ERROR("Could not pass command line arguments to interpreter");
 
-
     // create ejs scope object
     JSObject *ejs;
     if (!(ejs = JS_DefineObject(cx, glob, "ejs", &ejs_class, NULL, JSPROP_ENUMERATE)))
@@ -231,7 +264,6 @@ struct EJSShell
     if (!ejs_setUntrusted(cx,ejs,JSVAL_FALSE))
       INIT_ERROR("could not set untrusted");
 
-    // ejs.exit
     if (!JS_DefineFunctions(cx, ejs, static_methods))
       INIT_ERROR("could not define static ejs functions");
 

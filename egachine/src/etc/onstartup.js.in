@@ -42,17 +42,15 @@ ejs.loadUntrusted=function(file) {
   return ejs.ModuleLoader.loadUntrusted.call(ejs.getGlobal(),file);
 }
 
+/*
 ejs.resolve=function(name,flags) {
-  return false;
-  /* doesn't work yet
-  var ret=true;
   try{
     ejs.ModuleLoader.load.call(ejs.getGlobal(),name);
-    ret=ejs.getGlobal()[name];
+    if (ejs.getGlobal()[name]) return ejs.getGlobal();
   }catch(x){
   }
-  if (!ret) throw name;
-  */
+  return false;
 }
+*/
 
 //load=ejs.load;

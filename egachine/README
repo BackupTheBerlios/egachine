@@ -15,18 +15,7 @@ AND THE CLIENT PERHAPS, TOO
 (see also TODO)
 --------------------------------------------------------------------------------
 
-QUICK-START (windows)
-
-All .bat files should do something.
-
-To run a local 2-player pong game start:
-pong.bat
-
-To run a networked 2-player pong game:
-first start
-netpong.bat (this starts the server)
-then
-client.bat (this starts the client)
+QUICK-START
 
 Input:
 if you have a joystick, it acts like a gamepad
@@ -40,10 +29,29 @@ Alt+Enter		toggle fullscreen	(not supported on win32)
 Ctrl+Z			iconify window		(not supported on win32?)
 
 Keypad 1:
-cursor keys on the number block
+cursor keys _on the number block_
 
 Keypad 2:
 w,a,s,d
+
+For best results make sure your video driver synchronizes page flips to
+the vertical retrace.
+(if you use linux and nvidia drivers:
+export __GL_SYNC_TO_VBLANK=1
+with version 1.0-5336 it seems to works well
+older versions used a busy loop)
+
+Windows:
+All .bat files should do something.
+
+To run a local 2-player pong game start:
+pong.bat
+
+To run a networked 2-player pong game:
+first start
+netpong.bat (this starts the server)
+then
+client.bat (this starts the client)
 
 Linux users:
 USAGE: egachine script

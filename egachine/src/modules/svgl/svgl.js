@@ -49,7 +49,7 @@
     var document;
     var File=ejs.ModuleLoader.get("File");
     var stream=File.read(fileName);
-    if (stream.inAvailable()<=0)
+    if (stream.inAvailable()<0)
       throw Error("Could not open file: "+fileName);
     
     document=new svgl.SVGDocument(stream.readAll());

@@ -24,6 +24,7 @@
 #include <w3c/svg/SVGDocument.hpp>
 #include <w3c/svg/SVGSVGElement.hpp>
 #include <w3c/svg/SVGRectElement.hpp>
+#include <svgl/Parser.hpp>
 #include "ejssvgdocument.h"
 #include "ejselement.h"
 #include <cassert>
@@ -61,7 +62,7 @@ extern "C" {
     // todo: root string!
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
-    dom::Text* text=svgdocument->createTextNode(unicode::String::internStringUtf16(JS_GetStringChars(strtype)));
+    dom::Text* text=svgdocument->createTextNode(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
     assert(text);
 
     return JS_TRUE;
@@ -160,8 +161,6 @@ extern "C" {
 
 #undef FUNC
 
-
-
   static
   JSBool
   svgdocument_cons
@@ -171,7 +170,33 @@ extern "C" {
       // todo
       EJS_THROW_ERROR(cx,obj,"not yet implemented");
     }
-    if (!JS_SetPrivate(cx,obj,(void *)new svg::SVGDocument()))
+    svg::SVGDocument* doc=NULL;
+
+    try{
+      if (argc==1) {
+	// create from string or stream (problem with stream: svgl wants a istream and not a streambuf)
+
+	// from string
+	JSString *strtype=JS_ValueToString(cx, argv[0]);
+	if (!strtype) return JS_FALSE;
+	svgl::Parser parser;
+	if (doc=parser.parseFromString(unicode::String::createString(JS_GetStringBytes(strtype))))
+	  // todo: remove?
+	  doc->updateStyle();
+      }else{
+	// create new empty document
+	doc=new svg::SVGDocument();
+      }
+      // todo: improve error handling
+    }catch(const svgl::Parser::exception& e){
+      if (doc) {delete doc;doc=NULL;};
+    }catch(std::exception& e){
+      if (doc) {delete doc;doc=NULL;};
+    }catch(...){
+      if (doc) {delete doc;doc=NULL;};
+    }
+    if (!doc) EJS_THROW_ERROR(cx,obj,"failed");
+    if (!JS_SetPrivate(cx,obj,(void *)doc))
       return JS_FALSE;
     return JS_TRUE;
   }

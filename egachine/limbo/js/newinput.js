@@ -1,18 +1,26 @@
 viewport=Video.getViewport();
 width=viewport[2];
 height=viewport[3];
-while(true) {
+loops=0;
+numEvents=0;
+maxEvents=0;
+quit=false;
+do{
   if (!Input.waitEvent())
     stderr.write("Warning: error while waiting for event");
   events=Input.getEvents();
+  maxEvents=Math.max(maxEvents,events.length);
+  numEvents+=events.length;
   for (i=0;i<events.length;++i) {
     e=events[i];
     switch(e.type) {
     case Input.QUIT:
-      ejs.exit(true);
+      quit=true;
+      break;
     case Input.KEYDOWN:
-      if (e.sym==Input.KEY_ESCAPE) ejs.exit(true);
-      if ( (e.sym==Input.KEY_RETURN) && (e.mod & Input.KMOD_ALT))
+      if (e.sym==Input.KEY_ESCAPE)
+	quit=true;
+      else if ( (e.sym==Input.KEY_RETURN) && (e.mod & Input.KMOD_ALT))
 	Video.toggleFullscreen();
       break;
     case Input.MOUSEMOTION:
@@ -32,4 +40,9 @@ while(true) {
       stdout.write(e.toSource()+"\n");
     };
   };
-};
+  ++loops;
+}while(!quit);
+stdout.write("Events processed:"+numEvents+" (in "+loops+" loops)\n");
+stdout.write("Max. events in queue:"+maxEvents+"\n");
+stdout.write("Avg. events in queue:"+(numEvents/loops)+"\n");
+

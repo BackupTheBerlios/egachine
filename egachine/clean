@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# similar to make clean
+
 set -e
 
 if test ! -f $(pwd)/src/egachine.js; then

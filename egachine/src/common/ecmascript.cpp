@@ -40,6 +40,8 @@ extern "C" {
     argv[0]=STRING_TO_JSVAL(s);
     // does not print the complete string if there is a \0 in it
     // std::cout << JS_GetStringBytes(s) << std::endl;
+
+    // todo: we loose unicode information here
     char* ctype=JS_GetStringBytes(s);
     if (!ctype) return JS_FALSE;
     unsigned len=JS_GetStringLength(s);
@@ -256,7 +258,6 @@ namespace ECMAScript
   void deinit() 
   {
     if (cx) {
-      JS_GC(cx);
       JS_DestroyContext(cx);
       cx = NULL;
     }

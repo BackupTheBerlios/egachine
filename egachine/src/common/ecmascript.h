@@ -161,6 +161,7 @@ namespace ECMAScript
 #define ECMA_STRING_TO_CHARVEC(val,ctype,len) do{if (!JSVAL_IS_STRING(val)) ECMA_THROW_ERROR("string required"); \
     JSString *strtype=JS_ValueToString(cx, val); \
     if (!strtype) return JS_FALSE; \
+    // todo: we loose unicode information here \
     ctype=JS_GetStringBytes(strtype); \
     if (!ctype) return JS_FALSE; \
     len=JS_GetStringLength(strtype); \

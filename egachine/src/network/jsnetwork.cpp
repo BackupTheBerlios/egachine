@@ -19,6 +19,7 @@ extern "C" {
     if (!JS_ValueToInt32(cx,argv[1],&port)) ECMA_ERROR("Argument 1 must be a port number");
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
+    // todo: we loose unicode information here
     char* ctype=JS_GetStringBytes(strtype);
     if (!ctype) return JS_FALSE;
     try {
@@ -40,6 +41,7 @@ extern "C" {
     if (!JSVAL_IS_STRING(argv[0])) return JS_FALSE;
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
+    // todo: we loose unicode information here
     char* ctype=JS_GetStringBytes(strtype);
     if (!ctype) return JS_FALSE;
     int w=stream->sputn(ctype,strlen(ctype));

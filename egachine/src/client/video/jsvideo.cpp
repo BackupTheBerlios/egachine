@@ -65,6 +65,7 @@ extern "C" {
     if (!argc) ECMA_THROW_ERROR("at least one argument required");
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
+    // todo: we loose unicode information here
     char* ctype=JS_GetStringBytes(strtype);
     if (!ctype) return JS_FALSE;
     if (!JS_AddRoot(cx,strtype)) return JS_FALSE;

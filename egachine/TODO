@@ -8,7 +8,23 @@ problem remaining:
 deserializing is done with eval
 this is okay on client side but not on server side
 because CLIENTS SHOULD NOT BE ALLOWED TO RUN CODE ON THE SERVER
-=> supply a limited deserialize for the server
+=> supply a limited deserialize for the server (a stripped down ObjectLiteral
+parser without side effects)
+NOTE: NJS JavaScript Interpreter <http://www.njs-javascript.org/> seems to have 
+a javascript javascript lexer/parser - sharp variables are missing?
+(part of a javascript javascript compiler in the jsc directory)
+
+it seems konqueror uses a bison based parser:
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=bhaklu%249k22%40ripley.netscape.com:
+(the whole thread is interesting)
+Well ....
+I am satisfied with their work.
+I did not yet write JS parser with them so may be it will be more
+interesting for you
+to talk with Harri.Porten<Harri.Porten@gmx.de> .
+He wrote JS parser in Konqueror browser using bison.
+
+
 clients only send primitive messages to the server
 At the moment clients are able to send javascript code to the server
 and via the server to the other clients
@@ -142,9 +158,36 @@ hmm linux only? try to cross-compile it
 there is a zip => probably win32, too
 does not use freetype
 
+Bob Pendleton wrote:
+> So, yes, you can use polyfonts to draw text in an SDL/OpenGL program.
+> That is pretty much what I wrote it for. I just happened to have some
+> old graphics code floating around so I added the ability to use it with
+> *all* SDL surfaces. For my own personal use I have a version where I
+> stripped out the sgl library and only support OpenGL.
+
 hmm an end-user friendly choice would be to use system fonts
 and let the end-user decide which fonts to use
 
+fonts once again:
+
+It seems there are the following options:
+SDL_ttf (uses freetype 1?)
+SDL_ttf2 (uses freetype 2?)
+polyfonts (no dependencies)
+freetype 2 directly
+libgltt2 (uses freetype 1)
+oglft
+ftgl
+
+any missing here?
+
+my requirements:
+free software
+security?
+cross plattform (easily cross compilable)
+small
+opengl
+unicode
 --------------------------------------------------------------------------------
 win32 timestamp currently only ms precision
 --------------------------------------------------------------------------------
@@ -282,13 +325,6 @@ should try if opengl works with it => no need for hacked SDL version?
 we often assume that there is only one javascript context
 especially in client/video/jsgl
 --------------------------------------------------------------------------------
-do:
-grep -r JS_realloc
-grep -r JS_NewString
-why?
-are JS strings with \0 allowed?
-or must JS strings be \0 terminated?
---------------------------------------------------------------------------------
 perhaps wrap:
 std::streambuf (nearly done in the network part)
 std::vector
@@ -317,4 +353,76 @@ and if a NaN double is converted to an int ...
 also check warnings
 perhaps the simplest method would be to check this in javascript where not
 critical
+--------------------------------------------------------------------------------
+I18N:
+
+charset:
+	javascript supports unicode utf16?
+	spidermonkey has a "seperate" unicode api?
+	now do we really want the script files utf16 encoded? no
+	utf8 maybe
+	how are unicode strings represented internally by spidermonkey?
+	first take a closer look at how this all is meant to work
+
+strings/messages:
+	javascript has no special features for translating messages?
+	come up with some framework
+--------------------------------------------------------------------------------
+byte arrays: (and string handling)
+
+currently I use strings to represent byte arrays (binary data)
+the way I do it I use twice as much memory as needed since js strings are
+16bit unicode
+
+I have to take a deep look at this (see also the I18N point)
+a related thread on n.p.m.jseng:
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=9dabmi%24os01%40secnews.netscape.com
+
+also do:
+grep -r JS_realloc
+grep -r JS_NewString
+why?
+are JS strings with \0 allowed?
+or must JS strings be \0 terminated?
+
+
+something about the string stuff:
+
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3C45FD50.4050806%40meer.net:
+History: JS_GetStringBytes predates Unicode support in the engine, and 
+it used to give access to the JSString's underlying char buffer, which 
+would live as long as the string did (you couldn't write -- look, don't 
+touch!).  With the switch to Unicode, API compatibility had to be 
+preserved, but the string's buffer was not a char buffer any longer. 
+ Hence the deflated_string_cache (see jsstr.c).  
+
+
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3CD8E4C1.9080007%40meer.net:
+>So what does JS_GetStringBytes() return for multibyte characters?  Suppose we had a UCS2 char 0xXXYY, does it just return XX or YY?  Or does it return a sequence of chars for a particular encoding?
+>
+How would it know what encoding to use?
+
+It clearly just chops (decimates, as I wrote below) from jschar to char, 
+so \uXXYY becomes \xYY.
+
+
+http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=3CD79F24.6020903%40meer.net:
+>Hi there,
+>
+>When would one want to use JSVAL_TO_STRING macro vs. JS_ValueToString
+>function?
+>
+The macro untags a jsval into a pointer, so JSVAL_IS_STRING(v) had 
+better be true before you call JSVAL_TO_STRING(v).
+
+JS_ValueToString pretty clearly *converts* any value into a string.
+
+I'm not sure why you're having troubles, but I have to ask: why are you 
+using JS_GetStringBytes?  It's lossy and deprecated.
+
+/be
+
+
+--------------------------------------------------------------------------------
+write a spidermonkey embeding "best practice" document"
 --------------------------------------------------------------------------------

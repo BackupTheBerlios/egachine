@@ -60,8 +60,6 @@
 #endif // WIN32
 
 static bool m_lineSmooth=true;
-static
-Video::ViewportCoordinates viewportCoordinates;
 
 typedef std::map<int, JGACHINE_SMARTPTR<Texture> > Textures;
 // we do not use complex static data structures => pointer
@@ -139,30 +137,6 @@ setMouseCursor()
     SDL_ShowCursor(SDL_DISABLE);
   else
     SDL_ShowCursor(SDL_ENABLE);
-}
-
-//! set projection matrix
-/*
-  \note this must be the only function manipulating the projection matrix!
-  since we keep track of the current viewport coordinates
-  we could also try to reconstruct the glOrtho call from the
-  projection matrix
-*/
-void
-Video::setViewportCoordinates(const Video::ViewportCoordinates &c)
-{
-  viewportCoordinates=c;
-  glMatrixMode(GL_PROJECTION);		
-  glLoadIdentity();
-  glOrtho(c.left,c.right,c.bottom,c.top,c.near,c.far);
-  GL_ERRORS();
-  glMatrixMode(GL_MODELVIEW);
-}
-
-Video::ViewportCoordinates
-Video::getViewportCoordinates()
-{
-  return viewportCoordinates;
 }
 
 static
@@ -256,7 +230,7 @@ createWindow(int width, int height, bool fullscreen)
   if (!db) JGACHINE_WARN("did not get double buffer");
 
   setViewport(0,0,video->w,video->h);
-  setViewportCoordinates(Video::ViewportCoordinates(0.0f,video->w,0.0f,video->h,-100.0f,100.0f));
+  glOrtho(0.0f,video->w,0.0f,video->h,-100.0f,100.0f);
 
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   GL_ERRORS();

@@ -130,37 +130,18 @@ Video.drawQuad=function(w,h)
   gl.Rectf(-w2,-h2,w2,h2);
 }
 
-/* todo:
-void
-Video::setViewportCoordinates(const Video::ViewportCoordinates &c)
+Video.setViewportCoords=function(obj)
 {
-  viewportCoordinates=c;
-  glMatrixMode(GL_PROJECTION);		
-  glLoadIdentity();
-  glOrtho(c.left,c.right,c.bottom,c.top,c.near,c.far);
-  GL_ERRORS();
-  glMatrixMode(GL_MODELVIEW);
+  if (typeof(obj)!="object") throw new Error("object required as argument");
+  if (obj.near==undefined) obj.near=-100;
+  if (obj.far==undefined) obj.far=100;
+  gl.MatrixMode(GL_PROJECTION);		
+  gl.LoadIdentity();
+  gl.Ortho(obj.left,obj.right,obj.bottom,obj.top,obj.near,obj.far);
+  gl.MatrixMode(GL_MODELVIEW);
 }
 
-Video::ViewportCoordinates
-Video::getViewportCoordinates()
-{
-  return viewportCoordinates;
-}
-
-static
-void
-setViewport(int x, int y, int sx, int sy)
-{
-  glViewport(x,y,sx,sy);
-}
-
-void
-Video::setViewport(const Video::Rectangle &r)
-{
-  ::setViewport(r.x,r.y,r.sx,r.sy);
-}
-
+/*
 Video::Rectangle
 Video::getViewport()
 {
@@ -168,7 +149,6 @@ Video::getViewport()
   glGetIntegerv (GL_VIEWPORT, view);
   return Video::Rectangle(view[0],view[1],view[2],view[3]);
 }
-
 */
 
 // opengl constants

@@ -37,7 +37,7 @@ Input.handleInput=function(i){\
   stream.send(msg); \
   stream.sync(); \
 }; \
-Video.setViewportCoordinates({left:0,right:"+sx+",bottom:0,top:"+sy+"});\
+Video.setViewportCoords({left:0,right:"+sx+",bottom:0,top:"+sy+"});\
 last=Timer.getTimeStamp();\
 while (true) { \
   Video.clear(); \

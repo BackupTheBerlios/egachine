@@ -34,7 +34,6 @@
 
 namespace Video
 {
-  struct ViewportCoordinates;
   struct Coord2i;
   struct Rectangle;
   
@@ -49,9 +48,6 @@ namespace Video
   void drawTexture(int tid,float w=1, float h=1);
   void drawText(const std::string &text, bool hcentered, bool vcentered);
 
-  void setViewportCoordinates(const ViewportCoordinates &coords);
-  ViewportCoordinates getViewportCoordinates();
-  
   void setViewport(const Rectangle &r);
   Rectangle getViewport();
 
@@ -59,20 +55,6 @@ namespace Video
   Coord2i project(float x, float y);
   
   void deinit();
-
-  struct ViewportCoordinates 
-  {
-    ViewportCoordinates(){}
-    ViewportCoordinates(float _left, float _right, float _bottom, float _top, float _near, float _far)
-      : left(_left), right(_right), bottom(_bottom), top(_top), near(_near), far(_far)
-    {}
-    
-    float left,right,bottom,top,near,far;
-    void set() const
-    {
-      setViewportCoordinates(*this);
-    }
-  };
 
   struct Coord2i
   {

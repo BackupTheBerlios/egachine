@@ -48,7 +48,7 @@ function connect(host,port) {
   var welcome="    Welcome to EGachine "+EGachine.version.string+"    ";
   var constr="Connect to";
   var s=welcome+"\n\n"+constr;
-  Video.setViewportCoordinates({left:0,right:sx,bottom:0,top:sy});
+  Video.setViewportCoords({left:0,right:sx,bottom:0,top:sy});
   var maxlen=Math.max(welcome.length,constr.length);
   var inputField=new InputField(host+":"+port,maxlen);
 

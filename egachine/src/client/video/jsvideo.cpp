@@ -79,38 +79,6 @@ extern "C" {
     return JS_TRUE;
   }
 
-  ECMA_BEGIN_VOID_FUNC(setViewportCoordinates){
-    ECMA_CHECK_NUM_ARGS(1);
-    if (!JSVAL_IS_OBJECT(argv[0])) ECMA_ERROR("object required as argument");
-    JSObject *pobj=JSVAL_TO_OBJECT(argv[0]);
-    if (!pobj) ECMA_ERROR("object required as argument");
-    jsval v[6];
-    jsdouble d[6];
-    
-#define GETPROP(x,y) do{\
-if ((!JS_GetProperty(cx, pobj, x, &(v[y])))||(v[y]==JSVAL_VOID)) ECMA_ERROR("object property "x" missing"); \
-if (!JS_ValueToNumber(cx, v[y], &(d[y]))) ECMA_ERROR("object property "x" is not a number"); \
-}while(0)
-
-    GETPROP("left",0);
-    GETPROP("right",1);
-    GETPROP("bottom",2);
-    GETPROP("top",3);
-#undef GETPROP
-#define GETPROP(x,y,z) do{\
-if ((!JS_GetProperty(cx, pobj, x, &(v[y])))||(v[y]==JSVAL_VOID)) d[y]=z; \
-else if (!JS_ValueToNumber(cx, v[y], &(d[y]))) d[y]=z; \
-}while(0)
-    GETPROP("near",4,-1.0);
-    GETPROP("far",5,1.0);
-#undef GETPROP
-
-    Video::ViewportCoordinates vc(d[0],d[1],d[2],d[3],d[4],d[5]);
-    vc.set();
-
-    return JS_TRUE;
-
-  }
   ECMA_BEGIN_VOID_FUNC(setViewport){
     ECMA_CHECK_NUM_ARGS(1);
 
@@ -172,7 +140,6 @@ static JSFunctionSpec static_methods[] = {
   ECMA_FUNCSPEC(createTexture,1),
   ECMA_FUNCSPEC(drawTexture,1),
   ECMA_FUNCSPEC(drawText,3),
-  ECMA_FUNCSPEC(setViewportCoordinates,1),
   ECMA_FUNCSPEC(setViewport,1),
   ECMA_FUNCSPEC_EXTRA(getViewport,0,1),
   ECMA_FUNCSPEC(project,2),

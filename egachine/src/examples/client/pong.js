@@ -9,9 +9,10 @@ joypad=[];
 viewport=Video.getViewport();
 sx=viewport.sx;
 sy=viewport.sy;
+rackets=[];
+points=[];
 spriteSize=new V2D(sx/10,sx/10);
 
-rackets=[];
 
 addResources();
 
@@ -64,10 +65,10 @@ Ball.prototype.step=function(dt){
   // points
   if (this.pos.x<0) {
     this.restart();
-    print("point for player 1\n");
+    ++(points[0].text);
   }else if (this.pos.x>sx) {
     this.restart();
-    print("point for player 0\n");
+    ++(points[1].text);
   }
 }
 
@@ -75,9 +76,21 @@ ball=new Ball();
 
 // build our scenegraph
 root=new Node()
-  .addNode(new Color(1,0,0,1).addNode(rackets[1]=new Sprite("racket",spriteSize,new V2D(spriteSize.x/2,sy/2))))
-  .addNode(new Color(0,1,0,1).addNode(rackets[0]=new Sprite("racket",spriteSize,new V2D(sx-1-spriteSize.x/2,sy/2))))
-  .addNode(new Sprite("ball",spriteSize,ball.pos,ball.degrees));
+  .add(new Color(1,0,0,1)
+       .add(rackets[1]=new Sprite("racket",spriteSize,new V2D(spriteSize.x/2,sy/2))))
+  .add(new Color(0,1,0,1)
+       .add(rackets[0]=new Sprite("racket",spriteSize,new V2D(sx-1-spriteSize.x/2,sy/2))))
+  .add(new Sprite("ball",spriteSize,ball.pos,ball.degrees))
+  // display points for player one
+  .add(new Color(0,1,0,1)
+       .add(new Translate(new V2D(0.92*sx,0.9*sy))
+	    .add(new Scale(new V2D(sx*0.05,sx*0.05))
+		 .add((points[0]=new Text("0",true))))))
+  // display points for player two
+  .add(new Color(1,0,0,1)
+       .add(new Translate(new V2D(0.08*sx,0.9*sy))
+	    .add(new Scale(new V2D(sx*0.05,sx*0.05))
+		 .add((points[1]=new Text("0",true))))));
 
 start=Timer.getTimeStamp();
 last=start;

@@ -4,14 +4,14 @@ if (!EGachine.server)
 if (!EGachine.checkVersion(0,0,7)) 
   throw new Error("at least version 0.0.7 required");
 
-print("Server is now running\nListening for connections on port "+listenPort);
-print("ATTENTION: at the moment the server is insecure.");
-print("You should not give access to untrusted clients - you have been warned!");
+println("Server is now running\nListening for connections on port "+listenPort);
+println("ATTENTION: at the moment the server is insecure.");
 
 // our game uses an aspect ratio of 1.333:1
 sx=1+1/3;
 sy=1;
 rackets=[];
+points=[];
 spriteSize=new V2D(0.1,0.1);
 
 // add our resources (see at the end of the file)
@@ -28,7 +28,8 @@ function handleNewConnection(id,stream){
   // code we send to the client - which executes it
   // this is quite generic and should work for any similar networked game
   Net.sendTo(id,"\
-if (!EGachine.checkVersion(0,0,6)) throw new Error('at least version 0.0.6 required');\
+if (!EGachine.checkVersion(0,0,7)) \
+  throw new Error('at least version 0.0.7 required');\
 Input.handleInput=function(i){\
   var msg=serialize(i); \
   var h=msg.length.convertTo(16,6); \
@@ -87,7 +88,9 @@ Ball.prototype.step=function(dt){
     var dx=this.pos.x-rackets[i].children[0].pos.x;
     var dy=this.pos.y-rackets[i].children[0].pos.y;
     if (((Math.abs(dx)<spriteSize.x/2)&&(Math.abs(dy)<spriteSize.y))
-	&&(((this.pos.x<sx/2)&&(this.speed.x<0))||((this.pos.x>sx/2)&&(this.speed.x>0)))) {
+	&&
+	(((this.pos.x<sx/2)&&(this.speed.x<0))
+	 ||((this.pos.x>sx/2)&&(this.speed.x>0)))) {
       this.speed.x*=-1;
       this.rotspeed.value*=-1;
     }
@@ -95,10 +98,10 @@ Ball.prototype.step=function(dt){
   // points
   if (this.pos.x<0) {
     this.restart();
-    print("point for player 1");
+    ++(points[0].text);
   }else if (this.pos.x>sx) {
     this.restart();
-    print("point for player 0");
+    ++(points[1].text);
   }
 }
 
@@ -106,18 +109,31 @@ ball=new Ball();
 
 // build our scenegraph
 root=new Node()
-  .addNode(new Color(1,0,0,1)
-	   .addNode(rackets[1]=new Mover(new V2D(0,0))
-		    .addNode(new Sprite("racket",
-					spriteSize,
-					new V2D(spriteSize.x/2,sy/2)))))
-  .addNode(new Color(0,1,0,1)
-	   .addNode(rackets[0]=new Mover(new V2D(0,0))
-		    .addNode(new Sprite("racket",
-					spriteSize,
-					new V2D(sx-spriteSize.x/2,sy/2)))))
-  .addNode(new Mover(ball.speed,ball.rotspeed)
-	   .addNode(new Sprite("ball",spriteSize,ball.pos,ball.degrees)));
+  // racket of player one (right, green)
+  .add(new Color(0,1,0,1)
+       .add(rackets[0]=new Mover(new V2D(0,0))
+	    .add(new Sprite("racket",
+			    spriteSize,
+			    new V2D(sx-spriteSize.x/2,sy/2)))))
+  // racket of player two (left, red)
+  .add(new Color(1,0,0,1)
+       .add(rackets[1]=new Mover(new V2D(0,0))
+	    .add(new Sprite("racket",
+			    spriteSize,
+			    new V2D(spriteSize.x/2,sy/2)))))
+  // the ball
+  .add(new Mover(ball.speed,ball.rotspeed)
+       .add(new Sprite("ball",spriteSize,ball.pos,ball.degrees)))
+  // display points for player one
+  .add(new Color(0,1,0,1)
+       .add(new Translate(new V2D(0.92*sx,0.9*sy))
+	    .add(new Scale(new V2D(sx*0.05,sx*0.05))
+		 .add((points[0]=new Text("0",true))))))
+  // display points for player two
+  .add(new Color(1,0,0,1)
+       .add(new Translate(new V2D(0.08*sx,0.9*sy))
+	    .add(new Scale(new V2D(sx*0.05,sx*0.05))
+		 .add((points[1]=new Text("0",true))))));
 
 // distribute scenegraph to all clients
 // NOTE: changes to the scenegraph are automatically distributed

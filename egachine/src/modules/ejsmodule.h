@@ -46,6 +46,16 @@
     }							\
   }while(0)
 
+#define EJS_CHECK_CLASS(cx,obj,class) do{				\
+    if (JS_GET_CLASS(cx, obj) != &class) {				\
+      std::ostringstream o;						\
+      o << "Wrong object class: "					\
+	<< "expected: " << class.name					\
+	<< " got: " << JS_GET_CLASS(cx, obj)->name;			\
+      EJS_THROW_ERROR(cx, obj, o.str().c_str());			\
+    }									\
+  }while(0)
+
 #define EJS_END_FUNCTIONSPEC {0,0,0,0,0}
 
 #define EJS_END_CLASS_SPEC 0,0,0,0,0,0,0,0

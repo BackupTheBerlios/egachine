@@ -16,6 +16,7 @@ examples = \
 	client/balls.js \
 	client/sgdemo.js \
 	client/rail.js \
+	client/scrolltest.js \
 	server/netpong.js \
 	server/netorigpong.js \
 	svg/svgviewer.js \

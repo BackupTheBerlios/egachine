@@ -358,4 +358,193 @@ files suitable for graphviz)
 new util module
 for now contains: ieval, isCompilableUnit, getObjectID (formerly hashObject)
 --------------------------------------------------------------------------------
+clean up new egaserver
+perhaps this should only be a module => no executable script?, no the script
+is useful (egaserver.in)
+btw. how will i do this on win32? via .bat script wrapper
+--------------------------------------------------------------------------------
+watchall does not handle circles?!
+i think it does
+but it does not handle addition and removal of properties!
+this was fixed by the new serialization (ObjectWriter) and Monitorable objects
 
+--------------------------------------------------------------------------------
+fix netpong and netpong2
+i removed netpong / netpong2 is now netpong
+--------------------------------------------------------------------------------
+allow #!/usr/.../egachine at beginning of scripts
+to allow "normal" execution on unix systems
+--------------------------------------------------------------------------------
+serialize:
+why so complicated?
+toSource can handle graphs
+only because of the __proto__ field?
+i started a second try in src/examples/misc/ser.js
+now using the second serializer
+which temporarily renames __proto__ to _p
+still not the best solution
+
+yet another approach is the ObjectWriter
+--------------------------------------------------------------------------------
+we often assume that there is only one javascript context
+especially in client/video/jsgl
+fixed (i think)
+--------------------------------------------------------------------------------
+wrap std::streambuf (done by the stream module)
+--------------------------------------------------------------------------------
+do not install all examples
+somehow tag the examples which should not get shipped with binaries
+the tag is DONTINSTALL in the first line
+(done: but only install does use this
+todo: crossmake (win32) should use this, too
+
+update:
+we use autotools (autoconf,automake,...) again
+=> the above is obsolete
+
+using autotools again since I did not find a better replacement:
+cons (perl basiert):
+- no parallel builds?
+- dead?
+
+cook?
+jam?
+
+scons (python):
++ anscheinend verbesserung von cons
+- langsam?
+- no support for cross compilation
++ ansich ganz nett
+ 
+ant (java basiert): hmm
+--------------------------------------------------------------------------------
+distributed scenegraph:
+at the moment only changes to simple properties are distributed
+at least missing:
+distribute changes to arrays (see watcharray.js in limbo/js)
+allow addition of objects to arrays/objects
+(this is difficult to get right since the server must remember which objects
+where already distributed to the client to keep object relationships
+correct - in case objects are shared.
+example:
+a={x:...}
+root={r:a}
+distribute(root);
+root.b=a; <---
+
+this means we must remember the hash value of all distributed objects and the
+remote name (now we get back to the more complex serialization algorithms)
+
+another aproach would be to drop the distributed scenegraph and to use a
+"distributed eval" / function to evaluate code on server and clients
+of course this would not hide the network stuff verry well and would require
+the user to serialize objects as needed => user is forced to think about local
+and remote objects
+
+distributed scenegraph now works
+there are some limitations:
+	all scengraph objects must be monitorables
+	=> js [] don't work
+--------------------------------------------------------------------------------
+Eine Shell:
+
+jetzt habe ich schon egaserver egachine egares
+ansich wäre eine shell mit einem befehl zum plugin nachladen und einem befehl
+zum Ausführen von Script Dateien am Besten
+aber es muß sicher sein => befehl der den plugin ladebefehl sicher abschaltet
+befehl um js skripte auszuführen
+befehl der noch genau ein js skript ausführt
+
+plugin interface überlegen (C/C++ und JS)
+
+JS:
+dlopen(libname)
+EvaluateScript()
+
+// ab da geht dlopen und EvaluateScript nicht mehr - danach ist der context
+// aber auch untrusted => evtl. problem beim deinitialisieren
+EvaluateUntrustedScript() 
+
+was ist import in JS?
+was kann die smjs shell?
+
+was benutzen?
+libtldl - wahrscheinlich schon - schön klein
+glib? eher nein
+
+evtl. noch schauen wie es die anderen machen (möglichst programme die es
+auf vielen plattformen gibt)
+
+done using libltdl
+--------------------------------------------------------------------------------
+win32 dll's must be self contained:
+
+http://www.belgeler.org/autobook/autobook-DLLs-with-Libtool.html: 
+
+"All of the symbols required by a dll at runtime, must be resolved at
+ link time. With some creative use of import libraries, it is usually
+ possible to work around this shortcoming, but it is easy to forget
+ this limitation if you are developing on a modern system which has
+ lazy symbol resolution. Be sure to keep it at the back of your mind
+ if you intend to have your package portable to Windows."
+
+libtool:
+use -no-undefined (to be able to cross-compile dll's for win32)
+--------------------------------------------------------------------------------
+renamed plugin to module everywhere
+--------------------------------------------------------------------------------
+modules may consist out of script and/or native lib
+--------------------------------------------------------------------------------
+renamed the zlib wrapper module 
+(from zlib.XXX to ejszlib.XXX)
+--------------------------------------------------------------------------------
+convert all wrappers to modules
+treat the module loader as module itself (as far as possible ;-)
+--------------------------------------------------------------------------------
+try to reduce memory usage:
+spidermonkey can parse directly from a  FILE*
+=> no need to read the script into memory first
+
+but unfortunately this only works with latin1 input
+jsscan.c:343: ubuf[i] = (jschar) (unsigned char) cbuf[j];
+
+=> not really an option
+=> must use memory buffer (or hack on spidermonkey)
+
+for interactive shells there is also:
+JS_BufferIsCompilableUnit
+(wrapped by util.isCompilableUnit)
+--------------------------------------------------------------------------------
+remember: debian spidermonkey uses nspr (and JS_THREADSAFE)
+i now try to detect JS_THREADSAFE usage and spidermonkey in configure.ac
+--------------------------------------------------------------------------------
+dlopen and nvidia opengl will make trouble?
+link against pthread?
+see /usr/share/doc/nvidia-glx/README.gz
+works
+--------------------------------------------------------------------------------
+we need:
+different spidermonkey version
+(the one in testing has bug 240577)
+update:
+fixed version entered testing => we can use it
+--------------------------------------------------------------------------------
+okay
+modules can now be linked statically
+the version with static modules is: 959K
+the version with dynamic modules is: 1,3M
+
+libtool dependency tracking is shit since it always links against all libs
+(which isn't required on linux)
+why is this shit?
+for example you link against SDL (which depends on many other libs)
+now you could replace this SDL with another one (with minimalistic dependencies)
+=> your program should now have minimalistic dependencies, too
+but no - libtool linked against every lib ....
+--------------------------------------------------------------------------------
+build stuff:
+
+--disable-module does not work yet
+
+should now work?
+--------------------------------------------------------------------------------

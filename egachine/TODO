@@ -1,29 +1,17 @@
+General TODO list (each module might have its own)
+
+================================================================================
 SECURITY RELATED BUGS:
 --------------------------------------------------------------------------------
 serialize/deserialize
-fast enough? is okay
-we will not completely serialize often because we only send
-differences => should be fast enough
 problem remaining:
 deserializing is done with eval
 this is okay on client side but not on server side
 because CLIENTS SHOULD NOT BE ALLOWED TO RUN CODE ON THE SERVER
 => supply a limited deserialize for the server (a stripped down ObjectLiteral
 parser without side effects)
-NOTE: NJS JavaScript Interpreter <http://www.njs-javascript.org/> seems to have 
-a javascript javascript lexer/parser - sharp variables are missing?
-(part of a javascript javascript compiler in the jsc directory)
 
-it seems konqueror uses a bison based parser:
-http://www.google.de/groups?hl=de&lr=&ie=UTF-8&selm=bhaklu%249k22%40ripley.netscape.com:
-(the whole thread is interesting)
-Well ....
-I am satisfied with their work.
-I did not yet write JS parser with them so may be it will be more
-interesting for you
-to talk with Harri.Porten<Harri.Porten@gmx.de> .
-He wrote JS parser in Konqueror browser using bison.
-
+we will use JSON for this
 
 clients only send primitive messages to the server
 At the moment clients are able to send javascript code to the server
@@ -42,12 +30,21 @@ http://bugzilla.mozilla.org/show_bug.cgi?id=239721
 --------------------------------------------------------------------------------
 server network code must be non-blocking (or use threads)
 now a client can simply block the server => DOS
+
+non-blocking io:
+the native code for non-blocking i/o for sockets is in place
+(win32 implementation is missing)
+the wrapper at the momenet can't expose it since we in fact wrap std::streambuf
+
+how to detect errors?
+at the moment we use blocking i/o => when read does return an empty string
+we are at eof/eos
 --------------------------------------------------------------------------------
 client must always be interruptable
 => how to interrupt the interpreter from time to time?
 does spidermonkey support this? similar to the GC
 (or perhaps use threads)
-yes there is some hook
+yes there is some hook (branch callback)
 --------------------------------------------------------------------------------
 egachine.in: see TODO / BUG
 ejsnet.cpp: see todo
@@ -58,19 +55,20 @@ SDL_mixer/mikmod?
 SDL_image?
 --------------------------------------------------------------------------------
 the svgl module is completely insecure at the moment
---------------------------------------------------------------------------------
+================================================================================
+
 
 
 OTHER:
 --------------------------------------------------------------------------------
-error reporting from native code:
-be careful with c++ exceptions
+Error reporting from native code:
+be careful with C++ exceptions:
 c++ exceptions can't be thrown through c-code
 (this was true but it seems today the c-compiler handles this?)
 anyway we can't throw exceptions in native code called by the interpreter 
 since he will not like it
 
-now there is a macro for handling errors EJS_THROW_ERROR
+now there is a macro for handling errors: EJS_THROW_ERROR
 all spidermonkey functions returning JS_FALSE already did set the error
 => simply return JS_FALSE
 if you want to generate an error use EJS_THROW_ERROR
@@ -78,24 +76,9 @@ if you want to generate an error use EJS_THROW_ERROR
 at the moment always the same error exception is thrown and the only way
 to differentiate between them is the message => really bad
 --------------------------------------------------------------------------------
-complete scenegraph (color, ...)
-wrap remaining video/input functions
---------------------------------------------------------------------------------
-perhaps redesign the scene-graph and take advantage of ecmascript features
-the current scenegraph is mainly taken from jgachine
---------------------------------------------------------------------------------
-watchall does not handle circles?!
-i think it does
-but it does not handle addition and removal of properties!
---------------------------------------------------------------------------------
 somehow remove dontwatch hack
---------------------------------------------------------------------------------
-solve the win32 opengl 1.1 problem
-probably use glew
-perhaps i should split the opengl wrapper stuff completely out of egachine
-there might be some interest in this
-on the other side there is already monkeyglobs which seems dead?
-now we use ejs and the gl module is seperated enough
+dontwatch hack is used by the (deprecated) Mover object
+remove Mover object and dontwatch hack (and examples using Mover)
 --------------------------------------------------------------------------------
 FONT STUFF:
 
@@ -186,6 +169,9 @@ cross plattform (easily cross compilable)
 small
 opengl
 unicode
+
+svgl uses glft for font rendering
+perhaps we could always use glft
 --------------------------------------------------------------------------------
 win32 timestamp currently only ms precision
 --------------------------------------------------------------------------------
@@ -194,9 +180,6 @@ report spidermonkey docu "bugs"
 JS_NewObject: class pointer may be NULL => Object
 FunctionSpec: extra arguments field
 --------------------------------------------------------------------------------
-fix netpong and netpong2
-i removed netpong / netpong2 is now netpong
-
 perhaps complete pong3
 --------------------------------------------------------------------------------
 supply version information
@@ -215,10 +198,10 @@ major: script wants 2.2.3 (=> 3.2.3 not okay and 1.2.3 not okay)
 we make no guarantee that this scheme is established until version 1!!
 expose spidermonkey/javascript version
 --------------------------------------------------------------------------------
-allow #!/usr/.../egachine at beginning of scripts
-to allow "normal" execution on unix systems
---------------------------------------------------------------------------------
 unicode text input does not work yet - and perhaps even is buggy?
+stdin text input currently is always latin1
+text input via. Input layer is unicode and seems to work quite well
+(via SDL)
 --------------------------------------------------------------------------------
 redesign input layer?
 
@@ -232,54 +215,36 @@ sometime in the future:
 expose more of the SDL Input stuff
 it is more powerful and there will not be any other implementation
 in the near future
-let user redefine keys
+let user redefine keys / gamepad mapping
 --------------------------------------------------------------------------------
 i am not sure if I do create the dll with my mingw cross compiler the right way
 do I need -fPIC, too ? no i don't think so - it seems all win32 code generated
 by mingw is position independant
 do I need the declspec shit and have to use dlltool?
 for now I simply compile like I would do on a unix system and it seems to work
---------------------------------------------------------------------------------
-serialize:
-why so complicated?
-toSource can handle graphs
-only because of the __proto__ field?
-i started a second try in src/examples/misc/ser.js
-now using the second serializer
-which temporarily renames __proto__ to _p
-still not the best solution
+
+cross compiling the modules results in large dlls
+because libstdc++ is linked in statically
+=> for windows we link the modules statically
+(is there a mingw with shared libstdc++?)
 --------------------------------------------------------------------------------
 client and server should check protocol compatibility/version
 --------------------------------------------------------------------------------
 kick out the video stuff which only duplicates the gl wrapper
 should i keep a subset in Video anyway?
 currently examples in client/opengl may use gl. and in client/ itself
-the should not use it - otherwise the destinction would be stupid
+they should not use it - otherwise the destinction would be stupid
 i think it would be a good idea to have an explicit subset
 of course this must be documented
-are the scenegraph objects allowed to call gl functions?
-nicer would be if they were not
+are the scenegraph objects allowed to call gl functions? yes
 --------------------------------------------------------------------------------
 I just found the sdl mingw developer package again
 should try if opengl works with it => no need for hacked SDL version?
---------------------------------------------------------------------------------
-we often assume that there is only one javascript context
-especially in client/video/jsgl
---------------------------------------------------------------------------------
-perhaps wrap:
-std::streambuf (nearly done in the network part)
-std::vector
 --------------------------------------------------------------------------------
 compression support
 we already depend on zlib
 done: Zlib.compress and Zlib.decompress
 todo: allow files passed on startup to be .gz
---------------------------------------------------------------------------------
-do not install all examples
-somehow tag the examples which should not get shipped with binaries
-the tag is DONTINSTALL in the first line
-(done: but only install does use this
-todo: crossmake (win32) should use this, too
 --------------------------------------------------------------------------------
 perhaps preprocess the examples
 because the have quite some code in common
@@ -299,10 +264,10 @@ I18N:
 
 charset:
 	javascript supports unicode utf16?
-	spidermonkey has a "seperate" unicode api?
+	spidermonkey has a "seperate" unicode api? yes (UC functions)
 	now do we really want the script files utf16 encoded? no
 	utf8 maybe
-	how are unicode strings represented internally by spidermonkey?
+	how are unicode strings represented internally by spidermonkey? (2byte)
 	first take a closer look at how this all is meant to work
 
 strings/messages:
@@ -321,6 +286,7 @@ Problem: music playing with SDL_mixer <=1.2.5 only works from files (not RWOps)
 In adic there also was a bug with mod playing - the loops were wrong afair.
 
 we currently depend on a CVS version and include it in the egachine package
+update: not true anymore
 
 OpenAL made much advances since last time I tried it.
 Really nice
@@ -350,217 +316,27 @@ the players may program all clients via the server
 a game about software patents
 choose side: patent lobby, patent opponent, politician
 --------------------------------------------------------------------------------
-distributed scenegraph:
-at the moment only changes to simple properties are distributed
-at least missing:
-distribute changes to arrays (see watcharray.js in limbo/js)
-allow addition of objects to arrays/objects
-(this is difficult to get right since the server must remember which objects
-where already distributed to the client to keep object relationships
-correct - in case objects are shared.
-example:
-a={x:...}
-root={r:a}
-distribute(root);
-root.b=a; <---
-
-this means we must remember the hash value of all distributed objects and the
-remote name (now we get back to the more complex serialization algorithms)
-
-another aproach would be to drop the distributed scenegraph and to use a
-"distributed eval" / function to evaluate code on server and clients
-of course this would not hide the network stuff verry well and would require
-the user to serialize objects as needed => user is forced to think about local
-and remote objects
---------------------------------------------------------------------------------
 SVG support (direct or indirect via transformation)
 decided to use svgl - since it already does what I wanted to do and I
 do not have the time to reinvent the wheel
+svgl module is still very experimental and buggy
 --------------------------------------------------------------------------------
 update project description to reflect new focus
+in fact a description should seperate ejs from the modules and describe the
+modules
 --------------------------------------------------------------------------------
-kooperation mit den anderen spidermonkey usern wäre auch nicht schlecht
-damit nicht alle die selben wrapper schreiben muessen
-evtl. simple "plugins" (shared lib mit 1/2 init/deinit funktionen)
+cooperate with other spidermonkey users using the spidermonkey API directly
+(not via xpcom)
+and working on similar projects (in the end we all write a js shell and only 
+add different language bindings)
+this was the reason for the redesign around ejs
+similar projects:
+- shanti rao (jsdb) http://www.jsdb.org
+- ...
 --------------------------------------------------------------------------------
-meine watch geschichte
-also ich mache jetzt ne eigene "klasse" dafür
-momentan teste ich das in test
-ich werde aufgerufen für add set get und delete => super
-jetzt muß ich nur noch irgendwie den/die callback(s) registrierbar machen
-watch überladen scheint mir nicht die beste lösung
-nur beim constructor übergeben auch nicht (aber es sollte möglich sein)
-wie soll so ein callback aussehen? mehrere funktionen oder eine mit einem
-entsprechenden parameter?
-einer oder mehrere callbacks?
-mehrere sollten möglich sein => mehrere
-vielleicht so:
-o=Test(); 
-brauche noch nen namen:
-WatchedObject
-ProxyObject - nee
-MonitoredObject
-WatchableObject
-Watchable
-Monitorable
-MonitorableObject
-
-
-o.onAdd=function(p,v)
-o.onDel=function(p)
-o.onGet=function(p,v)
-o.onSet=function(p,o,n)
-
-oder
-o.watch({onAdd:func....,onSet:func....});
-evtl.
-o.watchAll({onAdd:func....,onSet:func....});
-o.monitor={onAdd:func....,onSet:func....};
-
-
-okay
-wo war ich
-
-ich mach grad ewig rum wegen der exception kacke
-wollte eine exception "ableiten" von error
-aber das ist alles irgendwie kacke
-und alles nur weil onAdd auch das Hinzufügen von
-properties verhindern können soll
-:-((
-
-wie mache ich weiter?
-evtl. erstmal buch beschaffen?
-ecma-262 ausdrucken?
-dann nochmal in ruhe .constructor .__parent__
-.__proto__
-usw. anschauen
-???
-alles kacke
-
-js2 ist auch scheiße da xpcom
-ngs-js ist tot?
---------------------------------------------------------------------------------
-Eine Shell:
-
-jetzt habe ich schon egaserver egachine egares
-ansich wäre eine shell mit einem befehl zum plugin nachladen und einem befehl
-zum Ausführen von Script Dateien am Besten
-aber es muß sicher sein => befehl der den plugin ladebefehl sicher abschaltet
-befehl um js skripte auszuführen
-befehl der noch genau ein js skript ausführt
-
-plugin interface überlegen (C/C++ und JS)
-
-JS:
-dlopen(libname)
-EvaluateScript()
-
-// ab da geht dlopen und EvaluateScript nicht mehr - danach ist der context
-// aber auch untrusted => evtl. problem beim deinitialisieren
-EvaluateUntrustedScript() 
-
-was ist import in JS?
-was kann die smjs shell?
-
-=> gescheiten C++ streambuf wrapper schreiben
-
-C/C++:
-lib initialisieren
-javascript objekte registrieren (entfernen?)
-lib deinitialieren (reihenfolge?)
-
-was benutzen?
-libtldl - wahrscheinlich schon - schön klein
-glib? eher nein
-
-evtl. noch schauen wie es die anderen machen (möglichst programme die es
-auf vielen plattformen gibt)
---------------------------------------------------------------------------------
-war gerade dabei plugin geschichte zu implementieren (example plugin)
-
-was fehlt ist schlecht?
-JS:
-PluginLoader.xxx macht noch nix
-plugins und LD_LIBRARY_PATH bzw. pfade allgemein
-für win32 testen
-mit abhängigkeiten testen
-ansonsten abhängigkeiten evtl. in JS regeln
-
-das geht jetzt:
-echo "PluginLoader.load('example');if (example()) PluginLoader.load('example');"|./ejs
-
-
-problem: plugins unloaden
-das kann ich nicht wirklich machen
-geht erst nach spidermonkey shutdown => keine JS functionen dafür
---------------------------------------------------------------------------------
-wollte testen ob die libtool geschichte auch mit win geht
-problem: libtool will autoconf?
-mal sehen
-libtool kann man auch ohne autoconf benutzen
-
---------------------------------------------------------------------------------
-kann momentan nicht gegen cross compilierte spidermonkey lib linken?
-(zumindest smjs.exe nicht)
-nur wenn DEBUG=1 ! todo: warum?
---------------------------------------------------------------------------------
-
-große scheiße win DLL's dürfen anscheinend keine undefined symbols
-haben - aber anscheinend gibt es abhilfe:
-http://www.belgeler.org/autobook/autobook-DLLs-with-Libtool.html: 
-
-"All of the symbols required by a dll at runtime, must be resolved at
- link time. With some creative use of import libraries, it is usually
- possible to work around this shortcoming, but it is easy to forget
- this limitation if you are developing on a modern system which has
- lazy symbol resolution. Be sure to keep it at the back of your mind
- if you intend to have your package portable to Windows."
-
-vielleicht ist es am einfachsten wenn ich unter win zwar auch libtool verwende
-aber das so mache, daß wohl die libs gleich gelinkt werden
-
-oder ich mach die libs eben self contained!
-
-alles kacke haut irgendwie nicht so recht hin
-=> ich muß erstmal einen kleinen test machen
---------------------------------------------------------------------------------
-We don't use libtool we only use libltdl with "native" libs (non-libtool libs)
-
-todo bei make und crossmake: libltdl bauen und benutzen
-
-zlib modul ist nicht self-contained
-überall plugin in modul umbenennen? ja
-bei python bsp.: paket python-gtk2: contains modules that allow you to use...
-
---------------------------------------------------------------------------------
-MERKE: libtool+mingw+dll+ltdl suckt momentan => nur mingw+ltdl
-TODO: was ist der bug in libtool? - evtl. in neuerer vers. behoben?
-
-MERKE: libltdl macht den prefix nur bei libtoll libs (.la)
---------------------------------------------------------------------------------
-ich wollte modul geschichte evtl. anders machen
-vielleicht nur eine function via dlsym holen
-in der function eine struct füllen
-(vielleicht problematisch mit dll-geschichten, da könnten die addressen nicht
-stimmen
-
-jedes modul soll außerdem ein script haben können
-(optional)
-evtl. auch module die nur aus einem script bestehen
---------------------------------------------------------------------------------
-okay soweit
-jetzt muß ich noch testen ob es unter win auch geht!
-jop geht
-ABER:
-hmm cross compiling the modules results in large dlls
-probably because libstdc++ is linked in statically
-=> compile mingw with shared libstdc++
---------------------------------------------------------------------------------
-the zlib wrapper module should not be called zlib.dll
-at least jszlib.dll or perhaps ejszlib.dll
---------------------------------------------------------------------------------
-convert all wrappers to modules
-treat the module loader as module itself (as far as possible ;-)
+Monitorable object:
+rejecting property add's does not work at the moment?
+performance?
 --------------------------------------------------------------------------------
 nochmal die context geschichten anschauen
 vielleicht kann ich das ja doch gebrauchen
@@ -608,16 +384,6 @@ ziemlich bescheuert
 jetzt mache ich das mal richtig
 --------------------------------------------------------------------------------
 also
-spidermonkey kann auch aus nem FILE* lesen
-sollte weniger speicher verbrauchen
-(es wird nicht das ganze file in den speicher gelesen und dann erst ausgeführt
-und die Konvertierung nach unicode findet erst statt wenn nötig)
-jsscan.c:343: ubuf[i] = (jschar) (unsigned char) cbuf[j];
---------------------------------------------------------------------------------
-we should use one eval from file and do character conversion if neccessary
---------------------------------------------------------------------------------
-
-also
 grad ist mein problem ich rufe Evaluate auf mit NULL als obj
 interessant ist auch der jsapi.h Kommentar dazu
 wenn der denn noch aktuell ist?
@@ -637,65 +403,21 @@ moduleloader.js muß gefunden werden
 
 Beste Lösung man muß install machen!
 --------------------------------------------------------------------------------
-build funktionierte gerade nicht wegen VERBOSE / SILENT drecks bash kram
-
-
-
-nochmal libtool:
-evtl. muss ich nur -no-undefined hinzufuegen!
-
-ja fuck dann geht es !!!
-=> doch wieder libtool benutzen !!
-
-dann am besten auch gleich autoconf/automake
-
-bin dabei wieder automake zu benutzen
---------------------------------------------------------------------------------
-autoconf/libtool:
-i only want pic objects if they are only used for modules
---------------------------------------------------------------------------------
-also
-autoconf suckt
-
-suche mal ersatz
-
-cons (perl basiert):
-- keine parallelen builds?
-- tot?
-
-cook
-
-jam
-
-scons (python):
-+ anscheinend verbesserung von cons
-- langsam?
-- cross compile?
-+ ansich ganz nett
- 
-ant (java basiert):
-hmm
-
---------------------------------------------------------------------------------
-problem mit automake war das jsautocfg.h nicht rechtzeitig generiert wird
-
---------------------------------------------------------------------------------
 sash anschauen
 print modul
-spidermonkey configure check
---------------------------------------------------------------------------------
-test javascript modules
 --------------------------------------------------------------------------------
 ich sollte mir die nomenklatur anschauen - die scheint bei JS etwas
 "verworren"
 --------------------------------------------------------------------------------
-cross compile
---------------------------------------------------------------------------------
 automatic loading of modules? (resolve hook)
---------------------------------------------------------------------------------
-debian package
---------------------------------------------------------------------------------
-merke: debian spidermonkey benutzt nspr
+reflecting the resolve hook back to js seems to be a bad idea
+automatic loading of modules would require the modules to strictly follow
+naming convention and to stay in their scope
+at the moment this is not true and should be improved anyway
+
+clean-up the module / namespace stuff
+a module should if possible only define one object
+what about nesting?
 --------------------------------------------------------------------------------
 derive special exception objects
 --------------------------------------------------------------------------------
@@ -769,17 +491,7 @@ monitorable functioniert nicht
 garbage collector crashed
 
 noch mal InitClass Beispiel suchen :-((
---------------------------------------------------------------------------------
-habe jetzt std::streambuf gewrapped (allerdings wie immer string dreck...)
-brauche endlich byte array ;-)
-
-jetzt wollte ich den socket stream richtig machen
-die frage ist ob das std c++ interface dafür überhaupt taugt, da ich
-ja non-blobking io machen wollte
-anscheind soll man über showmanyc gehen 
-
-aber am besten wäre wohl doch ein select...
-aber den stream wrapper kann ich ja trotzdem benutzen ...
+this is fixed?
 --------------------------------------------------------------------------------
 private data:
 there is a API function JS_GetInstancePrivate
@@ -787,8 +499,9 @@ unfortunately it does not differentiate between private is null and
 class is wrong
 
 i use JS_GET_CLASS to do this
+perhaps we really should use JS_GetInstancePrivate
 --------------------------------------------------------------------------------
-clean up network modul - it is really ugly
+clean up network module - it is really ugly
 --------------------------------------------------------------------------------
 use streams whenever possible (don't convert to string ...)
 f.e. the Base64 encode decode could use a stream
@@ -796,28 +509,8 @@ f.e. the Base64 encode decode could use a stream
 create a native class (derived from std::streambuf) which uses a javascript
 object to implement it
 --------------------------------------------------------------------------------
-new network stream stuff:
-how to detect errors?
-at the moment we use blocking i/o => when read does return an empty string
-we are at eof/eos
-
-clean up new egaserver
-perhaps this should only be a module => no executable script?
-btw. how will i do this on win32?
---------------------------------------------------------------------------------
 improve opengl wrapper
-see src/modules/gl/README
---------------------------------------------------------------------------------
-dlopen und nvidia opengl wird trouble machen?
-etl. gegen pthread linken (oder LD_PRELOAD) oder....
-s.h.: /usr/share/doc/nvidia-glx/README.gz
-hmm anscheinend gehts
---------------------------------------------------------------------------------
-i should reduce namespace polution and clutter
-
-namens kacke
-stdin,stdout,... sind in Stream :-(((
-nicht sehr schön
+see src/modules/gl/README and TODO
 --------------------------------------------------------------------------------
 problem: input layer depends on video layer and must be able to exit
 why?
@@ -839,13 +532,6 @@ video resize wird ganz schwierig
 untrusted code soll das nicht koennen
 aber trotzdem muß es funktionieren wenn untrusted code läuft!
 --------------------------------------------------------------------------------
-libmcrypt kann ich von lernen
-libtool+threads und optional compilierte module !
-hmm anscheinend doch nicht was threads angeht
-error functionen werden abgeschalten und die anderen weitergereicht
-aber optional module bauen sollte da schön sein
-und alternativ statisch linken auch
---------------------------------------------------------------------------------
 thread-safety
 at the moment we do not use threads directly but:
 SDL_mixer does
@@ -855,6 +541,9 @@ libltdl isn't thread safe
 
 take a look at libesmpt?
 perhaps we should use glib or nspr now?
+glib: no
+we still do not depend upon nspr (but the debian libsmjs is linked against
+nspr anyway since it is using JS_THREADSAFE)
 --------------------------------------------------------------------------------
 OpenGL ES:
 http://www.khronos.org/opengles/
@@ -865,11 +554,10 @@ debian package!
 check linitian error messages
 man pages are missing
 
-perhaps split into platform dep/indep
+perhaps split into platform dep/indep?
+we now build 4 packages: ejs, ejs-multimedia, egachine-base, egachine
+
 register mime type (application/egachine ?)
-perhaps use an extra package for ejs
-and perhaps seperate packages for some module
-(especially the modules which depend on SDL => lots of deps)
 
 we need:
 different SDL_mixer version (see below audio:)
@@ -877,45 +565,52 @@ different SDL_mixer version (see below audio:)
 different spidermonkey version
 (the one in testing has bug 240577)
 --------------------------------------------------------------------------------
-build stuff:
-
---disable-module does not work yet
---------------------------------------------------------------------------------
-okay
-modules can now be linked statically
-the version with static modules is: 959K
-the version with dynamic modules is: 1,3M
-
-libtool dependency tracking is shit since it always links against all libs
-(which isn't required on linux)
-why is this shit?
-for example you link against SDL (which depends on many other libs)
-now you could replace this SDL with another one (with minimalistic dependencies)
-=> your program should now have minimalistic dependencies, too
-but no - libtool linked against every lib ....
---------------------------------------------------------------------------------
 take a look at <http://g3d-cpp.sourceforge.net/>
 --------------------------------------------------------------------------------
 different modules (video, gl, svgl) must be able to include gl headers in a 
 portable way find a nice solution
 --------------------------------------------------------------------------------
 wrap svgl DOM objects
+basic functionality is there
 --------------------------------------------------------------------------------
 hmm i have trouble with the nvidia drivers
 I use them in 16bit mode, AGP disabled and this works very well
 but svgl needs the stencil buffer which is not available in 16bit mode
 but in 24bit mode i get creashes and machine lock-ups
-it seems related to the lirc kernel module?
+seems related to bttv
 --------------------------------------------------------------------------------
 svgl generates cpp headers automatically from DOM idl via python
 we should try to generate wrappers automatically in the same way
 --------------------------------------------------------------------------------
-DOM:
-hmm riesig
-brauchbares subset auswählen
---------------------------------------------------------------------------------
 hmm svgldom test produces warning:
 unknown SVG element rect SVGDocument.cpp:117
+fixed: this was due to "bug" in svgl
+it assumed that the tagname passed in is a interned string
+awaiting reply from Stephane Conersy to this:
+
+i found another problem/bug
+createElement either assumes I always intern the string I pass in
+(which is not an option for me) or you just missed the *
+
+currently I use this fix:
+
+Index: src/w3c/svg/SVGDocument.cpp
+===================================================================
+RCS file: /cvsroot/svgl/svgl/src/w3c/svg/SVGDocument.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 SVGDocument.cpp
+--- src/w3c/svg/SVGDocument.cpp	22 Jun 2004 12:09:54 -0000	1.1.1.1
++++ src/w3c/svg/SVGDocument.cpp	28 Dec 2004 19:19:33 -0000
+@@ -102,7 +102,7 @@
+     SVGElement * res=0;
+ #if 1
+     #define STRDEF(name, value) \
+-    if(tagName==SVG##name##Element_element_string) { \
++    if(*tagName==*SVG##name##Element_element_string) { \
+       res = new SVG##name##Element(this); \
+     } \
+     else
+
 --------------------------------------------------------------------------------
 JS_ConstructObject vs. JS_NewObject !!
 perhaps i should use JS_ConstructObject where i am using JS_NewObject ?!
@@ -939,10 +634,8 @@ jsunit
 burstlib
 
 Another problem is to generate docu for the wrapped native code
---------------------------------------------------------------------------------
-clean-up the module / namespace stuff
-a module should if possible only define one object
-what about nesting?
+
+=> perhaps the best solution is to write the docu manually
 --------------------------------------------------------------------------------
 spidermonkey bug:
 https://bugzilla.mozilla.org/show_bug.cgi?id=271716
@@ -1213,3 +906,76 @@ siehe auch spezielle modul todo listen
 ejs.exit still sucks
 --------------------------------------------------------------------------------
 experimental declarative animation support destroyed svgviewer functionality
+
+wollte grad ein svg pong machen
+dabei habe ich nen svvg bug entdeckt? 2*setAttribute("transform ....
+genug für heut
+--------------------------------------------------------------------------------
+serialization/deser from client to server (secure without eval, subset
+of object literals could also use JSON:
+http://jsolait.net/doc/lang.xhtml
+--------------------------------------------------------------------------------
+auch gut:
+http://jan.kollhof.net/projects/svg/examples/index.xhtml
+
+ich glaube ich hab den bug gefunden
+das liegt daran daß immer nur transforms angehängt werden
+entscheidend scheint mir zu sein:
+#0  svg::Attribute<svg::Animated<svg::SVGList<svg::SVGTransform*> > >::getValue (this=0x817b830) at Attribute.hpp:37
+#1  0x42aae783 in svg::SVGTransformable::parse_attributes (this=0x0, attrName=@0x42af18e8, attrValue=@0x42af18e8)
+    at parseHelper.hpp:115
+#2  0x42aaeb2f in svg::SVGPolygonElement::parse_attributes (this=0x817b740, attrName=@0xbfffe5d8, attrValue=@0xbfffe5f4)
+    at ElementParseAttributesMethods.cpp:770
+#3  0x42a3178a in svg::SVGAttr::setValue (this=0x81868b8, v=0x8212ca8) at SVGDocument.cpp:48
+#4  0x42a0943b in dom::Attr::setNodeValue (this=0x42af18e8, value=0x817b844) at Attr.cpp:120
+#5  0x42a0f623 in dom::Element::setAttribute (this=0x817b740, name=0x8212c78, value=0x8212ca8) at Element.cpp:199
+
+(gdb) info break
+Num Type           Disp Enb Address    What
+1   breakpoint     keep y   0x429cd31d in element_setAttribute at ../../../../egachine/src/modules/svgl/ejselement.cpp:111
+        breakpoint already hit 9 times
+2   breakpoint     keep y   0x42aae739 in svg::SVGTransformable::parse_attributes(unicode::String* const&, unicode::String* const&) at ElementParseAttributesMethods.cpp:684
+        breakpoint already hit 3 times
+
+report bug
+my "fix" is in parseHelper.hpp:227
+vermutlich ist das nicht der einzige bug dieser art
+
+
+
+remember:
+You must type
+  (gdb) print ('Foo::Bar') x
+
+--------------------------------------------------------------------------------
+
+the filter effects do not work?
+
+der macht sowas wie ich?
+http://jan.kollhof.net/publications/svgopen2004.html
+
+inkscape
+--------------------------------------------------------------------------------
+serialization:
+
+the new serialization is quite slow
+
+we now have many different serialization approaches
+2 will remain:
+- server to clients:
+	goal: try to serialize as complete as possible
+	(prototypes, sharp variables, ...)
+	support "incremental" serialization (later modification)
+	distributed object graph
+- client to server:
+	goal: don't use eval (security)
+	use JSON (subset of javascript object literals)
+--------------------------------------------------------------------------------
+================================================================================
+
+
+
+
+Performance problems:
+
+- scene graph traversion is quite slow

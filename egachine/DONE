@@ -693,5 +693,15 @@ somehow remove dontwatch hack
 dontwatch hack is used by the (deprecated) Mover object
 remove Mover object and dontwatch hack (and examples using Mover)
 --------------------------------------------------------------------------------
-
+cross-compiled svgl (glft/freetype/libgc/expat)
+strip resulting libs (.a) only with --strip-unneeded
+otherwise symbols are stripped and they are worthless
+--------------------------------------------------------------------------------
+emacs:
+M-1 M-|
+(replace region with shell command output - using region as input
+--------------------------------------------------------------------------------
+setNodeValue() is not in es dom bindings
+it is the nodeValue property (writable)
+--------------------------------------------------------------------------------
 

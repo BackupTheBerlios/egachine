@@ -63,16 +63,12 @@
     var Timer=ejs.ModuleLoader.get("Timer");
     var svgl=ejs.ModuleLoader.get("svgl");
     var stderr=ejs.ModuleLoader.get("Stream").stderr;
-
-    var timeOut;
+    var timeout,oldTarget;
 
     Video.showMouseCursor(1);
 
-    var oldTarget;
-
-
     function setNewTarget(e,newTarget) {
-      assert(function(){return e && newTarget;});
+      //      assert(function(){return e && newTarget;});
 
       var subevt;
       if (newTarget!=oldTarget) {
@@ -99,7 +95,7 @@
     };
 
     function setEventTarget(e) {
-      assert(function(){return !e.target;});
+      //      assert(function(){return !e.target;});
       var picked,path=[document],p2,p3;
       picked=svgl.pick(e.screenX,e.screenY);
       //      stderr.write("setEventTarget: "+picked.toSource()+"\n");
@@ -107,7 +103,7 @@
 	// nothing picked
 	e._path=path;
 	setNewTarget(e,document);
-	assert(function(){return e.target;});
+	//	assert(function(){return e.target;});
 	return e;
       }
       p2=picked[picked.length-1];
@@ -115,9 +111,9 @@
       path=path.concat(p2);
       p3=p2[p2.length-1];
       e._path=path;
-      assert(function(){return p3;});
+      //      assert(function(){return p3;});
       setNewTarget(e,p3);
-      assert(function(){return e.target;});
+      //      assert(function(){return e.target;});
       return e;
     };
 
@@ -151,7 +147,7 @@
 
       if (!evt.target)
 	setEventTarget(evt);
-      assert(function(){return evt.target;});
+      //      assert(function(){return evt.target;});
       dispatch(evt);
       if (evt.type=="mouseup") {
 	// todo: perhaps the evt was modified!! clone mouseup before dispatch
@@ -178,11 +174,11 @@
     
     function getEvents(dt) {
       var tmp;
-      if (timeOut) {
+      if (timeout) {
 	// process timeout
-	if ((timeOut.remain-=dt)<0) {
-	  tmp=timeOut;
-	  timeOut=false;
+	if ((timeout.remain-=dt)<0) {
+	  tmp=timeout;
+	  timeout=false;
 	  tmp.func();
 	}
       }
@@ -194,7 +190,7 @@
       var stepSize=1000000/85*2;
       if (time && (stepSize>time)) stepSize=time;
       
-      var start,last,now;
+      var start,last,now,ret;
       start=last=now=Timer.getTimeStamp();
       while ((!time)||(now-start<time)) {
 	Timer.uSleep(stepSize);
@@ -202,11 +198,14 @@
 	if (!f(now-last)) break;
 	last=now;
       };
-      return now-start;
+      ret=now-start;
+      //      debug("step: "+ret);
+      return ret;
     };
     
     //! called from native code (animation running)
     reschedule=function(sec){
+      //      debug("reschedule: "+sec);
       if (sec<0) throw sec;
       if (!sec) sec=0.001;
       return step(getEvents,sec*1000000)/1000000;
@@ -228,9 +227,9 @@
     setTimeout=function(toeval,ms) {
       // todo: should it be possible to set multiple timeouts?
       if (typeof toeval == "function")
-	timeOut={func:function(){toeval();},timeOut:ms*1000,remain:ms*1000};
+	timeout={func:function(){toeval();},timeout:ms*1000,remain:ms*1000};
       else
-	timeOut={func:function(){eval(toeval);},timeOut:ms*1000,remain:ms*1000};
+	timeout={func:function(){eval(toeval);},timeout:ms*1000,remain:ms*1000};
     };
     
     document._handleScripts(this);
@@ -241,7 +240,7 @@
 
       function convert(e) {
 	var i,s,c;
-	assert(e);
+	//	assert(e);
 	if (e.getAttribute) {
 	  for (i=0;i<types.length;++i) {
 	    if ((s=e.getAttribute("on"+types[i]))) {
@@ -253,12 +252,8 @@
 	      e.addEventListener(types[i],
 				 (function(t,s){
 				   return function(evt){
-				     if (evt.target === t) {
-				       debug("call "+types[i]+": "+s+" ");
+				       debug("eval: "+s);
 				       eval(s);
-				     }else{
-				       debug("wrong target");
-				     }
 				   };})(e,s),
 				 false);
 	    }

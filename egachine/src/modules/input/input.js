@@ -381,11 +381,25 @@
   Input.toMouseEvent=function(e) {
     var ret=new Input.MouseEvent();
     switch(e.type) {
-      case Input.MOUSEBUTTONDOWN:
-      case Input.MOUSEBUTTONUP:
+    case Input.MOUSEMOTION:
+      ret.type="mousemove";
+      break;
+    case Input.MOUSEBUTTONDOWN:
+      ret.type="mousedown";
+      break;
+    case Input.MOUSEBUTTONUP:
+      ret.type="mouseup";
+      break;
+    default:
+      throw Error("wrong type: "+e.type);
+    };
+
+    switch(e.type) {
+    case Input.MOUSEBUTTONDOWN:
+    case Input.MOUSEBUTTONUP:
       ret.button=e.button-1;
       // no break here
-      case Input.MOUSEMOTION:
+    case Input.MOUSEMOTION:
       ret.screenX=e.x;
       ret.screenY=e.y;
       // todo: ?
@@ -400,7 +414,7 @@
 	 ret.type=;
       */
       break;
-      default:
+    default:
       throw Error("wrong event type");
     };
     ret.bubbles=true;
@@ -470,24 +484,7 @@
   };
 
   Input.handleMouse=function(e) {
-    var domevent=Input.toMouseEvent(e);
-    var type;
-    switch(e.type) {
-    case Input.MOUSEMOTION:
-      type="mousemove";
-      break;
-    case Input.MOUSEBUTTONDOWN:
-      type="mousedown";
-      break;
-    case Input.MOUSEBUTTONUP:
-      type="mouseup";
-      break;
-    default:
-      throw Error("wrong type: "+e.type);
-    };
-
-    domevent.type=type;
-    Input.dispatchEvent(domevent);
+    Input.dispatchEvent(Input.toMouseEvent(e));
   };
 
   //! todo: this must always work => untrusted code should not be allowed to mess with this
@@ -563,7 +560,7 @@
   })();
 
   Input.poll=function(){
-    var events,i,event;
+    var events,i,event,maxe=0,mouseMotion=false;
 
     function handleDevKey(e, keyDev)
     {
@@ -702,6 +699,10 @@
     };
 
     events=Input.getEvents();
+    if (events.length>maxe) {
+      maxe=events.length;
+      //      debug("maxe: "+maxe);
+    }
     for (i=0;i<events.length;++i) {
       event=events[i];
       switch (event.type) {
@@ -731,13 +732,26 @@
 	Input.handleResize(event);
 	break;
       case Input.MOUSEMOTION:
+	// accumulate mouse motion events
+	mouseMotion=event;
+	break;
       case Input.MOUSEBUTTONDOWN:
       case Input.MOUSEBUTTONUP:
+	if (mouseMotion) {
+	  // keep mouse events in order
+	  Input.handleMouse(mouseMotion);
+	  mouseMotion=false;
+	}
 	Input.handleMouse(event);
 	break;
-      }
-
-    }
-  }
+      };
+    };
+    
+    // report pending mouse motion events
+    if (mouseMotion) {
+      Input.handleMouse(mouseMotion);
+      mouseMotion=false;
+    };
+  };
 
  })(this);

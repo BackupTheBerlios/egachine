@@ -23,4 +23,18 @@ we dont support external script files:
 --------------------------------------------------------------------------------
 dom level 2 event bubbling probably not correctly implemented
 the reported coordinates are wrong?
+
+regarding attributes:
+Implementors may view the setting of event attributes as the creation and 
+registration of an EventListener on the EventTarget. The value of useCapture 
+defaults to 'false'. This EventListener behaves in the same manner as any 
+other EventListeners which may be registered on the EventTarget.
+
+http://www.w3.org/TR/SVG11/svgdom.html#RelationShipWithDOM2Events
+--------------------------------------------------------------------------------
+onLoad?
+where is it in the specs?
+http://www.w3.org/TR/SVG11/interact.html#SVGEvents
+--------------------------------------------------------------------------------
+getCTM(), getScreenCTM()
 --------------------------------------------------------------------------------

@@ -74,6 +74,12 @@
 #include <unistd.h>
 #endif
 
+#define HAVE_SCHED_SETSCHEDULER 1
+#ifdef HAVE_SCHED_SETSCHEDULER
+#include <sched.h>
+#include <sys/mman.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -278,6 +284,33 @@ extern "C" {
     return JS_TRUE;
   }
 #endif
+
+#ifdef HAVE_SCHED_SETSCHEDULER
+  static JSBool
+  schedRealtime(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    struct sched_param sp;
+    pid_t pid;
+
+    EJS_CHECK_TRUSTED(cx,obj);
+    *rval=JSVAL_TRUE;
+
+    sp.sched_priority = sched_get_priority_min(SCHED_FIFO);
+    if(sched_setscheduler(0, SCHED_FIFO, &sp) != 0) {
+      sp.sched_priority = sched_get_priority_min(SCHED_RR);
+      if(sched_setscheduler(0, SCHED_RR, &sp) != 0) {
+	sp.sched_priority = sched_get_priority_max(SCHED_OTHER);
+	if(sched_setscheduler(0, SCHED_OTHER, &sp) != 0) {
+	  *rval=JSVAL_FALSE;
+	}
+      }
+    }
+    if (mlockall(MCL_CURRENT)!=0) *rval=JSVAL_FALSE;
+    setuid(getuid());
+    return JS_TRUE;
+  }
+#endif
+  
   
 #define FUNC(name, args) { #name,name,args,0,0}
 
@@ -292,6 +325,9 @@ extern "C" {
     {"JSVersion",       ejs_JSVersion,  0, 0, 0},
 #ifdef HAVE_RLIMIT
     FUNC(setMemoryLimit,1),
+#endif
+#ifdef HAVE_SCHED_SETSCHEDULER
+    FUNC(schedRealtime,0),
 #endif
     EJS_END_FUNCTIONSPEC
   };

@@ -58,10 +58,24 @@ ObjectWriter=function(stream)
   this.stream=stream;
 };
 
+// todo: put this somewhere suitable
+ObjectWriter.toHex=function(n){
+  var s=Number(n).toString(16);
+  var padTo=6;
+  if (s.length>=padTo) throw new Error("out of range");
+  var z="000000";
+  return z.slice(-6+s.length)+s;
+}
+
 ObjectWriter.prototype.sync=function()
 {
   this.stream.sync();
 };
+
+ObjectWriter.prototype.remoteEval=function(x)
+{
+  this.stream.write(""+ObjectWriter.toHex(x.length+1)+"e"+x);
+}
 
 //! write object
 ObjectWriter.prototype.write=function(x,getObjectID)
@@ -72,7 +86,7 @@ ObjectWriter.prototype.write=function(x,getObjectID)
   // sharp variables within object graph
   var sharp={};
   var sharps=0;
-  var root="this.o["+this.written+"]";
+  var root="this.o["+ (this.written++) +"]";
   var stream=new StringStream();
 
   function myPropertyIsEnumerable(obj,p) {
@@ -97,6 +111,11 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	     || ( x instanceof Number  )
 	     || ( x instanceof Error   )
 	     || ( x instanceof Date    ) );
+  }
+
+  // todo: shit
+  function ignoreProperty(p) {
+    return p=="monitor";
   }
 
   // walk through the object graph and call callback functions stored in cbs
@@ -150,7 +169,7 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	    q=0;
 	    for (i in c) {
 	      p=c[i];
-	      if (x.hasOwnProperty(p))
+	      if ((x.hasOwnProperty(p))&&(!ignoreProperty(p)))
 		if (walk(x,x[p],fqname+"['"+p+"']",p,q,cbs))
 		  ++q;
 	    }
@@ -164,14 +183,22 @@ ObjectWriter.prototype.write=function(x,getObjectID)
     return true;
   };
 
+  // todo: this is shit
+  function completelyIgnore(obj) {
+    return ((obj=={}.constructor)
+	    || (obj==Object.prototype)
+	    || (obj==Function)        
+	    || (obj==Function.prototype)
+	    || ((this.Monitorable)
+		&&(obj==this.Monitorable.prototype)));
+  }
+
   // find aliases (calculate sharp variables) within this object graph
   walk(undefined, x, root, root, 0,
        {visited:{}, inFunction:false, ignore:function(px,obj){
-	   var key=getObjectID(obj);
-	   if ((obj=={}.constructor)
-	       || (obj==Object.prototype)
-	       || (obj==Function)        
-	       || (obj==Function.prototype)) return 2;
+	   var key;
+	   if (completelyIgnore(obj)) return 2;
+	   key=getObjectID(obj);
 	   if (this.visited[key]) {
 	     sharp[key]=++sharps;
 	     return true;
@@ -186,10 +213,7 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	   ignore:function(px, obj, fqname, name, cnum){
 	   var key;
 	   var ser;
-	   if ((obj=={}.constructor)
-	       || (obj==Object.prototype)
-	       || (obj==Function)        
-	       || (obj==Function.prototype)) return 2;
+	   if (completelyIgnore(obj)) return 2;
 	   key=getObjectID(obj);
 	   if (this.visited[key]) {
 	     this.visited[key]++;
@@ -287,15 +311,8 @@ ObjectWriter.prototype.write=function(x,getObjectID)
 	 },
        });
 
-  function toHex(n){
-    var s=n.toString(16);
-    var padTo=6;
-    if (s.length>=padTo) throw new Error("out of range");
-    var z="000000";
-    return z.slice(-6+s.length)+s;
-  }
-
-  oo.stream.write(""+toHex(stream.str().length)+stream.str());
+  oo.stream.write(""+ObjectWriter.toHex(stream.str().length+1)+"o"+stream.str());
+  return root;
 };
 
 ObjectReader=function(stream)
@@ -313,7 +330,14 @@ ObjectReader.prototype.read=function()
 {
   var h="0x"+this.stream.read(6);
   var msg=this.stream.read(Number(h));
-  var ret=eval("this.o["+this._read+"]="+msg);
-  this._read++;
+  var msgtype=msg[0];
+  var ret;
+  if (msgtype=="o") {
+    ret=eval("this.o["+this._read+"]="+msg.slice(1));
+    this._read++;
+  }else if (msgtype=="e"){
+    ret=eval(msg.slice(1));
+  }else
+    throw new Error("received unknown message type: '"+msgtype+"'");
   return ret;
 };

@@ -41,8 +41,19 @@ read:
 http://www.debian.org/doc/manuals/apt-howto/ch-sourcehandling.en.html
 
 for example:
+
+As root:
+# update package database
 $apt-get update
+# install packages required to build egachine
+$apt-get build-dep egachine
+# install fakeroot
+$apt-get install fakeroot
+
+As normal user
+# fetch source
 $apt-get source egachine
+# build package
 $cd egachine-0.0.?
 $dpkg-buildpackage -rfakeroot -b -uc
 

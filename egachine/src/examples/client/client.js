@@ -1,11 +1,12 @@
 // gerneral purpose client - which connects to egaserver
 
 if (!EGachine.client) throw "This file must be run by egachine";
-if (!EGachine.checkVersion(0,0,5)) throw "at least version 0.0.5 required";
+if (!EGachine.checkVersion(0,0,7)) throw "at least version 0.0.7 required";
 
 var host=(argv.length>=2) ? argv[1] : "localhost";
 var port=(argv.length>=3) ? argv[2] : 47000;
 
+// input field
 function InputField(text,maxlen)
 {
   this.maxlen=maxlen;
@@ -32,7 +33,6 @@ InputField.prototype.handleChar=function(c){
     if (this.text.length<this.maxlen)
       this.text=this.text+c;
   }
-  //  print (this.text);
 }
 
 function connect(host,port) {
@@ -106,14 +106,10 @@ function connect(host,port) {
   host=hp[0];
   port=hp[1];
 
-  // todo in the moment we can't handle errors
-  // we have to be careful
-  // if we allow catching errors we should not allow
-  // to try another connection
-  // why?
-  // for security reasons
-  // egachine is probably running untrusted code 
-  // => it is only allowed to connect once
+  // TODO: in the moment we can't handle errors
+  // if we could we could print an error message
+  // Note: egachine allows only to try once
+  // to establish an outgoing connection for security reasons
   // (perhaps we could allow 2 or 3 trials)
   stream=Net.connect(host,port);
 }

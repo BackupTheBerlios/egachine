@@ -15,6 +15,41 @@ AND THE CLIENT PERHAPS, TOO
 (see also TODO)
 --------------------------------------------------------------------------------
 
+QUICK-START (windows)
+
+All .bat files should do something.
+
+To run a local 2-player pong game start:
+pong.bat
+
+To run a networked 2-player pong game:
+first start
+netpong.bat (this starts the server)
+then
+client.bat (this starts the client)
+
+Input:
+if you have a joystick, it acts like a gamepad
+no joystick/gamepad => keyboard acts like a gamepad
+Keyboard Controls:
+
+Key			Function		Comments
+
+ESC			quit
+Alt+Enter		toggle fullscreen	(not supported on win32)
+Ctrl+Z			iconify window		(not supported on win32?)
+
+Keypad 1:
+cursor keys on the number block
+
+Keypad 2:
+w,a,s,d
+
+Linux users:
+USAGE: egachine script
+
+--------------------------------------------------------------------------------
+
 FEATURES/GOALS:
 - Run untrusted code in a secure manner:
   This is similar to Java applets or like browsers run javascript code.
@@ -52,19 +87,11 @@ HELP WANTED:
 if you like EGachine please contact me/us. For now mail me directly:
 karme@berlios.de
 
---------------------------------------------------------------------------------
+Could someone write a small GUI in Javascript?
+(Menu, checkboxes, themable, suitable for games)
 
-QUICK-START (windows)
-All .bat files should do something.
-
-To run a local 2-player pong game start:
-pong.bat
-
-To run a networked 2-player pong game:
-first start
-netpong.bat (this starts the server)
-then
-client.bat (this starts the client)
+Perhaps a game generator frontend which produces suitable output for
+egaserver/egachine ?
 
 --------------------------------------------------------------------------------
 

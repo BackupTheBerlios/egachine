@@ -34,10 +34,20 @@ does spidermonkey support this? similar to the GC
 --------------------------------------------------------------------------------
 client.js: see TODO / BUG
 --------------------------------------------------------------------------------
+are the wrapped libraries secure?
 how buggy/safe/secure/trustworthy are opengl/mesa implementations?
+SDL_mixer/mikmod?
+SDL_image?
 --------------------------------------------------------------------------------
 
+
 OTHER:
+--------------------------------------------------------------------------------
+Could someone write a small GUI in Javascript?
+(Menu, checkboxes, themable, suitable for games)
+--------------------------------------------------------------------------------
+Perhaps a game generator frontend which produces suitable output for
+egaserver/egachine ?
 --------------------------------------------------------------------------------
 error reporting from native code:
 be careful with exceptions
@@ -209,7 +219,8 @@ should i use autoconf/make again before i make a deb?
 i did now make a deb without autoconf/make
 
 check linitian error messages
-man pages
+man pages are missing
+source package should not include CVS
 
 perhaps split into platform dep/indep
 register mime type (application/egachine ?)
@@ -219,6 +230,9 @@ i used a different SDL_mixer version (see below audio:)
 i used a different spidermonkey version
 (there is none in testing?)
 => compiled statically
+perhaps i should compile then dynamically anyway and place them in
+/usr/lib/egachine
+this would require LD_LIBRARY_PATH and a shell wrapper around the programs
 --------------------------------------------------------------------------------
 write DOCU!
 --------------------------------------------------------------------------------
@@ -311,4 +325,10 @@ somehow tag the examples which should not get shipped with binaries
 the tag is DONTINSTALL in the first line
 (done: but only install does use this
 todo: crossmake (win32) should use this, too
+--------------------------------------------------------------------------------
+perhaps preprocess the examples
+because the have quite some code in common
+=> annoying if this code needs an update
+--------------------------------------------------------------------------------
+native base64 encode/decode
 --------------------------------------------------------------------------------

@@ -22,8 +22,7 @@
 */
 
 #include <w3c/dom/ext/DOMVisitor.hpp>
-#include <w3c/svg/SVGSVGElement.hpp>
-#include <w3c/svg/SVGRectElement.hpp>
+#include <w3c/svg/SVGDocument.hpp>
 #include <svgl/Parser.hpp>
 #include "ejsallelements.h"
 #include "strutils.h"

@@ -8,8 +8,12 @@ must dom object constructors be in global scope?
 --------------------------------------------------------------------------------
 remove empty native constructors and finalizers if possible
 --------------------------------------------------------------------------------
-scripting and declarative animation?
+scripting together with declarative animation?
 --------------------------------------------------------------------------------
 we dont support external script files:
 <script xlink:href="foo.js" /> will not work
+--------------------------------------------------------------------------------
+hmm setAttribute("fill",color) does not work for circles
+--------------------------------------------------------------------------------
+dom level 2 event bubbling probably not correctly implemented
 --------------------------------------------------------------------------------

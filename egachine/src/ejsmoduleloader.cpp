@@ -39,6 +39,8 @@ public:
     if (!handle)
       storeLTError();
     onLoad = (OnLoadFunc)getSymbol("onLoad");
+    onUnLoad = NULL;
+    
     if (!onLoad) {
       storeLTError();
     }else{

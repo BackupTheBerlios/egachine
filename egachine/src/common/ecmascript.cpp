@@ -338,6 +338,7 @@ namespace ECMAScript
     }
   }
 
+  // todo: this is still quite a hack
   JSBool
   jsThrow(JSContext *cx, const char* msg) 
   {

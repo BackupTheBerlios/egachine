@@ -140,6 +140,7 @@ Input::devStateHandler(const Input::DevState& d)
   o << "Input.handleInput(new DevState("<<int(d.devno)<<","<<int(d.x)<<","<<int(d.y)<<","<<int(d.buttons)<<"));\n";
   // todo: i think we should use JS_CallFunction
   // note: we do not use ECMAScript::eval since this clears pending exceptions
+  // i posted a question to the newsgroup if it is allowed at all to call eval within the same context again
   jsval rval;
   if (!JS_EvaluateScript(ECMAScript::cx, ECMAScript::glob,
 			 o.str().c_str(), o.str().length(),

@@ -12,6 +12,7 @@ rm -vf $(find -name "*.o" -o -name "*.so" -o -name "*.lo" -o -name "*.a")
 
 for a in $PROGRAMS; do rm -vf src/$a; done
 for a in $PROGRAMS; do rm -vf src/$a.exe; done
+for a in $PROGRAMS; do rm -vf src/$a.bin; done
 
 cd $SPIDERMONKEY_SRCDIR
 rm -rf *.OBJ fdlibm/*.OBJ

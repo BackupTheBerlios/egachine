@@ -1,5 +1,8 @@
 2004-04-23  Jens Thiele  <karme@berlios.de>
 
+	* build shared library version of spidermonkey
+	on linux systems again
+
 	* started to remove Video functions from native code which are
 	in fact gl wrappers and implemented them in Javascript using 
 	the gl wrapper directly

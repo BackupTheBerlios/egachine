@@ -44,9 +44,22 @@ for a in $(find -name "*.js"); do
 done
 
 EBINDIR="$DESTDIR/$BINDIR"
+ELIBDIR="$DESTDIR/$LIBDIR/egachine"
 install -dv $EBINDIR
+install -dv $ELIBDIR
+
+install -s $SPIDERMONKEY_SRCDIR/$SM_BUILDDIR/libsmjs.so $ELIBDIR
+
 cd $SRCDIR
 for a in $PROGRAMS; do
-    install -s "$a" $EBINDIR
-    install -s "$a" $EBINDIR
+    install -s "$a.bin" $ELIBDIR
+
+    cat > $EBINDIR/$a <<-EOF
+	#!/bin/sh
+	LD_LIBRARY_PATH=$LIBDIR/egachine
+	export LD_LIBRARY_PATH
+	exec $LIBDIR/egachine/$a.bin \$*
+	EOF
+    chmod +x $EBINDIR/$a
 done
+

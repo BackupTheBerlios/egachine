@@ -27,8 +27,7 @@ extern "C" {
       if (!outgoing) return JS_FALSE;
       if (!JSNetwork::newStreamObject(outgoing,rval)) return JS_FALSE;
     }catch(const SocketError &e){
-      JS_ReportError(cx,e.what());
-      return JS_FALSE;
+      ECMA_ERROR(e.what());
     }
     return JS_TRUE;
   }

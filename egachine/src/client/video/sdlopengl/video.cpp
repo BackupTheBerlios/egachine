@@ -230,23 +230,21 @@ createWindow(int width, int height, bool fullscreen)
   if (!db) JGACHINE_WARN("did not get double buffer");
 
   setViewport(0,0,video->w,video->h);
+
+  glMatrixMode(GL_PROJECTION);		
+  glLoadIdentity();
   glOrtho(0.0f,video->w,0.0f,video->h,-100.0f,100.0f);
 
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-  GL_ERRORS();
   glClear(GL_COLOR_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+
   glColor3f(1.0,1.0,1.0);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  GL_ERRORS();
-
-
   glDisable(GL_NORMALIZE);
-  GL_ERRORS();
   glDisable(GL_LIGHTING);
-  GL_ERRORS();
   glDisable(GL_CULL_FACE);
   GL_ERRORS();
   float range[2];

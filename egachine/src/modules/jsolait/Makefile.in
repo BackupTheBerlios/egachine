@@ -37,7 +37,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = src/modules/jsolait
-DIST_COMMON = $(dist_jsolait_DATA) $(dist_pkgdata_DATA) \
+DIST_COMMON = README $(dist_jsolait_DATA) $(dist_pkgdata_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac

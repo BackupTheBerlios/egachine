@@ -1,3 +1,14 @@
+2005-01-26  Jens Thiele  <karme@berlios.de>
+
+	* added port property to Server object
+
+	* added close method to Stream object
+
+	* modules having configuration options now all get those
+	from ejs.config.modulename.option
+
+	* EGachine: get port from config: ejs.config.EGachine.port
+
 2005-01-25  Jens Thiele  <karme@berlios.de>
 
 	* bump version number to 0.1.2

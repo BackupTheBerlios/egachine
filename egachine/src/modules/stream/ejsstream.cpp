@@ -83,7 +83,7 @@ extern "C" {
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     GET_STREAM_OBJ;
-    if (!JSVAL_IS_INT(argv[0])) return JS_FALSE;
+    if (!JSVAL_IS_INT(argv[0])) EJS_THROW_ERROR(cx,obj,"int expected");
     int toread=JSVAL_TO_INT(argv[0]);
     char* buf=(char *)JS_malloc(cx,toread+1);
     if (!buf) return JS_FALSE;

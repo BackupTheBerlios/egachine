@@ -119,9 +119,14 @@ bool NetStreamBufServer::select(const Timeout *timeout){
   fd_set read_fd_set = active_fd_set;
   timeval ctimeout;
   if (timeout) {
-    // todo what about negative values and unsigned timeval structs
-    ctimeout.tv_sec=(*timeout)/1000000LL;
-    ctimeout.tv_usec=(*timeout)%1000000LL;
+    if (*timeout>=0){
+      // todo what about negative values and unsigned timeval structs
+      ctimeout.tv_sec=(*timeout)/1000000LL;
+      ctimeout.tv_usec=(*timeout)%1000000LL;
+    }else{
+      EJS_WARN("negative timeout value");
+      ctimeout.tv_sec=ctimeout.tv_usec=0;
+    }
   }
   // Find the largest file descriptor
   // todo - this should not be done on each select
@@ -138,8 +143,11 @@ bool NetStreamBufServer::select(const Timeout *timeout){
   
   while (::select (++maxfd, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL) < 0)
     {
-      if (errno!=EINTR)
+      if (errno!=EINTR) {
+	if (timeout)
+	  EJS_ERROR("(timeout:"<< (*timeout));
 	EJS_FATAL("select failed");
+      }
     }
   // which sockets have input pending ?
   for (int i = 0; i < maxfd; ++i)

@@ -119,6 +119,26 @@ function deserialize(str) {
   return x;
 };
 
+// find last element in sorted array-like object not greater than v
+function findLastNotGreater(at,length,v){
+  if ((!at)||(!length)) throw new Error("invalid input");
+  if (at(0)>v) return -1;
+  var last=length-1;
+  if (at(last)<=v) return last;
+  
+  function _find(l,r) {
+    var d=r-l;
+    if (d<2) return l;
+    var m=l+(d>>1);
+    if (at(m)>v)
+      return _find(l,m);
+    else
+      return _find(m,r);
+  };
+  
+  return _find(0,last);
+};
+
 // misc extensions
 Number.prototype.convertTo=function(base,padTo){
   var s=this.toString(base);
@@ -126,8 +146,11 @@ Number.prototype.convertTo=function(base,padTo){
   return Math.pow(10,padTo-s.length).toString().slice(1)+s;
 };
 
+if (!constructor)
+  constructor=function(func){return func;};
+
 //! Resource object
-function Resource(resname,resource) {
+Resource=constructor(function(resname,resource) {
   this.name=resname;
   this.size=resource.length;
 
@@ -140,7 +163,8 @@ function Resource(resname,resource) {
   }else{
     this.data=uncomp;
   }
-};
+			      });
+
 
 Resource.prototype.decode=function(){
   if (this.z) return Zlib.uncompress(Base64.decode(this.data),this.size);
@@ -272,10 +296,10 @@ EGachine.checkVersion=function(maj,min,mic)
 */
 
 // vector object
-function V2D(x,y){
-  this.x=x;
-  this.y=y;
-};
+V2D=constructor(function(x,y){
+			   this.x=x;
+			   this.y=y;
+			 });
 V2D.middle=function(p1,p2) {
   return p1.add(p2).scale(0.5);
 }
@@ -326,9 +350,9 @@ V2D.prototype.dot=function(v)
 
 // degrees object
 // this is mainly to get reference semantic / wrap primitive type
-function Degrees(deg){
-  this.value=deg;
-};
+Degrees=constructor(function (deg){
+			       this.value=deg;
+			     });
 Degrees.prototype.add=function(deg)
 {
   return new Degrees(this.value+deg);
@@ -360,31 +384,29 @@ function DevState(dev,x,y,buttons){
 // Node object
 // curently prototype object of all nodes in the scenegraph
 // (prototype of the prototypes)
-function Node() {
-};
+Node=constructor(function() {});
 Node.prototype.paint=function(time){
+  var i;
   if (!this.children) return;
-  for (var i=0;i<this.children.length;++i)
-    if (!this.children[i].disabled) {
-      this.children[i].paint(time);
-    }
+  for (i=0;i<this.children;++i)
+    this[i].paint(time);
 };
 // deprecated
 Node.prototype.step=function(dt){
   if (!this.children) return;
-  for (var i=0;i<this.children.length;++i)
-    this.children[i].step(dt);
+  for (var i=0;i<this.children;++i)
+    this[i].step(dt);
 };
 Node.prototype.add=function(n){
-  if (!this.children) this.children=[];
-  this.children.push(n);
+  if (!this.children) this.children=0;
+  this[this.children++]=n;
   return this;
 };
 
 // derived object Rotate
-function Rotate(degrees) {
-  this.degrees=degrees;
-}
+Rotate=constructor(function (degrees) {
+			      this.degrees=degrees;
+			    });
 Rotate.prototype=new Node();
 Rotate.prototype.paint=function(time){
   Video.pushMatrix();
@@ -395,9 +417,9 @@ Rotate.prototype.paint=function(time){
 };
 
 // derived object Texture
-function Texture(resname){
-  this.resname=resname;
-}
+Texture=constructor(function(resname){
+			       this.resname=resname;
+			     });
 Texture.prototype=new Node();
 Texture.prototype.paint=function(time){
   Video.drawTexture(Video.getTextureID(this.resname));
@@ -406,9 +428,9 @@ Texture.prototype.paint=function(time){
 };
 
 // derived object Scale
-function Scale(v) {
-  this.v=v;
-}
+Scale=constructor(function(v) {
+			     this.v=v;
+			   });
 Scale.prototype=new Node();
 Scale.prototype.paint=function(time){
   Video.pushMatrix();
@@ -418,9 +440,9 @@ Scale.prototype.paint=function(time){
 };
 
 // derived object Translate
-function Translate(v) {
-  this.v=v;
-}
+Translate=constructor(function(v) {
+				 this.v=v;
+			       });
 Translate.prototype=new Node();
 Translate.prototype.paint=function(time){
   Video.pushMatrix();
@@ -430,12 +452,12 @@ Translate.prototype.paint=function(time){
 };
 
 // derived object Sprite
-function Sprite(resname,size,pos,degrees) {
-  this.size=size;
-  this.pos=pos;
-  this.degrees=degrees;
-  this.resname=resname;
-}
+Sprite=constructor(function(resname,size,pos,degrees) {
+			      this.size=size;
+			      this.pos=pos;
+			      this.degrees=degrees;
+			      this.resname=resname;
+			    });
 Sprite.prototype=new Node();
 Sprite.prototype.paint=function(time){
   Video.pushMatrix();
@@ -450,12 +472,12 @@ Sprite.prototype.paint=function(time){
 };
 
 // derived object Color
-function Color(r,g,b,a) {
-  if (r.length)
-    this.c=r;
-  else
-    this.c=[r,g,b,a];
-}
+Color=constructor(function(r,g,b,a) {
+			     if (r.length)
+			       this.c=r;
+			     else
+			       this.c=[r,g,b,a];
+			   });
 Color.prototype=new Node();
 Color.prototype.paint=function(time){
   Video.pushColor();
@@ -465,11 +487,11 @@ Color.prototype.paint=function(time){
 };
 
 // derived object Text
-function Text(text,hcenter,vcenter) {
-  this.text=text;
-  this.hcenter=hcenter;
-  this.vcenter=vcenter;
-}
+Text=constructor(function(text,hcenter,vcenter) {
+			    this.text=text;
+			    this.hcenter=hcenter;
+			    this.vcenter=vcenter;
+			  });
 Text.prototype=new Node();
 Text.prototype.paint=function(time){
   Video.drawText(this.text,this.hcenter,this.vcenter);
@@ -477,12 +499,11 @@ Text.prototype.paint=function(time){
 };
 
 // derived object Quad
-function Quad(size,pos,degrees) {
-  this.size=size;
-  this.pos=pos;
-  this.degrees=degrees;
-}
-
+Quad=constructor(function(size,pos,degrees) {
+			    this.size=size;
+			    this.pos=pos;
+			    this.degrees=degrees;
+			  });
 Quad.prototype=new Node();
 Quad.prototype.paint=function(time){
   Video.pushMatrix();
@@ -494,31 +515,32 @@ Quad.prototype.paint=function(time){
 };
 
 // derived object Mover (deprecated)
-function Mover(speed, rotspeed) {
-  this.speed=speed;
-  this.rotspeed=rotspeed;
-  this.time=0;
-  this.last=0;
-}
+Mover=constructor(function(speed, rotspeed) {
+			     this.speed=speed;
+			     this.rotspeed=rotspeed;
+			     this.time=0;
+			     this.last=0;
+			   });
 Mover.prototype=new Node();
 Mover.prototype.step=function(dt){
   var ct=this.time+dt;
-  if (ct-this.last<1) {
+  if (ct-this.last<2) {
     dontwatch=true;
     this.time=ct;
   }else{
     this.time=ct;
     this.last=this.time;
   }
-  for (var i=0;i<this.children.length;++i){
-    this.children[i].pos.x+=this.speed.x*dt;
-    this.children[i].pos.y+=this.speed.y*dt;
-    if (this.rotspeed) {
-      this.children[i].degrees.value+=this.rotspeed.value*dt;
-      if (this.children[i].degrees.value>360) this.children[i].degrees.value-=360;
-      if (this.children[i].degrees.value<0) this.children[i].degrees.value+=360;
+  if (this.children)
+    for (var i=0;i<this.children;++i){
+      this[i].pos.x+=this.speed.x*dt;
+      this[i].pos.y+=this.speed.y*dt;
+      if (this.rotspeed) {
+	this[i].degrees.value+=this.rotspeed.value*dt;
+	if (this[i].degrees.value>360) this[i].degrees.value-=360;
+	if (this[i].degrees.value<0) this[i].degrees.value+=360;
+      }
     }
-  }
   dontwatch=false;
   Node.prototype.step.call(this,dt);
 };

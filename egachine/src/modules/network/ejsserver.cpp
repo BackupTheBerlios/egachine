@@ -58,8 +58,20 @@ extern "C" {
   {
     try{
       GET_SERVER_OBJ;
-      Timeout zero(0);
-      server->listener.select(&zero);
+      Timeout timeout(0);
+      Timeout* timeoutPtr=&timeout;
+      if (argc>0) {
+	jsval inf=JS_GetPositiveInfinityValue(cx);
+	// todo: will this always work?
+	if (argv[0]==inf) {
+	  timeoutPtr=NULL;
+	}else{
+	  jsdouble t;
+	  if (!JS_ValueToNumber(cx,argv[0],&t)) return JS_FALSE;
+	  timeout=t;
+	}
+      }
+      *rval= server->listener.select(timeoutPtr) ? JSVAL_TRUE : JSVAL_FALSE;
     }catch(const CallbackError &error){
       // todo: perhaps use the error
       return JS_FALSE;

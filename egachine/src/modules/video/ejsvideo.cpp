@@ -95,6 +95,15 @@ extern "C" {
     return JS_TRUE;
   }
 
+  static
+  JSBool
+  toggleFullscreen(JSContext *cx, JSObject *obj, uintN, jsval *argv, jsval *)
+  {
+    // todo: should not be callable by untrusted scripts
+    Video::toggleFullscreen();
+    return JS_TRUE;
+  }
+  
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
   static JSFunctionSpec static_methods[] = {
@@ -102,6 +111,7 @@ extern "C" {
     FUNC(createTexture,1),
     FUNC(drawTexture,1),
     FUNC(drawText,3),
+    FUNC(toggleFullscreen,0),
     EJS_END_FUNCTIONSPEC
   };
 

@@ -9,4 +9,7 @@
   Input.handleQuit=function(){
     ejs.exit(true);
   };
+  Input.toggleFullscreen=function(){
+    Video.toggleFullscreen();
+  };
  })();

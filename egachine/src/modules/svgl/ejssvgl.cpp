@@ -31,6 +31,7 @@
 #include <svgl/getattr.hpp>
 #include <svgl/Context.hpp>
 #include <svgl/ExternalEntityManager.hpp>
+#include <svgl/PickManager.hpp>
 
 #include <w3c/svg/SVGDocument.hpp>
 #include <w3c/svg/SVGSVGElement.hpp>
@@ -124,6 +125,7 @@ extern "C" {
 	initHelper->glinfo->ypan=-(winHeight/zoomw-height)/2;
       }
     }
+    return JS_TRUE;
   }
 
   static
@@ -137,6 +139,54 @@ extern "C" {
     return JS_TRUE;
   }
 
+  static
+  JSBool
+  pick(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  {
+    EJS_CHECK(initHelper);
+    svgl::Context* svglContext=initHelper->context;
+    svgl::GLInfo* glinfo = initHelper->glinfo;
+    EJS_CHECK(svglContext && glinfo);
+
+    // get args
+    int x,y;
+    EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
+    if (!JS_ValueToECMAInt32(cx, argv[0], &x)) return JS_FALSE;
+    if (!JS_ValueToECMAInt32(cx, argv[1], &y)) return JS_FALSE;
+    
+    // do work
+    svgl::PickManager::PickResult p = initHelper->pickManager->pick(csvgelt, svglContext, glinfo, x,y,5,5);
+    if(p.first==p.second) {
+      // nothing hit
+      *rval=JSVAL_FALSE;
+      return JS_TRUE;
+    }
+
+    // convert pick result to JS array of arrays
+
+    JSObject *atop=JS_NewArrayObject(cx, 0, NULL);
+    if (!atop) return JS_FALSE;
+    *rval=OBJECT_TO_JSVAL(atop);
+
+    for(unsigned i=0; p.first!=p.second; ++p.first,++i) {
+      JSObject *asub=JS_NewArrayObject(cx, 0, NULL);
+      if (!asub) return JS_FALSE;
+      jsval v=OBJECT_TO_JSVAL(asub);
+      if (!JS_SetElement(cx, atop, i, &v)) return JS_FALSE;
+      svgl::PickManager::HitIterator::value_type onehit = *p.first;
+      for(unsigned j=0; onehit.first!=onehit.second; ++onehit.first,++j) {
+	//todo: get existing wrapper if possible
+	EJS_INFO((*onehit.first));
+	JSObject* njsobj=ejs_NewElement(cx,obj,(*onehit.first));
+	EJS_INFO(njsobj);
+	if (!njsobj) return JS_FALSE;
+	jsval val=OBJECT_TO_JSVAL(njsobj);
+	if (!JS_SetElement(cx, asub, j, &val)) return JS_FALSE;
+      }
+    };
+    return JS_TRUE;
+  }
+  
   static
   JSBool
   startAnimation(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval*)
@@ -162,6 +212,7 @@ extern "C" {
     FUNC (display, 0),
     FUNC (startAnimation, 0),
     FUNC (stopAnimation, 0),
+    FUNC (pick, 2),
     EJS_END_FUNCTIONSPEC
   };
 

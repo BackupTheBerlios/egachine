@@ -1,11 +1,4 @@
 #!/usr/bin/make -f
-TODO
-packaging not yet done
-perhaps use autoutils first again (autoconf/...)
-
-If you want to package egachine feel free to contact me:
-karme@berlios.de
-
 # Sample debian/rules that uses debhelper.
 # GNU copyright 1997 to 1999 by Joey Hess.
 
@@ -28,19 +21,13 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
-config.status: configure
-	dh_testdir
-	# Add here commands to configure the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-staticcpp --bindir=/usr/games --datadir=/usr/share/games
-
 build: build-stamp
 
-build-stamp:  config.status
+build-stamp:
 	dh_testdir
 
 	# Add here commands to compile the package.
-	$(MAKE)
-	#/usr/bin/docbook-to-man debian/egachine.sgml > jgachine.1
+	PREFIX=/usr DATADIR=/usr/share/games BINDIR=/usr/games SYSCONFDIR=/etc ./make 
 
 	touch build-stamp
 
@@ -50,12 +37,7 @@ clean:
 	rm -f build-stamp 
 
 	# Add here commands to clean up after the build process.
-	-$(MAKE) distclean
-	-test -r /usr/share/misc/config.sub && \
-	  cp -f /usr/share/misc/config.sub config.sub
-	-test -r /usr/share/misc/config.guess && \
-	  cp -f /usr/share/misc/config.guess config.guess
-
+	./clean
 
 	dh_clean
 
@@ -66,9 +48,8 @@ install: build
 	dh_installdirs
 
 	# package egachine
-	$(MAKE) DESTDIR=$(CURDIR)/debian/egachine install-exec
-	# package libegachine
-	$(MAKE) DESTDIR=$(CURDIR)/debian/libegachine install-data
+	PREFIX=/usr SYSCONFDIR=/etc DATADIR=/usr/share/games BINDIR=/usr/games \
+	DESTDIR=$(CURDIR)/debian/egachine ./install 
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -76,29 +57,19 @@ binary-indep: build install
 
 # Build architecture-dependent files here.
 binary-arch: build install
+	rm $(CURDIR)/debian/egachine/usr/share/doc/egachine/COPYING
 	dh_testdir
 	dh_testroot
-#	dh_installdebconf	
 	dh_installdocs
 	dh_installexamples
 	dh_installmenu
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-#	dh_installcron
 	dh_installman
-#	dh_installinfo
-#	dh_undocumented
 	dh_installchangelogs 
 	dh_link
 	dh_strip
-	dh_compress
+	dh_compress -X.js
 	dh_fixperms
-#	dh_makeshlibs
 	dh_installdeb
-#	dh_perl
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
@@ -106,3 +77,4 @@ binary-arch: build install
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install 
+

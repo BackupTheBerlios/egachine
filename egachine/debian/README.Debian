@@ -1,14 +1,6 @@
-TODO
-packaging not yet done
-perhaps use autoutils first again (autoconf/...)
-
-If you want to package egachine feel free to contact me:
-karme@berlios.de
-
-
-adic for Debian
+egachine for Debian
 ---------------
 
 this package is experimental - and no official debian package
 
- -- Jens Thiele (karme) <karme@berlios.de>, Sun Apr 11 18:55:58 2004
+ -- Jens Thiele (karme) <karme@berlios.de>, Sun Apr 18 21:37:10 2004

@@ -59,7 +59,7 @@ pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 ejssvgl_la_LIBADD =
 am_ejssvgl_la_OBJECTS = ejssvgl.lo ejssvgdocument.lo ejsnode.lo \
-	ejselement.lo
+	ejselement.lo ejstext.lo
 ejssvgl_la_OBJECTS = $(am_ejssvgl_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
@@ -240,7 +240,10 @@ ejssvgl_la_SOURCES = \
 	ejsnode.h \
 	ejsnode.cpp \
 	ejselement.h \
-	ejselement.cpp
+	ejselement.cpp \
+	ejstext.h \
+	ejstext.cpp \
+	nodefuncs.h
 
 ejssvgl_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SVGL_LIBS@
 dist_pkgdata_DATA = svgl.js
@@ -318,6 +321,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejsnode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejssvgdocument.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejssvgl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejstext.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

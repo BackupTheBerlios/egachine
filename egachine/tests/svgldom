@@ -4,6 +4,7 @@
 // not really needed for this test
 ejs.ModuleLoader.load("Stream");
 ejs.ModuleLoader.load("gl");
+ejs.ModuleLoader.load("Input");
 if (!gl.GetIntegerv(GL_STENCIL_BITS)[0])
 	stderr.write("Warning no stencil buffer\n");
 // end of not really needed for this test
@@ -12,25 +13,31 @@ ejs.ModuleLoader.load("svgl");
 var svgdoc=new SVGDocument();
 // create svg element
 var svg=svgdoc.createElement("svg");
-svg.setAttribute("width",450);
-svg.setAttribute("height",450);
+svg.setAttribute("width",320);
+svg.setAttribute("height",240);
 // create rectangle
 var rect=svgdoc.createElement("rect");
 rect.setAttribute("width",100);
 rect.setAttribute("height",100);
-rect.setAttribute("x",200);
-rect.setAttribute("y",200);
+rect.setAttribute("x",160);
+rect.setAttribute("y",140-10);
 rect.setAttribute("style","fill:red;stroke:green;stroke-width:10");
 // create text
 var text=svgdoc.createElement("text");
-text.setAttribute("style","fill:black");
-//text.setNodeValue("Hello World!");
-svgdoc.appendChild(svg).appendChild(rect).appendChild(text);
+text.appendChild(svgdoc.createTextNode("\u00C4tsch;-)"));
+text.setAttribute("style","font-size:32;text-anchor:middle;fill:black");
+text.setAttribute("x",160);
+text.setAttribute("y",100);
+svgdoc
+    .appendChild(svg
+	.appendChild(rect)
+	.appendChild(text));
 
 var i;
 for (i=0;i<400;++i) {
 	gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 	svgl.display(svgdoc);
+	Input.poll();
 	Video.swapBuffers();
 }
 EOF

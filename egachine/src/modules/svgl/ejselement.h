@@ -15,6 +15,9 @@ JSObject*
 ejs_NewElement(JSContext *cx, JSObject *obj, dom::Element* element);
 
 JSBool
+ejselement_class(JSContext *cx, JSObject *obj);
+
+JSBool
 ejselement_GetNative(JSContext* cx, JSObject * obj, dom::Element* &native);
 
 #endif

@@ -24,6 +24,7 @@
 #include <w3c/svg/Element.hpp>
 #include <w3c/svg/SVGElement.hpp>
 #include "ejselement.h"
+#include "ejstext.h"
 #include <cassert>
 
 extern "C" {
@@ -47,8 +48,8 @@ extern "C" {
   // Remember: if (JS_GET_CLASS(cx, obj) != &element_class) did not work
   // because JS_THREADSAFE was not defined correctly (defined or undefined)
 
-#define GET_ELEMENT_OBJ dom::Element* element=NULL;			\
-    if (!ejselement_GetNative(cx,obj,element)) return JS_FALSE
+#define GET_ELEMENT_OBJ dom::Element* nthis=NULL;		\
+    if (!ejselement_GetNative(cx,obj,nthis)) return JS_FALSE
 
   // todo: this is a method of Node (Node->Element)
   static
@@ -60,7 +61,11 @@ extern "C" {
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
     unicode::String* value=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
-    element->setNodeValue(value);
+    try{
+      nthis->setNodeValue(value);
+    }catch(const dom::DOMException &e){
+      EJS_THROW_ERROR(cx, obj, e.what());
+    }
     return JS_TRUE;
   }
   
@@ -80,34 +85,26 @@ extern "C" {
     unicode::String* value=unicode::String::createStringUtf16(JS_GetStringChars(strtype));
 
     // todo: catch exceptions
-    element->setAttribute(name,value);
+    nthis->setAttribute(name,value);
 
     // todo: hmmm
-    if (svg::SVGElement *svgelement = dynamic_cast<svg::SVGElement *>(element)) {
+    if (svg::SVGElement *svgelement = dynamic_cast<svg::SVGElement *>(nthis)) {
       svgelement->updateStyle(NULL);
     }
     return JS_TRUE;
   }
 
-  // TODO: this is a method of Node (SVGDocument is also a Node)
-  // currently duplicated
-  static
-  JSBool
-  element_appendChild(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
-  {
-    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_ELEMENT_OBJ;
-    if (!JSVAL_IS_OBJECT(argv[0])) EJS_THROW_ERROR(cx,obj,"object as arg 0 required");
+#define EJSFUNC(FUNC) static \
+  JSBool element_##FUNC \
+  (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)	\
+  {									\
+    GET_ELEMENT_OBJ;						\
     
-    // todo: node expected as agrument not neccessary an element
-    dom::Element* celement=NULL;
-    if (!ejselement_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),celement)) return JS_FALSE;
-    // todo: exception
-    element->appendChild(celement);
-    *rval=argv[0];
-    return JS_TRUE;
-  }
-  
+
+#include "nodefuncs.h"
+
+#undef EJSFUNC
+
 #undef GET_ELEMENT_OBJ
 
 #define FUNC(name, args) { #name,element_##name,args,0,0}
@@ -172,10 +169,15 @@ ejs_NewElement(JSContext *cx, JSObject *obj, dom::Element* element)
 }
 
 JSBool
+ejselement_class(JSContext* cx, JSObject *obj)
+{
+  return JS_GET_CLASS(cx, obj) == &element_class;
+}
+
+JSBool
 ejselement_GetNative(JSContext* cx, JSObject * obj, dom::Element* &native)
 {
-  if (JS_GET_CLASS(cx, obj) != &element_class)
-    EJS_THROW_ERROR(cx,obj,"incompatible object type");
+  EJS_CHECK_CLASS(cx, obj, element_class);
   native=(dom::Element *)JS_GetPrivate(cx,obj);
   if (!native)
     EJS_THROW_ERROR(cx,obj,"no valid dom::Element object");

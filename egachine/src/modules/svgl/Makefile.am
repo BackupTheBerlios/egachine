@@ -9,7 +9,10 @@ ejssvgl_la_SOURCES = \
 	ejsnode.h \
 	ejsnode.cpp \
 	ejselement.h \
-	ejselement.cpp
+	ejselement.cpp \
+	ejstext.h \
+	ejstext.cpp \
+	nodefuncs.h
 
 ejssvgl_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SVGL_LIBS@
 

@@ -10,13 +10,17 @@ ejs.ModuleLoader.load("svgl");
 svgdoc=new SVGDocument();
 svgdoc.addSample();
 
+function debug(x){stderr.write(x+"\n");}
+
 function test(svgdoc){
-  var i;
-  for (i=0;i<100;++i) {
+  var i=0,start=Timer.getTimeStamp(),dt=0;
+  while((dt=(Timer.getTimeStamp()-start))<2000000) {
     gl.Clear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
     svgl.display(svgdoc);
     Video.swapBuffers();
+    ++i;
   }
+  debug("fps: "+i*1000000/dt+" dt:"+dt);
 }
 test(svgdoc);
 

@@ -27,6 +27,7 @@
 #include <svgl/Parser.hpp>
 #include "ejssvgdocument.h"
 #include "ejselement.h"
+#include "ejstext.h"
 #include <cassert>
 
 extern "C" {
@@ -50,8 +51,8 @@ extern "C" {
   // Remember: if (JS_GET_CLASS(cx, obj) != &svgdocument_class) did not work
   // because JS_THREADSAFE was not defined correctly (defined or undefined)
 
-#define GET_SVGDOCUMENT_OBJ svg::SVGDocument* svgdocument=NULL;		\
-    ejssvgdocument_GetNative(cx,obj,svgdocument)
+#define GET_SVGDOCUMENT_OBJ svg::SVGDocument* nthis=NULL;	\
+    ejssvgdocument_GetNative(cx,obj,nthis)
 
   static
   JSBool
@@ -62,9 +63,13 @@ extern "C" {
     // todo: root string!
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
-    dom::Text* text=svgdocument->createTextNode(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
+    dom::Text* text=nthis->createTextNode(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
     assert(text);
-
+    // todo: return javascript wrapper object
+    JSObject* jstext=ejs_NewText(cx,obj,text);
+    // todo: delete text?
+    if (!jstext) return JS_FALSE;
+    *rval=OBJECT_TO_JSVAL(jstext);
     return JS_TRUE;
   }
   
@@ -84,36 +89,37 @@ extern "C" {
     // TODO: check above, check for exceptions, how does svgl GC?
     
     // TODO: shit
-    //    dom::Element* element=svgdocument->createElement(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
+    //    dom::Element* element=nthis->createElement(unicode::String::createStringUtf16(JS_GetStringChars(strtype)));
     // it seems we must use internString otherwise createElement does not work as expected?
     // TODO: take a look at the details
-    dom::Element* element=svgdocument->createElement(unicode::String::internStringUtf16(JS_GetStringChars(strtype)));
+    dom::Element* element=nthis->createElement(unicode::String::internStringUtf16(JS_GetStringChars(strtype)));
     assert(element);
+
+    std::cerr << "tag name: " << (*element->getTagName()) << std::endl;
+    std::cerr << "node name: " << (*element->getNodeName()) << std::endl;
+    std::cerr << "node type: " << ((int)element->getNodeType()) << std::endl;
     
     // now create javascript wrapper object for element
     // TODO: what about polymorphism? shouldn't we create a specialized element?
+    // and who is the owner of the native object? gc -> creash
+    // perhaps we must map native to js object?
+    // or is svgl always the owner of the native object?
     JSObject* njsobj=ejs_NewElement(cx,obj,element);
     if (!njsobj) return JS_FALSE;
     *rval=OBJECT_TO_JSVAL(njsobj);
     return JS_TRUE;
   }
 
-  // TODO: duplicated: see ejselement.cpp
-  static
-  JSBool
-  svgdocument_appendChild(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
-  {
-    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    GET_SVGDOCUMENT_OBJ;
-    if (!JSVAL_IS_OBJECT(argv[0])) EJS_THROW_ERROR(cx,obj,"object as arg 0 required");
+#define EJSFUNC(FUNC) static \
+  JSBool svgdocument_##FUNC \
+  (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)	\
+  {									\
+    GET_SVGDOCUMENT_OBJ;						\
+    
 
-    dom::Element* element=NULL;
-    if (!ejselement_GetNative(cx,JSVAL_TO_OBJECT(argv[0]),element)) return JS_FALSE;
-    // todo: exception
-    svgdocument->appendChild(element);
-    *rval=argv[0];
-    return JS_TRUE;
-  }
+#include "nodefuncs.h"
+
+#undef EJSFUNC
   
   static
   JSBool
@@ -122,13 +128,13 @@ extern "C" {
     EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
     GET_SVGDOCUMENT_OBJ;
 
-    svg::SVGSVGElement * thesvgelt = new svg::SVGSVGElement(svgdocument);
+    svg::SVGSVGElement * thesvgelt = new svg::SVGSVGElement(nthis);
     thesvgelt->setWidth(450);
     thesvgelt->setHeight(450);
 
-    svgdocument->appendChild(thesvgelt);
+    nthis->appendChild(thesvgelt);
 
-    svg::SVGRectElement * rect = new svg::SVGRectElement(svgdocument);
+    svg::SVGRectElement * rect = new svg::SVGRectElement(nthis);
 
     double w=100,h=100;
     double x = 100;
@@ -148,14 +154,38 @@ extern "C" {
     return JS_TRUE;
   }
 
+  static
+  JSBool
+  svgdocument_getElementById(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    GET_SVGDOCUMENT_OBJ;
+
+    // todo: root string!
+    JSString *strtype=JS_ValueToString(cx, argv[0]);
+    if (!strtype) return JS_FALSE;
+    // todo: unicode
+    dom::Element* element=nthis->getElementById(unicode::String::createString(JS_GetStringBytes(strtype)));
+    assert(element);
+
+    // now create javascript wrapper object for element
+    // TODO: what about polymorphism? shouldn't we create a specialized element?
+    JSObject* njsobj=ejs_NewElement(cx,obj,element);
+    if (!njsobj) return JS_FALSE;
+    *rval=OBJECT_TO_JSVAL(njsobj);
+    return JS_TRUE;
+  }
+  
 #undef GET_SVGDOCUMENT_OBJ
 
 #define FUNC(name, args) { #name,svgdocument_##name,args,0,0}
 
   static JSFunctionSpec svgdocument_methods[] = {
+    FUNC(createTextNode,1),
     FUNC(createElement,1),
     FUNC(appendChild,1),
     FUNC(addSample,0),
+    FUNC(getElementById,1),
     EJS_END_FUNCTIONSPEC
   };
 
@@ -180,7 +210,9 @@ extern "C" {
 	JSString *strtype=JS_ValueToString(cx, argv[0]);
 	if (!strtype) return JS_FALSE;
 	svgl::Parser parser;
-	if (doc=parser.parseFromString(unicode::String::createString(JS_GetStringBytes(strtype))))
+	// todo: did not work - but why?
+	// if (doc=parser.parseFromString(unicode::String::createStringUtf16(JS_GetStringChars(strtype))))
+	if ((doc=parser.parseFromString(unicode::String::createString(JS_GetStringBytes(strtype)))))
 	  // todo: remove?
 	  doc->updateStyle();
       }else{
@@ -206,9 +238,9 @@ extern "C" {
   svgdocument_finalize(JSContext *cx, JSObject *obj)
   {
     EJS_CHECK(JS_GET_CLASS(cx, obj) == &svgdocument_class);
-    svg::SVGDocument* svgdocument=(svg::SVGDocument *)JS_GetPrivate(cx,obj);
-    if (!svgdocument) return;
-    delete svgdocument;
+    svg::SVGDocument* nthis=(svg::SVGDocument *)JS_GetPrivate(cx,obj);
+    if (!nthis) return;
+    delete nthis;
   }
 
   JSBool
@@ -228,8 +260,7 @@ extern "C" {
 JSBool
 ejssvgdocument_GetNative(JSContext* cx, JSObject * obj, svg::SVGDocument* &native)
 {
-  if (JS_GET_CLASS(cx, obj) != &svgdocument_class)
-    EJS_THROW_ERROR(cx,obj,"incompatible object type");
+  EJS_CHECK_CLASS(cx, obj, svgdocument_class);
   native=(svg::SVGDocument *)JS_GetPrivate(cx,obj);
   if (!native)
     EJS_THROW_ERROR(cx,obj,"no valid svgdocument object");

@@ -51,8 +51,7 @@ StringStream.prototype.clear=function(){
 */
 ObjectWriter=function(stream)
 {
-  var i;
-  var toignore=[{}.constructor, Object.prototype, Function, Function.prototype];
+  var i, toignore=[{}.constructor, Object.prototype, Function, Function.prototype];
   if (typeof Monitorable != typeof undefined)
     toignore.push(Monitorable.prototype);
 
@@ -72,10 +71,8 @@ ObjectWriter=function(stream)
 
 // todo: put this somewhere suitable
 ObjectWriter.toHex=function(n){
-  var s=Number(n).toString(16);
-  var padTo=6;
+  var s=Number(n).toString(16), padTo=6, z="000000";
   if (s.length>=padTo) throw new Error("out of range");
-  var z="000000";
   return z.slice(-6+s.length)+s;
 }
 
@@ -138,10 +135,7 @@ ObjectWriter.prototype.write=function(x)
   // walk through the object graph and call callback functions stored in cbs
   function walk(px, x, fqname, name, cnum, cbs) {
     var tx=typeof x;
-    var p;
-    var q;
-    var c;
-    var i;
+    var p, q, c, i;
 
     if ((tx != 'object')&&(tx!='function')) {
       // primitives
@@ -183,13 +177,13 @@ ObjectWriter.prototype.write=function(x)
     if (!simpleObject(x)) {
       // "normal" objects
       c=[];
-      for (p in oo._hiddenProps)
+      for (p=0;p<oo._hiddenProps.length;++p)
 	if (!myPropertyIsEnumerable(x,oo._hiddenProps[p])) c.push(oo._hiddenProps[p]);
       for (p in x)
 	c.push(p);
       
       q=0;
-      for (i in c) {
+      for (i=0;i<c.length;++i) {
 	p=c[i];
 	if ((x.hasOwnProperty(p))&&(!ignoreProperty(p)))
 	  if (walk(x,x[p],fqname+"['"+p+"']",p,q,cbs))
@@ -218,8 +212,7 @@ ObjectWriter.prototype.write=function(x)
   walk(undefined, x, root, root, 0,
        {visited:{},
 	   ignore:function(px, obj, fqname, name, cnum){
-	   var ser;
-	   var key=util.getObjectID(obj);
+	   var ser, key=util.getObjectID(obj);
 	   if (oo._ignore[key]) return 2;
 	   if (this.visited[key]) {
 	     this.visited[key]++;
@@ -321,11 +314,7 @@ ObjectWriter.prototype.write=function(x)
 //! update property of already written object
 ObjectWriter.prototype.updateProperty=function(obj,pname,pval)
 {
-  var valt;
-  var objo;
-  var valo;
-  var fqpname;
-  var rpval;
+  var valt, objo, valo, fqpname, rpval;
 
   if (!(objo=this._serialized[util.getObjectID(obj)]))
     throw new Error("not yet serialized");
@@ -361,16 +350,18 @@ ObjectReader=function(stream)
 //! read object
 ObjectReader.prototype.read=function()
 {
+  var h="0x"+this.stream.read(6);
+  var msg=this.stream.read(Number(h));
+  var msgtype=msg[0];
+  var ret;
+
   function debug(x){
     //    stderr.write(x+"\n");
   }
 
-  var h="0x"+this.stream.read(6);
   //  debug("h:"+h);
-  var msg=this.stream.read(Number(h));
-  var msgtype=msg[0];
   debug("msgtype:"+msgtype);
-  var ret;
+
   if (msgtype=="o") {
     try{
       ret=eval("this.o["+this._read+"]="+msg.slice(1));

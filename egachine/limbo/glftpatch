@@ -1,13 +1,10 @@
-cvs diff: Diffing .
-cvs diff: Diffing build
-cvs diff: Diffing build/automake
 Index: build/automake/bootstrap
 ===================================================================
 RCS file: /cvsroot/svgl/glft/build/automake/bootstrap,v
 retrieving revision 1.1.1.1
 diff -u -r1.1.1.1 bootstrap
 --- build/automake/bootstrap	22 Jun 2004 12:09:07 -0000	1.1.1.1
-+++ build/automake/bootstrap	1 Jan 2005 18:38:23 -0000
++++ build/automake/bootstrap	23 Jan 2005 11:39:38 -0000
 @@ -80,7 +80,7 @@
  set -x
  
@@ -17,15 +14,62 @@ diff -u -r1.1.1.1 bootstrap
  autoheader || exit 2
  libtoolize --automake || exit 3
  automake --add-missing || exit 4
-cvs diff: Diffing build/automake/files
-cvs diff: Diffing build/automake/files/demos
-cvs diff: Diffing build/automake/files/glft
-cvs diff: Diffing build/automake/utils
-cvs diff: Diffing build/xcode
-cvs diff: Diffing build/xcode/English.lproj
-cvs diff: Diffing build/xcode/glft.xcode
-cvs diff: Diffing demos
-cvs diff: Diffing docs
-cvs diff: Diffing glft
-cvs diff: Diffing glft/sysdep
-cvs diff: Diffing glft/sysdep/macosx
+Index: build/automake/files/glft/Makefile.am
+===================================================================
+RCS file: /cvsroot/svgl/glft/build/automake/files/glft/Makefile.am,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 Makefile.am
+--- build/automake/files/glft/Makefile.am	22 Jun 2004 12:09:07 -0000	1.1.1.1
++++ build/automake/files/glft/Makefile.am	23 Jan 2005 11:39:38 -0000
+@@ -15,8 +15,9 @@
+ 
+ lib_LTLIBRARIES = libglft.la
+ 
+-libglft_la_SOURCES = FontManager.cpp glft.cpp
++# debug.hpp and config.hpp are for internal use only
++libglft_la_SOURCES = debug.hpp config.hpp FontManager.cpp glft.cpp
+ 
+ libglftincludedir = @GLFT_INCLUDEDIR@
+ libglftinclude_HEADERS = FontInfo.hpp FontManager.hpp glft.hpp 
+-# debug.hpp and config.hpp are for internal use only
++
+Index: glft/FontManager.cpp
+===================================================================
+RCS file: /cvsroot/svgl/glft/glft/FontManager.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 FontManager.cpp
+--- glft/FontManager.cpp	22 Jun 2004 12:09:09 -0000	1.1.1.1
++++ glft/FontManager.cpp	23 Jan 2005 11:39:39 -0000
+@@ -183,7 +183,7 @@
+   }
+ 
+   FontManager::FontManager(const system_string& font_path, const system_string& cache_path, bool yUp, bool autoEnableTexture)
+-    : _font_type(vector), _current_size(12), _font_path(font_path.c_str()), _cache_path(cache_path.c_str()), _currentPixmapFaceInfo(0), _currentVectorFaceInfo(0),
++    : _font_type(vector), _current_size(12), _font_path(font_path.c_str()), _cache_path(cache_path.c_str()), _currentPixmapFaceInfo(0), _currentVectorFaceInfo(0), _defaultFileInfo(0), 
+       _autoScale(false), _maxTexturedFontSize(30), _user_font_type(_font_type), _user_size(_current_size), _yUp(yUp), _autoEnableTexture(autoEnableTexture)
+   {
+     glft_init();
+Index: glft/glft.cpp
+===================================================================
+RCS file: /cvsroot/svgl/glft/glft/glft.cpp,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 glft.cpp
+--- glft/glft.cpp	22 Jun 2004 12:09:09 -0000	1.1.1.1
++++ glft/glft.cpp	23 Jan 2005 11:39:39 -0000
+@@ -13,8 +13,15 @@
+ http://www.emn.fr/info/image/Themes/Indigo/licence.html
+ 
+  */
+-#if defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
++#if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
++#define NOMINMAX
++#define WIN32_LEAN_AND_MEAN
+ #include <windows.h>
++#undef NOMINMAX
++#undef WIN32_LEAN_AND_MEAN
++#ifndef CALLBACK
++#error CALLBACK undefined
++#endif
+ #endif
+ 
+ #include <glft/debug.hpp>

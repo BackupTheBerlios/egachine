@@ -62,6 +62,14 @@ ejsnet.cpp: see todo
 --------------------------------------------------------------------------------
 are the wrapped libraries secure?
 how buggy/safe/secure/trustworthy are opengl/mesa implementations?
+glu bug?: 
+Newsgroups: comp.graphics.api.opengl
+Referenzen: <41e4ffa7$0$59174$ed2619ec@ptn-nntp-reader02.plus.net> 
+"FYI, the SGI reference implementation's GLU tesselator (found in Mesa) seg
+faults on infinite float input. This is completely acceptable to a C
+programmer, of course, but you might like to provide a work-around in your
+bindings to a real language.  ;-) "
+
 SDL_mixer/mikmod?
 SDL_image?
 --------------------------------------------------------------------------------
@@ -190,11 +198,6 @@ perhaps we could always use glft
 --------------------------------------------------------------------------------
 win32 timestamp currently only ms precision
 --------------------------------------------------------------------------------
-report spidermonkey docu "bugs"
-
-JS_NewObject: class pointer may be NULL => Object
-FunctionSpec: extra arguments field
---------------------------------------------------------------------------------
 supply version information
 nearly done
 not yet done:
@@ -252,6 +255,8 @@ it would be nicer to have a image module and a text/font module
 --------------------------------------------------------------------------------
 I just found the sdl mingw developer package again
 should try if opengl works with it => no need for hacked SDL version?
+simply replacing the SDL.dll works again
+perhaps this really was a driver problem?
 --------------------------------------------------------------------------------
 compression support
 we already depend on zlib
@@ -259,7 +264,7 @@ done: Zlib.compress and Zlib.decompress
 todo: allow files passed on startup to be .gz
 --------------------------------------------------------------------------------
 perhaps preprocess the examples
-because the have quite some code in common
+because they have quite some code in common
 => annoying if this code needs an update
 --------------------------------------------------------------------------------
 base64:
@@ -322,16 +327,6 @@ mikmod directly
 there is another mod playing library used optionally by xmms
 --------------------------------------------------------------------------------
 lsb linux binaries
---------------------------------------------------------------------------------
-Game ideas:
-
-use "insecure" server to make a programming game
-the server executes all client commands
-the client has a javascript "shell" which allows execution of arbitrary commands
-the players may program all clients via the server
-
-a game about software patents
-choose side: patent lobby, patent opponent, politician
 --------------------------------------------------------------------------------
 SVG support (direct or indirect via transformation)
 decided to use svgl - since it already does what I wanted to do and I
@@ -528,6 +523,8 @@ seems related to bttv
 --------------------------------------------------------------------------------
 svgl generates cpp headers automatically from DOM idl via python
 we should try to generate wrappers automatically in the same way
+unfortunately the ecmascript bindings are quite different
+we would have to map idl to idl to map cpp to js
 --------------------------------------------------------------------------------
 hmm svgldom test produces warning:
 unknown SVG element rect SVGDocument.cpp:117
@@ -747,63 +744,11 @@ in meinen szenengraph
 
 habe einen maxpect zoom/pan gemacht
 --------------------------------------------------------------------------------
-
-also ich wollte jetzt mal ein SVG basiertes menü machen
-dazu brauche ich mehr dom objekte
-und erneut taucht das problem auf, daß ich ein dom::Element* object bekomme
-aber ein spezialisiertes brauche
-(in diesem Fall dom::Text)
-also 2 möglichkeiten:
-	1) in javascript irgendwie casten
-	2) das spezialisierte javascript objekt zurückgeben
-	=> eine weiche die feststellt was das für ein element ist
-	und ein entsprechendes javascript objekt erstellt und zurückgibt
-	das geht dann über rtti oder dom::Element->getTagName()
-
-HIER geht es um   svgdocument_getElementById u.a.:
-    // now create javascript wrapper object for element
-    // TODO: what about polymorphism? shouldn't we create a specialized element?
-    // and who is the owner of the native object? gc -> creash
-    // perhaps we must map native to js object?
-    // or is svgl always the owner of the native object?
---------------------------------------------------------------------------------
-war dabei zu schauen wie sowas geht:
-groupelem.childNodes.item(cn).setAttribute("transform","rotate("+rot+")");
-sprich ob item nicht ein Element anstatt eines Nodes zurückliefern sollte
-spec anschauen
-
-und generell habe ich versucht in egachine.in via transform="rotate()" sterne
-zu drehen
---------------------------------------------------------------------------------
-nochmal generell über javascript dom wrapper nachdenken
-
-war grad dabei zu versuchen das svgtetris zum laufen zu bekommen
---------------------------------------------------------------------------------
-fix test for SDL_mixer in configure.ac
---------------------------------------------------------------------------------
-declarative SVG animations
-integration of SVG into EGachine
---------------------------------------------------------------------------------
-überall strutils verwenden bei dom:String <-> JSString konvertierungen
-1:1 mapping zw. native und js dom objekten?
-clean up todo list
-siehe auch spezielle modul todo listen
---------------------------------------------------------------------------------
-ejs.exit still sucks
---------------------------------------------------------------------------------
-experimental declarative animation support destroyed svgviewer functionality
-
-wollte grad ein svg pong machen
-dabei habe ich nen svvg bug entdeckt? 2*setAttribute("transform ....
-genug für heut
---------------------------------------------------------------------------------
-serialization/deser from client to server (secure without eval, subset
-of object literals could also use JSON:
-http://jsolait.net/doc/lang.xhtml
+ejs.exit still sucks?
 --------------------------------------------------------------------------------
 auch gut:
 http://jan.kollhof.net/projects/svg/examples/index.xhtml
-
+--------------------------------------------------------------------------------
 ich glaube ich hab den bug gefunden
 das liegt daran daß immer nur transforms angehängt werden
 entscheidend scheint mir zu sein:
@@ -905,38 +850,46 @@ also slide show:
 wie mache ich das jetzt soll ich da mein text file basiertes benutzen
 oder doch einfach SVG?
 --------------------------------------------------------------------------------
-also problem bei der presentation ist, daß meine ganzen demos total den
-namespace vollmüllen und ich noch keinen mechanismus habe damit umzugehen
-
-jetzt kann ich entweder die demos ändern oder einen solchen mechanismus
-machen
-
-auf jedenfall müssen ja presentation und demo kooperieren
-(zwecks navigation!)
-am schönsten wären sowieso eingebettete demos
-das ganze ist halt echt ein hack
---------------------------------------------------------------------------------
 gl error handling is shit
---------------------------------------------------------------------------------
-habe name clash
-zw. svgl Text und egachine.js Text !!
-=> create sg (scenegraph) module
---------------------------------------------------------------------------------
-shit jetzt schien alles gut ist es aber nicht
-denn er sucht den constructor anhand clasp->name
-
-lsg.: NewObject nehmen => constructor wird nicht aufgerufen
-und proto setzen nicht finden lassen
-
-hmm nicht so richtig gut
-liegt es vielleicht am parent?
 --------------------------------------------------------------------------------
 also svg und namespaces
 müssen die dom objekte bzw. constructors in den global ns?
 zumindest in für die skripte muss es so aussehen als ob
 --------------------------------------------------------------------------------
-map sg to svg
+perhaps map sg to svg (distributed sg + svg - hmm distributed DOM?)
 --------------------------------------------------------------------------------
 how to do timeshift in SVG (decl. anim.)
 (scene-graph node adjusting time rel.) ?
+--------------------------------------------------------------------------------
+perhaps i still have got __parent__/[[Scope]] wrong
+especially look for:
+JS_InitClass, JS_NewObject
+--------------------------------------------------------------------------------
+os support for secure execution of untrusted code:
+chroot
+
+LIDS http://www.lids.org
+kernel 2.6 capabilities
+lsm
+
+segcomp patch
+http://kerneltrap.org/node/3413
+http://kerneltrap.org/node/3413/print
+http://www.cpushare.com/
+--------------------------------------------------------------------------------
+glft should probably use fontconfig
+(perhaps look how scribus does this)
+fix svgl build proccess
+--------------------------------------------------------------------------------
+wollte sketch anschauen
+--------------------------------------------------------------------------------
+
+debian paket (dependencies prüfen!)
+--------------------------------------------------------------------------------
+improve network examples
+network example using simple interpolation
+--------------------------------------------------------------------------------
+hmm
+examples dir layout sucks
+especially with the debs
 --------------------------------------------------------------------------------

@@ -28,8 +28,6 @@ function redisplay()
 SVGViewer={
   debug:function(x){stderr.write(x+"\n");},
   run:function(){
-    svgl.startAnimation(document);
-    stderr.write("after start\n");
     var frame=0,start,last,now,dt,i,timeOut;
     last=now=start=Timer.getTimeStamp();
     while(true) {
@@ -48,6 +46,8 @@ SVGViewer={
       }
 
       Input.poll();
+      svgl.display(document);
+      Video.swapBuffers();
       ++frame;
     };
   }
@@ -92,4 +92,4 @@ function setTimeout(toeval,ms) {
 };
 document._handleScripts(this);
 svgl.startAnimation(document);
-//SVGViewer.run();
+SVGViewer.run();

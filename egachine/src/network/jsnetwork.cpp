@@ -10,11 +10,11 @@ static int connectAttempts=0;
 extern "C" {
   ECMA_BEGIN_FUNC(jsnet_connect) 
   {
-    if (connectAttempts) ECMA_ERROR("Security: Already tried to establish an outgoing connection");
+    if (connectAttempts) ECMA_THROW_ERROR("Security: Already tried to establish an outgoing connection");
     ECMA_CHECK_NUM_ARGS(2);
     // we allow only one connection for security reasons
     if (outgoing) return JS_FALSE;
-    if (!JSVAL_IS_STRING(argv[0])) ECMA_ERROR("Argument 0 must be a hostname");
+    if (!JSVAL_IS_STRING(argv[0])) ECMA_THROW_ERROR("Argument 0 must be a hostname");
     int32 port;
     if (!JS_ValueToInt32(cx,argv[1],&port)) ECMA_ERROR("Argument 1 must be a port number");
     JSString *strtype=JS_ValueToString(cx, argv[0]);
@@ -27,7 +27,7 @@ extern "C" {
       if (!outgoing) return JS_FALSE;
       if (!JSNetwork::newStreamObject(outgoing,rval)) return JS_FALSE;
     }catch(const SocketError &e){
-      ECMA_ERROR(e.what());
+      ECMA_THROW_ERROR(e.what());
     }
     return JS_TRUE;
   }

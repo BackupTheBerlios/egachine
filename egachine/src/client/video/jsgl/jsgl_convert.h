@@ -38,18 +38,19 @@ inline bool ecma_to_GLclampf (jsval x,GLclampf &y){return ecma_to_float(x,y);}
 inline bool ecma_to_GLdouble (jsval x,GLdouble &y){return ecma_to_float(x,y);}
 inline bool ecma_to_GLclampd (jsval x,GLclampd &y){return ecma_to_float(x,y);}
 
-
+// we assume false==JS_FALSE
 template <typename I>
 inline bool ecma_to_intvec(jsval x,I* y, unsigned dim)
 {
-  if (!JSVAL_IS_OBJECT(x)) return false;
+  JSContext* cx=ECMAScript::cx;
+  if (!JSVAL_IS_OBJECT(x)) ECMA_THROW_ERROR("array object required");
   JSObject *obj=JSVAL_TO_OBJECT(x);
   jsuint l;
-  if (!JS_GetArrayLength(ECMAScript::cx, obj, &l)) return false;
-  if (l!=dim) return false;
+  if (!JS_GetArrayLength(cx, obj, &l)) return false;
+  if (l!=dim) ECMA_THROW_ERROR("wrong array dimension");
   for (jsuint i=0;i<l;++i) {
     jsval elem;
-    if (!JS_GetElement(ECMAScript::cx, obj, i ,&elem)) return false;
+    if (!JS_GetElement(cx, obj, i ,&elem)) return false;
     if (!ecma_to_int(elem,y[i])) return false;
   }
   return true;
@@ -58,14 +59,15 @@ inline bool ecma_to_intvec(jsval x,I* y, unsigned dim)
 template <typename I>
 inline bool ecma_to_floatvec(jsval x,I* y, unsigned dim)
 {
-  if (!JSVAL_IS_OBJECT(x)) return false;
+  JSContext* cx=ECMAScript::cx;
+  if (!JSVAL_IS_OBJECT(x)) ECMA_THROW_ERROR("array object required");
   JSObject *obj=JSVAL_TO_OBJECT(x);
   jsuint l;
-  if (!JS_GetArrayLength(ECMAScript::cx, obj, &l)) return false;
-  if (l!=dim) return false;
+  if (!JS_GetArrayLength(cx, obj, &l)) return false;
+  if (l!=dim) ECMA_THROW_ERROR("wrong array dimension");
   for (jsuint i=0;i<l;++i) {
     jsval elem;
-    if (!JS_GetElement(ECMAScript::cx, obj, i ,&elem)) return false;
+    if (!JS_GetElement(cx, obj, i ,&elem)) return false;
     if (!ecma_to_float(elem,y[i])) return false;
   }
   return true;
@@ -93,10 +95,6 @@ inline bool ecma_from_GLboolean(GLboolean nres, jsval *rval)
 template <typename I>
 inline bool ecma_from_int(I nres, jsval *rval)
 {
-  if (INT_FITS_IN_JSVAL(nres)){
-    *rval=INT_TO_JSVAL(nres);
-    return true;
-  }
   return JS_NewNumberValue(ECMAScript::cx,nres,rval)==JS_TRUE;
 }
 
@@ -127,7 +125,7 @@ inline bool ecma_from_const_GLubyte_ptr(const GLubyte* nres, jsval* rval)
 inline bool ecma_from_boolean_vec(const GLboolean* v,int s, jsval* rval)
 {
   JSObject *nobj=JS_NewArrayObject(ECMAScript::cx, 0, NULL);
-  if (!nobj) return JS_FALSE;
+  if (!nobj) return false;
   *rval=OBJECT_TO_JSVAL(nobj);
   for (int i=0;i<s;++i) {
     jsval n=BOOLEAN_TO_JSVAL(v[i]);
@@ -141,7 +139,7 @@ template <typename N>
 inline bool ecma_from_number_vec(const N* v,int s, jsval* rval)
 {
   JSObject *nobj=JS_NewArrayObject(ECMAScript::cx, 0, NULL);
-  if (!nobj) return JS_FALSE;
+  if (!nobj) return false;
   *rval=OBJECT_TO_JSVAL(nobj);
   for (int i=0;i<s;++i) {
     jsval n;

@@ -82,6 +82,9 @@ namespace ECMAScript
 
   void
   parseLib(const char* config);
+
+  JSBool
+  jsThrow(JSContext *cx, const char* msg);
 };
 
 // macros to help with writing wrappers
@@ -105,15 +108,14 @@ namespace ECMAScript
 #define ECMA_BEGIN_METHOD(name) static JSBool name (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 //! check number of arguments (only usable in wrapper function - see ECMA_BEGIN_FUNC(name) )
-#define ECMA_CHECK_NUM_ARGS(numargs) do{if(argc!=numargs) {JS_ReportError(cx,"Wrong number of arguments: expect %d, got %d",numargs,argc);return JS_FALSE;}}while(0)
-
-//! report error - printf style formatting (only usable in wrapper function - see ECMA_BEGIN_FUNC(name) )
-//#define ECMA_FERROR(format,msg) do{JS_ReportError(cx,format, msg);return JS_FALSE;}while(0)
-#define ECMA_FERROR(format,msg) do{return JS_FALSE;}while(0)
+//#define ECMA_CHECK_NUM_ARGS(numargs) do{if(argc!=numargs) {JS_ReportError(cx,"Wrong number of arguments: expect %d, got %d",numargs,argc);return JS_FALSE;}}while(0)
+#define ECMA_CHECK_NUM_ARGS(numargs) do{if(argc!=numargs) ECMA_THROW_ERROR("Wrong number of args");}while(0)
 
 //! report error (only usable in wrapper function - see ECMA_BEGIN_FUNC(name) )
-//#define ECMA_ERROR(msg) do{JS_ReportError(cx,"%s", msg);return JS_FALSE;}while(0)
-#define ECMA_ERROR(msg) do{return JS_FALSE;}while(0)
+#define ECMA_THROW_ERROR(msg) do{return ECMAScript::jsThrow(cx,msg);}while(0)
+
+//! report error (only usable in wrapper function and when a JS function returned JS_FALSE
+#define ECMA_ERROR(msg) return JS_FALSE
 
 //! function spec
 #define ECMA_FUNCSPEC(name,numargs) { #name,name,numargs,0,0}
@@ -153,14 +155,12 @@ namespace ECMAScript
 #define ECMA_VOID_FUNC_FLOAT4(ns,name) ECMA_BEGIN_STATIC_VOID_FUNC(name) { ECMA_ARGS_TO_FLOAT_ARRAY(4,d);ns::name(d[0],d[1],d[2],d[3]);return JS_TRUE;}
 
 // TODO: bug? - len correct? number of chars in the unicode string?
-#define ECMA_STRING_TO_CHARVEC(val,ctype,len) do{if (!JSVAL_IS_STRING(val)) return JS_FALSE; \
+#define ECMA_STRING_TO_CHARVEC(val,ctype,len) do{if (!JSVAL_IS_STRING(val)) ECMA_THROW_ERROR("string required"); \
     JSString *strtype=JS_ValueToString(cx, val); \
     if (!strtype) return JS_FALSE; \
     ctype=JS_GetStringBytes(strtype); \
     if (!ctype) return JS_FALSE; \
     len=JS_GetStringLength(strtype); \
   }while(0)
-
-
 
 #endif

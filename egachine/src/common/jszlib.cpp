@@ -46,7 +46,7 @@ extern "C" {
     char* ctype;
     size_t len;
     ECMA_STRING_TO_CHARVEC(argv[0],ctype,len);
-    if (!len) ECMA_ERROR("nothing to compress");
+    if (!len) ECMA_THROW_ERROR("nothing to compress");
     
     uLong destLen=compressBound(len);
 
@@ -55,7 +55,7 @@ extern "C" {
 
     if (compress(dest, &destLen, (Byte*)ctype, len)!=Z_OK) {
       JS_free(cx,dest);
-      ECMA_ERROR("compression failed");
+      ECMA_THROW_ERROR("compression failed");
     }
 
     JGACHINE_CHECK(destLen);
@@ -70,11 +70,11 @@ extern "C" {
     char* ctype;
     size_t len;
     ECMA_STRING_TO_CHARVEC(argv[0],ctype,len);
-    if (!len) ECMA_ERROR("nothing to decompress");
+    if (!len) ECMA_THROW_ERROR("nothing to decompress");
 
     int32 d;
     if (!JS_ValueToInt32(cx,argv[1],&d)) return JS_FALSE;
-    if (d<0) ECMA_ERROR("Argument 0 must be a postive number");
+    if (d<0) ECMA_THROW_ERROR("Argument 0 must be a postive number");
     uLong destLen=d;
 
     Byte* dest=(Byte *)JS_malloc(cx, destLen);
@@ -83,7 +83,9 @@ extern "C" {
     int r;
     if ((r=uncompress(dest,  &destLen, (Byte*)ctype, len))!=Z_OK) {
       JS_free(cx,dest);
-      ECMA_FERROR("decompression failed: %s", (r==Z_DATA_ERROR ? "DATA_ERROR" : (r==Z_BUF_ERROR ? "wrong size" : "out of memory")));
+      std::string error="decompression failed: ";
+      error+=(r==Z_DATA_ERROR ? "DATA_ERROR" : (r==Z_BUF_ERROR ? "wrong size" : "out of memory"));
+      ECMA_THROW_ERROR(error.c_str());
     }
     dest=(Byte *)JS_realloc(cx,dest,destLen);
     RETSTR(dest,destLen);

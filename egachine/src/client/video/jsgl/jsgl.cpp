@@ -33,7 +33,7 @@ extern "C" {
       dim=3;
       break;
     default:
-      ECMA_ERROR("argument 1 has wrong value");
+      ECMA_THROW_ERROR("argument 1 has wrong value");
     }
     GLfloat v[dim];
     if (!ecma_to_GLfloat_VEC (argv[2], v, dim))
@@ -64,7 +64,7 @@ extern "C" {
       dim=3;
       break;
     default:
-      ECMA_ERROR("argument 1 has wrong value");
+      ECMA_THROW_ERROR("argument 1 has wrong value");
     }
     GLfloat v[dim];
     if (!ecma_to_GLfloat_VEC (argv[2], v, dim))
@@ -81,7 +81,7 @@ extern "C" {
       ECMA_ERROR ("argument 0 has wrong type");
     int vecsize=jsgl_glGetNumArgs(pname);
     if (vecsize<=0)
-      ECMA_ERROR ("unknown parameter");
+      ECMA_THROW_ERROR ("unknown parameter");
     GLboolean v[vecsize];
     glGetBooleanv(pname,v);
     if (!ecma_from_boolean_vec(v,vecsize,rval))
@@ -97,7 +97,7 @@ extern "C" {
       ECMA_ERROR ("argument 0 has wrong type");
     int vecsize=jsgl_glGetNumArgs(pname);
     if (vecsize<=0)
-      ECMA_ERROR ("unknown parameter");
+      ECMA_THROW_ERROR ("unknown parameter");
     GLdouble v[vecsize];
     glGetDoublev(pname,v);
     if (!ecma_from_number_vec(v,vecsize,rval))
@@ -113,7 +113,7 @@ extern "C" {
       ECMA_ERROR ("argument 0 has wrong type");
     int vecsize=jsgl_glGetNumArgs(pname);
     if (vecsize<=0)
-      ECMA_ERROR ("unknown parameter");
+      ECMA_THROW_ERROR ("unknown parameter");
     GLfloat v[vecsize];
     glGetFloatv(pname,v);
     if (!ecma_from_number_vec(v,vecsize,rval))
@@ -129,7 +129,7 @@ extern "C" {
       ECMA_ERROR ("argument 0 has wrong type");
     int vecsize=jsgl_glGetNumArgs(pname);
     if (vecsize<=0)
-      ECMA_ERROR ("unknown parameter");
+      ECMA_THROW_ERROR ("unknown parameter");
     GLint v[vecsize];
     glGetIntegerv(pname,v);
     if (!ecma_from_number_vec(v,vecsize,rval))

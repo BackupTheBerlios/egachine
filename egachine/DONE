@@ -164,3 +164,8 @@ wingl.c
 
 and it works ;-)
 --------------------------------------------------------------------------------
+error handling improved:
+i now use ECMA_ERROR for all errors resulting from JS functions
+(they always throw an exception)
+and ECMA_THROW_ERROR for errors in my functions
+--------------------------------------------------------------------------------

@@ -106,8 +106,8 @@ function connect(host,port) {
   host=hp[0];
   port=hp[1];
 
-  // TODO: in the moment we can't handle errors
-  // if we could we could print an error message
+  // TODO: in the moment we don't handle errors
+  // we should print an error message
   // Note: egachine allows only to try once
   // to establish an outgoing connection for security reasons
   // (perhaps we could allow 2 or 3 trials)
@@ -121,5 +121,11 @@ function readMsg()
   eval(msg);
 }
 
-connect(host,port);
-while (true) readMsg();
+try{
+  connect(host,port);
+  while (true) readMsg();
+}catch(error){
+  println(error);
+  println("Stack:");
+  println(error.stack);
+}

@@ -34,7 +34,7 @@ extern "C" {
     // sound disabled?
     if (!Audio::audio) return JS_TRUE;
     
-    if((argc<1)||(argc>3)) ECMA_ERROR("Between 1 and 3 arguments required");
+    if((argc<1)||(argc>3)) ECMA_THROW_ERROR("Between 1 and 3 arguments required");
 
 
     char* ctype;
@@ -70,13 +70,13 @@ extern "C" {
     // sound disabled?
     if (!Audio::audio) return JS_TRUE;
 
-    if((argc<1)||(argc>2)) ECMA_ERROR("Between 1 and 2 arguments required");
+    if((argc<1)||(argc>2)) ECMA_THROW_ERROR("Between 1 and 2 arguments required");
     jsdouble sid;
-    if (!JS_ValueToNumber(cx,argv[1],&sid)) ECMA_ERROR("Argument 0: number required");
-    JSBool rep=JS_FALSE;
+    if (!JS_ValueToNumber(cx,argv[0],&sid)) ECMA_ERROR("Argument 0: number required");
+    jsdouble repeat;
     if (argc>=2)
-      if (!JS_ValueToBoolean(cx,argv[1],&rep)) ECMA_ERROR("Argument 1: boolean required");
-    Audio::CID cid=Audio::audio->playSample(sid,rep==JS_TRUE);
+      if (!JS_ValueToNumber(cx,argv[1],&repeat)) ECMA_ERROR("Argument 1: number required");
+    Audio::CID cid=Audio::audio->playSample(sid,repeat);
     return JS_NewNumberValue(cx,cid,rval);
   }
 }

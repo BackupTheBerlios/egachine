@@ -340,6 +340,7 @@ because the have quite some code in common
 --------------------------------------------------------------------------------
 native base64 encode/decode
 --------------------------------------------------------------------------------
-ECMA_ERROR now simply return JS_FALSE
-walk through the code and look where this does not fit well
+ECMA_ERROR perhaps should use argument to supply additional information
+for now it is simply ignored
+in fact ECMA_ERROR simply returns JS_FALSE
 --------------------------------------------------------------------------------

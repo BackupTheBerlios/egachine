@@ -47,20 +47,22 @@ extern "C" {
 
   ECMA_BEGIN_VOID_FUNC(drawTexture) 
   {
-    if (argc<1) ECMA_ERROR("at least one argument required");
-    if (argc>3) ECMA_ERROR("too much arguments (3 at max)");
+    if (argc<1) ECMA_THROW_ERROR("at least one argument required");
+    if (argc>3) ECMA_THROW_ERROR("too much arguments (3 at max)");
     jsdouble tid;
     jsdouble w,h;
     w=h=1;
     if (!JS_ValueToNumber(cx,argv[0],&tid)) ECMA_ERROR("Argument 0 is not a number");
-    if (argc>=2) JS_ValueToNumber(cx,argv[1],&w);
-    if (argc>=3) JS_ValueToNumber(cx,argv[2],&h);
+    if (argc>=2)
+      if (!JS_ValueToNumber(cx,argv[1],&w)) ECMA_ERROR("Argument 1 is not a number");
+    if (argc>=3)
+      if (!JS_ValueToNumber(cx,argv[2],&h)) ECMA_ERROR("Argument 2 is not a number");
     Video::drawTexture(tid,w,h);
     return JS_TRUE;
   }
 
   ECMA_BEGIN_VOID_FUNC(drawText){
-    if (!argc) ECMA_ERROR("at least one argument required");
+    if (!argc) ECMA_THROW_ERROR("at least one argument required");
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
     char* ctype=JS_GetStringBytes(strtype);

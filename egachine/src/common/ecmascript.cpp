@@ -79,7 +79,7 @@ extern "C" {
   ECMA_BEGIN_FUNC(hashObject) 
   {
     ECMA_CHECK_NUM_ARGS(1);
-    if (!JSVAL_IS_OBJECT(argv[0])) ECMA_ERROR("object required as argument");
+    if (!JSVAL_IS_OBJECT(argv[0])) ECMA_THROW_ERROR("object required as argument");
     JSObject *o=JSVAL_TO_OBJECT(argv[0]);
     if (!o) return JS_FALSE;
     JS_GetObjectId(cx,o,rval);
@@ -346,5 +346,22 @@ namespace ECMAScript
     }
   }
 
+  JSBool
+  jsThrow(JSContext *cx, const char* msg) 
+  {
+    // Attention: we do not root s
+    // does JS_CallFunctionName root s for sure?
+    JSString* s=JS_NewStringCopyZ(cx, msg);
+    // todo:
+    // this is not perfect - since it could be confusing to throw
+    // an out of memory exception when there should be thrown a
+    // different exception
+    // on the other hand it is very unlikely that this ever happens
+    if (!s) return JS_FALSE;
+    jsval param[1];
+    param[0]=STRING_TO_JSVAL(s);
+    jsval rval;
+    return JS_CallFunctionName(cx, ECMAScript::glob, "jsthrow", 1, param, &rval);
+  }
 }
 

@@ -1,1 +1,10 @@
-Misc JavaScript only modules (scripts)
+Miscellaneous pure JavaScript modules
+
+base64 module:
+Encode and decode base64
+
+graphviz module:
+Generate output suitable for graphviz (dot) from JavaScript object graph.
+
+sg module:
+Simple scene-graph for sprite based 2D games.

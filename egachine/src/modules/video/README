@@ -1,8 +1,21 @@
-Video subsystem interface implementation using SDL and OpenGL/Mesa
+Video module
 
-Most of the code is taken from adic and dope
-(http://adic.berlios.de, http://dope.berlios.de)
+Description:
 
-Note:
-Needs major clean up.
+provides basic 2D functionality.   The current implementation uses SDL
+to setup the OpenGL context and the gl module for  the rendering.  The
+API is  like a small subset   of the OpenGL  API in  2D.  Additionally
+texture  loading is  simplified.   The purpose  of  this module  is to
+provide a smaller base for the simple scene-graph  module (sg) to make
+porting easier.  It should  not be too diffcult  to implement this API
+using   a  traditional  2D    API.   (The   aplha-blending  might   be
+problematic). For example  it should be possible  to write a pure  SDL
+implementation (without OpenGL) or even   one based upon SVG  (perhaps
+based on the svgl module)
 
+Module dependencies:
+Video -> gl
+
+Library dependencies:
+Video -> libSDL
+Video -> libSDL_image

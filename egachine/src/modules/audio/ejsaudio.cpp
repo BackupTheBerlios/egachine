@@ -112,6 +112,21 @@ extern "C" {
     return JS_NewNumberValue(cx,cid,rval);
   }
 
+  static
+  JSBool
+  stopChannel(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    // sound disabled?
+    if (!Audio::audio) return JS_TRUE;
+
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+
+    jsdouble cid;
+    if (!JS_ValueToNumber(cx,argv[0],&cid)) return JS_FALSE;
+    Audio::audio->stopChannel(cid);
+    return JS_TRUE;
+  }
+
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
   static JSFunctionSpec static_methods[] = {
@@ -120,6 +135,7 @@ extern "C" {
     FUNC(playingMusic,0),
     FUNC(loadSample,1),
     FUNC(playSample,2),
+    FUNC(stopChannel,1),
     EJS_END_FUNCTIONSPEC
   };
 

@@ -179,7 +179,8 @@ AudioSDLMixer::modifyChannel(Audio::CID channel, R volume, R balance, R pitch)
 void 
 AudioSDLMixer::stopChannel(Audio::CID channel) 
 {
-  // todo
+  // todo: check return value?
+  Mix_HaltChannel(channel);
 }
 
 void 

@@ -2,6 +2,14 @@ Audio module
 
 Description:
 Simple audio module allowing to play music and samples.
+At  the moment    there   is only   one    implementation.   It   uses
+SDL_mixer.   SDL_mixer always depends  on libSDL.    Older versions of
+SDL_mixer  ship  with a  modified  version  of libmikmod whereas newer
+versions might   be linked  against an  external   libmikmod.  Current
+EGachine distributions ship with a   statically linked CVS version  of
+libSDL_mixer because  this   module  depends on   the   Mix_LoadMUS_RW
+function only available in newer  versions.  Midi, ogg and mp3 support
+are disabled in those builds.
 
 Security:
 Depends on security of SDL_mixer and the libraries enabled and used by
@@ -13,20 +21,12 @@ srate:        sampling rate
 sbits:        sample precision
 sbuffers:     output buffer size
 stereo:       stereo?
+getResource:  function mapping resource name to resource
 
 Module dependencies:
 None
 
-Library dependencies:
-
-At  the moment    there   is only   one    implementation.   It   uses
-SDL_mixer.   SDL_mixer always depends  on libSDL.    Older versions of
-SDL_mixer  ship  with a  modified  version  of libmikmod whereas newer
-versions might   be linked  against an  external   libmikmod.  Current
-EGachine distributions ship with a   statically linked CVS version  of
-libSDL_mixer because  this   module  depends on   the   Mix_LoadMUS_RW
-function only available in newer  versions.  Midi, ogg and mp3 support
-are disabled in those builds.
+Native library dependencies:
 
 Audio -> libSDL_mixer
 libSDL_mixer -> libSDL
@@ -48,17 +48,17 @@ stopMusic()
 //! are we playing music?
 playingMusic()
 
-//! load a sample (String contains sample)
+//! load a sample (String contains resource name)
 /*!
 	\returns sample ID
 */
 Number loadSample(String)
 
-//! play sample referenced by ID
+//! play sample (String contains resource name)
 /*!
 	\returns channel ID
 */
-playSample(Number)
+Number playSample(String)
 
 //! stop playing sample on channel referenced by ID
-stopSample(Number)
+stopChannel(Number)

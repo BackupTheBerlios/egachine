@@ -6,32 +6,28 @@
 #if defined(__WIN32__) || defined(WIN32)
 
 // need timeval
-
 #define __USE_W32_SOCKETS
 #include <windows.h>
 #define WINDOOF 1
 
-static int initialized=0;
-
 #else
+
+// we assume non-win platforms all have gettimeofday
+#define HAVE_GETTIMEOFDAY 1
 // unix/posix
 static Timer::TimeStamp start;
 
 #endif
 
-
-
-#ifndef WINDOOF
-// we assume non-win platforms all have gettimeofday
-#define HAVE_GETTIMEOFDAY 1
-#endif
+static int initialized=0;
 
 void
 Timer::init()
 {
-#ifdef WINDOOF
   if (initialized++)
     return;
+
+#ifdef WINDOOF
   timeBeginPeriod(1);
 #else
 
@@ -53,15 +49,13 @@ Timer::init()
 void
 Timer::deinit()
 {
-#ifdef WINDOOF
   if (initialized<=0) return;
-  
   if (--initialized)
     return;
+#ifdef WINDOOF
   timeEndPeriod(1);
 #endif
 }
-
 
 Timer::TimeStamp
 Timer::getTimeStamp()
@@ -75,7 +69,7 @@ Timer::getTimeStamp()
   unsigned long n=timeGetTime();
   return Timer::TimeStamp(n)*1000LL;
 #else
-#error "you must implement this"
+#error "bug"
 #endif
 #endif
 
@@ -95,7 +89,6 @@ Timer::uSleep(Timer::TimeStamp usec)
   // could be interrupted by a signal !!
   // on linux we could use the timeout paramter if select was interrupted by a signal
   // but this would be non-std
-  // the error checks are because i once had a strange problem
   int ret;
   if (((ret=select(1,&z,&z,&z,&s))==-1)&&(errno!=EINTR)) {
     // todo: we are in trouble
@@ -106,4 +99,3 @@ Timer::uSleep(Timer::TimeStamp usec)
   Sleep(msec);
 #endif  
 }
-

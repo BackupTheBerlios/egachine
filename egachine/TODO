@@ -219,3 +219,5 @@ toSource can handle graphs
 only because of the __proto__ field?
 i started a second try in src/examples/misc/ser.js
 --------------------------------------------------------------------------------
+compare performance of new and old serializer
+--------------------------------------------------------------------------------

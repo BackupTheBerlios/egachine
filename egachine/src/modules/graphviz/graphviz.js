@@ -112,6 +112,7 @@ graphviz.dot=function(obj,label,style)
     var children;
     var from;
     var to;
+    var f;
 
     if (!obj instanceof Object) return;
     nodeName=getNodeName(obj);
@@ -119,8 +120,12 @@ graphviz.dot=function(obj,label,style)
     m[nodeName]=true;
     label=((obj instanceof Array) ? "Array" : typeof(obj) );
     if (typeof(obj) == 'function') {
-      label="";
-      src=obj.toSource();
+      f=(#1=(/^\(?function ?(.*)\((.*)\) ?\{(.*)\}\)?$/.exec(obj.toSource())),
+	{name:#1#[1],args:#1#[2],body:#1#[3]});
+      label="function";
+      if (f.name) label+=" "+f.name;
+      label+="("+f.args+")\\n";
+      src=f.body;
       if (src.length>maxlen) {
 	tmp=src.substring(0,maxlen/2-3)+" ... "
 	  +src.substring(src.length-maxlen/2-2,src.length);

@@ -336,3 +336,9 @@ Makefile.am's:
 we probably should use la_LIBADD instead of la_LDFLAGS when adding libs?
 No (why no? forgotton)
 --------------------------------------------------------------------------------
+AC_LIBLTDL_INSTALLABLE also needs libltdl (to build it if neccessary)
+--------------------------------------------------------------------------------
+build debian package again
+split it into ejs, ejs-multimedia, egachine-base, egachine
+(this might look like overkill but it is not)
+--------------------------------------------------------------------------------

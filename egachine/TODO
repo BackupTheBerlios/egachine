@@ -939,9 +939,6 @@ unknown SVG element rect SVGDocument.cpp:117
 JS_ConstructObject vs. JS_NewObject !!
 perhaps i should use JS_ConstructObject where i am using JS_NewObject ?!
 --------------------------------------------------------------------------------
-wollte wieder cross-compilen
-trouble mit libltdl
-auch 
-AC_LIBLTDL_INSTALLABLE
-braucht naemlich das libltdl verzeichnis um libltdl zu bauen falls notwendig
-vielleicht sollte ich wieder conenience nehmen?
+splitted binary packages
+perhaps i should split the source, too? not now
+--------------------------------------------------------------------------------

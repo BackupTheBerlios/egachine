@@ -1,7 +1,5 @@
 2004-09-23  Jens Thiele  <karme@berlios.de>
 
-	* release 0.1.0
-
 	* modules may be compiled statically into ejs with --disable-shared
 	(modified libtool/ltmain.sh)
 

@@ -7,8 +7,8 @@ if (!EGachine.checkVersion(0,0,7)) throw "at least version 0.0.7 required";
 joypad=[];
 
 viewport=Video.getViewport();
-sx=viewport.sx;
-sy=viewport.sy;
+sx=viewport[2];
+sy=viewport[3];
 rackets=[];
 points=[];
 spriteSize=new V2D(sx/10,sx/10);

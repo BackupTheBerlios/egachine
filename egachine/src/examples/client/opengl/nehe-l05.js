@@ -179,7 +179,7 @@ Frames=0;
 var viewport=Video.getViewport();
 
 /* resize the initial window */
-resizeWindow( viewport.sx,viewport.sy);
+resizeWindow( viewport[2],viewport[3]);
 
 /* wait for events */ 
 while (true)

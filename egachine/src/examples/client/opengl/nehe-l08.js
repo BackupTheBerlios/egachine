@@ -47,8 +47,8 @@ blend = 1;                  // Turn blending on/off
 addResources();
 
 var viewport=Video.getViewport();
-Width=viewport.sx;
-Height=viewport.sy;
+Width=viewport[2];
+Height=viewport[3];
 
 gl.Enable(GL_TEXTURE_2D);                     // Enable texture mapping.
  

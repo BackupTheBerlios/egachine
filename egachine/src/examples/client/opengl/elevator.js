@@ -151,8 +151,7 @@ Man.prototype.step=function(dt)
 
 
 viewport=Video.getViewport();
-//gl.Translatef(viewport.sx/2,0,0);
-gl.Scalef(viewport.sy,viewport.sy,1);
+gl.Scalef(viewport.[2],viewport[3],1);
 gl.Enable(GL_LINE_SMOOTH);
 
 var back = gl.GenLists(1);

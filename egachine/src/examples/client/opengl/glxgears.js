@@ -309,7 +309,7 @@ function init()
 init();
 
 var viewport=Video.getViewport();
-reshape(viewport.sx,viewport.sy);
+reshape(viewport[2],viewport[3]);
 
 while (true) {
   // get input events

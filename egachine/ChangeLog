@@ -1,5 +1,7 @@
 2004-04-24  Jens Thiele  <karme@berlios.de>
 
+	* Video.getViewport now returns an Array
+
 	* code clean up
 
 	* removed project from native code (since we now have

@@ -108,10 +108,12 @@ namespace ECMAScript
 #define ECMA_CHECK_NUM_ARGS(numargs) do{if(argc!=numargs) {JS_ReportError(cx,"Wrong number of arguments: expect %d, got %d",numargs,argc);return JS_FALSE;}}while(0)
 
 //! report error - printf style formatting (only usable in wrapper function - see ECMA_BEGIN_FUNC(name) )
-#define ECMA_FERROR(format,msg) do{JS_ReportError(cx,format, msg);return JS_FALSE;}while(0)
+//#define ECMA_FERROR(format,msg) do{JS_ReportError(cx,format, msg);return JS_FALSE;}while(0)
+#define ECMA_FERROR(format,msg) do{return JS_FALSE;}while(0)
 
 //! report error (only usable in wrapper function - see ECMA_BEGIN_FUNC(name) )
-#define ECMA_ERROR(msg) do{JS_ReportError(cx,"%s", msg);return JS_FALSE;}while(0)
+//#define ECMA_ERROR(msg) do{JS_ReportError(cx,"%s", msg);return JS_FALSE;}while(0)
+#define ECMA_ERROR(msg) do{return JS_FALSE;}while(0)
 
 //! function spec
 #define ECMA_FUNCSPEC(name,numargs) { #name,name,numargs,0,0}

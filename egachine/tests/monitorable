@@ -3,7 +3,7 @@ echo '
 success=false;
 this.Monitorable=ejs.ModuleLoader.get("Monitorable").Monitorable;
 ejs.ModuleLoader.load("Stream");
-function println(x){stdout.write(x+"\n");stdout.sync();}
+function println(x){Stream.stdout.write(x+"\n");Stream.stdout.sync();}
 function chopLine(x){
   return x.substring(x.indexOf("\n")+1,x.length);
 }
@@ -45,4 +45,72 @@ if ((!success)||(t.a)) throw new Error("failed");
 success=false;
 var foo=t.a;
 if (!success) throw new Error("failed");
+'|../src/ejs
+
+
+echo '
+success=false;
+ejs.ModuleLoader.load("Monitorable");
+ejs.ModuleLoader.load("Stream");
+function println(x){Stream.stdout.write(x+"\n");Stream.stdout.sync();}
+function chopLine(x){
+  return x.substring(x.indexOf("\n")+1,x.length);
+}
+function getStack(){
+  return chopLine(chopLine(new Error().stack.toString()));
+}
+function debug(x){
+//println(getStack());
+}
+
+debug("test");
+t=new Monitorable.Monitorable();
+Monitorable.Monitorable.prototype.monitor={
+  onSet:function(obj,prop,val){
+    success=true;
+    debug();
+    return val;
+  }
+};
+t.a=10;
+if ((!success)||(t.a!=10)||(!(t instanceof Monitorable.Monitorable)))
+  throw new Error("failed");
+'|../src/ejs
+
+
+echo '
+success=false;
+ejs.ModuleLoader.load("Monitorable");
+ejs.ModuleLoader.load("Stream");
+
+function cons(func){
+  return function(){
+    // required to get [[class]] right
+    var ret=new Monitorable.Monitorable();
+    // repair
+    ret.__proto__=this.__proto__;
+    if (!(ret instanceof Monitorable.Monitorable)) {
+      if (!ret.__proto__.__proto__ === Object.prototype) throw new Error("bug");
+      ret.__proto__.__proto__=Monitorable.Monitorable.prototype;
+    }
+
+    func.apply(ret,arguments);
+    return ret;
+  }
+};
+
+
+foo={};
+foo.Bar=cons(function(x){this.x=10;});
+Monitorable.Monitorable.prototype.monitor={
+  onSet:function(obj,prop,val){
+    if (prop=="a") success=true;
+    return val;
+  }
+};
+
+bar=new foo.Bar();
+bar.a=10;
+if ((!success)||(bar.x!=10)||(bar.a!=10)||(!(bar instanceof foo.Bar)))
+  throw new Error("failed");
 '|../src/ejs

@@ -29,6 +29,7 @@
 #include "ejsmoduleloader.h"
 #include "modules/ejsmodule.h"
 
+//! class handling module loading and unloading
 class Module
 {
 public:
@@ -129,6 +130,7 @@ private:
 };
 
 typedef std::map<std::string, Module* > Modules;
+//! already loaded modules
 static Modules* modules=NULL;
 
 extern "C" {
@@ -151,7 +153,8 @@ extern "C" {
   */
   static
   JSBool
-  ejs_moduleloader_loadNative(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
+  ejs_moduleloader_loadNative
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK(modules);
@@ -186,7 +189,8 @@ extern "C" {
 
   static
   JSBool
-  ejs_moduleloader_loadScript(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  ejs_moduleloader_loadScript
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
@@ -201,7 +205,8 @@ extern "C" {
   //! like loadScript but enters untrusted mode
   static
   JSBool
-  ejs_moduleloader_loadUntrusted(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  ejs_moduleloader_loadUntrusted
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     // this also checks that we are in trusted mode
     EJS_ENTER_UNTRUSTED(cx,obj);
@@ -217,7 +222,8 @@ extern "C" {
   
   static
   JSBool
-  ejs_moduleloader_fileIsReadable(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  ejs_moduleloader_fileIsReadable
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
@@ -261,19 +267,19 @@ EJSModuleLoader::onLoad(JSContext *cx, JSObject *obj)
 
 // todo: this is quite stupid
 JSBool
-EJSModuleLoader::evaluateScript(JSContext* cx, JSObject* obj, std::streambuf* src, const char* resname, jsval* rval) 
+EJSModuleLoader::evaluateScript
+(JSContext* cx, JSObject* obj, std::streambuf* src, const char* resname, jsval* rval) 
 {
   typedef std::streambuf stream;
   std::string script;
   if (!src) EJS_THROW_ERROR(cx,obj,"invalid source stream");
 
-  // test for #!/ - to support unix script execution
+  // test for #! - to support unix script execution
   std::istream str(src);
   std::getline(str,script);
-  if ((script.size()>3) && (script.substr(0,3)=="#!/"))
-    script="\n";
-  else
-    script+="\n";
+  if ((script.size()>2) && (script.substr(0,2)=="#!"))
+    script="";
+  script+="\n";
 
   stream::char_type c;
   
@@ -283,7 +289,8 @@ EJSModuleLoader::evaluateScript(JSContext* cx, JSObject* obj, std::streambuf* sr
 }
 
 JSBool
-EJSModuleLoader::evaluateScript(JSContext* cx, JSObject* obj, const char* filename, jsval* rval) 
+EJSModuleLoader::evaluateScript
+(JSContext* cx, JSObject* obj, const char* filename, jsval* rval) 
 {
   if (!filename) EJS_THROW_ERROR(cx,obj,"filename required");
   std::ifstream in(filename);

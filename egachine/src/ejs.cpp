@@ -37,8 +37,11 @@ extern "C" {
   //! error reporter we register with spidermonkey
   static
   void
-  printError(JSContext *cx, const char *message, JSErrorReport *report) {
-    std::cerr << "JSERROR: "<< (report->filename ? report->filename : "NULL") << ":" << report->lineno << ":\n"
+  printError
+  (JSContext *cx, const char *message, JSErrorReport *report)
+  {
+    std::cerr << "JSERROR: "<< (report->filename ? report->filename : "NULL") 
+	      << ":" << report->lineno << ":\n"
 	      << "    " << message << "\n";
     if (report->linebuf) {
       std::string line(report->linebuf);
@@ -84,7 +87,7 @@ extern "C" {
 	  return;
 	}
 	unsigned len=JS_GetStringLength(s);
-	// todo somehow do nice indent
+	// todo: somehow do nice indent
 	std::cerr << "Stack:" << std::endl;
 	std::cerr.rdbuf()->sputn(ctype,len);
 	std::cerr << std::endl;
@@ -95,8 +98,8 @@ extern "C" {
 
   static
   JSBool
-  global_newresolve(JSContext *cx, JSObject *obj, jsval id,
-		    uintN flags, JSObject **objp)
+  global_newresolve
+  (JSContext *cx, JSObject *obj, jsval id, uintN flags, JSObject **objp)
   {
     if (flags & JSRESOLVE_ASSIGNING)
       return JS_TRUE;
@@ -119,7 +122,7 @@ extern "C" {
     if ((s=JS_ValueToString(cx, id))
 	&&(cstr=JS_GetStringBytes(s))
 	&&(!strcmp("ejs",cstr))) {
-	/* todo: should we set *objp = obj ? */
+      // todo: should we set *objp = obj ?
       return JS_TRUE;
     }
 
@@ -162,7 +165,8 @@ extern "C" {
 
   static
   JSBool
-  ejs_exit(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  ejs_exit
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
     JSBool success;
@@ -176,14 +180,16 @@ extern "C" {
   //! get hidden untrusted field
   static
   JSBool
-  ejs_isUntrusted(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  ejs_isUntrusted
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     return ejs_get_untrusted(cx,obj,*rval);
   }
 
   static
   JSBool
-  ejs_enterUntrusted(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  ejs_enterUntrusted
+  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_ENTER_UNTRUSTED(cx,obj);
     return JS_TRUE;
@@ -205,7 +211,8 @@ extern "C" {
 
 //! the program
 /*!
-  \note we use a struct/class to make sure everything is always deinititalized (by the destructor)
+  \note we use a struct/class to make sure everything
+  is always deinititalized (by the destructor)
 */
 struct EJSShell
 {
@@ -219,7 +226,6 @@ struct EJSShell
     if (!(rt = JS_NewRuntime(1L * 1024L * 1024L))) return EXIT_FAILURE;
     if (!(cx = JS_NewContext(rt, 2<<13))) return EXIT_FAILURE;
     if (!(glob = JS_NewObject(cx, &global_class, NULL, NULL))) return EXIT_FAILURE;
-    //    if (!JS_InitStandardClasses(cx, glob)) return EXIT_FAILURE;
     JS_SetErrorReporter(cx, printError);
     JS_SetGlobalObject(cx, glob);
     JS_SetOptions(cx, JS_GetOptions(cx) | JSOPTION_VAROBJFIX);
@@ -227,14 +233,14 @@ struct EJSShell
     return EXIT_SUCCESS;
   }
 
-
 #define INIT_ERROR(msg) do{			\
     std::cerr << "ejs: " << msg << std::endl;	\
     return EXIT_FAILURE;			\
   }while(0)
 
   int
-  main(int argc, char** argv)
+  main
+  (int argc, char** argv)
   {
     if (initSpiderMonkey()==EXIT_FAILURE)
       INIT_ERROR("Could not initialize spidermonkey");
@@ -322,26 +328,25 @@ struct EJSShell
   //! copy argument vector to interpreter
   static
   JSBool
-  copyargv(JSContext* cx, JSObject* obj, int argc, char** argv)
+  copyargv
+  (JSContext* cx, JSObject* obj, int argc, char** argv)
   {
-    // TODO: make this in a cleaner way (we should remove the roots on error)
-    // be careful with the GC
     int js_argc=argc-1;
     if (js_argc<0) js_argc=0;
-    jsval v[js_argc];
-    JSString* jsstr[js_argc];
-    for (int i=1;i<argc;++i) {
-      if (!(jsstr[i-1]=JS_NewStringCopyZ(cx, argv[i]))) return JS_FALSE;
-      if (!JS_AddRoot(cx,jsstr[i-1])) return JS_FALSE;
-      v[i-1]=STRING_TO_JSVAL(jsstr[i-1]);
-    }
+
     JSObject* nobj;
-    if (!(nobj=JS_NewArrayObject(cx, js_argc, v))) return JS_FALSE;
-    if (!JS_AddRoot(cx,nobj)) return JS_FALSE;
-    for (int i=1;i<argc;++i)
-      if (!JS_RemoveRoot(cx,jsstr[i-1])) return JS_FALSE;
-    if (!JS_DefineProperty(cx,obj,"argv",OBJECT_TO_JSVAL(nobj),NULL,NULL,JSPROP_ENUMERATE)) return JS_FALSE;
-    if (!JS_RemoveRoot(cx,nobj)) return JS_FALSE;
+    if (!(nobj=JS_NewArrayObject(cx, js_argc, NULL))) return JS_FALSE;
+    if (!JS_DefineProperty(cx,obj,"argv",OBJECT_TO_JSVAL(nobj),
+			   NULL,NULL,JSPROP_ENUMERATE))
+      return JS_FALSE;
+
+    jsval v;
+    JSString* s;
+    for (int i=1;i<argc;++i) {
+      if (!(s=JS_NewStringCopyZ(cx, argv[i]))) return JS_FALSE;
+      v=STRING_TO_JSVAL(s);
+      if (!JS_SetElement(cx, nobj, i-1, &v)) return JS_FALSE;
+    }
     return JS_TRUE;
   }
 

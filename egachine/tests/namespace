@@ -1,6 +1,7 @@
 #!/bin/sh 
 ../src/ejs <<EOF
 // check if modules pollute the global namespace
+// very weak check!!
 (function(){
   // todo: this only detects enumerable properties
   function globalProps() {
@@ -42,7 +43,7 @@
   var expect=globalProps();
   var modules=["sg","Audio","Base64","Stream","Timer","Zlib","File","graphviz",
 	       "jsolait","Monitorable","Net","sg","Stream","util",
-	       "gl","Video","Input","EGachine"];
+	       "gl","Video","Input","EGachine","svgl"];
 
   var stderr=ejs.ModuleLoader.get("Stream").stderr;
   var i,j,props;

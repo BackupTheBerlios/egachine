@@ -300,6 +300,13 @@
   Input.KMOD_ALT=768;
   Input.KMOD_META=3072;
 
+  //! mouse buttons
+  Input.BUTTON_LEFT=1;
+  Input.BUTTON_MIDDLE=2;
+  Input.BUTTON_RIGHT=3;
+  Input.BUTTON_WHEELUP=4;
+  Input.BUTTON_WHEELDOWN=5;
+
   //! register function to be called if gamepad state changes
   Input.addDevListener=function(f) {
     if (typeof Input.devListeners == "undefined") Input.devListeners=[];
@@ -311,7 +318,107 @@
     devListeners.push(f);
     return devListeners.length-1;
   };
+
+
+  //! dom level  2 events
+  Input.Event=function() {
+    /*
+      this.type=
+      this.timeStamp=
+      ...
+    */
+  }
+  Input.Event.prototype.CAPTURING_PHASE = 1;
+  Input.Event.prototype.AT_TARGET = 2;
+  Input.Event.prototype.BUBBLING_PHASE = 3;
+
+  Input.MouseEvent=function() {
+  };
+
+  Input.MouseEvent.prototype.initMouseEvent=function(typeArg,
+						     canBubbleArg,
+						     cancelableArg,
+						     viewArg,
+						     detailArg,
+						     screenXArg,
+						     screenYArg,
+						     clientXArg,
+						     clientYArg,
+						     ctrlKeyArg,
+						     altKeyArg,
+						     shiftKeyArg,
+						     metaKeyArg,
+						     buttonArg,
+						     relatedTargetArg) {
+    throw Error("not yet implemented");
+  };
+
+  //! convert event to dom level 2 MouseEvent
+  Input.toMouseEvent=function(e) {
+    var ret=new Input.MouseEvent();
+    switch(e.type) {
+      case Input.MOUSEBUTTONDOWN:
+      case Input.MOUSEBUTTONUP:
+      ret.button=e.button-1;
+      // no break here
+      case Input.MOUSEMOTION:
+      ret.screenX=e.x;
+      ret.screenY=e.y;
+      // todo: ?
+      ret.clientX=e.x;
+      ret.clientY=e.y;
+      /* todo:
+	 ret.ctrlKey=;
+	 ret.shiftKey=;
+	 ret.altKey=;
+	 ret.metaKey=;
+	 ret.metaKey=;
+	 ret.type=;
+      */
+      break;
+      default:
+      throw Error("wrong event type");
+    };
+    return ret;
+  };
+
+  var listeners={};
+  Input._clearListeners=function(){listeners={};};
+  Input.addEventListener=function(type, listener, useCapture) {
+    var a=listeners[type];
+    if (!a) listeners[type]=a=[];
+    a.push({listener:listener,useCapture:useCapture});
+  };
   
+  /* todo:
+  Input.removeEventListener(type, listener, useCapture) {
+  };*/
+
+  Input.handleMouse=function(e) {
+    var domevent=Input.toMouseEvent(e);
+    var type;
+    switch(e.type) {
+    case Input.MOUSEMOTION:
+      type="mousemove";
+      break;
+    case Input.MOUSEBUTTONDOWN:
+      type="mousedown";
+      break;
+    case Input.MOUSEBUTTONUP:
+      type="mouseup";
+      break;
+    default:
+      throw Error("wrong type: "+e.type);
+    };
+
+    var i;
+    var l=listeners[type];
+    if (l) {
+      for (i=0;i<l.length;++i)
+	l[i].listener(domevent);
+    }
+  };
+
   //! todo: this must always work => untrusted code should not be allowed to mess with this
 
   // backward compatibility layer
@@ -491,7 +598,13 @@
       case Input.VIDEORESIZE:
 	Input.handleResize(event);
 	break;
+      case Input.MOUSEMOTION:
+      case Input.MOUSEBUTTONDOWN:
+      case Input.MOUSEBUTTONUP:
+	Input.handleMouse(event);
+	break;
       }
+
     }
   }
 

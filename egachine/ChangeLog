@@ -1,3 +1,7 @@
+2005-05-16  Jens Thiele  <karme@berlios.de>
+
+	* src/modules/gl/ejsgl.cpp: glGetMinmax only available since opengl 1.2
+
 2005-04-04  Jens Thiele  <karme@berlios.de>
 
 	* src/egachine.in: don't mess with audio API, frame skip test, gl.getMinmax test

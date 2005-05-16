@@ -77,7 +77,7 @@ extern "C" {
   }
 
   JSBool
-  ejtimer_LTX_onUnLoad()
+  ejstimer_LTX_onUnLoad()
   {
     Timer::deinit();
     return JS_TRUE;

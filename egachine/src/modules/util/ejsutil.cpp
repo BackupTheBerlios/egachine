@@ -66,7 +66,7 @@
 #include <ejsmodule.h>
 #include <cassert>
 
-#define HAVE_RLIMIT 1
+//#define HAVE_RLIMIT 1
 
 #ifdef HAVE_RLIMIT
 #include <sys/time.h>
@@ -74,7 +74,7 @@
 #include <unistd.h>
 #endif
 
-#define HAVE_SCHED_SETSCHEDULER 1
+//#define HAVE_SCHED_SETSCHEDULER 1
 #ifdef HAVE_SCHED_SETSCHEDULER
 #include <sched.h>
 #include <sys/mman.h>

@@ -94,7 +94,6 @@ glGetColorTableParameteriv
 glGetHistogram
 glGetHistogramParameterfv
 glGetHistogramParameteriv
-glGetMinmax
 glGetMinmaxParameterfv
 glGetMinmaxParameteriv
 glConvolutionFilter1D

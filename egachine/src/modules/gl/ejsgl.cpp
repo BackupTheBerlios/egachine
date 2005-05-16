@@ -374,6 +374,8 @@ extern "C" {
     glMap1f(target,u1,u2,stride,order,points);
     return JS_TRUE;
   }
+
+#ifdef GL_VERSION_1_2
   
   static JSBool GetMinmax(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
   {
@@ -415,7 +417,7 @@ extern "C" {
     glGetMinmax(target, reset, format, types, values);
     return from_number_vec(cx, obj, values, c, rval);
   }
-  
+#endif  
 
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
@@ -428,7 +430,9 @@ extern "C" {
     FUNC (GetFloatv, 1),
     FUNC (GetIntegerv, 1),
     FUNC (Map1f, 4),
+#ifdef GL_VERSION_1_2
     FUNC (GetMinmax, 4),
+#endif
     EJS_END_FUNCTIONSPEC
   };
 

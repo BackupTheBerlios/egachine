@@ -88,11 +88,12 @@ FEATURES/GOALS:
 - tool for learning by writing computer games
 
 - beginner friendly:
-  Get  beginners started with  game  programing. For  now  there is no
+  Get  beginners started with  game programing.  For now  there  is no
   detailed documentation (any volunteers?) but the examples should get
-  you started.  JavaScript is a nice  language  and you don't  need to
-  compile  code.  You only  need  EGachine and  a   text editor to get
-  started.
+  you started.  JavaScript  is a nice  language and you don't need  to
+  compile code.   You  only need EGachine   and a  text editor  to get
+  started.  SpiderMonkey does a quite  good job at giving useful error
+  messages.
 
 - quick development of games
   sometimes you just want to write a game within few hours
@@ -100,21 +101,26 @@ FEATURES/GOALS:
 - portability
 
 - run untrusted code in a secure manner:
-  This is similar to Java applets or like browsers run JavaScript 
-  code. This means you only download the client once and games/apps
-  may be shipped via network. Neither server nor client can access 
-  files from JavaScript code. (ATTENTION: at the moment you should
-  not run untrusted scripts)
+  This  is similar  to Java  applets or  like  browsers run JavaScript
+  code. This  means you only download  the client  once and games/apps
+  may  be  shipped via network. Neither   server nor client can access
+  files from JavaScript code. (ATTENTION: at the moment you should not
+  run untrusted scripts)
 
 - network support:
-  Writing multi-player network games/apps should be easy.
-  The client may establish one connection to a server. The server may 
-  listen on one port and establish one connection (for example to a 
+  Writing multi-player network  games/apps should be easy.  The client
+  may establish one connection  to a server. The  server may listen on
+  one    port and   establish   one connection     (for example to   a
   meta-server).
 
 - not limited to games - could also be used as:
-  presentation tool, "movie" player similar to flash, special purpose
+  presentation tool, "movie" player  similar to flash, special purpose
   terminal, tool to teach/learn OpenGL
+
+- (soft) real time requirements:
+  Especially garbage collection (GC)  is problematic. ("real  time GC"
+  required). At  the moment this  isn't implemented  and the stock  GC
+  from spidermonkey is used. (But it works quite well.)
 
 - modular:
   based upon EJS and modules for EJS
@@ -153,15 +159,7 @@ karme@berlios.de
 
 ----------------------------------------------------------------------
 
-Links:
-
-http://mozilla.org/js/spidermonkey/
-http://www.libsdl.org
-http://www.opengl.org
-http://www.mesa3d.org
-http://trophy.sf.net
 http://jsdoc.sf.net
-http://www.jsdb.org
 
 ----------------------------------------------------------------------
 
@@ -192,6 +190,29 @@ Pygame <http://www.pygame.org/>:
   the python  language. Pygame is highly portable  and runs  on nearly
   every platform and operating system."
 
+Eel/eelbox <http://eel.olofson.net/>
+  License: LGPL
+  Description: "EEL is  a scripting and programming language, designed
+  specifically for  hard real  time  applications. The  primary target
+  areas  of application are  control  engineering and audio synthesis,
+  but EEL should also  be suitable for game  scripting and for  adding
+  scripting capabilities  to  real  time multimedia  applications. 
+
+  The syntax is  C-like, but the language  is higher level than C, and
+  "safe"  in the sense that  EEL programs should not  be able to crash
+  the virtual machine or the host application. EEL has dynamic typing,
+  automatic memory  management,  exception handling  and built-in high
+  level data  types such as vectors,  arrays and tables. New such data
+  types can be added at run time by host applications.
+
+  EEL  compiles into byte-code that  runs  on a virtual machine, which
+  means that  no explicit support for  specific achitectures is needed
+  for  portability.  The   implementation  is deliberately  very  self
+  contained    and has few   dependencies, so  that   it can be easily
+  integrated into  "strange"  environments,  such as  embedded devices
+  running real time operating systems."
+
+----------------------------------------------------------------------
 
 Projects also embedding SpiderMonkey (similar to EJS):
 
@@ -207,4 +228,32 @@ JSDB  <http://www.jsdb.org/>:
 A list of projects embedding SpiderMonkey:
 <http://www.mozilla.org/js/projects.html>
 
+----------------------------------------------------------------------
+
+Other programing languages / runtime environments  / VMs that might be
+interesting for similar projects:
+
+- perl6 <http://www.perl.org/> (parrot VM):
+  sandbox, small minimalistic environment?
+
+- python <http://www.python.org>:
+  sandbox, small minimalistic environment?
+
+- scheme: (soft)-realtime, which implementation?
+
+- squirrel <http://squirrel.sourceforge.net/>
+  (squadd <http://sourceforge.net/projects/squadd>)
+
+- lua <http://www.lua.org/>
+
+- io <http://www.iolanguage.com>
+
+- goo <http://www.googoogaga.org/>: sandbox?
+
+- jrate / Real-Time Specification for Java (RTSJ)
+  <http://jrate.sourceforge.net/>:  java not  suitable  for beginers /
+  rapid     development?      - this  is    why     i stopped jgachine
+  <http://jgachine.berlios.de>
+
+- erlang
 ----------------------------------------------------------------------

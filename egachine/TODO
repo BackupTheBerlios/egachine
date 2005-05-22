@@ -893,3 +893,9 @@ hmm
 examples dir layout sucks
 especially with the debs
 --------------------------------------------------------------------------------
+currently working at using shared libstdc++ for win
+last problem: libtool modules can't link static libs in 
+- probably because pic required
+easy solution: use dll's in those cases, too
+this should result in a really small (~60k) ejs.exe
+--------------------------------------------------------------------------------

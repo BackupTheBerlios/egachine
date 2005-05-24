@@ -12,7 +12,7 @@ if test -e ./configure; then
 fi
 
 echo Autoreconf
-mkdir config
+test -e config || mkdir config
 # othwerise autoreconf will complain about missing ltdl directory
 # libtoolize -c -f --ltdl
 autoreconf -i -f

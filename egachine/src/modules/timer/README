@@ -1,0 +1,10 @@
+Timer module
+
+Description:
+
+Provides a high resolution timer.
+
+Functions:
+
+//! get a time stamp (10^-6 s)
+Number getTimeStamp()

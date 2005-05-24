@@ -1,0 +1,15 @@
+Zlib module
+
+Description: The Zlib module provides functions to compress and
+uncompress Strings.
+
+Native library dependencies:
+Zlib -> libzlib
+
+Functions:
+
+//! compress String
+String compress(String)
+
+//! decompress String
+String uncompress(String)

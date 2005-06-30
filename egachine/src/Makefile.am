@@ -49,6 +49,10 @@ if BUILD_AUDIO
 DLOPEN_MAYBE_AUDIO = -dlopen modules/audio/ejsaudio.la
 DEP_MAYBE_AUDIO = modules/audio/ejsaudio.la
 endif
+if BUILD_TCC
+DLOPEN_MAYBE_TCC = -dlopen modules/tcc/ejstcc.la
+DEP_MAYBE_TCC = modules/tcc/ejstcc.la
+endif
 
 ejs_LDADD = @LIBLTDL@ \
 	-dlopen modules/example/ejsexample.la\
@@ -65,6 +69,7 @@ ejs_LDADD = @LIBLTDL@ \
 	$(DLOPEN_MAYBE_VIDEO) \
 	$(DLOPEN_MAYBE_INPUT) \
 	$(DLOPEN_MAYBE_AUDIO) \
+	$(DLOPEN_MAYBE_TCC) \
 	$(DLOPEN_MAYBE_SVGL) 
 
 # note -export-symbols-regex only works since we use a hacked libtool
@@ -88,6 +93,7 @@ ejs_DEPENDENCIES = @LIBLTDL@ \
 	$(DEP_MAYBE_VIDEO) \
 	$(DEP_MAYBE_INPUT) \
 	$(DEP_MAYBE_AUDIO) \
+	$(DEP_MAYBE_TCC) \
 	$(DEP_MAYBE_SVGL) 
 
 EXTRA_DIST = egares.in egaserver.in egachine.in

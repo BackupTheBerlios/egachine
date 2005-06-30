@@ -62,7 +62,8 @@ ejs_OBJECTS = $(am_ejs_OBJECTS)
 @BUILD_VIDEO_TRUE@am__DEPENDENCIES_7 = modules/video/ejsvideo.la
 @BUILD_INPUT_TRUE@am__DEPENDENCIES_8 = modules/input/ejsinput.la
 @BUILD_AUDIO_TRUE@am__DEPENDENCIES_9 = modules/audio/ejsaudio.la
-@BUILD_SVGL_TRUE@am__DEPENDENCIES_10 = modules/svgl/ejssvgl.la
+@BUILD_TCC_TRUE@am__DEPENDENCIES_10 = modules/tcc/ejstcc.la
+@BUILD_SVGL_TRUE@am__DEPENDENCIES_11 = modules/svgl/ejssvgl.la
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -118,6 +119,8 @@ BUILD_STREAM_FALSE = @BUILD_STREAM_FALSE@
 BUILD_STREAM_TRUE = @BUILD_STREAM_TRUE@
 BUILD_SVGL_FALSE = @BUILD_SVGL_FALSE@
 BUILD_SVGL_TRUE = @BUILD_SVGL_TRUE@
+BUILD_TCC_FALSE = @BUILD_TCC_FALSE@
+BUILD_TCC_TRUE = @BUILD_TCC_TRUE@
 BUILD_TIMER_FALSE = @BUILD_TIMER_FALSE@
 BUILD_TIMER_TRUE = @BUILD_TIMER_TRUE@
 BUILD_VIDEO_FALSE = @BUILD_VIDEO_FALSE@
@@ -266,6 +269,8 @@ ejs_SOURCES = ejsmoduleloader.h ejs.cpp ejsmoduleloader.cpp
 @BUILD_INPUT_TRUE@DEP_MAYBE_INPUT = modules/input/ejsinput.la
 @BUILD_AUDIO_TRUE@DLOPEN_MAYBE_AUDIO = -dlopen modules/audio/ejsaudio.la
 @BUILD_AUDIO_TRUE@DEP_MAYBE_AUDIO = modules/audio/ejsaudio.la
+@BUILD_TCC_TRUE@DLOPEN_MAYBE_TCC = -dlopen modules/tcc/ejstcc.la
+@BUILD_TCC_TRUE@DEP_MAYBE_TCC = modules/tcc/ejstcc.la
 ejs_LDADD = @LIBLTDL@ \
 	-dlopen modules/example/ejsexample.la\
 	-dlopen modules/monitorable/ejsmonitorable.la\
@@ -281,6 +286,7 @@ ejs_LDADD = @LIBLTDL@ \
 	$(DLOPEN_MAYBE_VIDEO) \
 	$(DLOPEN_MAYBE_INPUT) \
 	$(DLOPEN_MAYBE_AUDIO) \
+	$(DLOPEN_MAYBE_TCC) \
 	$(DLOPEN_MAYBE_SVGL) 
 
 
@@ -304,6 +310,7 @@ ejs_DEPENDENCIES = @LIBLTDL@ \
 	$(DEP_MAYBE_VIDEO) \
 	$(DEP_MAYBE_INPUT) \
 	$(DEP_MAYBE_AUDIO) \
+	$(DEP_MAYBE_TCC) \
 	$(DEP_MAYBE_SVGL) 
 
 EXTRA_DIST = egares.in egaserver.in egachine.in
@@ -328,9 +335,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/Makefile
+	  $(AUTOMAKE) --foreign  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

@@ -30,6 +30,9 @@ endif
 if BUILD_AUDIO
 MAYBE_AUDIO = audio
 endif
+if BUILD_TCC
+MAYBE_TCC = tcc
+endif
 
 SUBDIRS = \
 	example \
@@ -45,6 +48,7 @@ SUBDIRS = \
 	$(MAYBE_VIDEO) \
 	$(MAYBE_INPUT) \
 	$(MAYBE_AUDIO) \
+	$(MAYBE_TCC) \
 	$(MAYBE_SVGL) \
 	util \
 	jsmisc \

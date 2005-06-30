@@ -6,6 +6,7 @@ net = net server
 audio = audio
 timer = timer
 gl = opengl
+tcc = tcc
 
 if BUILD_SVGL
 MAYBE_SVGL = $(svgl)
@@ -31,6 +32,9 @@ endif
 if BUILD_GL
 MAYBE_GL = $(gl)
 endif
+if BUILD_TCC
+MAYBE_TCC = $(tcc)
+endif
 
 tests = \
 	ejsexit \
@@ -54,7 +58,8 @@ check_SCRIPTS = \
 	$(MAYBE_AUDIO) \
 	$(MAYBE_TIMER) \
 	$(MAYBE_GL) \
-	$(MAYBE_SVGL)
+	$(MAYBE_SVGL) \
+	$(MAYBE_TCC)
 
 TESTS = $(check_SCRIPTS)
 

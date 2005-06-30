@@ -14,6 +14,7 @@ Christophe Roux 	(for testing egachine and giving feedback)
 Alex Fritze     	(for SVG Tetris)
 Jan-Klaas Kollhof	(for jsolait)
 Stéphane Conversy <conversy@enac.fr> (for glft and svgl)
+Nicolai M. Josuttis	(for fdstream.hpp)
 
 SDL			<http://libsdl.org>
 boost			<http://www.boost.org>

@@ -1,3 +1,10 @@
+2005-06-30  Jens Thiele  <karme@berlios.de>
+
+	* added experimental tcc module
+
+	* added experimental popen like function (providing 
+	stdin, stdout, stderr streams for forked process)
+
 2005-05-16  Jens Thiele  <karme@berlios.de>
 
 	* src/modules/gl/ejsgl.cpp: glGetMinmax only available since opengl 1.2

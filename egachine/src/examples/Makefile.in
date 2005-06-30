@@ -82,6 +82,8 @@ BUILD_STREAM_FALSE = @BUILD_STREAM_FALSE@
 BUILD_STREAM_TRUE = @BUILD_STREAM_TRUE@
 BUILD_SVGL_FALSE = @BUILD_SVGL_FALSE@
 BUILD_SVGL_TRUE = @BUILD_SVGL_TRUE@
+BUILD_TCC_FALSE = @BUILD_TCC_FALSE@
+BUILD_TCC_TRUE = @BUILD_TCC_TRUE@
 BUILD_TIMER_FALSE = @BUILD_TIMER_FALSE@
 BUILD_TIMER_TRUE = @BUILD_TIMER_TRUE@
 BUILD_VIDEO_FALSE = @BUILD_VIDEO_FALSE@
@@ -244,9 +246,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/examples/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/examples/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/examples/Makefile
+	  $(AUTOMAKE) --foreign  src/examples/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

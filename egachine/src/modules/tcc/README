@@ -1,0 +1,4 @@
+Bindings to tcc/libtcc (tiny c compiler)
+
+Why?
+idea was to use a subset of c as ffi (to c) language

@@ -72,6 +72,14 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(ejsfile_la_SOURCES)
 DIST_SOURCES = $(ejsfile_la_SOURCES)
 dist_pkgdataDATA_INSTALL = $(INSTALL_DATA)
@@ -103,6 +111,8 @@ BUILD_STREAM_FALSE = @BUILD_STREAM_FALSE@
 BUILD_STREAM_TRUE = @BUILD_STREAM_TRUE@
 BUILD_SVGL_FALSE = @BUILD_SVGL_FALSE@
 BUILD_SVGL_TRUE = @BUILD_SVGL_TRUE@
+BUILD_TCC_FALSE = @BUILD_TCC_FALSE@
+BUILD_TCC_TRUE = @BUILD_TCC_TRUE@
 BUILD_TIMER_FALSE = @BUILD_TIMER_FALSE@
 BUILD_TIMER_TRUE = @BUILD_TIMER_TRUE@
 BUILD_VIDEO_FALSE = @BUILD_VIDEO_FALSE@
@@ -228,7 +238,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 INCLUDES = @EJS_CFLAGS@ -I\$(top_srcdir)
 pkglib_LTLIBRARIES = ejsfile.la
-ejsfile_la_SOURCES = ejsfile.cpp
+ejsfile_la_SOURCES = fdstream.hpp ejsfile.cpp
 ejsfile_la_LDFLAGS = -module @MODULE_LDFLAGS@
 dist_pkgdata_DATA = file.js
 EXTRA_DIST = export.sym
@@ -245,9 +255,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/modules/file/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/modules/file/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/modules/file/Makefile
+	  $(AUTOMAKE) --foreign  src/modules/file/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

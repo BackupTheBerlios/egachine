@@ -27,6 +27,7 @@ editbuild = sed \
 	"@abs_top_srcdir@/src/modules/jsolait"\,\
 	"@abs_top_srcdir@/src/modules"\,\
 	"@abs_top_srcdir@/src/modules/jsmisc"\,\
+	"@abs_top_srcdir@/src/modules/tcc"\,\
 	,g' \
 	-e 's,@libraryPath\@,\
 	"@abs_top_builddir@/src/modules/example"\,\
@@ -44,6 +45,7 @@ editbuild = sed \
 	"@abs_top_builddir@/src/modules/audio"\,\
 	"@abs_top_builddir@/src/modules/svgl"\,\
 	"@abs_top_builddir@/src/modules/util"\,\
+	"@abs_top_builddir@/src/modules/tcc"\,\
 	,g'
 
 editinst = sed \

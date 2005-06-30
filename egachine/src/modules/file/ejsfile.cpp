@@ -25,6 +25,12 @@
 #include <fstream>
 #include "ejsmodule.h"
 
+#define WITH_POPEN 1
+
+#ifdef WITH_POPEN
+#include "fdstream.hpp"
+#endif
+
 // todo: similar code is also in ejsnet.cpp
 JSBool
 newStreamObject(JSContext* cx, JSObject* obj, std::streambuf* stream, jsval* rval)
@@ -109,10 +115,114 @@ extern "C" {
     return JS_TRUE;
   }
 
+#ifdef WITH_POPEN  
+  static
+  int
+  myPopen(const char* cmd, char* const* cmdargs, int* infd, int* outfd, int* erroutfd)
+  {
+    pid_t pid;
+    int o_pipe[2];
+    int e_pipe[2];
+    int i_pipe[2];
+    int i=0;
+    int maxfds=0;
+    int status;
+
+    EJS_CHECK(!pipe(o_pipe));
+    EJS_CHECK(!pipe(e_pipe));
+    EJS_CHECK(!pipe(i_pipe));
+
+    pid=fork();
+    if (pid==0)
+      {
+	/* child */
+	dup2(o_pipe[1],STDOUT_FILENO);
+	EJS_CHECK(!close(o_pipe[0]));
+
+	dup2(e_pipe[1],STDERR_FILENO);
+	EJS_CHECK(!close(e_pipe[0]));
+
+	dup2(i_pipe[0],STDIN_FILENO);
+	EJS_CHECK(!close(i_pipe[1]));
+
+	EJS_CHECK(!close(o_pipe[1]));
+	EJS_CHECK(!close(e_pipe[1]));
+	EJS_CHECK(!close(i_pipe[0]));
+
+	/* mark fd's as close on exec? except stdin/stdout/stderr */
+	maxfds=sysconf(_SC_OPEN_MAX);
+	/* todo: don't depend on 3 being the first fd not stdin/stdout/stderr */
+	for (i=3;i<maxfds;i++)
+	  close(i);
+	
+	execv(cmd,cmdargs);
+	EJS_WARN("execv failed");
+	return 0;
+      }
+    EJS_CHECK(pid!=-1);
+    *outfd=o_pipe[0];
+    *erroutfd=e_pipe[0];
+    *infd=i_pipe[1];
+    EJS_CHECK(!close(o_pipe[1]));
+    EJS_CHECK(!close(e_pipe[1]));
+    EJS_CHECK(!close(i_pipe[0]));
+    return 1;
+  }
+
+  static JSBool
+  ejsfile_popen(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    JSString *s=NULL;
+    int infd, outfd, erroutfd;
+
+    EJS_CHECK_TRUSTED(cx,obj);
+    if (argc<1) EJS_THROW_ERROR(cx, obj, "at least one argument required");
+
+    if (!(s=JS_ValueToString(cx,argv[0]))) return JS_FALSE;
+    // todo: unicode
+    char* cmd=JS_GetStringBytes(s);
+
+    char* cmdargs[argc+1-1];
+    unsigned i;
+    for (i=0;i<argc-1;++i) {
+      if (!(s=JS_ValueToString(cx,argv[i+1]))) return JS_FALSE;
+      // todo: unicode
+      cmdargs[i]=JS_GetStringBytes(s);
+    }
+    cmdargs[i]=NULL;
+    if (!myPopen(cmd,cmdargs,&infd,&outfd,&erroutfd))
+      EJS_THROW_ERROR(cx, obj, "myPopen failed");
+
+    JSObject *robj;
+    if (!(robj=JS_NewObject(cx, NULL, NULL, NULL))) return JS_FALSE;
+    *rval=OBJECT_TO_JSVAL(robj);
+
+    std::streambuf* istream=new boost::fdinbuf(outfd, true);
+    jsval js_istream;
+    if (!newStreamObject(cx, obj, istream, &js_istream)) return JS_FALSE;
+    if (!JS_SetProperty(cx, robj, "stdout", &js_istream)) return JS_FALSE;
+
+    std::streambuf* err_istream=new boost::fdinbuf(erroutfd, true);
+    jsval js_err_istream;
+    if (!newStreamObject(cx, obj, err_istream, &js_err_istream)) return JS_FALSE;
+    if (!JS_SetProperty(cx, robj, "stderr", &js_err_istream)) return JS_FALSE;
+
+    std::streambuf* ostream=new boost::fdoutbuf(infd, true);
+    jsval js_ostream;
+    if (!newStreamObject(cx, obj, ostream, &js_ostream)) return JS_FALSE;
+    if (!JS_SetProperty(cx, robj, "stdin", &js_ostream)) return JS_FALSE;
+
+    return JS_TRUE;
+  }
+#endif /* WITH_POPEN */
+
 #define FUNC(name, args) { #name,ejsfile_##name,args,0,0}
 
   static JSFunctionSpec file_static_methods[] = {
     FUNC(open,2),
+#ifdef WITH_POPEN
+    FUNC(popen,1),
+#endif
     EJS_END_FUNCTIONSPEC
   };
 

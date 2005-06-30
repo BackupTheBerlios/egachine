@@ -4,26 +4,37 @@ set -e
 . $srcdir/common
 
 # ATTENTION: this may overwrite a file (see fname below)
-# todo: somehow make this safe and remove the file after the test
+# todo: make this safe
+
+FNAME="delme-filetest-346x63hg3"
+test -e $FNAME && echo "Output file ($FNAME) exists. TODO: fix this test" && exit 1
 
 runtest '
-ejs.ModuleLoader.load("File");
+var File=ejs.ModuleLoader.get("File");
 if (!File.mode.read)
 	throw new Error("failed");
 stream=File.open("Makefile",File.mode.read);
 function assert(x){if (!x()) throw new Error(x.toSource());};
-str=ejs.ModuleLoader.get("Stream");
+var str=ejs.ModuleLoader.get("Stream");
 assert(function(){return stream instanceof str.Stream;});
 if ((s=stream.read(10))!="# Makefile")
 	throw new Error("failed: \""+s+"\"");
 stream=File.read("Makefile");
 if ((s=stream.read(10))!="# Makefile")
 	throw new Error("failed: \""+s+"\"");
-fname="delme-filetest-346x63hg3";
+fname="'$FNAME'";
 stream=File.write(fname);
 stream.write("Hello World");
 stream.sync();
 stream=File.read(fname);
 assert(function(){return stream.read(11)=="Hello World";});
+
+if (File.popen) {
+    var cmd="/bin/cat";
+    var p=File.popen(cmd,cmd,fname,"-");
+    p.stdin.write("\nHello World");
+    p.stdin.close();
+    assert(function(){return p.stdout.readAll()=="Hello World\nHello World";});
+}
 '
-rm delme-filetest-346x63hg3
+rm $FNAME

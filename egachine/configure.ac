@@ -339,13 +339,15 @@ AC_ARG_ENABLE([tcc],
 	[Build tcc module [[default=no]]]),
 	[], enable_tcc=no)
 if test x$enable_tcc = xyes; then
-	AC_CHECK_HEADER([libtcc.h], [], [
+	AC_CHECK_HEADER([libtcc.h], [ true ], [
 		AC_MSG_ERROR([Could not find required header 'libtcc.h'
 			Perhaps you have to add some -I/path/toheader to your CPPFLAGS])
 	])
-	AC_CHECK_LIB(tcc, tcc_new, , [
+	TCC_LIBS=""
+	AC_CHECK_LIB(tcc, tcc_new, [TCC_LIBS="-ltcc"], [
 		AC_MSG_ERROR([Could not find required tcc library])
 	])
+	AC_SUBST(TCC_LIBS)
 fi
 AM_CONDITIONAL([BUILD_TCC], [test x$enable_tcc = xyes])
 

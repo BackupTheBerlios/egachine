@@ -173,6 +173,7 @@ SOCKET_LIBS = @SOCKET_LIBS@
 STRIP = @STRIP@
 SVGL_CFLAGS = @SVGL_CFLAGS@
 SVGL_LIBS = @SVGL_LIBS@
+TCC_LIBS = @TCC_LIBS@
 TIMER_LIBS = @TIMER_LIBS@
 VERSION = @VERSION@
 ZLIB_LIBS = @ZLIB_LIBS@
@@ -231,7 +232,7 @@ target_vendor = @target_vendor@
 INCLUDES = @EJS_CFLAGS@
 pkglib_LTLIBRARIES = ejstcc.la
 ejstcc_la_SOURCES = ejstcc.cpp
-ejstcc_la_LDFLAGS = -module @MODULE_LDFLAGS@
+ejstcc_la_LDFLAGS = -module @MODULE_LDFLAGS@ @TCC_LIBS@
 dist_pkgdata_DATA = tcc.js
 EXTRA_DIST = export.sym
 all: all-am

@@ -42,55 +42,7 @@ extern "C" {
     lastError=msg;
   }
 
-  //! compile and run c-code
-  /*!
-    \todo: fix possible memory leaks
-  */
-  static
-  JSBool
-  ejstcc_run
-  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-  {
-    EJS_CHECK_TRUSTED(cx,obj);
-    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-
-    JSString *strtype=JS_ValueToString(cx, argv[0]);
-    if (!strtype) return JS_FALSE;
-    // todo: we loose unicode information here
-    char* ctype=JS_GetStringBytes(strtype);
-    if (!ctype) return JS_FALSE;
-    
-    lastError=NULL;
-    TCCState *s = tcc_new();
-    if (!s) EJS_THROW_ERROR(cx, obj, "Could not create tcc state");
-    tcc_set_error_func(s,NULL,ejstcc_onerror);
-
-    tcc_set_output_type(s, TCC_OUTPUT_MEMORY);
-    if (tcc_compile_string(s, ctype)) {
-      std::string m("Compilation failed:");
-      if (lastError)
-	m+=lastError;
-      else
-	m+="reason unknown";
-      EJS_THROW_ERROR(cx, obj, m.c_str());
-    }
-    
-    if (tcc_relocate(s))
-      EJS_THROW_ERROR(cx, obj, "Relocation failed");
-    
-    typedef void (*void_func_void) (void);
-    long unsigned int addr;
-    if (tcc_get_symbol(s, &addr, "ejstcc_compiled_function"))
-      EJS_THROW_ERROR(cx, obj, "Could net get symbol");
-    void_func_void func;
-    func=(void_func_void)addr;
-    func();
-    tcc_delete(s);
-
-    return JS_TRUE;
-  }
-
-  //! compile and run c-code
+  //! compile c-code
   /*!
     \todo: fix possible memory leaks
   */
@@ -101,6 +53,7 @@ extern "C" {
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    EJS_CHECK(tccState);
 
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -122,7 +75,7 @@ extern "C" {
     return JS_TRUE;
   }
 
-  //! call c function of type void(*)(void)
+  //! link
   static
   JSBool
   ejstcc_relocate
@@ -130,9 +83,16 @@ extern "C" {
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
+    EJS_CHECK(tccState);
 
-    if (tcc_relocate(tccState))
-      EJS_THROW_ERROR(cx, obj, "Relocation failed");
+    if (tcc_relocate(tccState)) {
+      std::string m("Relocation failed:");
+      if (lastError)
+	m+=lastError;
+      else
+	m+="reason unknown";
+      EJS_THROW_ERROR(cx, obj, m.c_str());
+    }
 
     return JS_TRUE;
   }
@@ -145,6 +105,7 @@ extern "C" {
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    EJS_CHECK(tccState);
 
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -173,6 +134,7 @@ extern "C" {
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+    EJS_CHECK(tccState);
 
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -202,8 +164,7 @@ extern "C" {
     if (!tccState) EJS_THROW_ERROR(cx, module, "Could not create tcc state");
     tcc_set_error_func(tccState, NULL, ejstcc_onerror);
     tcc_set_output_type(tccState, TCC_OUTPUT_MEMORY);
-    
-    if (!JS_DefineFunction(cx,module,"run", ejstcc_run,0,0)) return JS_FALSE;
+
     if (!JS_DefineFunction(cx,module,"compile",ejstcc_compile,0,0)) return JS_FALSE;
     if (!JS_DefineFunction(cx,module,"relocate",ejstcc_relocate,0,0)) return JS_FALSE;
     if (!JS_DefineFunction(cx,module,"call",ejstcc_call,0,0)) return JS_FALSE;

@@ -4,13 +4,14 @@
   if (!fname) throw new Error("Could not find module: 'ejstcc.la'");
   ejs.ModuleLoader.loadNative.call(tcc,"ejstcc",fname.substring(0,fname.lastIndexOf(".")));
 
-  tcc._run = tcc.run;
   tcc.run = function(x, includes) {
-    tcc._run( (includes ? includes : "#include <tcclib.h>\n")
+    tcc.compile( (includes ? includes : "#include <tcclib.h>\n")
 	      + "void ejstcc_compiled_function(){\n"
 	      + x
 	      + "\n\
 }");
+    tcc.relocate();
+    tcc.callVV("ejstcc_compiled_function");
   }
   tcc.wrap = function(fname, fbody, includes) {
     // TODO: platform dependant and requires spidermonkey headers to be installed

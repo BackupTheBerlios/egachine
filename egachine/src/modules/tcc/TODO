@@ -1,0 +1,7 @@
+relocate may be called only once on each TCCState?
+=> 1. create state
+   2. compile*
+   3. relocate
+   4. execute*
+   5. delete state
+?

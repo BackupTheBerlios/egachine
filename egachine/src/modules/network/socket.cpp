@@ -53,13 +53,19 @@
 // this assumes that if connect is defined it is defined to be __xnet_connect !!
 #define JGACHINE_RESTORE_CONNECT __xnet_connect
 #undef connect
+
 #endif
 
 #include <arpa/inet.h>   // inet_pton
 #include <netdb.h>       // hostent
 #include <fcntl.h>       // fcntl
 #include <sys/types.h>   // setsockopt
+#include <sys/time.h>    // timeval
+
+
+#ifdef HAVE_TCP_NODELAY
 #include <netinet/tcp.h> // TCP_NODELAY
+#endif
 
 #define closesocket	::close
 #define JGACHINE_SOCKOPTVALT void*
@@ -277,7 +283,7 @@ Socket::inAvail(const Timeout* timeout)
   FD_ZERO(&read_fd_set);
   int fd=getHandle();
   FD_SET(fd,&read_fd_set);
-  timeval ctimeout;
+  struct timeval ctimeout;
   if (timeout) {
     ctimeout.tv_sec=(*timeout)/1000000LL;
     ctimeout.tv_usec=(*timeout)%1000000LL;
@@ -315,7 +321,11 @@ Socket::setTcpNoDelay(bool on)
 {
   int flag = on;
   // (void *) cause of solaris
+#ifdef HAVE_TCP_NODELAY
   return !setsockopt(getHandle(), IPPROTO_TCP, TCP_NODELAY, (JGACHINE_SOCKOPTVALT) &flag, sizeof(int));
+#else
+  return false;
+#endif  
 }
 
 int

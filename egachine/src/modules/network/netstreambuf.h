@@ -103,15 +103,16 @@ public:
   */
   bool select(const Timeout* timeout=NULL)
   {
-    if (in_avail()>0)
+    if (this->in_avail()>0)
       return true;
     return sock.inAvail(timeout);
   }
 
   //! return corresponding file handle / descriptor
+  /*
   int get_handle(){
     return sock.get_handle();
-  }
+    }*/
 
   //! set socket to blocking or non-blocking mode - default is blocking
   void setBlocking(bool block)
@@ -128,8 +129,8 @@ public:
   {
     onDelete.emit();
     freeBuf();
-    if (pbase())
-      delete [] pbase();
+    if (this->pbase())
+      delete [] this->pbase();
   }
 
   SigC::Signal0<void> onDelete;
@@ -143,14 +144,14 @@ protected:
     setg(newBuf,newBuf,newBuf+bsize);
     int res;
     int toread=sizeof(char_type)*bsize;
-    res=sock.read((void *)gptr(),toread);
+    res=sock.read((void *)this->gptr(),toread);
     if (res>0) {
       if (res!=toread) {
 	assert(toread>res);
-	setg(eback(),gptr(),gptr()+res);
+	setg(this->eback(),this->gptr(),this->gptr()+res);
       }
-      int_type r=traits_type::to_int_type(*gptr());
-      setg(eback(),gptr()+1,egptr());
+      int_type r=traits_type::to_int_type(*this->gptr());
+      setg(this->eback(),this->gptr()+1,this->egptr());
       return r;
     }
     // else
@@ -219,17 +220,17 @@ protected:
    */
   int_type overflow(int_type i = traits_type::eof())
   {
-    assert(pbase());
-    int towrite=((char *)pptr())-((char *)pbase());
+    assert(this->pbase());
+    int towrite=((char *)this->pptr())-((char *)this->pbase());
     int written=0;
     while (written<towrite){
-      int res=sock.write((void *)((char *)pbase()+written),towrite-written);
+      int res=sock.write((void *)((char *)this->pbase()+written),towrite-written);
       if (res<0)
 	// error occured - todo should we bump the written characters ?
 	return traits_type::eof();
       written+=res;
     }
-    pbump(-towrite/sizeof(char_type));
+    this->pbump(-towrite/sizeof(char_type));
     if (i!=traits_type::eof()) 
       sputc(i);
     return traits_type::not_eof(i);
@@ -254,45 +255,45 @@ protected:
   int_type pbackfail(int_type c  = traits_type::eof())
   { 
     // inspired from gcc std c++ lib streambuf.tcc
-    bool haveSpace = gptr() && eback() < gptr();
+    bool haveSpace = this->gptr() && this->eback() < this->gptr();
     if (!haveSpace)
       {
 	// acquire new space - if current pos != end pos we have to copy the chars
-        assert(egptr()-eback()>=0);
-	int_type oldSize=egptr()-eback();
+        assert(this->egptr()-this->eback()>=0);
+	int_type oldSize=this->egptr()-this->eback();
 	int_type pbSize=1000;
         int_type newSize=oldSize+pbSize;
 	char_type* newBuf=new char_type[newSize];
-	assert(eback()==gptr());
-	traits_type::copy(newBuf+pbSize,gptr(),oldSize);
+	assert(this->eback()==this->gptr());
+	traits_type::copy(newBuf+pbSize,this->gptr(),oldSize);
 	freeBuf();
 	setg(newBuf,newBuf+pbSize,newBuf+newSize);
       }
     //    sputbackc(traits_type::to_char_type(c)); calls pbackfail ? - i thought it only calls pbackfail if no space is available ?
     // todo there must be a better way to do this
-    setg(eback(),gptr()-1,egptr());
-    *gptr()=traits_type::to_char_type(c);
+    setg(this->eback(),this->gptr()-1,this->egptr());
+    *this->gptr()=traits_type::to_char_type(c);
     return c;
   }
 
   void init()
   {
-    _M_mode = std::ios_base::in | std::ios_base::out; // sockets are always read/write ?
-    _M_buf_unified = false; // we want to use different buffers for input/output
-    setg(NULL,NULL,NULL);
+    //    _M_mode = std::ios_base::in | std::ios_base::out; // sockets are always read/write ?
+    //    _M_buf_unified = false; // we want to use different buffers for input/output
+    this->setg(NULL,NULL,NULL);
     // todo should be at least the MTU of the underlying interface
     // or otherwise a fixed size member array (=> no new and delete)
     int bsize=1500; 
     char_type *buf=new char_type[bsize];
-    setp(buf,buf+bsize);
+    this->setp(buf,buf+bsize);
   }
 
   void freeBuf()
   {
-    if (eback())
+    if (this->eback())
       {
-	delete [] eback();
-	setg(NULL,NULL,NULL);
+	delete [] this->eback();
+	this->setg(NULL,NULL,NULL);
       }
   }
 };

@@ -52,14 +52,14 @@ extern "C" {
     \return JS_TRUE on success
   */
   JSBool
-  ejsexample_LTX_onLoad(JSContext *cx, JSObject *global)
+  ejsexample_LTX_onLoad(JSContext *cx, JSObject *module)
   {
     std::cerr << "Example module loaded\n";
 #define P(x) std::cerr << #x << " = " << (x) << std::endl
     P( (void*)ejsexample_LTX_onLoad );
 #undef P
     std::cerr << "Registering Javascript function example()\n";
-    if (!JS_DefineFunction(cx,global,"example",jsexample,0,0)) return JS_FALSE;
+    if (!JS_DefineFunction(cx,module,"example",jsexample,0,0)) return JS_FALSE;
     return JS_TRUE;
   }
   

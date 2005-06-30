@@ -31,6 +31,7 @@
 #include <jsapi.h>
 #include <sstream>
 #include <iostream>
+#include <cerrno>
 
 //! throw an JavaScript Error exception
 #define EJS_THROW_ERROR(cx,obj,msg) do{				\

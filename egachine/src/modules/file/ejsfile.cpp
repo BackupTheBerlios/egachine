@@ -25,7 +25,7 @@
 #include <fstream>
 #include "ejsmodule.h"
 
-#define WITH_POPEN 1
+//#define WITH_POPEN 1
 
 #ifdef WITH_POPEN
 #include "fdstream.hpp"

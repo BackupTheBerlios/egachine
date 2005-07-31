@@ -898,4 +898,156 @@ last problem: libtool modules can't link static libs in
 - probably because pic required
 easy solution: use dll's in those cases, too
 this should result in a really small (~60k) ejs.exe
+perhaps --with-pic is enough?
 --------------------------------------------------------------------------------
+make debian packages for stuff i use for cross compilation
+take a simple aproach (no debian/win32 or debian/mingw32 ;-)
+just packages that go along with the mingw package
+libsdl-mingw-cross-
+libsdlimage-mingw-cross-
+libjpg-mingw-cross-
+libz-mingw-cross-
+...
+
+perhaps dpkg-cross and tpkg-make (in toolchain-source) might help
+http://www.jimbrooks.org/web/linux/docs/programming/SettingUpACrossDevelopmentEnvironmentOnDebianLinux.php
+--------------------------------------------------------------------------------
+simplify build and release process
+--------------------------------------------------------------------------------
+war gerade dabei diverse debian mingw-cross pakete zu bauen
+bug reports an dpkg-cross
+evtl. auch eigenes dpkg-cross paket bauen
+vermutlich werden meine änderungen keinen gefallen finden
+
+war dabei zlib packet zu bauen
+--------------------------------------------------------------------------------
+bin dabei png paket zu bauen
+problem: habe zu viel verändert
+hätte den -12 kram nicht löschen sollen
+
+=> änderungen rückgängig machen
+okay libpng geht
+--------------------------------------------------------------------------------
+bin dabei ein neues mingw cross compiler packet zu bauen
+im moment nehme ich das speedblue paket als basis
+vorteil: java aktiviert
+nachteil: einige sachen sind schlechter als im originalen
+
+paket bauen dauert ewig (brauche nen schnelleren rechner)
+vermutlich muß ich es nochmal bauen:
+hat
+	   --enable-shared=libstdc++,libffi,libjava
+die gewünschte wirkung?
+oder werden trotzdem keine .dll gebaut?
+ada und objc brauche ich nicht => abschalten?
+s.h. auch todo in debian/rules
+links für ccache
+file für bug reports
+problem mit konflikt zu offizieller version
+insbesondere mingw-binutils?
+plattenplatz fast ausgegangen
+
+strip geht nicht weil $file $$file sein müßte?
+nicht von scratch bauen
+erstmal testen
+linitian und das andere tool drauf loslassen (s.h. man debuild)
+
+evtl. --disable-nls wieder einschalten
+
+keine hardlinks nehmen!
+
+vgl. quellen zw deborig und speedblue version
+
+die upstream tarballs von deborig und speedblue sind die selben (md5sum)
+
+E: mingw32: wrong-path-for-awk ./usr/i586-mingw32msvc/bin/i586-mingw32msvc-addr2name.awk #!/bin/awk
+W: mingw32: unknown-section dev
+
+mingw32-binutils version sollte nicht 3.4.2-1 sein
+sollte eher 2.15.94-20050118.1-1karme1 sein
+
+und mingw32-runtime sollte auch nicht 3.4.2-1 sein sondern
+etwas wie 3.7-1karme1
+
+hmm dazu müßten es eigene quellpakete sein?
+nein
+	dh_gencontrol -pmingw32-binutils -u-v2.15.94-20050118.1-1karme1
+	dh_gencontrol -pmingw32-runtime3.7-1karme1
+
+hmm
+paketierung ist doch sehr unterschiedlich
+die replaces sind mir nicht klar
+
+die runtime bei speedblue ist älter und die api auch
+
+das debian paket runtime enthält mingw runtime und api
+das speedblue paket hat zwei seperate pakete
+
+hmm
+alles kacke
+speedblue packaging ist nicht so gut
+mingw orig auch nicht
+
+vorteil speedblue packaging:
+ein source paket ein build
+probleme verzeichnisnamen, strip
+
+vorteil mingw orig packaging:
+kein rebuild notwendig (dauert ja ewig), da in sarge
+nachteil:
+rebuild aufwendiger
+kein java
+
+grgrg
+am besten wäre es wenn es mit make install-strip
+evtl.
+make install-host-strip
+und
+make install-target-strip ginge
+
+--
+am besten ist es doch einfach den debian mingw compiler zu nehmen
+im moment brauche ich eh kein java
+--
+also
+das debian mingw paket ist schon nicht schlecht
+hut ab
+--
+
+war dabei die dh_strip problematik einigermaßen zu umgehen
+s.h. auch: #265620
+selbiges trifft natürlich auch auf meine diversion von
+dpkg-architecture zu
+vielleicht wäre es doch am deutlichsten für das jeweilige
+tool einen ersatz entweder in einem anderen pfad (wie bei strip)
+oder mit einem anderen namen anzubieten
+a la dpkg-cross-architecture
+dpkg-cross-buildpackage
+ist zwar eigentlich nicht wirklich besser aber vielleicht auffälliger
+auf der anderen seite sind das inoffizielle debian pakete
+
+
+also neues dpkg-cross paket bauen (erst fixen natürlich)
+
+--
+war dabei pakete mit meinem neuen dpkg-cross paket zu bauen
+ich hatte gedacht ich ersetzte überall dh_strip mit dpkg-cross-strip
+dummerweise geht das nicht immer (beispiel: png paket benutzt cdbs um
+dh_strip aufzurufen
+=> doch ein dh_strip im eigenen pfad von dpkg-cross ablegen
+
+pakete die ich bereits gebaut hatte:
+sdl
+jpeg
+libz
+
+die build skripte zentralisieren
+am besten auch ein großes build skript um alles neu zu compilieren
+dazu brauche ich auch einen funktionierenden gpg-agent
+--
+habe nochmal schnell
+sdl
+jpeg
+libz
+
+neu compiliert

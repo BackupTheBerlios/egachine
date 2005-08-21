@@ -19,6 +19,7 @@ Nicolai M. Josuttis	(for fdstream.hpp)
 SDL			<http://libsdl.org>
 boost			<http://www.boost.org>
 OpenGL/mesa 		<http://www.opengl.org>, <http://mesa3d.org/>
+tcc / Fabrice Bellard	<http://fabrice.bellard.free.fr/tcc/>
 
 gcc   			<http://www.gnu.org/software/gcc/>
 mingw 			<http://mingw.sourceforge.net/>

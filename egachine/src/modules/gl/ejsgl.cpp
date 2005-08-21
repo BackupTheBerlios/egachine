@@ -419,6 +419,47 @@ extern "C" {
   }
 #endif  
 
+  static JSBool TexImage2D(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,9,argc);
+
+    GLenum target;
+    GLint level;
+    GLint internalFormat;
+    GLsizei width;
+    GLsizei height;
+    GLint border;
+    GLenum format;
+    GLenum type;
+    GLvoid *pixels;
+
+    if (!to_GLenum(cx,obj,argv[0],target)) return JS_FALSE;
+    if (!to_GLint(cx,obj,argv[1],level)) return JS_FALSE;
+    if (!to_GLint(cx,obj,argv[2],internalFormat)) return JS_FALSE;
+    if (!to_GLsizei(cx,obj,argv[3],width)) return JS_FALSE;
+    if (!to_GLsizei(cx,obj,argv[4],height)) return JS_FALSE;
+    if (!to_GLint(cx,obj,argv[5],border)) return JS_FALSE;
+    if (!to_GLenum(cx,obj,argv[6],format)) return JS_FALSE;
+    if (!to_GLenum(cx,obj,argv[7],type)) return JS_FALSE;
+    // TODO: pixel argument ignored at the moment
+    EJS_WARN("pixel argument is ignored at the moment");
+
+    glTexImage2D(target, level, internalFormat, width, height, border, format, type, NULL);
+    return JS_TRUE;
+  }
+
+  static JSBool GenTextures(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
+  {
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+
+    GLsizei n;
+    if (!to_GLsizei(cx,obj,argv[0],n)) return JS_FALSE;
+    GLuint textures[n];
+    glGenTextures(n,textures);
+    if (!from_number_vec(cx, obj, textures, n, rval)) return JS_FALSE;
+    return JS_TRUE;
+  }
+
 #define FUNC(name,numargs) { #name,name,numargs,0,0}
 
   static JSFunctionSpec gl_static_methods[] = {
@@ -430,6 +471,8 @@ extern "C" {
     FUNC (GetFloatv, 1),
     FUNC (GetIntegerv, 1),
     FUNC (Map1f, 4),
+    FUNC (TexImage2D, 9),
+    FUNC (GenTextures, 1),
 #ifdef GL_VERSION_1_2
     FUNC (GetMinmax, 4),
 #endif

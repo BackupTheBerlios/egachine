@@ -34,3 +34,11 @@ hmm yep
 see tcc source code tcc.c:
 	/* XXX: get rid of this ASAP */
 	static struct TCCState *tcc_state;
+
+see also:
+http://lists.gnu.org/archive/html/tinycc-devel/2003-05/msg00003.html
+http://lists.gnu.org/archive/html/tinycc-devel/2005-06/msg00024.html
+
+
+TODO: Also take a look at other language bindings:
+Ruby: http://raa.ruby-lang.org/list.rhtml?name=ruby-tcc

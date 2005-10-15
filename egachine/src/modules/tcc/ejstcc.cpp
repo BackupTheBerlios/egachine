@@ -29,31 +29,52 @@
 extern "C" {
 #endif
 
-
+  //! TODO: remove this
   static
   const char* lastError=NULL;
 
-  static
-  TCCState *tccState=NULL;
-
+  //! TODO: remove this
   static
   void ejstcc_onerror(void*, const char* msg)
   {
     lastError=msg;
   }
 
-  //! compile c-code
-  /*!
-    \todo: fix possible memory leaks
-  */
+  static
+  void
+  ejs_TCCState_finalize(JSContext *cx, JSObject *obj);
+
+  static
+  JSClass ejs_TCCState_class = {
+    "TCCState",
+    JSCLASS_HAS_PRIVATE,
+    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
+    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  ejs_TCCState_finalize,
+    JSCLASS_NO_OPTIONAL_MEMBERS
+  };
+
+  // todo: clean up
+
+  // todo: is this class check good enough to make this dangerous cast safe?
+  // Remember: if (JS_GET_CLASS(cx, obj) != &ejs_TCCState_class) did not work
+  // this is probably caused by incorrect definition (defined or undefined) 
+  // of JS_THREADSAFE
+
+#define GET_EJS_TCCSTATE_OBJ TCCState* tccState=NULL;			\
+    if (JS_GET_CLASS(cx, obj) != &ejs_TCCState_class)			\
+      EJS_THROW_ERROR(cx,obj,"incompatible object type");		\
+    tccState=(TCCState *)JS_GetPrivate(cx,obj);				\
+    if (!tccState)							\
+      EJS_THROW_ERROR(cx,obj,"no valid TCCState object")
+
   static
   JSBool
-  ejstcc_compile
-  (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  ejs_TCCState_compile
+  (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    EJS_CHECK(tccState);
+    GET_EJS_TCCSTATE_OBJ;
 
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -78,12 +99,12 @@ extern "C" {
   //! link
   static
   JSBool
-  ejstcc_relocate
+  ejs_TCCState_relocate
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,0,argc);
-    EJS_CHECK(tccState);
+    GET_EJS_TCCSTATE_OBJ;
 
     if (tcc_relocate(tccState)) {
       std::string m("Relocation failed:");
@@ -100,12 +121,12 @@ extern "C" {
   //! call c function of type void(*)(void)
   static
   JSBool
-  ejstcc_call_vv
+  ejs_TCCState_callVV
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    EJS_CHECK(tccState);
+    GET_EJS_TCCSTATE_OBJ;
 
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -118,7 +139,7 @@ extern "C" {
     typedef void (*void_func_void) (void);
     long unsigned int addr;
     if (tcc_get_symbol(tccState, &addr, ctype))
-      EJS_THROW_ERROR(cx, obj, "Could net get symbol");
+      EJS_THROW_ERROR(cx, obj, "Couldn't get symbol");
     void_func_void func;
     func=(void_func_void)addr;
     func();
@@ -129,12 +150,12 @@ extern "C" {
   //! call c wrapper function
   static
   JSBool
-  ejstcc_call
+  ejs_TCCState_call
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
-    EJS_CHECK(tccState);
+    GET_EJS_TCCSTATE_OBJ;
 
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
@@ -147,12 +168,55 @@ extern "C" {
     typedef JSBool (*wrapper_func) (JSContext*, JSObject*, uintN, jsval*, jsval*);
     long unsigned int addr;
     if (tcc_get_symbol(tccState, &addr, ctype))
-      EJS_THROW_ERROR(cx, obj, "Could net get symbol");
+      EJS_THROW_ERROR(cx, obj, "Couldn't get symbol");
     wrapper_func func;
     func=(wrapper_func)addr;
     return func(cx,obj,argc-1,argv+1,rval);
   }
-  
+
+  static
+  void
+  ejs_TCCState_finalize(JSContext *cx, JSObject *obj)
+  {
+    EJS_CHECK(JS_GET_CLASS(cx, obj) == &ejs_TCCState_class);
+    TCCState* tccState=(TCCState *)JS_GetPrivate(cx,obj);
+    if (!tccState) return;
+    tcc_delete(tccState);
+  }
+
+  static
+  JSBool
+  ejs_TCCState_cons
+  (JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
+  {
+    if (!JS_IsConstructing(cx)) {
+      // called as function f.e. x=Test() - we act like x=new Test()
+      // todo do we really want this?
+      if (!(obj=JS_NewObject(cx,&ejs_TCCState_class,NULL,NULL))) return JS_FALSE;
+      *rval=OBJECT_TO_JSVAL(obj);
+    }
+    TCCState* tccState = tcc_new();
+    if (!tccState) EJS_THROW_ERROR(cx, obj, "Couldn't create tcc state");
+    tcc_set_error_func(tccState, NULL, ejstcc_onerror);
+    tcc_set_output_type(tccState, TCC_OUTPUT_MEMORY);
+    return JS_SetPrivate(cx,obj,(void *)tccState);
+  }
+
+#undef GET_EJS_TCCSTATE_OBJ
+
+#define FUNC(name, args) { #name,ejs_TCCState_##name,args,0,0}
+
+  static JSFunctionSpec ejs_TCCState_methods[] = {
+    FUNC(compile,1),
+    FUNC(relocate,0),
+    FUNC(callVV,1),
+    FUNC(call,1),
+    EJS_END_FUNCTIONSPEC
+  };
+
+#undef FUNC
+
+
   //! function called after module is loaded
   /*!
     \return JS_TRUE on success
@@ -160,26 +224,19 @@ extern "C" {
   JSBool
   ejstcc_LTX_onLoad(JSContext *cx, JSObject *module)
   {
-    tccState = tcc_new();
-    if (!tccState) EJS_THROW_ERROR(cx, module, "Could not create tcc state");
-    tcc_set_error_func(tccState, NULL, ejstcc_onerror);
-    tcc_set_output_type(tccState, TCC_OUTPUT_MEMORY);
+    if (!JS_InitClass(cx, module,
+		      NULL,
+		      &ejs_TCCState_class,
+		      ejs_TCCState_cons, 0,
+		      NULL, ejs_TCCState_methods,
+		      NULL, NULL)) return JS_FALSE;
 
-    if (!JS_DefineFunction(cx,module,"compile",ejstcc_compile,0,0)) return JS_FALSE;
-    if (!JS_DefineFunction(cx,module,"relocate",ejstcc_relocate,0,0)) return JS_FALSE;
-    if (!JS_DefineFunction(cx,module,"call",ejstcc_call,0,0)) return JS_FALSE;
-    if (!JS_DefineFunction(cx,module,"callVV",ejstcc_call_vv,0,0)) return JS_FALSE;
-    
     return JS_TRUE;
   }
   
   JSBool
   ejstcc_LTX_onUnLoad(JSContext *cx, JSObject *module)
   {
-    if (tccState) {
-      tcc_delete(tccState);
-      tccState = NULL;
-    }
     return JS_TRUE;
   }
 #ifdef __cplusplus

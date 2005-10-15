@@ -12,6 +12,10 @@ test -e $FNAME && echo "Output file ($FNAME) exists. TODO: fix this test" && exi
 runtest '
 var tcc=ejs.ModuleLoader.get("tcc");
 tcc.run("FILE *f; f=fopen(\"'$FNAME'\",\"w\"); fprintf(f,\"Hello World\"); fclose(f); ");
+// TODO: remove the next line and the test will fail due to a bug in the tcc module
+ejs.ModuleLoader.get("util").GC();
+tcc.run("FILE *f; f=fopen(\"'$FNAME'\",\"w\"); fprintf(f,\"Hello World\"); fclose(f); ");
+ejs.ModuleLoader.get("util").GC();
 var File=ejs.ModuleLoader.get("File");
 stream=File.read("'$FNAME'");
 function assert(x){if (!x()) throw new Error(x.toSource());};

@@ -5,3 +5,32 @@ relocate may be called only once on each TCCState?
    4. execute*
    5. delete state
 ?
+
+
+hmm - there is some trouble:
+
+this works:
+1. create state
+2. compile*
+3. relocate
+4. execute*
+5. delete state
+6. goto 1
+
+this does not work:
+1. create state A
+2. compile* A
+3. relocate A
+4. execute* A
+5. create state B
+6. compile* B
+7. relocate B
+8. execute* B
+9. delete state A
+10.delete state B
+
+
+hmm yep
+see tcc source code tcc.c:
+	/* XXX: get rid of this ASAP */
+	static struct TCCState *tcc_state;

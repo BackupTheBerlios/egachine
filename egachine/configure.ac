@@ -351,6 +351,13 @@ if test x$enable_tcc = xyes; then
 fi
 AM_CONDITIONAL([BUILD_TCC], [test x$enable_tcc = xyes])
 
+dnl the ltdl module
+AC_ARG_ENABLE([ltdl],
+	AS_HELP_STRING([--enable-ltdl],
+	[Build ltdl module [[default=no]]]),
+	[], enable_ltdl=no)
+AM_CONDITIONAL([BUILD_LTDL], [test x$enable_ltdl = xyes])
+
 dnl todo: thread-safety
 LDFLAGS="$LDFLAGS -thread-safe -pthread"
 MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.sym"
@@ -384,6 +391,7 @@ AC_CONFIG_FILES([
 	src/modules/jsolait/Makefile
 	src/modules/jsmisc/Makefile
 	src/modules/tcc/Makefile
+	src/modules/ltdl/Makefile
 ])
 
 AC_OUTPUT

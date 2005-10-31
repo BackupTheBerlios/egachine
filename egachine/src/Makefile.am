@@ -53,6 +53,10 @@ if BUILD_TCC
 DLOPEN_MAYBE_TCC = -dlopen modules/tcc/ejstcc.la
 DEP_MAYBE_TCC = modules/tcc/ejstcc.la
 endif
+if BUILD_LTDL
+DLOPEN_MAYBE_LTDL = -dlopen modules/ltdl/ejsltdl.la
+DEP_MAYBE_LTDL = modules/ltdl/ejsltdl.la
+endif
 
 ejs_LDADD = @LIBLTDL@ \
 	-dlopen modules/example/ejsexample.la\
@@ -70,13 +74,14 @@ ejs_LDADD = @LIBLTDL@ \
 	$(DLOPEN_MAYBE_INPUT) \
 	$(DLOPEN_MAYBE_AUDIO) \
 	$(DLOPEN_MAYBE_TCC) \
+	$(DLOPEN_MAYBE_LTDL) \
 	$(DLOPEN_MAYBE_SVGL) 
 
 # note -export-symbols-regex only works since we use a hacked libtool
 # and better would be called -import-symbols-regex
 # -export-dynamic is not really required (but we could perhaps use it
 # do print some stack-trace)
-ejs_LDFLAGS = -export-dynamic -export-symbols-regex ejs.*_LTX_.*Load
+ejs_LDFLAGS = -export-dynamic -export-symbols-regex ejs.*_LTX_.*
 
 ejs_DEPENDENCIES = @LIBLTDL@ \
 	modules/example/ejsexample.la\
@@ -94,6 +99,7 @@ ejs_DEPENDENCIES = @LIBLTDL@ \
 	$(DEP_MAYBE_INPUT) \
 	$(DEP_MAYBE_AUDIO) \
 	$(DEP_MAYBE_TCC) \
+	$(DEP_MAYBE_LTDL) \
 	$(DEP_MAYBE_SVGL) 
 
 EXTRA_DIST = egares.in egaserver.in egachine.in

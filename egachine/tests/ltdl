@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+
+. $srcdir/common
+
+runtest '
+function assert(x){if (!x()) throw new Error(x.toSource());};
+var ltdl=ejs.ModuleLoader.get("ltdl");
+var util=ejs.ModuleLoader.get("util");
+
+function test() {
+  var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsltdl.la");
+  var module=new ltdl.Ltmodule(fname);
+  var func=module.getWrapper("ejsltdl_LTX_selfcheck",0,ltdl.defaultFlags);
+  assert(function(){return func()==0;});
+  assert(function(){return func(1)==1;});
+  assert(function(){return func(1,2,3,100)==106;});
+  var i,a=[];
+  var from=1,to=65534;
+  for (i=from;i<=to;++i)
+    a[i]=i;
+  assert(function(){return func.apply(this,a)==(from+to)*(to-from+1)/2;});
+};
+
+test();
+util.GC();
+test();
+util.GC();
+'

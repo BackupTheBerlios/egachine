@@ -33,6 +33,9 @@ endif
 if BUILD_TCC
 MAYBE_TCC = tcc
 endif
+if BUILD_LTDL
+MAYBE_LTDL = ltdl
+endif
 
 SUBDIRS = \
 	example \
@@ -49,6 +52,7 @@ SUBDIRS = \
 	$(MAYBE_INPUT) \
 	$(MAYBE_AUDIO) \
 	$(MAYBE_TCC) \
+	$(MAYBE_LTDL) \
 	$(MAYBE_SVGL) \
 	util \
 	jsmisc \

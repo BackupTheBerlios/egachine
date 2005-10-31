@@ -68,7 +68,7 @@ HEADERS = $(include_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = example zlib monitorable stream file network bytearray \
-	egachine timer gl video input audio tcc svgl util jsmisc \
+	egachine timer gl video input audio tcc ltdl svgl util jsmisc \
 	jsolait
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -89,6 +89,8 @@ BUILD_GL_FALSE = @BUILD_GL_FALSE@
 BUILD_GL_TRUE = @BUILD_GL_TRUE@
 BUILD_INPUT_FALSE = @BUILD_INPUT_FALSE@
 BUILD_INPUT_TRUE = @BUILD_INPUT_TRUE@
+BUILD_LTDL_FALSE = @BUILD_LTDL_FALSE@
+BUILD_LTDL_TRUE = @BUILD_LTDL_TRUE@
 BUILD_NET_FALSE = @BUILD_NET_FALSE@
 BUILD_NET_TRUE = @BUILD_NET_TRUE@
 BUILD_STREAM_FALSE = @BUILD_STREAM_FALSE@
@@ -232,6 +234,7 @@ target_vendor = @target_vendor@
 @BUILD_INPUT_TRUE@MAYBE_INPUT = input
 @BUILD_AUDIO_TRUE@MAYBE_AUDIO = audio
 @BUILD_TCC_TRUE@MAYBE_TCC = tcc
+@BUILD_LTDL_TRUE@MAYBE_LTDL = ltdl
 SUBDIRS = \
 	example \
 	$(MAYBE_ZLIB) \
@@ -247,6 +250,7 @@ SUBDIRS = \
 	$(MAYBE_INPUT) \
 	$(MAYBE_AUDIO) \
 	$(MAYBE_TCC) \
+	$(MAYBE_LTDL) \
 	$(MAYBE_SVGL) \
 	util \
 	jsmisc \

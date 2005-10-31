@@ -1,0 +1,37 @@
+ltdl module
+
+Description: The ltdl module   allows to open libtool modules  (shared
+libraries / dlls) at runtime and to look up and bind wrapper functions
+with  the C signature:  JSBool   (JSContext* cx, JSObject*  obj, uintN
+argc, jsval*  argv,   jsval*  rval). The  ejs  core   provides similar
+functionality and the idea is to put the ltdl module into the core and
+reimplement  current core functionality in JS  to reduce the amount of
+native code.
+
+Security:
+Not allowed in untrusted mode
+
+Module configuration options:
+none
+
+Module dependencies:
+none
+
+Native library dependencies:
+
+ejsltdl -> ltdl
+
+Constructors:
+Ltmodule(filename)
+
+Ltmodule methods:
+Function getWrapper(symbolName, args, flags)
+
+Example:
+
+var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,
+	                            "ejsltdl.la");
+var module=new ltdl.Ltmodule(fname);
+var func=module.getWrapper("ejsltdl_LTX_selfcheck",
+                           0,ltdl.defaultFlags);
+assert(function(){return func(1,2,3,100)==106;});

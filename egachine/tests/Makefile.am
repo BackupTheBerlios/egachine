@@ -7,6 +7,7 @@ audio = audio
 timer = timer
 gl = opengl
 tcc = tcc
+ltdl = ltdl
 
 if BUILD_SVGL
 MAYBE_SVGL = $(svgl)
@@ -35,6 +36,9 @@ endif
 if BUILD_TCC
 MAYBE_TCC = $(tcc)
 endif
+if BUILD_LTDL
+MAYBE_LTDL = $(ltdl)
+endif
 
 tests = \
 	ejsexit \
@@ -59,7 +63,8 @@ check_SCRIPTS = \
 	$(MAYBE_TIMER) \
 	$(MAYBE_GL) \
 	$(MAYBE_SVGL) \
-	$(MAYBE_TCC)
+	$(MAYBE_TCC) \
+	$(MAYBE_LTDL)
 
 TESTS = $(check_SCRIPTS)
 

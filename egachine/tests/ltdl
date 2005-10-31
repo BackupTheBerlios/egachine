@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# todo:
+# check for:
+# 1. load module, 2. unload module (force GC), 3. call wrapper function => crash
+# this requires us to load a different module since libltdl returns the same handle
+# when opening twice and unloads the module if use count drops to 0
+
 set -e
 
 . $srcdir/common

@@ -88,6 +88,7 @@ extern "C" {
     // JSBool (JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval)
     JSNative cfunc=(JSNative)lt_dlsym(ltmodule,ctype);
     if (!cfunc) EJS_THROW_ERROR(cx, obj, "Symbol not found");
+    EJS_INFO("cfunc at:"<<((void *)cfunc));
 
     // output
 
@@ -120,7 +121,8 @@ extern "C" {
   (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     EJS_CHECK_TRUSTED(cx,obj);
-
+    EJS_INFO("called");
+    
     if (!JS_IsConstructing(cx)) {
       // todo
       EJS_THROW_ERROR(cx,obj,"not yet implemented");
@@ -142,14 +144,14 @@ extern "C" {
       EJS_CHECK(error);
       EJS_THROW_ERROR(cx,obj,error);
     }
-    if (!JS_SetPrivate(cx,obj,(void *)handle)) return JS_FALSE;
-    return JS_TRUE;
+    return JS_SetPrivate(cx,obj,(void *)handle);
   }
 
   static
   void
   ltmodule_finalize(JSContext *cx, JSObject *obj)
   {
+    EJS_INFO("called");
     EJS_CHECK(JS_GET_CLASS(cx, obj) == &ltmodule_class);
     lt_dlhandle ltmodule=(lt_dlhandle)JS_GetPrivate(cx,obj);
     if (!ltmodule) return;
@@ -180,6 +182,7 @@ extern "C" {
   JSBool
   ejsltdl_LTX_onLoad(JSContext *cx, JSObject *module)
   {
+    EJS_INFO("called");
     EJS_CHECK_TRUSTED(cx,module);
     LTDL_SET_PRELOADED_SYMBOLS();
     if (lt_dlinit()) return JS_FALSE;
@@ -200,6 +203,7 @@ extern "C" {
   JSBool
   ejsltdl_LTX_onUnLoad()
   {
+    EJS_INFO("called");
     if (lt_dlexit()) return JS_FALSE;
     return JS_TRUE;
   }

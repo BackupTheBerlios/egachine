@@ -6,6 +6,7 @@ function runtest () {
 	error=$(echo "$script"|valgrind -q --leak-check=yes --log-fd=1 ../src/ejs|grep -i 'lost\|error'||true)
 	if [ "x$error" != "x" ]; then
 	    echo Memory leak: "$error"
+	    echo "$script"|valgrind --leak-check=yes ../src/ejs
 	    exit 1
 	fi
     else

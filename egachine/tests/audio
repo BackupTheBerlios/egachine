@@ -3,7 +3,7 @@ set -e
 
 function runtest () {
     script="$1"
-    echo $script|../src/ejs
+    echo "$script"|../src/ejs
 
 # todo: valgrind check does not work with this one
 #     if which valgrind >/dev/null; then

@@ -8,11 +8,11 @@ runtest '
 function assert(x){if (!x()) throw new Error(x.toSource());};
 var util=ejs.ModuleLoader.get("util");
 
-function test() {
+function testGetWrapper() {
   var ltdl=ejs.ModuleLoader.get("ltdl");
   var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsltdl.la");
   var module=new ltdl.Ltmodule(fname);
-  var func=module.getWrapper("ejsltdl_LTX_selfcheck",0,ltdl.defaultFlags);
+  var func=module.getWrapper("ejsltdl_LTX_selfcheck");
   assert(function(){return func()==0;});
   assert(function(){return func(1)==1;});
   assert(function(){return func(1,2,3,100)==106;});
@@ -25,21 +25,36 @@ function test() {
 };
 
 // this test requires us to load a module different from ourself
-// since libtool does reference counting
+// since libtool does reference counting and the count would not drop to zero
 function testGC() {
-  var ltdl=ejs.ModuleLoader.get("ltdl");
-  var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsexample.la");
-  var module=new ltdl.Ltmodule(fname);
-  return module.getWrapper("ejsexample_LTX_foo",0,ltdl.defaultFlags);
+  function getFooFunc() {
+    var ltdl=ejs.ModuleLoader.get("ltdl");
+    var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsexample.la");
+    var module=new ltdl.Ltmodule(fname);
+    var ret=module.getWrapper("ejsexample_LTX_foo");
+    assert(function(){return ret.__parent__==module;});
+    assert(function(){
+	     // this must not work!
+	     ret.__parent__=undefined;
+	     return ret.__parent__==module;
+	   });
+    return ret;
+  }
+
+  assert(function(){
+	   // get wrapper function in a module
+	   var f=getFooFunc();
+	   // try to GC module (it should not be collected!)
+	   util.GC();
+	   // test if wrapper function is still callable
+	   return f()=="foo";});
 };
 
-test();
+testGetWrapper();
 util.GC();
-assert(function(){
-    // get wrapper function in a module
-    var f=testGC();
-    // try to GC module (it should not be collected!)
-    util.GC();
-    // test if wrapper function is still callable
-    return f()=="foo";});
+testGetWrapper();
+util.GC();
+testGC();
+util.GC();
+testGC();
 '

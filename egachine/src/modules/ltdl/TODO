@@ -20,3 +20,8 @@ Use cases:
 One could also implement a proxy module on top of the current ltdl module implementing such stuff.
 One could also allow to choose different implementations at runtime.
 For now I keep this simple one.
+--
+add wrapper for
+const lt_dlinfo * lt_dlgetinfo (lt_dlhandle HANDLE)
+and perhaps some other ltdl functions
+--

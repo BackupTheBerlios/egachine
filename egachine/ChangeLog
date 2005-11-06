@@ -1,3 +1,8 @@
+2005-11-06  Jens Thiele  <karme@berlios.de>
+
+	* added experimental ltdl module that will replace the
+	core module loading code in the future
+
 2005-10-15  Jens Thiele  <karme@berlios.de>
 
 	* changes in tcc module

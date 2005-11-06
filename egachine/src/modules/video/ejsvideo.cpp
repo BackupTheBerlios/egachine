@@ -75,7 +75,7 @@ extern "C" {
   JSBool
   drawText(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *)
   {
-    if (!argc) EJS_THROW_ERROR(cx,obj,"at least one argument required");
+    EJS_CHECK_MIN_ARGS(cx,obj,1,argc);
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
     // todo: we loose unicode information here

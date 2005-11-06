@@ -176,7 +176,7 @@ extern "C" {
     int infd, outfd, erroutfd;
 
     EJS_CHECK_TRUSTED(cx,obj);
-    if (argc<1) EJS_THROW_ERROR(cx, obj, "at least one argument required");
+    EJS_CHECK_MIN_ARGS(cx,obj,1,argc);
 
     if (!(s=JS_ValueToString(cx,argv[0]))) return JS_FALSE;
     // todo: unicode

@@ -47,6 +47,15 @@
     }							\
   }while(0)
 
+#define EJS_CHECK_MIN_ARGS(cx,obj,expect,got) do{		\
+    if(expect>got) {						\
+      std::ostringstream o;					\
+      o << "Wrong number of arguments: "			\
+	<< "at least expected: " << expect << " got: " << got;	\
+      EJS_THROW_ERROR(cx,obj,o.str().c_str());			\
+    }								\
+  }while(0)
+
 #define EJS_CHECK_CLASS(cx,obj,class) do{				\
     if (JS_GET_CLASS(cx, obj) != &class) {				\
       std::ostringstream o;						\

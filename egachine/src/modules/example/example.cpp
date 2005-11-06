@@ -46,6 +46,16 @@ extern "C" {
     *rval=STRING_TO_JSVAL(s);
     return JS_TRUE;
   }
+
+  //! another example function (not static and symbol is exported) accessible by the ltdl module
+  JSBool
+  ejsexample_LTX_foo(JSContext *cx, JSObject *, uintN, jsval *, jsval *rval)
+  {
+    JSString *s;
+    if (!(s=JS_NewStringCopyZ(cx, "foo"))) return JS_FALSE;
+    *rval=STRING_TO_JSVAL(s);
+    return JS_TRUE;
+  }
   
   //! function called after module is loaded
   /*!

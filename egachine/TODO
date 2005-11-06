@@ -1051,3 +1051,14 @@ jpeg
 libz
 
 neu compiliert
+--
+static linkage troubles
+debian libartsc0 includes static libltdl
+=> wrong functions are called
+s.a.:
+- info Distributing libltdl
+IMHO libartsc0 should link against system ltdl
+for now I don't link against libartsc0
+to do this i removed dependencies from libSDL.*.la
+(it is ugly that they are included there / in the -dev packages)
+--

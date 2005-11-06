@@ -54,8 +54,7 @@ extern "C" {
   // of JS_THREADSAFE
 
 #define GET_LTMODULE_OBJ lt_dlhandle ltmodule=NULL;			\
-    if (JS_GET_CLASS(cx, obj) != &ltmodule_class)			\
-      EJS_THROW_ERROR(cx,obj,"incompatible object type");		\
+    EJS_CHECK_CLASS4(cx,obj,ltmodule_class,argv);			\
     ltmodule=(lt_dlhandle)JS_GetPrivate(cx,obj);			\
     if (!ltmodule)							\
       EJS_THROW_ERROR(cx,obj,"no valid ltmodule object")
@@ -93,8 +92,14 @@ extern "C" {
     // output
 
     // build a JS Function calling this function
+
+    // We pass the module as parent
+    // mainly to ensure that the module is garbage colltected only if no JS function
+    // is left that is referencing C functions within that module
+    // TODO: perhaps find a better solution
+
     JSFunction * jsfunc;
-    if (!(jsfunc=JS_NewFunction(cx, cfunc, nargs, flags, NULL, ctype)))
+    if (!(jsfunc=JS_NewFunction(cx, cfunc, nargs, flags, obj, ctype)))
       return JS_FALSE;
 
     // return the js function object
@@ -198,6 +203,9 @@ extern "C" {
   
   //! function called before module is unloaded
   /*!
+    \NOTE: this will unload all modules => this function may be called only
+    if no (JS) functions refering to open modules are left
+
     \return JS_TRUE on success
   */
   JSBool

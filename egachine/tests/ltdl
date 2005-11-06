@@ -1,21 +1,15 @@
 #!/bin/sh
 
-# todo:
-# check for:
-# 1. load module, 2. unload module (force GC), 3. call wrapper function => crash
-# this requires us to load a different module since libltdl returns the same handle
-# when opening twice and unloads the module if use count drops to 0
-
 set -e
 
 . $srcdir/common
 
 runtest '
 function assert(x){if (!x()) throw new Error(x.toSource());};
-var ltdl=ejs.ModuleLoader.get("ltdl");
 var util=ejs.ModuleLoader.get("util");
 
 function test() {
+  var ltdl=ejs.ModuleLoader.get("ltdl");
   var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsltdl.la");
   var module=new ltdl.Ltmodule(fname);
   var func=module.getWrapper("ejsltdl_LTX_selfcheck",0,ltdl.defaultFlags);
@@ -23,14 +17,29 @@ function test() {
   assert(function(){return func(1)==1;});
   assert(function(){return func(1,2,3,100)==106;});
   var i,a=[];
-  var from=1,to=65534;
+  // note: the maximum number of arguments to a js function (in sm) is 65534
+  var from=1,to=10;
   for (i=from;i<=to;++i)
     a[i]=i;
   assert(function(){return func.apply(this,a)==(from+to)*(to-from+1)/2;});
 };
 
+// this test requires us to load a module different from ourself
+// since libtool does reference counting
+function testGC() {
+  var ltdl=ejs.ModuleLoader.get("ltdl");
+  var fname=ejs.ModuleLoader.findFile(ejs.config.modules.libraryPath,"ejsexample.la");
+  var module=new ltdl.Ltmodule(fname);
+  return module.getWrapper("ejsexample_LTX_foo",0,ltdl.defaultFlags);
+};
+
 test();
 util.GC();
-test();
-util.GC();
+assert(function(){
+    // get wrapper function in a module
+    var f=testGC();
+    // try to GC module (it should not be collected!)
+    util.GC();
+    // test if wrapper function is still callable
+    return f()=="foo";});
 '

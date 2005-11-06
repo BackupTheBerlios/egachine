@@ -1,25 +1,22 @@
-Attention: at the moment the destructor/finalizer does unload the module
-=> the function address might get invalid
-=> prg might crash
-
 ejs core does not allow multiple load/unload
 unload is only done at shutdown and unload function may not use js functions
 
-=> we (especially the ltdl module) could do better
-one solution would be to keep track of the module load state
-=> we would have one more indirection for function calls and functions could
-always throw not anymore available exception :-(
-
-the other solution would be to play nice with gc
-but then again it is stupid to force GC to do stuff
-(sometimes one should not depend on GC to free resources 
+At the moment the ltdl module does better but relies on GC. (The finalizer does unload the module)
+(it is stupid to force GC to do stuff - sometimes one should not depend on GC to free resources 
 - s.a. java close methods in streams)
+
+Another solution would be to keep track of the module load state
+=> we would have one more indirection for function calls and functions could
+always throw a "not anymore available exception" :-(
 
 todo: think once more about it.
 
 Is it really useful to unload and reload modules at runtime?
-Especially since ejs might run on a platform supporting only static linkage
-anyway
+Especially since ejs might run on a platform supporting only static linkage anyway.
 
 Use cases:
 - replace module with newer version at runtime (see torcs bots)
+
+One could also implement a proxy module on top of the current ltdl module implementing such stuff.
+One could also allow to choose different implementations at runtime.
+For now I keep this simple one.

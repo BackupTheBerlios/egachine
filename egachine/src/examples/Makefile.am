@@ -6,6 +6,8 @@ examples = \
 	client/opengl/glxgears.js \
 	client/opengl/nehe-l05.js \
 	client/opengl/nehe-l08.js \
+	client/opengl/flicker.js \
+	client/opengl/depthmerge.js \
 	client/pong.js \
 	client/horror.js \
 	client/audio.js \

@@ -8,6 +8,8 @@ examples = \
 	client/opengl/nehe-l08.js \
 	client/opengl/flicker.js \
 	client/opengl/depthmerge.js \
+	client/opengl/ship.js \
+	client/opengl/interference.js \
 	client/pong.js \
 	client/horror.js \
 	client/audio.js \

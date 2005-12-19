@@ -1,10 +1,10 @@
 #!BPY
 
 """
-Name: 'OpenGL (.js)...'
+Name: 'OpenGL (.c)...'
 Blender: 232
 Group: 'Export'
-Tooltip: 'Save to a JavaScript source file'
+Tooltip: 'Save to a C source file'
 """
 
 #####
@@ -21,19 +21,18 @@ Tooltip: 'Save to a JavaScript source file'
 #####
 #####  contact: raphael-langerhorst@gmx.at
 #####
-#####  2005 - Jens Thiele
-#####   + modified to export javascript opengl code for egachine
-#####
-#####  contact: karme@berlios.de
-#####
-#####
-#####  LAST UPDATED: 19 Dec 2005
+#####  LAST UPDATED: 07 July 2005
 #####
 #####  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 #####
 
 ##### 
 ##### Notes from raphael:
+##### 
+##### * The filename is currently hardcoded (/home/raphael/blender_model.c)
+#####   Simply change it to your needs inside the script (or write a
+#####   dialog that asks for input - I'm no Python wizard - in fact this
+#####   script is the only Python code I've written so far.
 ##### 
 ##### * Scaling and deformations:
 #####   These are not handled in the script, you MUST select all objects
@@ -76,11 +75,11 @@ def save_opengl(filename):
 	
 		f.write("\n\n//object: %s_%d\n" % (nmesh.name, index) )
 	
-		f.write("function load_%d() {\n" % index)
+		f.write("void load_%d() {\n" % index)
 		index += 1
 		
 		#used for materials
-		f.write("\tvar matColors=[];\n");
+		f.write("\tfloat matColors[4];\n");
 		
 		#transformation data
 		
@@ -89,7 +88,7 @@ def save_opengl(filename):
 		
 		#we also store the current matrix and restore it
 		# after the object is rendered (push, pop)
-		f.write("\tgl.PushMatrix();\n")
+		f.write("\tglPushMatrix();\n")
 		
 		#translation
 		
@@ -103,18 +102,18 @@ def save_opengl(filename):
 		if obj.LocZ > 0.0001 or obj.LocZ < -0.0001:
 			locz = obj.LocZ
 		
-		f.write("\tgl.Translated(%.6f, %.6f, %.6f);\n" % (locx, locy, locz))
+		f.write("\tglTranslated(%.6f, %.6f, %.6f);\n" % (locx, locy, locz))
 		
 		#rotation - this seems to be buggy !?
 		if obj.RotX > 0.0001 or obj.RotX < -0.0001:
-			f.write("  gl.Rotated(%.6f,1,0,0);\n" % (-obj.RotX*180*0.31831))
+			f.write("  glRotated(%.6f,1,0,0);\n" % (-obj.RotX*180*0.31831))
 		if obj.RotY > 0.0001 or obj.RotY < -0.0001:
-			f.write("  gl.Rotated(%.6f,0,1,0);\n" % (-obj.RotY*180*0.31831))
+			f.write("  glRotated(%.6f,0,1,0);\n" % (-obj.RotY*180*0.31831))
 		if obj.RotZ > 0.0001 or obj.RotZ < -0.0001:
-			f.write("  gl.Rotated(%.6f,0,0,1);\n" % (-obj.RotZ*180*0.31831))
+			f.write("  glRotated(%.6f,0,0,1);\n" % (-obj.RotZ*180*0.31831))
 		
 		#scaling
-		f.write("\tgl.Scaled(%.6f, %.6f, %.6f);\n" % tuple(obj.size))
+		f.write("\tglScaled(%.6f, %.6f, %.6f);\n" % tuple(obj.size))
 		
 		tricount = 0
 		lastMaterialIndex = -1;
@@ -134,7 +133,7 @@ def save_opengl(filename):
 					f.write("\tmatColors[1] = %.6f;\n" % material.G)
 					f.write("\tmatColors[2] = %.6f;\n" % material.B)
 					f.write("\tmatColors[3] = %.6f;\n" % material.alpha)
-					f.write("\tgl.Materialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,matColors);\n")
+					f.write("\tglMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,matColors);\n")
 					
 					#specular
 					specs = material.getSpecCol()
@@ -142,28 +141,28 @@ def save_opengl(filename):
 					f.write("\tmatColors[1] = %.6f;\n" % specs[1])
 					f.write("\tmatColors[2] = %.6f;\n" % specs[2])
 					f.write("\tmatColors[3] = %.6f;\n" % material.getSpecTransp())
-					f.write("\tgl.Materialfv(GL_FRONT_AND_BACK,GL_SPECULAR,matColors);\n")
+					f.write("\tglMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,matColors);\n")
 			
 			print "Exporting %s triangle(s)" % tricount  
 			
-			if len(face) == 3: f.write("\tgl.Begin(GL_TRIANGLES);\n")
-			elif len(face) == 4: f.write("\tgl.Begin(GL_QUADS);\n")
+			if len(face) == 3: f.write("\tglBegin(GL_TRIANGLES);\n")
+			elif len(face) == 4: f.write("\tglBegin(GL_QUADS);\n")
 			  
 			for vertex in face.v:
 				## Build glVertex3f
-				f.write("\tgl.Normal3f(%.6f, %.6f, %.6f);\n" % tuple(vertex.no))
-				f.write("\tgl.Vertex3f(%.6f, %.6f, %.6f);\n" % tuple(vertex.co))
+				f.write("\tglNormal3f(%.6f, %.6f, %.6f);\n" % tuple(vertex.no))
+				f.write("\tglVertex3f(%.6f, %.6f, %.6f);\n" % tuple(vertex.co))
 				vn+=1
 			#print "glEnd();"
-			f.write("\tgl.End();\n")
+			f.write("\tglEnd();\n")
 			
-		f.write("\tgl.PopMatrix();\n")
+		f.write("\tglPopMatrix();\n")
 		f.write("}\n")
 	
 	f.write("\n\n")
 	
 	#print "void loadModel() {"
-	f.write("function loadModel() {\n")
+	f.write("void loadModel() {\n")
 	
 	index = 0
 	
@@ -179,4 +178,4 @@ def save_opengl(filename):
 	f.close()
 
 
-Blender.Window.FileSelector(save_opengl, 'Export JavaScript OpenGL', newFName('js'))
+Blender.Window.FileSelector(save_opengl, 'Export Wavefront OBJ', newFName('c'))

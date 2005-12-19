@@ -1525,39 +1525,52 @@ function drawScene(zrot) {
   gl.Translatef(0.0,0.0,-20);
   var xrot=90;
   var yrot=-30;
+  gl.PushMatrix();
   gl.Rotatef(xrot,1.0,0.0,0.0);
   gl.Rotatef(zrot,0.0,0.0,1.0);
   gl.Rotatef(yrot,0.0,1.0,0.0);
   gl.CallList(ship);
+  gl.PopMatrix();
+
+  var y=-0.2;
+  var s=100;
+  gl.Color4f(0,0,1,0.3);
+  gl.Disable(GL_LIGHTING);
+  gl.Enable(GL_BLEND);
+  gl.Begin(GL_QUADS);
+  gl.Vertex3f(-s, y, -s);
+  gl.Vertex3f( s, y, -s);
+  gl.Vertex3f( s, y, +s);
+  gl.Vertex3f(-s, y, +s);
+  gl.End();
+  gl.Enable(GL_LIGHTING);
 }
 
 function init() {
   var LightAmbient = [ 0.5, 0.5, 0.5, 1.0 ];
-  var LightDiffuse = [ 1.0, 1.0, 1.0, 1.0 ];
+  var LightDiffuse = [ 0.5, 0.5, 0.5, 1.0 ];
   var LightPosition = [ 0.0, 0.0, 2.0, 1.0 ];
   var viewport=Video.getViewport();
   var width=viewport[2];
   var height=viewport[3];
   var zrot=0;
 
-  gl.ClearColor(0.0, 0.0, 0.0, 0.0);    	// This Will Clear The Background Color To Black
-  gl.ClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
-  gl.DepthFunc(GL_LESS);			// The Type Of Depth Test To Do
-  gl.Enable(GL_DEPTH_TEST);			// Enables Depth Testing
-  gl.ShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
+  gl.ClearColor(1.0, 1.0, 1.0, 0.0);
+  gl.ClearDepth(1.0);
+  gl.DepthFunc(GL_LESS);
+  gl.Enable(GL_DEPTH_TEST);
+  gl.ShadeModel(GL_SMOOTH);
   
   gl.MatrixMode(GL_PROJECTION);
-  gl.LoadIdentity();				// Reset The Projection Matrix
-  
-  glu.Perspective(45.0,width/height,0.1,100.0);	// Calculate The Aspect Ratio Of The Window
+  gl.LoadIdentity();
+  glu.Perspective(45.0,width/height,0.1,100.0);
   gl.MatrixMode(GL_MODELVIEW);
 
-  // set up light number 1.
-  gl.Lightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);  // add lighting. (ambient)
-  gl.Lightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);  // add lighting. (diffuse).
-  gl.Lightfv(GL_LIGHT1, GL_POSITION,LightPosition); // set light position.
-  gl.Enable(GL_LIGHT1);                             // turn light 1 on.
-  
+  // set up light
+  gl.Lightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+  gl.Lightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
+  gl.Lightfv(GL_LIGHT1, GL_POSITION,LightPosition);
+  gl.Enable(GL_LIGHT1);                             
   gl.Enable(GL_LIGHTING);
 
   ship = gl.GenLists(1);

@@ -1519,31 +1519,32 @@ function drawShip() {
   gl.PopMatrix();
 }
 
-function drawScene(zrot) {
-  gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
-  gl.LoadIdentity();
-  gl.Translatef(0.0,0.0,-20);
-  var xrot=90;
-  var yrot=-30;
-  gl.PushMatrix();
-  gl.Rotatef(xrot,1.0,0.0,0.0);
-  gl.Rotatef(zrot,0.0,0.0,1.0);
-  gl.Rotatef(yrot,0.0,1.0,0.0);
-  gl.CallList(ship);
-  gl.PopMatrix();
-
-  var y=-0.2;
-  var s=100;
-  gl.Color4f(0,0,1,0.3);
-  gl.Disable(GL_LIGHTING);
-  gl.Enable(GL_BLEND);
-  gl.Begin(GL_QUADS);
-  gl.Vertex3f(-s, y, -s);
-  gl.Vertex3f( s, y, -s);
-  gl.Vertex3f( s, y, +s);
-  gl.Vertex3f(-s, y, +s);
+function drawWave() {
+  var i,y,x,pieces=10;
+  gl.Begin(GL_QUAD_STRIP);
+  for (i=0;i<=pieces;++i) {
+    x=1.0/pieces*i;
+    y=Math.sin(2*x*Math.PI)*random(0.7,1);
+    gl.Vertex3f(x, y, 0);
+    gl.Vertex3f(x, y, 1);
+  }
   gl.End();
-  gl.Enable(GL_LIGHTING);
+}
+
+function clip(min,max,value,onClip) {
+  if (value<min) {
+    if (onClip) onClip();
+    return min;
+  }
+  if (value>max) {
+    if (onClip) onClip();
+    return max;
+  }
+  return value;
+}
+
+function random(min,max) {
+  return Math.random()*(max-min)+min;
 }
 
 function init() {
@@ -1554,16 +1555,90 @@ function init() {
   var width=viewport[2];
   var height=viewport[3];
   var zrot=0;
+  var ship,water;
+  var waterSpeed=1;
+  var waterX=0;
+  var waveLength=3;
+
+  function compile(f) {
+    var l;
+    l = gl.GenLists(1);
+    gl.NewList(l, GL_COMPILE);
+    f();
+    gl.EndList();
+    return function(){gl.CallList(l);};
+  }
+
+  function drawWater() {
+    var waves=100,waveHeight=0.2,i;
+
+    Video.pushColor();
+    gl.Disable(GL_LIGHTING);
+    gl.DepthMask(false);
+    gl.Enable(GL_BLEND);
+    gl.PushMatrix();
+    
+    Video.setColor4(0,0,1,0.3);
+    gl.Scalef(waveLength,1,1);
+    gl.Translatef(-waves/2,-0.3,-2950);
+    gl.Scalef(1,waveHeight,3000);
+    for (i=0;i<waves;++i) {
+      drawWave();
+      gl.Translatef(1,0,0);
+    }
+    
+    gl.PopMatrix();
+    gl.Disable(GL_BLEND);
+    gl.DepthMask(true);
+    gl.Enable(GL_LIGHTING);
+    Video.popColor();
+  }
+
+  function drawScene(zrot) {
+    gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
+    gl.LoadIdentity();
+    var xrot=90;
+    var yrot=-30;
+    gl.Translatef(0,-1,0);
+
+    gl.PushMatrix();
+    gl.Translatef(0,-0.2,-20);
+    gl.Rotatef(xrot,1.0,0.0,0.0);
+    gl.Rotatef(zrot,0.0,0.0,1.0);
+    gl.Rotatef(yrot,0.0,1.0,0.0);
+    ship();
+    gl.PopMatrix();
+
+    gl.PushMatrix();
+    gl.Translatef(waterX,0,0);
+    water();
+    gl.PopMatrix();
+    
+    /*
+      var y=-0.2;
+      var s=100;
+
+      gl.Begin(GL_QUADS);
+      gl.Vertex3f(-s, y, -s);
+      gl.Vertex3f( s, y, -s);
+      gl.Vertex3f( s, y, +s);
+      gl.Vertex3f(-s, y, +s);
+      gl.End();
+    */
+  }
+
 
   gl.ClearColor(1.0, 1.0, 1.0, 0.0);
   gl.ClearDepth(1.0);
   gl.DepthFunc(GL_LESS);
   gl.Enable(GL_DEPTH_TEST);
+  //  gl.Fogi(GL_FOG_MODE,GL_LINEAR);
+  //  gl.Enable(GL_FOG);
   gl.ShadeModel(GL_SMOOTH);
   
   gl.MatrixMode(GL_PROJECTION);
   gl.LoadIdentity();
-  glu.Perspective(45.0,width/height,0.1,100.0);
+  glu.Perspective(45.0,width/height,0.1,200.0);
   gl.MatrixMode(GL_MODELVIEW);
 
   // set up light
@@ -1573,13 +1648,14 @@ function init() {
   gl.Enable(GL_LIGHT1);                             
   gl.Enable(GL_LIGHTING);
 
-  ship = gl.GenLists(1);
-  gl.NewList(ship, GL_COMPILE);
-  drawShip();
-  gl.EndList();
+  ship = compile(drawShip);
+  water = compile(drawWater);
 
   EGachine.step(function(dt){
 		  zrot+=dt*45;
+		  waterSpeed=clip(-2,2,waterSpeed+dt*random(-0.5,0.5));
+		  waterX=clip(-waveLength*5,waveLength*5,waterX+dt*waterSpeed,function(){waterSpeed*=-1;});
+		  if (waterX>waveLength*10) waterX-=waveLength*10;
 		  drawScene(zrot);
 		  Video.swapBuffers();
 		});

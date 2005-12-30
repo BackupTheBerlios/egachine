@@ -148,12 +148,13 @@ function init() {
   glu.Perspective(45.0,width/height,0.1,200.0);
   gl.MatrixMode(GL_MODELVIEW);
 
-  setupMatrix(0);
   var base=baseTriangle();
   /*
+  setupMatrix(0);
   while(base.subdivide())
     ;
   */
+
   var draw=compile(function(){base.draw();});
 
   EGachine.step(function(dt){

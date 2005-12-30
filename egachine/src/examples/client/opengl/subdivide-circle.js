@@ -150,8 +150,10 @@ function init() {
 
   setupMatrix(0);
   var base=baseTriangle();
+  /*
   while(base.subdivide())
     ;
+  */
   var draw=compile(function(){base.draw();});
 
   EGachine.step(function(dt){

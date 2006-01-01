@@ -196,11 +196,11 @@ function init() {
 	      [np[0],np[1],np[2]]];
     };
     
-    myforeach(function(t){
+    foreach(function(t){
 		var sub=subdivideTriangle(t);
 		assertIsVec(sub);
 		assert(function(){return sub.length==4;});
-		myforeach(function(st){
+		foreach(function(st){
 			    newMesh.push(st);
 			  },sub);
 	      },mesh);

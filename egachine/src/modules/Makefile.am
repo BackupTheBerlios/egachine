@@ -24,6 +24,9 @@ endif
 if BUILD_VIDEO
 MAYBE_VIDEO = video
 endif
+if BUILD_IMAGE
+MAYBE_IMAGE = image
+endif
 if BUILD_INPUT
 MAYBE_INPUT = input
 endif
@@ -49,6 +52,7 @@ SUBDIRS = \
 	$(MAYBE_TIMER) \
 	$(MAYBE_GL) \
 	$(MAYBE_VIDEO) \
+	$(MAYBE_IMAGE) \
 	$(MAYBE_INPUT) \
 	$(MAYBE_AUDIO) \
 	$(MAYBE_TCC) \

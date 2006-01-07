@@ -41,6 +41,10 @@ if BUILD_VIDEO
 DLOPEN_MAYBE_VIDEO = -dlopen modules/video/ejsvideo.la
 DEP_MAYBE_VIDEO = modules/video/ejsvideo.la
 endif
+if BUILD_IMAGE
+DLOPEN_MAYBE_IMAGE = -dlopen modules/image/ejsimage.la
+DEP_MAYBE_IMAGE = modules/image/ejsimage.la
+endif
 if BUILD_INPUT
 DLOPEN_MAYBE_INPUT = -dlopen modules/input/ejsinput.la
 DEP_MAYBE_INPUT = modules/input/ejsinput.la
@@ -71,6 +75,7 @@ ejs_LDADD = @LIBLTDL@ \
 	$(DLOPEN_MAYBE_TIMER) \
 	$(DLOPEN_MAYBE_GL) \
 	$(DLOPEN_MAYBE_VIDEO) \
+	$(DLOPEN_MAYBE_IMAGE) \
 	$(DLOPEN_MAYBE_INPUT) \
 	$(DLOPEN_MAYBE_AUDIO) \
 	$(DLOPEN_MAYBE_TCC) \
@@ -96,6 +101,7 @@ ejs_DEPENDENCIES = @LIBLTDL@ \
 	$(DEP_MAYBE_TIMER) \
 	$(DEP_MAYBE_GL) \
 	$(DEP_MAYBE_VIDEO) \
+	$(DEP_MAYBE_IMAGE) \
 	$(DEP_MAYBE_INPUT) \
 	$(DEP_MAYBE_AUDIO) \
 	$(DEP_MAYBE_TCC) \

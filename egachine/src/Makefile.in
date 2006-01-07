@@ -60,11 +60,12 @@ ejs_OBJECTS = $(am_ejs_OBJECTS)
 @BUILD_TIMER_TRUE@am__DEPENDENCIES_5 = modules/timer/ejstimer.la
 @BUILD_GL_TRUE@am__DEPENDENCIES_6 = modules/gl/ejsgl.la
 @BUILD_VIDEO_TRUE@am__DEPENDENCIES_7 = modules/video/ejsvideo.la
-@BUILD_INPUT_TRUE@am__DEPENDENCIES_8 = modules/input/ejsinput.la
-@BUILD_AUDIO_TRUE@am__DEPENDENCIES_9 = modules/audio/ejsaudio.la
-@BUILD_TCC_TRUE@am__DEPENDENCIES_10 = modules/tcc/ejstcc.la
-@BUILD_LTDL_TRUE@am__DEPENDENCIES_11 = modules/ltdl/ejsltdl.la
-@BUILD_SVGL_TRUE@am__DEPENDENCIES_12 = modules/svgl/ejssvgl.la
+@BUILD_IMAGE_TRUE@am__DEPENDENCIES_8 = modules/image/ejsimage.la
+@BUILD_INPUT_TRUE@am__DEPENDENCIES_9 = modules/input/ejsinput.la
+@BUILD_AUDIO_TRUE@am__DEPENDENCIES_10 = modules/audio/ejsaudio.la
+@BUILD_TCC_TRUE@am__DEPENDENCIES_11 = modules/tcc/ejstcc.la
+@BUILD_LTDL_TRUE@am__DEPENDENCIES_12 = modules/ltdl/ejsltdl.la
+@BUILD_SVGL_TRUE@am__DEPENDENCIES_13 = modules/svgl/ejssvgl.la
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -112,6 +113,8 @@ BUILD_FILE_FALSE = @BUILD_FILE_FALSE@
 BUILD_FILE_TRUE = @BUILD_FILE_TRUE@
 BUILD_GL_FALSE = @BUILD_GL_FALSE@
 BUILD_GL_TRUE = @BUILD_GL_TRUE@
+BUILD_IMAGE_FALSE = @BUILD_IMAGE_FALSE@
+BUILD_IMAGE_TRUE = @BUILD_IMAGE_TRUE@
 BUILD_INPUT_FALSE = @BUILD_INPUT_FALSE@
 BUILD_INPUT_TRUE = @BUILD_INPUT_TRUE@
 BUILD_LTDL_FALSE = @BUILD_LTDL_FALSE@
@@ -269,6 +272,8 @@ ejs_SOURCES = ejsmoduleloader.h ejs.cpp ejsmoduleloader.cpp
 @BUILD_GL_TRUE@DEP_MAYBE_GL = modules/gl/ejsgl.la
 @BUILD_VIDEO_TRUE@DLOPEN_MAYBE_VIDEO = -dlopen modules/video/ejsvideo.la
 @BUILD_VIDEO_TRUE@DEP_MAYBE_VIDEO = modules/video/ejsvideo.la
+@BUILD_IMAGE_TRUE@DLOPEN_MAYBE_IMAGE = -dlopen modules/image/ejsimage.la
+@BUILD_IMAGE_TRUE@DEP_MAYBE_IMAGE = modules/image/ejsimage.la
 @BUILD_INPUT_TRUE@DLOPEN_MAYBE_INPUT = -dlopen modules/input/ejsinput.la
 @BUILD_INPUT_TRUE@DEP_MAYBE_INPUT = modules/input/ejsinput.la
 @BUILD_AUDIO_TRUE@DLOPEN_MAYBE_AUDIO = -dlopen modules/audio/ejsaudio.la
@@ -290,6 +295,7 @@ ejs_LDADD = @LIBLTDL@ \
 	$(DLOPEN_MAYBE_TIMER) \
 	$(DLOPEN_MAYBE_GL) \
 	$(DLOPEN_MAYBE_VIDEO) \
+	$(DLOPEN_MAYBE_IMAGE) \
 	$(DLOPEN_MAYBE_INPUT) \
 	$(DLOPEN_MAYBE_AUDIO) \
 	$(DLOPEN_MAYBE_TCC) \
@@ -315,6 +321,7 @@ ejs_DEPENDENCIES = @LIBLTDL@ \
 	$(DEP_MAYBE_TIMER) \
 	$(DEP_MAYBE_GL) \
 	$(DEP_MAYBE_VIDEO) \
+	$(DEP_MAYBE_IMAGE) \
 	$(DEP_MAYBE_INPUT) \
 	$(DEP_MAYBE_AUDIO) \
 	$(DEP_MAYBE_TCC) \

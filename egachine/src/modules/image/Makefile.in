@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(ejszlib_la_SOURCES)
+SOURCES = $(ejsimage_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -39,7 +39,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = src/modules/zlib
+subdir = src/modules/image
 DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -56,9 +56,9 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(pkglibdir)"
 pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
-ejszlib_la_LIBADD =
-am_ejszlib_la_OBJECTS = ejszlib.lo
-ejszlib_la_OBJECTS = $(am_ejszlib_la_OBJECTS)
+ejsimage_la_LIBADD =
+am_ejsimage_la_OBJECTS = ejsimage.lo
+ejsimage_la_OBJECTS = $(am_ejsimage_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -70,8 +70,8 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(ejszlib_la_SOURCES)
-DIST_SOURCES = $(ejszlib_la_SOURCES)
+SOURCES = $(ejsimage_la_SOURCES)
+DIST_SOURCES = $(ejsimage_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -229,10 +229,12 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-INCLUDES = @EJS_CFLAGS@
-pkglib_LTLIBRARIES = ejszlib.la
-ejszlib_la_SOURCES = ejszlib.cpp
-ejszlib_la_LDFLAGS = -module @MODULE_LDFLAGS@ @ZLIB_LIBS@
+INCLUDES = @EJS_CFLAGS@ @SDL_CFLAGS@
+pkglib_LTLIBRARIES = ejsimage.la
+ejsimage_la_SOURCES = \
+	ejsimage.cpp 
+
+ejsimage_la_LDFLAGS = -module @MODULE_LDFLAGS@ @SDL_LIBS@ @GL_LIBS@
 EXTRA_DIST = export.sym
 all: all-am
 
@@ -247,9 +249,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/modules/zlib/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/modules/image/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/modules/zlib/Makefile
+	  $(AUTOMAKE) --foreign  src/modules/image/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -294,8 +296,8 @@ clean-pkglibLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-ejszlib.la: $(ejszlib_la_OBJECTS) $(ejszlib_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(pkglibdir) $(ejszlib_la_LDFLAGS) $(ejszlib_la_OBJECTS) $(ejszlib_la_LIBADD) $(LIBS)
+ejsimage.la: $(ejsimage_la_OBJECTS) $(ejsimage_la_DEPENDENCIES) 
+	$(CXXLINK) -rpath $(pkglibdir) $(ejsimage_la_LDFLAGS) $(ejsimage_la_OBJECTS) $(ejsimage_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -303,7 +305,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejszlib.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ejsimage.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

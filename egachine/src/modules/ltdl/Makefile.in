@@ -41,8 +41,8 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = src/modules/ltdl
-DIST_COMMON = $(dist_pkgdata_DATA) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+DIST_COMMON = README $(dist_pkgdata_DATA) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in TODO
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -95,6 +95,8 @@ BUILD_FILE_FALSE = @BUILD_FILE_FALSE@
 BUILD_FILE_TRUE = @BUILD_FILE_TRUE@
 BUILD_GL_FALSE = @BUILD_GL_FALSE@
 BUILD_GL_TRUE = @BUILD_GL_TRUE@
+BUILD_IMAGE_FALSE = @BUILD_IMAGE_FALSE@
+BUILD_IMAGE_TRUE = @BUILD_IMAGE_TRUE@
 BUILD_INPUT_FALSE = @BUILD_INPUT_FALSE@
 BUILD_INPUT_TRUE = @BUILD_INPUT_TRUE@
 BUILD_LTDL_FALSE = @BUILD_LTDL_FALSE@

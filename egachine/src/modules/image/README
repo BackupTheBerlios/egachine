@@ -1,0 +1,22 @@
+Image module
+
+Description:    Image  module     providing  basic     image   loading
+functionality. At the moment   there is only one implementation  using
+SDL and SDL_image to load: BMP, PNM (PPM/PGM/PBM), XPM, LBM, PCX, GIF,
+JPEG, PNG, TGA, and TIFF formats.
+
+Security:
+Depends on security of SDL and SDL_image.
+
+Module dependencies:
+Image -> Video (todo: this dependency should be removed)
+
+Native library dependencies:
+
+Image -> libSDL
+Image -> libSDL_image
+
+Constructors:
+
+//! return image object constructed from image data
+Image(data)

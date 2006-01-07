@@ -254,6 +254,22 @@ if test x$enable_video = xyes; then
 fi
 AM_CONDITIONAL([BUILD_VIDEO], [test x$enable_video = xyes])
 
+dnl the image module
+AC_ARG_ENABLE([image],
+	AS_HELP_STRING([--enable-image],
+	[Build image module [[default=yes]]]),
+	[], enable_image=yes)
+if test x$enable_image = xyes; then
+	dnl Note: the current image module uses SDL/SDL_image
+	if test x$enable_video != xyes; then
+		AC_MSG_ERROR([image module requires video module])
+	fi
+	dnl todo: remove SDL_image dependency from video module
+	dnl todo check for SDL_image
+	dnl SDL_LIBS="-lSDL_image $SDL_LIBS"
+fi
+AM_CONDITIONAL([BUILD_IMAGE], [test x$enable_image = xyes])
+
 dnl the input module
 AC_ARG_ENABLE([input],
 	AS_HELP_STRING([--enable-input],
@@ -384,6 +400,7 @@ AC_CONFIG_FILES([
 	src/modules/gl/Makefile
 	src/modules/video/Makefile
 	src/modules/video/boost/Makefile
+	src/modules/image/Makefile
 	src/modules/input/Makefile
 	src/modules/audio/Makefile
 	src/modules/svgl/Makefile

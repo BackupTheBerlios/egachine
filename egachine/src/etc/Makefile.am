@@ -42,6 +42,7 @@ editbuild = sed \
 	"@abs_top_builddir@/src/modules/timer"\,\
 	"@abs_top_builddir@/src/modules/gl"\,\
 	"@abs_top_builddir@/src/modules/video"\,\
+	"@abs_top_builddir@/src/modules/image"\,\
 	"@abs_top_builddir@/src/modules/input"\,\
 	"@abs_top_builddir@/src/modules/audio"\,\
 	"@abs_top_builddir@/src/modules/svgl"\,\

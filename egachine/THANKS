@@ -15,6 +15,7 @@ Alex Fritze     	(for SVG Tetris)
 Jan-Klaas Kollhof	(for jsolait)
 Stéphane Conversy <conversy@enac.fr> (for glft and svgl)
 Nicolai M. Josuttis	(for fdstream.hpp)
+Guyon Roche		(for jsstl/jsstlext)
 
 SDL			<http://libsdl.org>
 boost			<http://www.boost.org>

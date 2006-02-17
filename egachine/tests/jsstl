@@ -1,0 +1,224 @@
+#!/bin/bash
+set -e
+
+. $srcdir/common
+
+runtest '
+function assert(x){if (!x()) throw new Error(x.toSource());};
+function println(x){ejs.ModuleLoader.get("Stream").stdout.write(x+"\n");};
+
+var jsstl=ejs.ModuleLoader.get("jsstl");
+var jsstlext=ejs.ModuleLoader.get("jsstlext");
+var l=jsstl.list();
+l.push_back(1);
+l.push_back(2);
+var it=l.begin();
+assert(function(){return l.size()==2;});
+assert(function(){return it.item==1;});
+assert(function(){return it.node.next.item==2;});
+
+// extracted from stlUnitTest.html written by Guyon Roche
+// TODO: the results are not really tested?!
+
+var oDbg = null;
+function clrdebug(){}
+function debug(txt)
+{
+//	println(txt);
+}
+
+function displayRange(sTitle, display, iBegin, iEnd)
+{
+	debug(sTitle);
+	for ( i = iBegin; !i.equal_to(iEnd); i.increment() )
+	{
+		debug(display(i.item));
+	}
+}
+// JavaScript function max returns the greater of two values
+function max(left,right)
+{
+	return left < right ? right : left;
+}
+
+var mapItems = [
+	{first:5,second:"five"},
+	{first:7,second:"seven"},
+	{first:3,second:"three"},
+	{first:9,second:"nine"},
+	{first:1,second:"one"},
+	{first:1,second:"uno"},
+	{first:1,second:"une"},
+	{first:4,second:"four"}
+];
+function mapItemDisplay(item)
+{
+	return "{first:" + item.first + ", second:" + item.second + "}";
+}
+var genItems = [5,7,3,9,1,1,1,4];
+function genItemDisplay(item)
+{
+	return item.toString();
+}
+
+function testSTL(c,title,displayItem,aItems,bMulti)
+{
+	// test a STL collection
+	//   c: the collection to test
+	//   title: the title of this test
+	//   displayItem: a function that will display items
+	//   aItems: an array of items
+	//   bMulti: whether the collection is a multi collection or not.
+	clrdebug();
+	debug(title);
+	
+	var nItem = 0;
+	c.insert(aItems[nItem++]);
+	c.insert(aItems[nItem++]);
+	c.insert(aItems[nItem++]);
+	c.insert(aItems[nItem++]);
+	c.insert(aItems[nItem++]);
+
+	var item = aItems[nItem++];
+	debug("attempt to insert " + displayItem(item));
+	var rt = c.insert(item);
+	if ( !bMulti )
+	{
+		if ( rt.second ) debug("&nbsp;&nbsp;&nbsp;inserted");
+		else debug("...already inserted, item = " + displayItem(rt.first.item));
+	}
+	item = aItems[nItem++];
+	debug("second attempt to insert " + displayItem(item));
+	var it1 = bMulti ? rt : rt.first;
+	var it = c.insert(it1,item);
+	debug("...result = " + displayItem(it.item));
+	
+	displayRange("forwards", displayItem, c.begin(), c.end());
+	displayRange("backwards", displayItem, c.rbegin(), c.rend());
+
+	var iThree = c.find(3);
+	debug("c.find(3) = " + displayItem(iThree.item));
+	
+	c.insert(iThree,aItems[nItem++]);
+	displayRange("4 After 3", displayItem, c.begin(), c.end());
+	
+	var iFind = c.find(4);
+	debug("c.find(4) = " + (iFind.equal_to(c.end()) ? "c.end()" : displayItem(iFind.item)) );
+	
+	c.erase(3);
+	displayRange("3 removed", displayItem, c.begin(), c.end());
+
+	iFind = c.find(3);
+	debug("c.find(3) = " + (iFind.equal_to(c.end()) ? "c.end()" : displayItem(iFind.item)) );
+	
+	debug("c.count(3) = " + c.count(3));
+	debug("c.count(5) = " + c.count(5));
+	debug("c.size() = " + c.size());
+	
+	var lb = c.lower_bound(3);
+	debug("c.lower_bound(3) = " + (lb.equal_to(c.end()) ? "c.end()" : displayItem(lb.item)) );
+
+	lb = c.lower_bound(5);
+	debug("c.lower_bound(5) = " + (lb.equal_to(c.end()) ? "c.end()" : displayItem(lb.item)) );
+
+	var ub = c.upper_bound(3);
+	debug("c.upper_bound(3) = " + (ub.equal_to(c.end()) ? "c.end()" : displayItem(lb.item)) );
+
+	lb = c.upper_bound(5);
+	debug("c.upper_bound(5) = " + (ub.equal_to(c.end()) ? "c.end()" : displayItem(lb.item)) );
+}
+
+
+function testSTLMap()
+{
+	testSTL(jsstl.map(),"Map",mapItemDisplay,mapItems,false);
+}
+function testSTLMultiMap()
+{
+	testSTL(jsstl.multimap(),"MultiMap",mapItemDisplay,mapItems,true);
+}
+function testSTLSet()
+{
+	testSTL(jsstl.set(),"Set",genItemDisplay,genItems,false);
+}
+function testSTLMultiSet()
+{
+	testSTL(jsstl.multiset(),"MultiSet",genItemDisplay,genItems,true);
+}
+function testSTLVector()
+{
+	clrdebug();
+	var v = jsstl.vector();
+	
+	v.push_back("one");
+	v.push_back("three");
+	v.push_back("five");
+	v.push_back("seven");
+	v.push_back("nine");
+
+	displayRange("forwards", genItemDisplay, v.begin(), v.end());
+	displayRange("backwards", genItemDisplay, v.rbegin(), v.rend());
+
+	var it = v.begin();
+	it.increment();
+	v.insert(it,"two");
+	displayRange("after two", genItemDisplay, v.begin(), v.end());
+
+	debug("v.size() = " + v.size());
+	debug("v.front() = " + v.front());
+	debug("v.back() = " + v.back());
+
+}
+function testSTLList()
+{
+	clrdebug();
+	var l = jsstl.list();
+	
+	l.push_back("one");
+	l.push_back("three");
+	l.push_back("five");
+	l.push_back("seven");
+	l.push_back("nine");
+
+	displayRange("forwards", genItemDisplay, l.begin(), l.end());
+	displayRange("backwards", genItemDisplay, l.rbegin(), l.rend());
+
+	var it = l.begin();
+	it.increment();
+	l.insert(it,"two");
+	displayRange("after two", genItemDisplay, l.begin(), l.end());
+
+	debug("l.size() = " + l.size());
+	debug("l.front() = " + l.front());
+	debug("l.back() = " + l.back());
+
+	l.sort();
+	displayRange("after sort", genItemDisplay, l.begin(), l.end());
+	
+}
+function testSTLEXTHashSet()
+{
+	testSTL(jsstlext.hash_set(),"Hashed Set",genItemDisplay,genItems,false);
+}
+function testSTLEXTHashMultiSet()
+{
+	testSTL(jsstlext.hash_multiset(),"Hashed MultiSet",genItemDisplay,genItems,true);
+}
+function testSTLEXTHashMap()
+{
+	testSTL(jsstlext.hash_map(),"Hashed Map",mapItemDisplay,mapItems,false);
+}
+function testSTLEXTHashMultiMap()
+{
+	testSTL(jsstlext.hash_multimap(),"Hashed MultiMap",mapItemDisplay,mapItems,true);
+}
+
+var tests=[testSTLMap, testSTLMultiMap, testSTLSet, testSTLMultiSet, testSTLVector, testSTLList,
+	   testSTLEXTHashSet, testSTLEXTHashMultiSet, testSTLEXTHashMap, testSTLEXTHashMultiMap];
+var i;
+for (i in tests) {
+  tests[i]();
+ };
+
+
+'

@@ -51,6 +51,7 @@ tests = \
 	smbug240577 \
 	jsolait \
 	util \
+	jsstl \
 	namespace
 
 check_SCRIPTS = \

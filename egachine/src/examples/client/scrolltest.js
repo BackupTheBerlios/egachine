@@ -90,6 +90,7 @@ init();
   var refreshRate=EGachine._refreshRate;
   var start,last,now,frames=0,tpf=Math.round(1/refreshRate*1000000),i;
   function print(x){Stream.stdout.write(x+"\n")};
+  var util=ejs.ModuleLoader.get("util");
   last=start=Timer.getTimeStamp();
 
   while (true) {
@@ -97,6 +98,11 @@ init();
     dt=(now-last)/1000000.0;
     last=now;
     frames++;
+    // test wether gc is fast enough
+    if (!(frames%100)) {
+      util.GC();
+      print("GC");
+    }
 
     Input.poll();
     Video.clear();

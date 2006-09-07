@@ -64,6 +64,22 @@
 extern "C" {
 #endif
 
+#ifndef HAVE_COMPRESSBOUND
+#warning did not find compressBound in zlib
+  //! old libz does not provide compressBound
+  /*!
+    [...] size of the destination buffer, which must be at least 0.1% larger than
+    sourceLen plus 12 bytes. [...]
+  */
+  static
+  uLong
+  compressBound (uLong sourceLen)
+  {
+    return sourceLen + (sourceLen >> 6) + 12;
+  }
+#endif
+
+
   static
   JSBool
   ejszlib_compress (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) 
@@ -106,7 +122,7 @@ extern "C" {
 
     int32 d;
     if (!JS_ValueToInt32(cx,argv[1],&d)) return JS_FALSE;
-    if (d<0) EJS_THROW_ERROR(cx,obj,"Argument 0 must be a postive number");
+    if (d<0) EJS_THROW_ERROR(cx,obj,"Argument 1 must be a postive number");
     uLong destLen=d;
 
     Byte* dest=(Byte *)JS_malloc(cx, destLen);

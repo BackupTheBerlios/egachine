@@ -29,6 +29,7 @@ editbuild = sed \
 	"@abs_top_srcdir@/src/modules/jsmisc"\,\
 	"@abs_top_srcdir@/src/modules/tcc"\,\
 	"@abs_top_srcdir@/src/modules/ltdl"\,\
+	"@abs_top_srcdir@/src/modules/posix"\,\
 	,g' \
 	-e 's,@libraryPath\@,\
 	"@abs_top_builddir@/src/modules/example"\,\
@@ -49,6 +50,7 @@ editbuild = sed \
 	"@abs_top_builddir@/src/modules/util"\,\
 	"@abs_top_builddir@/src/modules/tcc"\,\
 	"@abs_top_builddir@/src/modules/ltdl"\,\
+	"@abs_top_builddir@/src/modules/posix"\,\
 	,g'
 
 editinst = sed \

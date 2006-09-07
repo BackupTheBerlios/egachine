@@ -3,6 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(ejs, 0.1.2, karme@berlios.de)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/ejs.cpp])
 
@@ -85,6 +86,11 @@ Perhaps you have to add some -L/path/to/libz to your LDFLAGS
 or disable the zlib module by passing --disable-zlib to configure])
 	])
 	AC_SUBST(ZLIB_LIBS)		
+	dnl check wether compressBound is available
+	AC_CHECK_LIB(z, compressBound,
+		AC_DEFINE(HAVE_COMPRESSBOUND, 1,
+              		[Define if your zlib has the compressBound function.]),
+		[])
 fi
 AM_CONDITIONAL([BUILD_ZLIB], [test x$enable_zlib = xyes])
 
@@ -374,6 +380,13 @@ AC_ARG_ENABLE([ltdl],
 	[], enable_ltdl=no)
 AM_CONDITIONAL([BUILD_LTDL], [test x$enable_ltdl = xyes])
 
+dnl the posix module
+AC_ARG_ENABLE([posix],
+	AS_HELP_STRING([--enable-posix],
+	[Build posix module [[default=no]]]),
+	[], enable_posix=no)
+AM_CONDITIONAL([BUILD_POSIX], [test x$enable_posix = xyes])
+
 dnl todo: thread-safety
 LDFLAGS="$LDFLAGS -thread-safe -pthread"
 MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.sym"
@@ -409,6 +422,7 @@ AC_CONFIG_FILES([
 	src/modules/jsmisc/Makefile
 	src/modules/tcc/Makefile
 	src/modules/ltdl/Makefile
+	src/modules/posix/Makefile
 ])
 
 AC_OUTPUT

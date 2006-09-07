@@ -71,6 +71,8 @@ BUILD_LTDL_FALSE = @BUILD_LTDL_FALSE@
 BUILD_LTDL_TRUE = @BUILD_LTDL_TRUE@
 BUILD_NET_FALSE = @BUILD_NET_FALSE@
 BUILD_NET_TRUE = @BUILD_NET_TRUE@
+BUILD_POSIX_FALSE = @BUILD_POSIX_FALSE@
+BUILD_POSIX_TRUE = @BUILD_POSIX_TRUE@
 BUILD_STREAM_FALSE = @BUILD_STREAM_FALSE@
 BUILD_STREAM_TRUE = @BUILD_STREAM_TRUE@
 BUILD_SVGL_FALSE = @BUILD_SVGL_FALSE@
@@ -231,6 +233,7 @@ editbuild = sed \
 	"@abs_top_srcdir@/src/modules/jsmisc"\,\
 	"@abs_top_srcdir@/src/modules/tcc"\,\
 	"@abs_top_srcdir@/src/modules/ltdl"\,\
+	"@abs_top_srcdir@/src/modules/posix"\,\
 	,g' \
 	-e 's,@libraryPath\@,\
 	"@abs_top_builddir@/src/modules/example"\,\
@@ -251,6 +254,7 @@ editbuild = sed \
 	"@abs_top_builddir@/src/modules/util"\,\
 	"@abs_top_builddir@/src/modules/tcc"\,\
 	"@abs_top_builddir@/src/modules/ltdl"\,\
+	"@abs_top_builddir@/src/modules/posix"\,\
 	,g'
 
 editinst = sed \

@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+. $srcdir/common
+
+# ATTENTION: this may overwrite a file (see fname below)
+# todo: make this safe
+
+FNAME="delme-posixtest-346x63hg3"
+test -e $FNAME && echo "Output file ($FNAME) exists. TODO: fix this test" && exit 1
+
+runtest '
+var posix=ejs.ModuleLoader.get("posix");
+posix.system("echo Hello World > '$FNAME'");
+var File=ejs.ModuleLoader.get("File");
+stream=File.read("'$FNAME'");
+function assert(x){if (!x()) throw new Error(x.toSource());};
+assert(function(){return (stream.readAll().match("Hello World"));});
+// todo: execv and valgrind?
+posix.execv("/bin/grep",["/bin/grep","-q","Hello World","'$FNAME'"]);
+'
+rm $FNAME

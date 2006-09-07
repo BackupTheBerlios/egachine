@@ -39,6 +39,9 @@ endif
 if BUILD_LTDL
 MAYBE_LTDL = ltdl
 endif
+if BUILD_POSIX
+MAYBE_POSIX = posix
+endif
 
 SUBDIRS = \
 	example \
@@ -57,6 +60,7 @@ SUBDIRS = \
 	$(MAYBE_AUDIO) \
 	$(MAYBE_TCC) \
 	$(MAYBE_LTDL) \
+	$(MAYBE_POSIX) \
 	$(MAYBE_SVGL) \
 	util \
 	jsmisc \

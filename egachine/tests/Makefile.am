@@ -8,6 +8,7 @@ timer = timer
 gl = opengl
 tcc = tcc
 ltdl = ltdl
+posix = posix
 
 if BUILD_SVGL
 MAYBE_SVGL = $(svgl)
@@ -39,6 +40,9 @@ endif
 if BUILD_LTDL
 MAYBE_LTDL = $(ltdl)
 endif
+if BUILD_POSIX
+MAYBE_POSIX = $(posix)
+endif
 
 tests = \
 	ejsexit \
@@ -65,7 +69,8 @@ check_SCRIPTS = \
 	$(MAYBE_GL) \
 	$(MAYBE_SVGL) \
 	$(MAYBE_TCC) \
-	$(MAYBE_LTDL)
+	$(MAYBE_LTDL) \
+	$(MAYBE_POSIX)
 
 TESTS = $(check_SCRIPTS)
 

@@ -6,7 +6,7 @@ set -e
 # ATTENTION: this may overwrite a file (see fname below)
 # todo: make this safe
 
-FNAME="delme-filetest-346x63hg3"
+FNAME="delme-tcctest-346x63hg3"
 test -e $FNAME && echo "Output file ($FNAME) exists. TODO: fix this test" && exit 1
 
 runtest '

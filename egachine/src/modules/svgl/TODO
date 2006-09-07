@@ -38,3 +38,13 @@ http://www.w3.org/TR/SVG11/interact.html#SVGEvents
 --------------------------------------------------------------------------------
 getCTM(), getScreenCTM()
 --------------------------------------------------------------------------------
+the svgl module is completely insecure at the moment
+--------------------------------------------------------------------------------
+glft seems buggy
+font which made trouble:
+/usr/share/fonts/truetype/aircut3.ttf
+
+Remember:
+InitHelper.cpp sets default font path, too
+overwriting glft's one !
+--------------------------------------------------------------------------------

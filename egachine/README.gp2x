@@ -1,0 +1,11 @@
+Notes for the gp2x game console (arm-gp2x-linux):
+- ejs runs on the gp2x
+- egachine not yet
+
+ejs modules missing:
+- network: needs sigc++ 1.0.x (cross compilation failed)
+- video (at the moment there is only a opengl backend - see below)
+- opengl: perhaps use a opengles implementation? (vincent?)
+  or try osmesa (i hacked sdl at some time to use osmesa when using
+  fbdev)
+- tcc

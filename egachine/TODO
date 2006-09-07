@@ -3,18 +3,6 @@ General TODO list (each module might have its own)
 ================================================================================
 SECURITY RELATED BUGS:
 --------------------------------------------------------------------------------
-jsolait does use eval at some points
-make sure this doesn't allow clients to execute code on server
-the jsonclass (transformObj) feature seems to be a problem, too
-=> server probably still executes client code
-
-i asked jan:
->It should not evaluate arbitrary code, at least that's not the plan.
->
->Jan 
-
-=> for now I assume it is ok
---------------------------------------------------------------------------------
 spidermonkey bug: assertion in jsarena.c:274 fails
 this only happens with the debug build
 i posted it to the newsgroup
@@ -50,6 +38,13 @@ the wrapper at the momenet can't expose it since we in fact wrap std::streambuf
 how to detect errors?
 at the moment we use blocking i/o => when read does return an empty string
 we are at eof/eos
+
+rewrite (add new) io layer similar to scheme ports or SDLrwops:
+(simple api is most important)
+there are byte sources, byte sinks and byte arrays
+(i do not want posix like seekable and non-seekable fds)
+(how to handle non-blobking io in a nice way?)
+(blocking io must not return early)
 --------------------------------------------------------------------------------
 client must always be interruptable
 => how to interrupt the interpreter from time to time?
@@ -72,18 +67,7 @@ bindings to a real language.  ;-) "
 
 SDL_mixer/mikmod?
 SDL_image?
---------------------------------------------------------------------------------
-the svgl module is completely insecure at the moment
---------------------------------------------------------------------------------
-glft seems buggy
-font which made trouble:
-/usr/share/fonts/truetype/aircut3.ttf
-
-Remember:
-InitHelper.cpp sets default font path, too
-overwriting glft's one !
 ================================================================================
-
 
 
 OTHER:
@@ -122,7 +106,7 @@ features				minimal		many
 SDL_ttf uses textures
 ftgl can use textures as well as polys
 
-for now we use SDL_ttf (perhaps simpler, often used)
+for now we could use SDL_ttf (perhaps simpler, often used)
 and stay with texture fonts
 
 => redesign texture handling completely
@@ -228,7 +212,7 @@ for now I simply compile like I would do on a unix system and it seems to work
 cross compiling the modules results in large dlls
 because libstdc++ is linked in statically
 => for windows we link the modules statically
-(is there a mingw with shared libstdc++?)
+(is there a mingw with shared libstdc++? yes)
 --------------------------------------------------------------------------------
 client and server should check protocol compatibility/version
 --------------------------------------------------------------------------------
@@ -872,7 +856,7 @@ LIDS http://www.lids.org
 kernel 2.6 capabilities
 lsm
 
-segcomp patch
+seccomp patch
 http://kerneltrap.org/node/3413
 http://kerneltrap.org/node/3413/print
 http://www.cpushare.com/
@@ -1061,4 +1045,6 @@ IMHO libartsc0 should link against system ltdl
 for now I don't link against libartsc0
 to do this i removed dependencies from libSDL.*.la
 (it is ugly that they are included there / in the -dev packages)
+--
+port egachine to the gp2x
 --

@@ -31,7 +31,7 @@ THIS IS WORK IN PROGRESS (ALPHA) THE SERVER AND CLIENT ARE INSECURE !
 
 ----------------------------------------------------------------------
 
-QUICK-START
+EGachine QUICK-START
 
 Input / controls:
 
@@ -256,4 +256,5 @@ interesting for similar projects:
   <http://jgachine.berlios.de>
 
 - erlang
+- gamemonkey http://www.somedude.net/gamemonkey/
 ----------------------------------------------------------------------

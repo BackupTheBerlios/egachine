@@ -281,10 +281,10 @@ EJSModuleLoader::evaluateScript
     script="";
   script+="\n";
 
-  stream::char_type c;
-  
+  stream::int_type c;
   while ((c=src->sbumpc())!=stream::traits_type::eof())
     script+=stream::traits_type::to_char_type(c);
+
   return JS_EvaluateScript(cx, obj, script.c_str(), script.length(), resname, 1, rval);
 }
 

@@ -158,6 +158,11 @@ ejs_throw_error(JSContext* cx, JSObject* obj, const char* msg)
 #define EJS_WARN(msg) EJS_MSG("WARNING: ",msg, 1)
 #define EJS_INFO(msg) EJS_MSG("INFO: ",msg, 0)
 #define EJS_ERROR(msg) EJS_MSG("ERROR: ",msg, 1)
+#ifndef NDEBUG
+#define EJS_DEBUG(msg) EJS_MSG("DEBUG: ",msg, 0)
+#else
+#define EJS_DEBUG(msg) do{}while(0)
+#endif
 
 /*
   \def EJS_CHECK(expr)

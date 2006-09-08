@@ -20,4 +20,6 @@ Others have similar problems:
   (off-topic but interesting:
    http://www.eng.dmu.ac.uk/~hgs/ruby/RUBY_SNAPSHOT_RDOC/classes/IO.html)
 - perl (PerlIO_get_cnt(PerlIO *))
-- ...
+- guile/scheme
+  http://www.gnu.org/software/guile/docs/docs-1.8/guile-ref/Ports.html
+	Scheme Procedure: char-ready? [port]

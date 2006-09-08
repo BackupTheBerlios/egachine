@@ -1,0 +1,19 @@
+io module (will replace stream module)
+
+Objects:
+ByteSource
+ByteSink
+
+May wrap:
+- fd
+- FILE*
+- std::streambuf
+
+Unfortunately I have problems with FILE* streams (stdio) and std::streambuf (c++ iostreams):
+FILE*: no std way to get number of bytes available in input buffer?
+std::streambuf (in fact std::filebuf): no way to create temporary files in a secure manner?
+
+Others have similar problems:
+- ruby (dropped stdio completely?)
+- perl (PerlIO_get_cnt(PerlIO *))
+- ...

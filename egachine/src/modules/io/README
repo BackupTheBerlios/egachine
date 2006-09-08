@@ -15,5 +15,9 @@ std::streambuf (in fact std::filebuf): no way to create temporary files in a sec
 
 Others have similar problems:
 - ruby (dropped stdio completely?)
+  http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/7730:
+  "ruby 1.9 has its own buffering mechanism to avoid stdio buffering."
+  (off-topic but interesting:
+   http://www.eng.dmu.ac.uk/~hgs/ruby/RUBY_SNAPSHOT_RDOC/classes/IO.html)
 - perl (PerlIO_get_cnt(PerlIO *))
 - ...

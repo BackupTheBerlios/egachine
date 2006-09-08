@@ -42,6 +42,9 @@ endif
 if BUILD_POSIX
 MAYBE_POSIX = posix
 endif
+if BUILD_IO
+MAYBE_IO = io
+endif
 
 SUBDIRS = \
 	example \
@@ -61,6 +64,7 @@ SUBDIRS = \
 	$(MAYBE_TCC) \
 	$(MAYBE_LTDL) \
 	$(MAYBE_POSIX) \
+	$(MAYBE_IO) \
 	$(MAYBE_SVGL) \
 	util \
 	jsmisc \

@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+
+# test byte sources
+
+for bs in stdin fstdin cppstdin; do
+    echo 'Hello World'|../src/ejs <(echo '
+var s;
+var e="Hello World";
+if ((s=ejs.ModuleLoader.get("io").'$bs'.get(11))!=e) throw s+"!="+e;
+') || exit 1
+done
+
+# test byte sinks
+for bs in stdout stderr fstdout fstderr cppstdout cppstderr; do
+    O=$(echo '
+ejs.ModuleLoader.get("io").'$bs'.put("Hello World\n");
+'|../src/ejs 2>&1)
+    E="Hello World"
+    if [ "x$O" != "x$E" ]; then
+	echo failed: "$O != $E"
+	exit 1
+    fi
+done

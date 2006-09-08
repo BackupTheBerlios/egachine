@@ -387,6 +387,13 @@ AC_ARG_ENABLE([posix],
 	[], enable_posix=no)
 AM_CONDITIONAL([BUILD_POSIX], [test x$enable_posix = xyes])
 
+dnl the io module
+AC_ARG_ENABLE([io],
+	AS_HELP_STRING([--enable-io],
+	[Build posix module [[default=no]]]),
+	[], enable_io=no)
+AM_CONDITIONAL([BUILD_IO], [test x$enable_io = xyes])
+
 dnl todo: thread-safety
 LDFLAGS="$LDFLAGS -thread-safe -pthread"
 MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.sym"
@@ -423,6 +430,7 @@ AC_CONFIG_FILES([
 	src/modules/tcc/Makefile
 	src/modules/ltdl/Makefile
 	src/modules/posix/Makefile
+	src/modules/io/Makefile
 ])
 
 AC_OUTPUT

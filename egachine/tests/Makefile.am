@@ -9,6 +9,7 @@ gl = opengl
 tcc = tcc
 ltdl = ltdl
 posix = posix
+io = io
 
 if BUILD_SVGL
 MAYBE_SVGL = $(svgl)
@@ -43,6 +44,9 @@ endif
 if BUILD_POSIX
 MAYBE_POSIX = $(posix)
 endif
+if BUILD_IO
+MAYBE_IO = $(io)
+endif
 
 tests = \
 	ejsexit \
@@ -70,7 +74,8 @@ check_SCRIPTS = \
 	$(MAYBE_SVGL) \
 	$(MAYBE_TCC) \
 	$(MAYBE_LTDL) \
-	$(MAYBE_POSIX)
+	$(MAYBE_POSIX) \
+	$(MAYBE_IO)
 
 TESTS = $(check_SCRIPTS)
 

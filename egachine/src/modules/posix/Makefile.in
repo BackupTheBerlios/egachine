@@ -41,7 +41,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = src/modules/posix
-DIST_COMMON = $(dist_pkgdata_DATA) $(srcdir)/Makefile.am \
+DIST_COMMON = README $(dist_pkgdata_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -99,6 +99,8 @@ BUILD_IMAGE_FALSE = @BUILD_IMAGE_FALSE@
 BUILD_IMAGE_TRUE = @BUILD_IMAGE_TRUE@
 BUILD_INPUT_FALSE = @BUILD_INPUT_FALSE@
 BUILD_INPUT_TRUE = @BUILD_INPUT_TRUE@
+BUILD_IO_FALSE = @BUILD_IO_FALSE@
+BUILD_IO_TRUE = @BUILD_IO_TRUE@
 BUILD_LTDL_FALSE = @BUILD_LTDL_FALSE@
 BUILD_LTDL_TRUE = @BUILD_LTDL_TRUE@
 BUILD_NET_FALSE = @BUILD_NET_FALSE@

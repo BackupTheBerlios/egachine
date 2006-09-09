@@ -266,6 +266,23 @@ extern "C" {
     return JS_TRUE;
   }
 
+  static
+  JSBool
+  ejs_unlink(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    EJS_CHECK_TRUSTED(cx,obj);
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+
+    JSString *strtype=JS_ValueToString(cx, argv[0]);
+    // todo: we loose unicode information here
+    char* ctype=JS_GetStringBytes(strtype);
+    if (!ctype) return JS_FALSE;
+
+    *rval=(unlink(ctype)==0) ? JSVAL_TRUE : JSVAL_FALSE;
+
+    return JS_TRUE;
+  }
+
   JSBool
   ejs_getP_tmpdir(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
@@ -284,6 +301,7 @@ extern "C" {
 #endif
     FUNC(mkdtemp,1),
     FUNC(rmdir,1),
+    FUNC(unlink,1),
     FUNC(getP_tmpdir,0),
     EJS_END_FUNCTIONSPEC
   };

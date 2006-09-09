@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+. $srcdir/common
+
+D=$(echo 'ejs.ModuleLoader.get("Stream").stdout.write(ejs.ModuleLoader.get("File").mktempdir("foo")+"\n");'|../src/ejs)
+test -d "$D"
+#ls -ld "$D"
+echo 'ejs.ModuleLoader.get("File").rmdir("'$D'");'|../src/ejs
+test ! -d "$D"

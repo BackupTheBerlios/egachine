@@ -31,6 +31,9 @@
 #include "fdstream.hpp"
 #endif
 
+#include <unistd.h>
+#include "mkdtemp.h"
+
 // todo: similar code is also in ejsnet.cpp
 JSBool
 newStreamObject(JSContext* cx, JSObject* obj, std::streambuf* stream, jsval* rval)
@@ -76,7 +79,7 @@ extern "C" {
   */
   static
   JSBool
-  ejsfile_open(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
+  ejs_open(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_NUM_ARGS(cx,obj,2,argc);
     EJS_CHECK_TRUSTED(cx,obj);
@@ -170,7 +173,7 @@ extern "C" {
   }
 
   static JSBool
-  ejsfile_popen(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  ejs_popen(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   {
     JSString *s=NULL;
     int infd, outfd, erroutfd;
@@ -216,13 +219,72 @@ extern "C" {
   }
 #endif /* WITH_POPEN */
 
-#define FUNC(name, args) { #name,ejsfile_##name,args,0,0}
+  static
+  JSBool
+  ejs_mkdtemp(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    EJS_CHECK_TRUSTED(cx,obj);
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+
+    JSString *strtype=JS_ValueToString(cx, argv[0]);
+    // todo: we loose unicode information here
+    char* ctype=JS_GetStringBytes(strtype);
+    if (!ctype) return JS_FALSE;
+
+    char* nstr=JS_strdup(cx,ctype);
+    if (!nstr) return JS_FALSE;
+
+    if (!mkdtemp(nstr)) {
+      JS_free(cx,nstr);
+      *rval=JSVAL_FALSE;
+      return JS_TRUE;
+    }
+
+    JSString *jsnstr=JS_NewString(cx, nstr, strlen(nstr));
+    if (!jsnstr) {
+      JS_free(cx,nstr);
+      return JS_FALSE;
+    }
+    *rval=STRING_TO_JSVAL(jsnstr);
+    return JS_TRUE;
+  }
+
+  static
+  JSBool
+  ejs_rmdir(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    EJS_CHECK_TRUSTED(cx,obj);
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+
+    JSString *strtype=JS_ValueToString(cx, argv[0]);
+    // todo: we loose unicode information here
+    char* ctype=JS_GetStringBytes(strtype);
+    if (!ctype) return JS_FALSE;
+
+    *rval=(rmdir(ctype)==0) ? JSVAL_TRUE : JSVAL_FALSE;
+
+    return JS_TRUE;
+  }
+
+  JSBool
+  ejs_getP_tmpdir(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    JSString *s;
+    if (!(s=JS_NewStringCopyZ(cx,P_tmpdir))) return JS_FALSE;
+    *rval=STRING_TO_JSVAL(s);
+    return JS_TRUE;
+  }
+
+#define FUNC(name, args) { #name,ejs_##name,args,0,0}
 
   static JSFunctionSpec file_static_methods[] = {
     FUNC(open,2),
 #ifdef WITH_POPEN
     FUNC(popen,1),
 #endif
+    FUNC(mkdtemp,1),
+    FUNC(rmdir,1),
+    FUNC(getP_tmpdir,0),
     EJS_END_FUNCTIONSPEC
   };
 

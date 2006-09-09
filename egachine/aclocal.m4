@@ -7229,3 +7229,9 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
+m4_include([config/m4/inttypes_h.m4])
+m4_include([config/m4/mkdtemp.m4])
+m4_include([config/m4/onceonly_2_57.m4])
+m4_include([config/m4/stdint_h.m4])
+m4_include([config/m4/uintmax_t.m4])
+m4_include([config/m4/ulonglong.m4])

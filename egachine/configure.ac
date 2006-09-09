@@ -22,6 +22,11 @@ AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_CONFIG_SUBDIRS(libltdl)
 
+
+dnl gnulib checks
+
+gt_FUNC_MKDTEMP
+
 dnl we only use the c++ compiler (=> we do want to do the tests with c++
 dnl because we need CXXFLAGS right and not only CFLAGS)
 AC_LANG(C++)
@@ -404,6 +409,8 @@ AC_CONFIG_FILES([
 	Makefile
 	tests/Makefile
 	debian/Makefile
+	config/Makefile
+	config/m4/Makefile
 	src/Makefile
 	src/etc/Makefile
 	src/examples/Makefile

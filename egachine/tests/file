@@ -38,3 +38,9 @@ if (File.popen) {
 }
 '
 rm $FNAME
+
+D=$(echo 'ejs.ModuleLoader.get("Stream").stdout.write(ejs.ModuleLoader.get("File").mkdtemp("fooXXXXXXX")+"\n");'|../src/ejs)
+test -d "$D"
+echo 'ejs.ModuleLoader.get("File").rmdir("'$D'");'|../src/ejs
+test ! -d "$D"
+

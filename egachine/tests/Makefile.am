@@ -60,6 +60,7 @@ tests = \
 	jsolait \
 	util \
 	jsstl \
+	tmp \
 	namespace
 
 check_SCRIPTS = \

@@ -61,6 +61,7 @@ tests = \
 	util \
 	jsstl \
 	tmp \
+	cc \
 	namespace
 
 check_SCRIPTS = \

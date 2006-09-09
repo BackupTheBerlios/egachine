@@ -25,23 +25,32 @@
     var funcname="ejscc_"+_id;
     // todo: do not use internal spidermonkey knowledge here (setting rval)
     cfile.write((includes ? includes : "") + "\n"
-		+"void "+funcname+"(void* ejs_cx, void* ejs_obj, unsigned ejs_argv, void* ejs_argc, int* ejs_rval) {\n"
+		+"int "+funcname+"(void* ejs_cx, void* ejs_obj, unsigned ejs_argv, void* ejs_argc, int* ejs_rval) {\n"
 		+ body
 		+ "\n*ejs_rval=(1<<3)|0x6;return 1;\n"
 		+ "}\n\n");
     cfile.close();
     var libname=tmpdir+"/c"+_id+".so";
-    var cmd="gcc -fpic -o "+libname+" -shared "+tmpdir+"/c.c >"+tmpdir+"/stdout 2>"+tmpdir+"/stderr";
+    var cmd="gcc -Wall -Werror -fpic -o "+libname+" -shared "+tmpdir+"/c.c >"+tmpdir+"/stdout 2>"+tmpdir+"/stderr";
     //    stderr.write(cmd+"\n");
-    if (posix.system(cmd))
-      stderr.write("Compilation failed:\n"+File.read(tmpdir+"/stderr").readAll());
-    var module=new ltdl.Ltmodule(libname);
-    File.unlink(tmpdir+"/c.c");
-    File.unlink(tmpdir+"/stdout");
-    File.unlink(tmpdir+"/stderr");
-    // todo: probably will not work on win32
-    File.unlink(libname);
-    File.rmdir(tmpdir);
+    var module;
+    var error;
+    try{
+      if (posix.system(cmd))
+	throw Error("Compilation failed:\n"+File.read(tmpdir+"/stderr").readAll());
+      module=new ltdl.Ltmodule(libname);
+    }catch(e){
+      error=e;
+    }finally {
+      File.unlink(tmpdir+"/c.c");
+      File.unlink(tmpdir+"/stdout");
+      File.unlink(tmpdir+"/stderr");
+      // todo: probably will not work on win32
+      File.unlink(libname);
+      File.rmdir(tmpdir);
+    }
+    if (error)
+      throw error;
     return module.getWrapper(funcname);
   }
 

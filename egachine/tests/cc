@@ -8,6 +8,7 @@ set -e
 
 FNAME="delme-cctest-346x63hg3"
 test -e $FNAME && echo "Output file ($FNAME) exists. TODO: fix this test" && exit 1
+trap 'rm $FNAME' EXIT
 
 runtest '
 var cc=ejs.ModuleLoader.get("cc");
@@ -19,4 +20,3 @@ stream=File.read("'$FNAME'");
 function assert(x){if (!x()) throw new Error(x.toSource());};
 assert(function(){return (stream.readAll()=="Hello World");});
 '
-rm $FNAME

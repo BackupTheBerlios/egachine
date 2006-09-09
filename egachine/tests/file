@@ -8,6 +8,7 @@ set -e
 
 FNAME="delme-filetest-346x63hg3"
 test -e $FNAME && echo "Output file ($FNAME) exists. TODO: fix this test" && exit 1
+trap 'rm $FNAME' EXIT
 
 runtest '
 var File=ejs.ModuleLoader.get("File");
@@ -37,10 +38,8 @@ if (File.popen) {
     assert(function(){return p.stdout.readAll()=="Hello World\nHello World";});
 }
 '
-rm $FNAME
 
 D=$(echo 'ejs.ModuleLoader.get("Stream").stdout.write(ejs.ModuleLoader.get("File").mkdtemp("fooXXXXXXX")+"\n");'|../src/ejs)
 test -d "$D"
 echo 'ejs.ModuleLoader.get("File").rmdir("'$D'");'|../src/ejs
 test ! -d "$D"
-

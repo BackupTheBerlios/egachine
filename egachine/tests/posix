@@ -8,6 +8,7 @@ set -e
 
 FNAME="delme-posixtest-346x63hg3"
 test -e $FNAME && echo "Output file ($FNAME) exists. TODO: fix this test" && exit 1
+trap 'rm $FNAME' EXIT
 
 runtest '
 var posix=ejs.ModuleLoader.get("posix");
@@ -19,4 +20,3 @@ assert(function(){return (stream.readAll().match("Hello World"));});
 // todo: execv and valgrind?
 posix.execv("/bin/grep",["/bin/grep","-q","Hello World","'$FNAME'"]);
 '
-rm $FNAME

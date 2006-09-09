@@ -80,6 +80,8 @@
 #include <sys/mman.h>
 #endif
 
+#include <stdlib.h> // for getenv
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -310,15 +312,41 @@ extern "C" {
     return JS_TRUE;
   }
 #endif
+
+  static JSBool
+  ejs_getenv(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    EJS_CHECK_TRUSTED(cx,obj);
+    EJS_CHECK_NUM_ARGS(cx,obj,1,argc);
+
+    JSString *strtype=JS_ValueToString(cx, argv[0]);
+    // todo: we loose unicode information here
+    char* ctype=JS_GetStringBytes(strtype);
+    if (!ctype) return JS_FALSE;
+
+    char* val=getenv(ctype);
+    if (!val) {
+      *rval=JSVAL_FALSE;
+      return JS_TRUE;
+    }
+
+    JSString *jsnstr=JS_NewStringCopyZ(cx, val);
+    if (!jsnstr) return JS_FALSE;
+    *rval=STRING_TO_JSVAL(jsnstr);
+
+    return JS_TRUE;
+  }
   
   
 #define FUNC(name, args) { #name,name,args,0,0}
+#define PFUNC(name, args) { #name,ejs_##name,args,0,0}
 
   static JSFunctionSpec static_methods[] = {
     FUNC(getObjectID,0),
     FUNC(isCompilableUnit,1),
     FUNC(GC,0),
     FUNC(maybeGC,0),
+    // todo: why 1,0,1<- ?
     {"seal",            seal,           1, 0, 1},
     FUNC(cloneFunction,1),
     FUNC(clearScope,1),
@@ -329,9 +357,11 @@ extern "C" {
 #ifdef HAVE_SCHED_SETSCHEDULER
     FUNC(schedRealtime,0),
 #endif
+    PFUNC(getenv,1),
     EJS_END_FUNCTIONSPEC
   };
 
+#undef PFUNC
 #undef FUNC
   
   //! function called after module is loaded

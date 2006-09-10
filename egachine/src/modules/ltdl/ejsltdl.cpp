@@ -76,7 +76,7 @@ extern "C" {
     // todo: we loose unicode information here
     char* ctype=JS_GetStringBytes(strtype);
     if (!ctype) return JS_FALSE;
-    uintN nargs=0;
+    uint32 nargs=0;
     if (argc>=2)
       if (!JS_ValueToECMAUint32(cx, argv[1], &nargs)) return JS_FALSE;
 
@@ -174,7 +174,7 @@ extern "C" {
   {
     uintN res=0;
     for (unsigned i=0;i<argc;++i) {
-      uintN j;
+      uint32 j;
       if (!JS_ValueToECMAUint32(cx, argv[i], &j)) return JS_FALSE;
       res+=j;
     }
@@ -190,7 +190,9 @@ extern "C" {
   {
     //EJS_INFO("called");
     EJS_CHECK_TRUSTED(cx,module);
+#if 0
     LTDL_SET_PRELOADED_SYMBOLS();
+#endif
     if (lt_dlinit()) return JS_FALSE;
     JSObject *proto = JS_InitClass(cx, module,
 				   NULL,

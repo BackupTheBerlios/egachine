@@ -41,6 +41,8 @@ extern "C" {
       return JS_FALSE;							\
   }while(0)
   
+  // todo: perhaps we have to root the number value?
+  // i think call to JS_SetProperty should do it?
 #define SET_NUM_PROP(event,name) do{					\
     jsval jstype;							\
     if (!JS_NewNumberValue(cx, event.name, &jstype)) return JS_FALSE;	\

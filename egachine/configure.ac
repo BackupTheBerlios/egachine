@@ -68,7 +68,6 @@ AC_CHECK_LIB(js, JS_InitStandardClasses, SMJS="js", [
 dnl check wether spidermonkey library was compiled with JS_THREADSAFE
 dnl if so we must add -DJS_THREADSAFE to our CFLAGS, too
 AC_CHECK_LIB($SMJS, JS_BeginRequest, EJS_CFLAGS="$EJS_CFLAGS -DJS_THREADSAFE")
-AC_SUBST(EJS_CFLAGS)
 LIBS="-l$SMJS $LIBS"
 
 dnl optional modules
@@ -381,27 +380,26 @@ AM_CONDITIONAL([BUILD_TCC], [test x$enable_tcc = xyes])
 dnl the ltdl module
 AC_ARG_ENABLE([ltdl],
 	AS_HELP_STRING([--enable-ltdl],
-	[Build ltdl module [[default=no]]]),
-	[], enable_ltdl=no)
+	[Build ltdl module [[default=yes]]]),
+	[], enable_ltdl=yes)
 AM_CONDITIONAL([BUILD_LTDL], [test x$enable_ltdl = xyes])
 
 dnl the posix module
 AC_ARG_ENABLE([posix],
 	AS_HELP_STRING([--enable-posix],
-	[Build posix module [[default=no]]]),
-	[], enable_posix=no)
+	[Build posix module [[default=yes]]]),
+	[], enable_posix=yes)
 AM_CONDITIONAL([BUILD_POSIX], [test x$enable_posix = xyes])
 
 dnl the io module
 AC_ARG_ENABLE([io],
 	AS_HELP_STRING([--enable-io],
-	[Build posix module [[default=no]]]),
-	[], enable_io=no)
+	[Build posix module [[default=yes]]]),
+	[], enable_io=yes)
 AM_CONDITIONAL([BUILD_IO], [test x$enable_io = xyes])
 
-dnl todo: thread-safety
-LDFLAGS="$LDFLAGS -thread-safe -pthread"
 MODULE_LDFLAGS="-avoid-version -no-undefined -export-symbols \$(srcdir)/export.sym"
+AC_SUBST(EJS_CFLAGS)
 AC_SUBST(MODULE_LDFLAGS)
 
 dnl output files

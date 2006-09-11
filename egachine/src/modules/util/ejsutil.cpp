@@ -336,8 +336,43 @@ extern "C" {
 
     return JS_TRUE;
   }
-  
-  
+
+  //! get build info (this is native code to be able to limit access to trusted mode)
+  /*!
+    \todo find a solution using javascript - perhaps some trusted context?
+  */
+  static JSBool
+  ejs_buildinfo(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+  {
+    EJS_CHECK_TRUSTED(cx,obj);
+    JSObject *jsobj;
+    if (!(jsobj=JS_NewObject(cx, NULL, NULL, NULL))) return JS_FALSE;
+    *rval=OBJECT_TO_JSVAL(jsobj);
+
+    JSString *s=NULL;
+    jsval val;
+
+    // todo: root string?
+#define EJS_CP(x) if (!(s=JS_NewStringCopyZ(cx,EJS_XSTR(x))))	\
+      return JS_FALSE;						\
+    val=STRING_TO_JSVAL(s);					\
+    if (!JS_SetProperty(cx, jsobj, #x, &val))			\
+      return JS_FALSE;
+
+    EJS_CP(CC);
+    EJS_CP(CXX);
+    EJS_CP(DEFS);
+    EJS_CP(CPPFLAGS);
+    EJS_CP(AM_CPPFLAGS);
+    EJS_CP(EJS_CFLAGS);
+    EJS_CP(MODULE_LDFLAGS);
+    
+#undef EJS_CP
+
+    return JS_TRUE;
+  }
+
+
 #define FUNC(name, args) { #name,name,args,0,0}
 #define PFUNC(name, args) { #name,ejs_##name,args,0,0}
 
@@ -358,6 +393,7 @@ extern "C" {
     FUNC(schedRealtime,0),
 #endif
     PFUNC(getenv,1),
+    PFUNC(buildinfo,0),
     EJS_END_FUNCTIONSPEC
   };
 

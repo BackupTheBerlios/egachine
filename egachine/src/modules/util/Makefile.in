@@ -243,7 +243,7 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-INCLUDES = @EJS_CFLAGS@
+INCLUDES = @EJS_CFLAGS@ -DCC="$(CC)" -DCXX="$(CXX)" -DDEFS="$(DEFS)" -DEJS_CFLAGS="@EJS_CFLAGS@" -DCPPFLAGS="$(CPPFLAGS)" -DAM_CPPFLAGS="$(AM_CPPFLAGS)" -DMODULE_LDFLAGS="@MODULE_LDFLAGS@"
 pkglib_LTLIBRARIES = ejsutil.la
 ejsutil_la_SOURCES = ejsutil.cpp
 ejsutil_la_LDFLAGS = -module @MODULE_LDFLAGS@

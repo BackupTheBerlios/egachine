@@ -1,4 +1,4 @@
-INCLUDES = @EJS_CFLAGS@
+INCLUDES = @LTDLINCL@ @EJS_CFLAGS@
 
 pkglib_LTLIBRARIES = ejsltdl.la
 

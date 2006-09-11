@@ -46,34 +46,24 @@ extern "C" {
     JSCLASS_NO_OPTIONAL_MEMBERS
   };
 
-  // todo: clean up
-
-  // todo: is this class check good enough to make this dangerous cast safe?
-  // Remember: if (JS_GET_CLASS(cx, obj) != &ltmodule_class) did not work
-  // this is probably caused by incorrect definition (defined or undefined) 
-  // of JS_THREADSAFE
-
-#define GET_LTMODULE_OBJ lt_dlhandle ltmodule=NULL;			\
-    EJS_CHECK_CLASS4(cx,obj,ltmodule_class,argv);			\
-    ltmodule=(lt_dlhandle)JS_GetPrivate(cx,obj);			\
-    if (!ltmodule)							\
-      EJS_THROW_ERROR(cx,obj,"no valid ltmodule object")
-
   static
   JSBool
   ltmodule_getWrapper(JSContext* cx, JSObject* obj, uintN argc, jsval* argv, jsval* rval) 
   {
     EJS_CHECK_TRUSTED(cx,obj);
     EJS_CHECK_MIN_ARGS(cx,obj,1,argc);
-    GET_LTMODULE_OBJ;
 
+    lt_dlhandle ltmodule=NULL;
+    EJS_CHECK_CLASS4(cx,obj,ltmodule_class,argv);
+    ltmodule=(lt_dlhandle)JS_GetPrivate(cx,obj);
+    if (!ltmodule)
+      EJS_THROW_ERROR(cx,obj,"no valid ltmodule object");
 
     // input
     
-    // todo: root string!
     JSString *strtype=JS_ValueToString(cx, argv[0]);
     if (!strtype) return JS_FALSE;
-    // todo: we loose unicode information here
+    // we loose unicode information here
     char* ctype=JS_GetStringBytes(strtype);
     if (!ctype) return JS_FALSE;
     uint32 nargs=0;
@@ -97,7 +87,14 @@ extern "C" {
     // We pass the module as parent to ensure that the module 
     // is garbage colltected only if no JS function referencing C functions within that module
     // is left
-    // TODO: perhaps find a better solution
+    // TODO: is there a better solution? (imho it is okay)
+    // perhaps unexpected side effects:
+    // if the module has some properties they are accessible in the wrapper function
+    // (only a problem if the wrapper evaluates js code?)
+
+    // is there a security hole?
+    // could you call the method on the wrong module object?
+    // it is only allowed in trusted mode anyway
 
     JSFunction * jsfunc;
     if (!(jsfunc=JS_NewFunction(cx, cfunc, nargs, 0, obj, ctype)))
@@ -108,18 +105,10 @@ extern "C" {
     return JS_TRUE;
   }
 
-#undef GET_LTMODULE_OBJ
-
-
-
-#define FUNC(name, args) { #name,ltmodule_##name,args,0,0}
-
   static JSFunctionSpec ltmodule_methods[] = {
-    FUNC(getWrapper,1),
+    {"getWrapper", ltmodule_getWrapper, 1,0,0},
     EJS_END_FUNCTIONSPEC
   };
-
-#undef FUNC
 
   static
   JSBool

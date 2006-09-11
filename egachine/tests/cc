@@ -8,7 +8,7 @@ set -e
 
 FNAME="delme-cctest-346x63hg3"
 test -e $FNAME && echo "Output file ($FNAME) exists. TODO: fix this test" && exit 1
-trap 'rm $FNAME' EXIT
+trap 'test -e $FNAME && rm $FNAME' EXIT
 
 runtest '
 var cc=ejs.ModuleLoader.get("cc");
@@ -19,4 +19,19 @@ var File=ejs.ModuleLoader.get("File");
 stream=File.read("'$FNAME'");
 function assert(x){if (!x()) throw new Error(x.toSource());};
 assert(function(){return (stream.readAll()=="Hello World");});
+'
+
+runtest '
+var cc=ejs.ModuleLoader.get("cc");
+var fname=cc.mkFuncName();
+var cfunc=cc.compile2(fname, "#include <jsapi.h>\n"
++ "JSBool "+fname+" (JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)\n"
++ "{\n"
++ "  JSString *s;\n"
++ "  if (!(s=JS_NewStringCopyZ(cx, \"Hello World\"))) return JS_FALSE;\n"
++ "  *rval=STRING_TO_JSVAL(s);\n"
++ "  return JS_TRUE;\n"
++ "}\n");
+function assert(x){if (!x()) throw new Error(x.toSource());};
+assert(function(){return (cfunc()=="Hello World");});
 '

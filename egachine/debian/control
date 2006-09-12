@@ -32,6 +32,17 @@ Description: ejs multimedia modules
  module using SVGL, which renders SVG via OpenGL.
  .
   Homepage: http://egachine.berlios.de
+
+Package: ejs-cc
+Section: interpreters
+Architecture: all
+Depends: ejs (=${Source-Version})
+Description: ejs cc module
+ module providing capability   to  compile C   code  at
+ runtime. This   is  a   seperate package  because   it
+ introduces some heavy dependencies.
+ .
+  Homepage: http://egachine.berlios.de
  
 Package: egachine-base
 Section: interpreters

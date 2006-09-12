@@ -13,3 +13,11 @@ usr/share/ejs/graphviz.js
 usr/lib/ejs/ejsmonitorable.*
 usr/share/ejs/jsolait.js
 usr/share/ejs/jsolait/*
+usr/lib/ejs/ejsio.*
+usr/share/ejs/jsstl.js
+usr/share/ejs/jsstlext.js
+usr/lib/ejs/ejsltdl.*
+usr/share/ejs/ltdl.js
+usr/lib/ejs/ejsposix.*
+usr/share/ejs/posix.js
+usr/share/ejs/tmp.js

@@ -152,8 +152,7 @@ ejsDefineByteSource(JSContext *cx, JSObject *obj, const char* name, uintN flags,
   assert(ejsByteSourceProto);
   if (!(jsbs=JS_DefineObject(cx, obj, name, &ejsByteSource_class, ejsByteSourceProto, flags)))
     return JS_FALSE;
-  if (!JS_SetPrivate(cx,jsbs,(void *)bs))
-    return JS_FALSE;
+  return JS_SetPrivate(cx,jsbs,(void *)bs);
 }
 
 static
@@ -441,8 +440,7 @@ ejsDefineByteSink(JSContext *cx, JSObject *obj, const char* name, uintN flags, e
   assert(ejsByteSinkProto);
   if (!(jsbs=JS_DefineObject(cx, obj, name, &ejsByteSink_class, ejsByteSinkProto, flags)))
     return JS_FALSE;
-  if (!JS_SetPrivate(cx,jsbs,(void *)bs))
-    return JS_FALSE;
+  return JS_SetPrivate(cx,jsbs,(void *)bs);
 }
 
 static

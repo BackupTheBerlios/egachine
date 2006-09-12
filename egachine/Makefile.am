@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign dist-bzip2 dist-zip
 
-SUBDIRS = libltdl debian src tests
+SUBDIRS = libltdl debian src tests config
 
 EXTRA_DIRST = bootstrap
 

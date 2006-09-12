@@ -3,6 +3,7 @@ dist_pkgdata_DATA = \
 	sg.js \
 	graphviz.js \
 	jsstl.js \
+	jsstlext.js \
 	cc.js \
 	tmp.js
 

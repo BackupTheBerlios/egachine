@@ -88,5 +88,5 @@ EXTRA_DIST = \
 	untrusted.js \
 	common \
 	$(tests) \
-	$(svgl) $(zlib) $(stream) $(file) $(net) $(audio) $(timer) $(gl)
-
+	$(svgl) $(zlib) $(stream) $(file) $(net) $(audio) $(timer) $(gl) \
+	$(tcc) $(ltdl) $(posix) $(io)

@@ -26,8 +26,8 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 
-	# Add here commands to compile the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --sysconfdir=/etc --enable-svgl
+	# debian spidermonkey headers (libsmjs-dev) are in /usr/include/smjs
+	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --sysconfdir=/etc --enable-svgl CPPFLAGS="$(CPPFLAGS) -I/usr/include/smjs"
 
 	$(MAKE)
 

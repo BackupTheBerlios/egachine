@@ -7,6 +7,7 @@ EXTRA_DIST = \
 	rules \
 	ejs.install \
 	ejs-multimedia.install \
+	ejs-cc.install \
 	egachine-base.install \
 	egachine-base.examples \
 	egachine.install \

@@ -1,0 +1,31 @@
+.TH EJS 1
+.SH NAME
+ejs \- an extensible JavaScript shell
+.SH SYNOPSIS
+.PP
+.B ejs
+[
+.I script
+]
+[
+.I arguments
+]
+.SH DESCRIPTION
+.\" Putting a newline after each sentence can generate better output.
+Ejs is a simple minimalistic (currently non-interactive) JavaScript shell utilizing mozilla's JavaScript interpreter SpiderMonkey. The purpose of ejs is to get a JavaScript shell which is extensible in the spirit of other interpreters like Perl and Python. The module framework is kept as simple as possible to encourage code-reuse among people using the SpiderMonkey API directly, even if they don't use ejs.
+.SH FILES AND DIRECTORIES
+.br
+.nf
+.\" first sentence copied from python man page
+These are subject to difference depending on local installation  conventions;
+$(sysconfdir), $(datadir) and $(libdir) are installation dependent.
+Typical values are: syconfdir=/etc, datadir=/usr/share and libdir=/usr/lib\fP.
+.PP
+.\" set tabstop to longest possible filename, plus a wee bit
+.ta \w'/usr/lib/perl/getopts.plddddddd   'u
+\fI$(sysconfdir)/ejs/onstartup.js\fR	global configuration and startup file
+\fI$(datadir)/ejs/*\fR	JavaScript code of extension modules
+\fI$(libdir)/ejs/*\fR	native code of extension modules
+.SH AUTHOR
+Jens Thiele
+karme@berlios.de

@@ -5,3 +5,5 @@ SUBDIRS = libltdl debian src tests config
 EXTRA_DIRST = bootstrap
 
 ACLOCAL_AMFLAGS = -I config/m4
+
+man_MANS = ejs.1 egachine.1

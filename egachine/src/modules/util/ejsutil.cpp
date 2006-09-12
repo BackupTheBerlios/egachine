@@ -360,12 +360,16 @@ extern "C" {
       return JS_FALSE;
 
     EJS_CP(CC);
-    EJS_CP(CXX);
     EJS_CP(DEFS);
-    EJS_CP(CPPFLAGS);
+    EJS_CP(DEFAULT_INCLUDES);
+    EJS_CP(INCLUDES);
     EJS_CP(AM_CPPFLAGS);
-    EJS_CP(EJS_CFLAGS);
-    EJS_CP(MODULE_LDFLAGS);
+    EJS_CP(CPPFLAGS);
+    EJS_CP(AM_CFLAGS);
+    EJS_CP(CFLAGS);
+
+    EJS_CP(AM_LDFLAGS);
+    EJS_CP(LDFLAGS);
     
 #undef EJS_CP
 

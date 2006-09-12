@@ -18,6 +18,17 @@ ejs.config={
   },
   EGachine:{
     port:47000
+  },
+  cc:{
+    // function returning command to run via system(3) to compile a c file into a dll
+    // you probably want to hand-tune this especially if you are cross compiling
+    compileModule:function(cfile,mfile){
+      var bi=ejs.ModuleLoader.get("util").buildinfo();
+      return bi.CC+" "+bi.DEFS+" "+bi.DEFAULT_INCLUDES+" "+bi.INCLUDES+" "
+	+bi.AM_CPPFLAGS+" "+bi.CPPFLAGS+" "+bi.AM_CFLAGS+" "+bi.CFLAGS
+	+" -Wall -Werror -fPIC -DPIC -s -o "+mfile
+	+" -shared "+cfile+" "+bi.AM_LDFLAGS+" "+bi.LDFLAGS;
+    }
   }
 };
 

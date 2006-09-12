@@ -33,17 +33,16 @@
     cfile.write(code);
     cfile.close();
     var libname=tmpdir+"/c"+_id+".so";
-    // todo: gcc should be $CC and options passed should be the options detected by libtool
-    var cppflags=util.buildinfo().CPPFLAGS;
-    cppflags = cppflags ? cppflags+" " : "";
-    cppflags+="-Wall -Werror -fpic";
-    var cmd="gcc "+cppflags+" -o "+libname+" -shared "+tmpdir+"/c.c >"+tmpdir+"/stdout 2>"+tmpdir+"/stderr";
+    var cmd=ejs.config.cc.compileModule(tmpdir+"/c.c",libname)+" >"+tmpdir+"/stdout 2>"+tmpdir+"/stderr";
     var module;
     var error;
     try{
       stderr.write("Running: '"+cmd+"'\n");
       if (posix.system(cmd))
 	throw Error("Compilation failed:\n"+File.read(tmpdir+"/c.c").readAll()+"\n"+File.read(tmpdir+"/stderr").readAll());
+      else{
+	stderr.write("Compiled successfully:\n"+File.read(tmpdir+"/stdout").readAll()+File.read(tmpdir+"/stderr").readAll());
+      }
       module=new ltdl.Ltmodule(libname);
     }catch(e){
       error=e;

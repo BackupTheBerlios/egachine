@@ -1,3 +1,14 @@
+2006-09-12  Jens Thiele  <karme@berlios.de>
+
+	* started porting to arm (arm-gp2x-linux)
+
+	* make distcheck fixed
+
+	* various bug fixes
+
+	* added some modules: cc, io, ... (some of them will be
+	replacements for older ones
+
 2005-11-06  Jens Thiele  <karme@berlios.de>
 
 	* added experimental ltdl module that will replace the

@@ -6,6 +6,7 @@ usr/share/ejs/sg.js
 usr/lib/ejs/ejsinput.*
 usr/share/ejs/input.js
 usr/lib/ejs/ejsaudio.*
+usr/share/ejs/audio.js
 usr/lib/ejs/ejstimer.*
 usr/lib/ejs/ejssvgl.*
 usr/share/ejs/svgl.js

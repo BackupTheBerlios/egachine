@@ -10,7 +10,7 @@ Architecture: any
 Depends: ${shlibs:Depends}
 Description: extensible JavaScript shell
  EJS   is  a   simple   minimalistic  (currently   non-
- interactive)   JavaScript  shell utilizing   mozilla's
+ interactive)   JavaScript  shell utilising   mozilla's
  JavaScript   interpreter SpiderMonkey.  The purpose of
  EJS is to get  a JavaScript shell which is  extensible
  in the spirit of    other interpreters like  Perl  and
@@ -36,11 +36,11 @@ Description: ejs multimedia modules
 Package: ejs-cc
 Section: interpreters
 Architecture: all
-Depends: ejs (=${Source-Version}), c-compiler
-Recommends: libc-dev, libsmjs-dev
-Description: ejs cc module
+Depends: ejs (=${Source-Version}), gcc|c-compiler
+Recommends: libc6-dev|libc-dev, libsmjs-dev
+Description: ejs C compiler module
  module providing capability   to  compile C   code  at
- runtime. This   is  a   seperate package  because   it
+ runtime. This   is  a   separate package  because   it
  introduces some heavy dependencies.
  .
   Homepage: http://egachine.berlios.de

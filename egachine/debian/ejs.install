@@ -21,3 +21,4 @@ usr/share/ejs/ltdl.js
 usr/lib/ejs/ejsposix.*
 usr/share/ejs/posix.js
 usr/share/ejs/tmp.js
+usr/share/man/man1/ejs.1

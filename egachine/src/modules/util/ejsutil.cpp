@@ -340,6 +340,9 @@ extern "C" {
   //! get build info (this is native code to be able to limit access to trusted mode)
   /*!
     \todo find a solution using javascript - perhaps some trusted context?
+    a simple and flexible solution would be to ship a javascript file containing the info
+    (files can be loaded only by trusted code)
+    of course the trusted code must always ensure not to leak the information
   */
   static JSBool
   ejs_buildinfo(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)

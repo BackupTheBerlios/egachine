@@ -1,3 +1,11 @@
+ejs (0.1.2) unstable; urgency=low
+
+  * new "upstream" release
+  * new binary package ejs-cc
+  * fixed some typos and dependencies
+
+ -- Jens Thiele (karme) <karme@berlios.de>  Tue, 12 Sep 2006 17:44:43 +0200
+
 ejs (0.1.1) unstable; urgency=low
 
   * new "upstream" release

@@ -311,25 +311,19 @@ if test x$enable_audio = xyes; then
 	AC_LANG_PUSH(C)
 	OLD_LIBS="$LIBS"
 	OLD_CPPFLAGS="$CPPFLAGS"
+	SDLMIXER_CFLAGS=""
 	SDLMIXER_LIBS="-lSDL_mixer"
-	CPPFLAGS="$SDL_CFLAGS $CPPFLAGS -DUSE_RWOPS"
+	CPPFLAGS="$SDL_CFLAGS $CPPFLAGS $SDLMIXER_CFLAGS"
 	AC_CHECK_LIB(SDL_mixer, Mix_LoadMUS_RW, [SDLMIXER_LIBS="-lSDL_mixer"],
             	[
 			dnl Newer versions of SDL_mixer might be linked against libmikmod
 			dnl hmm cant call AC_CHECK_LIB again since result is cached
 			dnl is there a simple way to remove a cheched result?
-			
-			SDLMIXER_LIBS="-lSDL_mixer -lmikmod"
-			LIBS="$SDLMIXER_LIBS $SDL_LIBS $OLD_LIBS"
-			AC_TRY_LINK(
-				[
-#include <SDL_mixer.h>
-],
-	            		[
-SDL_RWops* rw;
-Mix_Music *music = Mix_LoadMUS_RW(rw);
-],
-				[AC_MSG_RESULT([yes - using external mikmod])],
+			AM_PATH_LIBMIKMOD([],[
+					SDLMIXER_CFLAGS="$SDLMIXER_CFLAGS $LIBMIKMOD_CFLAGS"
+					SDLMIXER_LIBS="-lSDL_mixer $LIBMIKMOD_LIBS"
+					AC_MSG_RESULT([yes - using external mikmod])
+				],
         	    		[
 					AC_MSG_ERROR([Could not find required SDL_mixer library
 Perhaps you have to add some -L/path/to/libz to your LDFLAGS
@@ -340,6 +334,7 @@ or disable the audio module by passing --disable-audio to configure])
 		["$SDL_LIBS"])
 	CPPFLAGS="$OLD_CPPFLAGS"
 	LIBS="$OLD_LIBS"
+	AC_SUBST(SDLMIXER_CFLAGS)
 	AC_SUBST(SDLMIXER_LIBS)
 	AC_LANG_POP(C)
 fi

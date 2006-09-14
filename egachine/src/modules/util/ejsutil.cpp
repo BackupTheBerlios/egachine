@@ -356,7 +356,7 @@ extern "C" {
     jsval val;
 
     // todo: root string?
-#define EJS_CP(x) if (!(s=JS_NewStringCopyZ(cx,EJS_XSTR(x))))	\
+#define EJS_CP(x) if (!(s=JS_NewStringCopyZ(cx,EJS_XSTR((x)))))	\
       return JS_FALSE;						\
     val=STRING_TO_JSVAL(s);					\
     if (!JS_SetProperty(cx, jsobj, #x, &val))			\

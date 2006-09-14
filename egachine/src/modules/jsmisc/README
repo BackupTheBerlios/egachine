@@ -22,8 +22,8 @@ Modules depending on ejs or ejs modules using native code:
 sg module: (depends on Video module)
 Simple scene-graph for sprite based 2D games.
 
-cc module: (depends on util, Stream, File, tmp, posix and ltdl modules)
-compile C code at runtime.
+cc module: (at the moment depends on util, Stream, File, tmp, posix and ltdl modules)
+compile C code at runtime. (see also tcc module)
 
 tmp module: (depends on File and util modules)
 creation of (hopefully) secure temporary directories

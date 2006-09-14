@@ -58,7 +58,7 @@
     return module.getWrapper(cfunc);
   }
 
-  // compile c function body
+  // compile c function body to JS function
   cc.compile = function(body, includes) {
     var funcname=mkFuncName();
     // todo: do not use internal spidermonkey knowledge here (setting rval)

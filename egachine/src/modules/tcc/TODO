@@ -42,3 +42,7 @@ http://lists.gnu.org/archive/html/tinycc-devel/2005-06/msg00024.html
 
 TODO: Also take a look at other language bindings:
 Ruby: http://raa.ruby-lang.org/list.rhtml?name=ruby-tcc
+
+--
+
+tcc and cc module should have the same interface

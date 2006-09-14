@@ -1,10 +1,29 @@
 Miscellaneous pure JavaScript modules
 
+
+Stand-alone modules:
+
 base64 module:
 Encode and decode base64
 
 graphviz module:
 Generate output suitable for graphviz (dot) from JavaScript object graph.
 
-sg module:
+jsstl and jsstlext modules:
+C++ STL like containers for JavaScript written by Guyon Roche, see also:
+- http://www.webreference.com/programming/javascript/gr/column13/index.html
+- http://www.webreference.com/programming/javascript/gr/column14/index.html
+- http://www.webreference.com/programming/javascript/gr/column15/index.html
+- http://www.webreference.com/programming/javascript/gr/column17/index.html
+
+
+Modules depending on ejs or ejs modules using native code:
+
+sg module: (depends on Video module)
 Simple scene-graph for sprite based 2D games.
+
+cc module: (depends on util, Stream, File, tmp, posix and ltdl modules)
+compile C code at runtime.
+
+tmp module: (depends on File and util modules)
+creation of (hopefully) secure temporary directories

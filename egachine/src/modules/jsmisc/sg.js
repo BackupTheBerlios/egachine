@@ -1,7 +1,7 @@
 (function(sg){
   // module configuration options
   
-  // function used to adjust constructor functions
+  // function used to adjust constructor functions (default is to do nothing)
   var adjCons=(ejs.config.sg && ejs.config.sg.adjCons) || (function(c){return c;});
   // Video implementation to use (todo: good default?)
   var Video=ejs.config.sg && ejs.config.sg.Video;

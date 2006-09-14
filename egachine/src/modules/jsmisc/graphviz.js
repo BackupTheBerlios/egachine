@@ -3,7 +3,7 @@ graphviz module
 
 For now there is only one intersting function:
 graphviz.dot which generates .dot files from JavaScript object graphs
-suitable for visualization via graphviz
+suitable for visualization via graphviz (http://www.graphviz.org/)
 */
 (function(graphviz){
   var stdout;

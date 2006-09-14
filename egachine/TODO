@@ -1048,3 +1048,7 @@ to do this i removed dependencies from libSDL.*.la
 --
 port egachine to the gp2x
 --
+- net module rewrite
+- tests should be runnable by installed ejs without automake/bash shit
+- tests should be in module directory
+- include tcc module in debian package?

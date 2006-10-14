@@ -225,6 +225,12 @@ JSDB  <http://www.jsdb.org/>:
   expression searches,  without having to  learn a specific SQL syntax
   or install a bunch of ActiveX components."
 
+jsext <http://sourceforge.net/projects/jsext>
+  "Spidermonkey is Mozilla's js   engine, written in C. Jsext  extends
+  its capabilities on the server side  to allow access to code written
+  in  ANSI C as  easy as  this: C("#include <stdio.h>") printf("hello,
+  world\n"); Also contains a number of js modules."
+
 A list of projects embedding SpiderMonkey:
 <http://www.mozilla.org/js/projects.html>
 
@@ -257,4 +263,5 @@ interesting for similar projects:
 
 - erlang (see http://esdl.sourceforge.net/)
 - gamemonkey http://www.somedude.net/gamemonkey/
+- fenix? (http://fenix.divsite.net/index.php?opcion=1&lang=en)
 ----------------------------------------------------------------------

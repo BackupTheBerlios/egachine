@@ -190,6 +190,13 @@ Pygame <http://www.pygame.org/>:
   the python  language. Pygame is highly portable  and runs  on nearly
   every platform and operating system."
 
+PataPata <http://patapata.sourceforge.net/>:
+  License: GPL
+  Description:  'PataPata supports educational  constructivism  on the
+  Python platform, inspired by "Squeak"  and "Self", but going  beyond
+  those   in  a Pythonic   way. It    is intended  to   mainly support
+  "unschooling", "free schooling", and "informal" education.'
+
 Eel/eelbox <http://eel.olofson.net/>
   License: LGPL
   Description: "EEL is  a scripting and programming language, designed
@@ -245,7 +252,8 @@ interesting for similar projects:
 - python <http://www.python.org>:
   sandbox, small minimalistic environment?
 
-- scheme: (soft)-realtime, which implementation?
+- scheme: (soft)-realtime, which implementation? see also:
+  <http://egachine.berlios.de/sgachine/>
 
 - squirrel <http://squirrel.sourceforge.net/>
   (squadd <http://sourceforge.net/projects/squadd>)

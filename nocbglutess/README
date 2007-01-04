@@ -1,1 +1,2 @@
-see glutessnocb.h
+1) see nocbglutess.h
+2) if you have doxygen installed documentation is built by make

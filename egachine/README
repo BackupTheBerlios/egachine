@@ -223,6 +223,25 @@ Eel/eelbox <http://eel.olofson.net/>
 
 Projects also embedding SpiderMonkey (similar to EJS):
 
+jslibs <http://code.google.com/p/jslibs/>:
+
+  "jslibs is a standalone JavaScript development environment for using
+  JavaScript as a  general-purpose scripting language. jslibs provides
+  a  set  of  native  modules that  contains  various  general-purpose
+  classes and functions. Some of  these modules are simple wrappers to
+  familiar libraries  such as : zlib, SQLite,  FastCGI, NSPR (Netscape
+  Portable Runtime)  , ODE (Open  Dynamics Engine) ,  libpng, libjpeg,
+  OpenGL, OpenAL,  LibTomCrypt, libffi (Foreign  function interface) ,
+  ... Other modules provide  tools to enhance JavaScript programming :
+  Print(),  Load(), Exec(),  Seal(), Expand(),  Buffer class,  ... The
+  jslibs  distribution  comes  with  a small  standalone  command-line
+  access  program  (jshost)  that   can  be  used  to  run  Javascript
+  files. Note that  modules are quite independent from  jshost and can
+  be used  in any  project that embeds  Spidermonkey. A  Window binary
+  (without console) is also available (jswinhost). jslibs is available
+  under GNU  GPL 2.0 license. You  can access the  source code through
+  the Subversion repository using the 'Source' tab."
+
 JSDB  <http://www.jsdb.org/>:
   "is a JavaScript shell  designed with network-centric programming in
   mind.  It can  be used as  a database interface,  XML processor, and

@@ -203,7 +203,7 @@ extern "C" {
 
 struct nocb_GluTessResPtr*
 nocb_gluTessPolygonContoursPtr(unsigned contours, const unsigned* contourVertices,
-			   const GLdouble* vertices)
+			       const GLdouble* vertices)
 {
   CppRes cppRes;
   GLUtesselator* tess=gluNewTess();
@@ -272,11 +272,11 @@ void
 nocb_gluTessRes_delete(struct nocb_GluTessRes* res) 
 {
 #define FREE(x) do{				\
-      if (x) {					\
-	free(x);				\
-	x=NULL;					\
-      }						\
-    }while(0)
+    if (x) {					\
+      free(x);					\
+      x=NULL;					\
+    }						\
+  }while(0)
   assert(res);
   FREE(res->newVertsInfo);
   FREE(res->mode);
@@ -288,10 +288,10 @@ nocb_gluTessRes_delete(struct nocb_GluTessRes* res)
 
 struct nocb_GluTessRes*
 nocb_gluTessPolygonContours(unsigned contours, const unsigned* contourVertices,
-			   const GLdouble* vertices)
+			    const GLdouble* vertices)
 {
   struct nocb_GluTessResPtr* resP=nocb_gluTessPolygonContoursPtr(contours, contourVertices,
-							   vertices);
+								 vertices);
   // map pointers to indices
   map<const GLdouble*, unsigned> idx;
 

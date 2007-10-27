@@ -5,7 +5,7 @@ html/index.html: doxyfile test.out nocbglutess.h main.c
 	see $@
 
 test.out: nocbglutess
-	LD_LIBRARY_PATH=. valgrind --leak-check=full ./$< >$@.tmp
+	type valgrind 2>/dev/null && { LD_LIBRARY_PATH=. valgrind --leak-check=full ./$< >$@.tmp; } || { LD_LIBRARY_PATH=. ./$< >$@.tmp;}
 	mv test.out.tmp $@
 
 nocbglutess: main.o libnocbglutess.so

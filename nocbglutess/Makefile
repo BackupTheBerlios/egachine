@@ -9,10 +9,10 @@ test.out: nocbglutess
 	mv test.out.tmp $@
 
 nocbglutess: main.o libnocbglutess.so
-	$(CC) -o $@ $< -L. -lnocbglutess
+	$(CC) -o $@ $< -L. -lnocbglutess $(LDFLAGS)
 
 libnocbglutess.so: nocbglutess.o
-	$(CXX) -o $@ -shared $< -lGLU
+	$(CXX) -o $@ -shared $< -lGLU $(LDFLAGS)
 
 nocbglutess.o: nocbglutess.h nocbglutess.cpp
 

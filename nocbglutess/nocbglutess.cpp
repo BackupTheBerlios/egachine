@@ -318,7 +318,7 @@ nocb_gluTessPolygonContours(unsigned contours, const unsigned* contourVertices,
     for (unsigned j=0;j<4;++j) {
       res->newVertsInfo[i].weight[j]=resP->newVertsInfo[i]->weight[j];
       // todo: bug in mesa glu might be a null pointer
-      //      assert(idx.find(static_cast<const GLdouble*>(resP->newVertsInfo[i]->src[j]))!=idx.end());
+      // assert(idx.find(static_cast<const GLdouble*>(resP->newVertsInfo[i]->src[j]))!=idx.end());
       res->newVertsInfo[i].src[j]=idx[static_cast<const GLdouble*>(resP->newVertsInfo[i]->src[j])];
     }
   }

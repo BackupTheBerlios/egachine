@@ -11,10 +11,10 @@
   \mainpage 
 
   \section problem The Problem:
-  It is quite difficult to provide language bindings for the opengl utility library (glu) tesselation object.
+  It is quite difficult to provide language bindings for the opengl utility library (glu) tesselation object because of extensive usage of C callbacks.
 
   \section solution The Solution:
-  Provide procedures based on glu tesselation to simplify the task:
+  Provide procedures not using C callbacks based on glu tesselation to simplify the task:
   - \ref nocb_gluTessPolygon and \ref nocb_gluTessPolygonContours
 
   \section todos Todo:

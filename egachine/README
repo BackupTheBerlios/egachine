@@ -219,6 +219,8 @@ Eel/eelbox <http://eel.olofson.net/>
   integrated into  "strange"  environments,  such as  embedded devices
   running real time operating systems."
 
+seed7 <http://seed7.sourceforge.net/> ?
+
 ----------------------------------------------------------------------
 
 Projects also embedding SpiderMonkey (similar to EJS):
@@ -291,4 +293,5 @@ interesting for similar projects:
 - erlang (see http://esdl.sourceforge.net/)
 - gamemonkey http://www.somedude.net/gamemonkey/
 - fenix? (http://fenix.divsite.net/index.php?opcion=1&lang=en)
+- gnash (http://www.gnu.org/software/gnash/)
 ----------------------------------------------------------------------
